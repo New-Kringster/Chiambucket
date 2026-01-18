@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en" style="scroll-snap-type: y proximity;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Chiambucket</title>
+    <link rel="stylesheet" href="mainstyle.css">
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  />
+    <link rel="icon" type="image/png" href="images/icon.png">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="links.js" defer></script>
+</head>
+<body>
+    <main>
+        <div id="loader">
+            <img src="images/logo.png" alt="">
+        </div>
+        <div class="nav-holder">
+            <nav class="nav-closed" id="nav">
+                <a href="index.html" class="logo"><img src="images/logo.png" alt="LOGO" onclick="location.href= Home;return false;"></a>
+                <ul class="navitem" id="navitem">
+                    <li class="Nav-Menu-Items" id="Nav-Item-2"><a href="" onclick="location.href= Photography;return false;">Photography</a></li>
+                    <li class="Nav-Menu-Items" id="Nav-Item-3"><a href="" onclick="location.href= HomeLab;return false;">HomeLab</a></li>
+                    <li class="Nav-Menu-Items" id="Nav-Item-4"><a href="" onclick="location.href= Portfolio;return false;">Portfolio</a></li>
+                    <li class="Nav-Menu-Items" id="Nav-Item-5">
+                        <button class="button-hero" onclick="BucketCentralOnClick()">
+                        <div class="dots_border"></div>
+                        <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        class="sparkle"
+                        >
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="black"
+                            fill="black"
+                            d="M14.187 8.096L15 5.25L15.813 8.096C16.0231 8.83114 16.4171 9.50062 16.9577 10.0413C17.4984 10.5819 18.1679 10.9759 18.903 11.186L21.75 12L18.904 12.813C18.1689 13.0231 17.4994 13.4171 16.9587 13.9577C16.4181 14.4984 16.0241 15.1679 15.814 15.903L15 18.75L14.187 15.904C13.9769 15.1689 13.5829 14.4994 13.0423 13.9587C12.5016 13.4181 11.8321 13.0241 11.097 12.814L8.25 12L11.096 11.187C11.8311 10.9769 12.5006 10.5829 13.0413 10.0423C13.5819 9.50162 13.9759 8.83214 14.186 8.097L14.187 8.096Z"
+                        ></path>
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="black"
+                            fill="black"
+                            d="M6 14.25L5.741 15.285C5.59267 15.8785 5.28579 16.4206 4.85319 16.8532C4.42059 17.2858 3.87853 17.5927 3.285 17.741L2.25 18L3.285 18.259C3.87853 18.4073 4.42059 18.7142 4.85319 19.1468C5.28579 19.5794 5.59267 20.1215 5.741 20.715L6 21.75L6.259 20.715C6.40725 20.1216 6.71398 19.5796 7.14639 19.147C7.5788 18.7144 8.12065 18.4075 8.714 18.259L9.75 18L8.714 17.741C8.12065 17.5925 7.5788 17.2856 7.14639 16.853C6.71398 16.4204 6.40725 15.8784 6.259 15.285L6 14.25Z"
+                        ></path>
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="black"
+                            fill="black"
+                            d="M6.5 4L6.303 4.5915C6.24777 4.75718 6.15472 4.90774 6.03123 5.03123C5.90774 5.15472 5.75718 5.24777 5.5915 5.303L5 5.5L5.5915 5.697C5.75718 5.75223 5.90774 5.84528 6.03123 5.96877C6.15472 6.09226 6.24777 6.24282 6.303 6.4085L6.5 7L6.697 6.4085C6.75223 6.24282 6.84528 6.09226 6.96877 5.96877C7.09226 5.84528 7.24282 5.75223 7.4085 5.697L8 5.5L7.4085 5.303C7.24282 5.24777 7.09226 5.15472 6.96877 5.03123C6.84528 4.90774 6.75223 4.75718 6.697 4.5915L6.5 4Z"
+                        ></path>
+                        </svg>
+                        <span class="text_button">To BucketCentral</span>
+                        </button>
+                    </li>
+                </ul>
+                <label class="hamburger">
+                    <input type="checkbox" onclick="MenuBar()">
+                    <svg viewBox="0 0 32 32">
+                      <path class="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"></path>
+                      <path class="line" d="M7 16 27 16"></path>
+                    </svg>
+                  </label>
+            </nav>
+        </div>
+        <div class="portfolio-hero-bottom">
+            <div id="portfolio-items-holder">
+                <div class="portfolio-items2 pf-item-card-bg pf-personal-highlights" id="blddm">
+                    <div class="pf-items-wrapper">
+                        <div class="pf-items-top">
+                            <div class="pf-item-tag">
+                                <div class="pf-item-tag-personal-best">
+                                    <h5>Highlights</h5>
+                                </div>
+                                <div class="pf-item-tag-personal">
+                                    <h5>Personal Project</h5>
+                                </div>
+                            </div>
+                            <div class="pf-info-dropdown">
+                                <label class="pf-info-dropdown-checkbox">
+                                    <input type="checkbox" id="brolocator-checkbox" onclick="blddf()">
+                                    <svg viewBox="0 0 512 512" height="1em" xmlns="http://www.w3.org/2000/svg" class="chevron-down"><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path></svg>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="pf-item-content pf-item2-content">
+                            <h1>LoRA Messenger</h1>
+                            <h6>Featuring the ESP32 Microcontroller, LoRA, 2-Way Voice communication over ESP-NOW, Designing a PCB with KiCAD & case with Onshape. All self-learnt.</h6>
+                            <div class="pf-item-button-wrapper">
+                                <div class="pf-button-left-stack">
+                                    <h3>Tools Used:</h3>
+                                    <div class="icon-stack">
+                                        <img src="images/ps-pf-icon.png" alt="">
+                                        <img src="images/vscode-icon.png" alt="">
+                                        <img src="images/onshape-icon.png" alt="">
+                                        <img src="images/Kicad-icon.png" alt="">
+                                        <img src="images/esp-icon.png" alt="">
+                                        <img src="images/PlatformIO-icon.png" alt="">
+                                    </div>
+                                </div>
+                                <button class="pf-item-button" onclick="articleBrolocatorOnClick()">
+                                    View Article
+                                    <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                      <path
+                                        clip-rule="evenodd"
+                                        d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                        fill-rule="evenodd"
+                                      ></path>
+                                    </svg>
+                                  </button>
+                            </div>
+                        </div>
+                        <div class="pf-hidden-content" id="bldd">
+                            <h1>Summary</h1>
+                            <p>1 Month • High Difficulty</p>
+                            <div class="pf-hidden-bottom">
+                                <div class="pf-hidden-left">
+                                <div class="pf-hidden-keypoints">
+                                    <div class="left">
+                                        <h3 class="pf-key">Features :</h3>
+                                        <p class="pf-point">- Messaging</p>
+                                        <p class="pf-point">- Voice calls 2-Way</p>
+                                        <p class="pf-point">- Battery Powered</p>
+                                        <h3 class="pf-key">Microcontroller :</h3>
+                                        <p class="pf-point">- ESP32 WROOM</p>
+                                        <p class="pf-point">- PlatformIO IDE VsCode</p>
+                                        <p class="pf-point">- Arduino Framework</p>
+                                        <h3 class="pf-key">Connectivity :</h3>
+                                        <p class="pf-point">- ESPNOW [Voice]</p>
+                                        <p class="pf-point">- LoRa p2p [Text]</p>
+                                    </div>
+                                    <div class="right">
+                                        <h3 class="pf-key">Audio :</h3>
+                                        <p class="pf-point">- I2S Mic and Speaker</p>
+                                        <h3 class="pf-key">Others :</h3>
+                                        <p class="pf-point">- Custom PCB</p>
+                                        <p class="pf-point">- Custom 3D Case</p>
+                                        <p class="pf-point">- TP4056 Charger</p>
+                                        <p class="pf-point">- Dual OLED Displays</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pf-hidden-right">
+                                <iframe width="560" height="315" src="https://www.youtube.com/embed/1nbiYCAtGPA?si=DX0zrik6DufUva5P" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-item-image-wrapper-blur">
+                        <img src="images/borlocator-pf-context.png" alt="" class="pf-item-image">
+                    </div>
+                </div>     
+                <div class="portfolio-items2 pf-item-card-bg">
+                    <div class="pf-items-wrapper">
+                        <div class="pf-item-tag">
+                            <div class="pf-item-tag-school">
+                                <h5>School Project</h5>
+                            </div>
+                        </div>
+                        <div class="pf-item-content pf-item2-content">
+                            <h1>Pandus Dispenser</h1>
+                            <h6>Pandus was my first school project I worked on. It is made of of 6 different 3D printed components and Powered by an Ardunio uno.</h6>
+                            <div class="pf-item-button-wrapper">
+                                <div class="pf-button-left-stack">
+                                    <h3>Tools Used:</h3>
+                                    <div class="icon-stack">
+                                        <img src="images/resolve-icon.png" alt="">
+                                        <img src="images/ps-pf-icon.png" alt="">
+                                        <img src="images/powerpoint-icon.png" alt="">
+                                        <img src="images/vscode-icon.png" alt="">
+                                        <img src="images/onshape-icon.png" alt="">
+                                    </div>
+                                </div>
+                                <button class="pf-item-button" onclick="articlePandusOnClick()">
+                                    View Article
+                                    <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                      <path
+                                        clip-rule="evenodd"
+                                        d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                        fill-rule="evenodd"
+                                      ></path>
+                                    </svg>
+                                  </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-item-image-wrapper-blur">
+                        <img src="images/pandusarticle.png" alt="" class="pf-item-image-pandus">
+                    </div>
+                </div>
+                <div class="portfolio-items2 pf-item-card-bg">
+                    <div class="pf-items-wrapper">
+                        <div class="pf-item-tag">
+                            <div class="pf-item-tag-school">
+                                <h5>School Project</h5>
+                            </div>
+                        </div>
+                        <div class="pf-item-content pf-item2-content">
+                            <h1>EMA Smart Home System</h1>
+                            <h6>BeagleBone Black Wireless, Click boards, Python, SocketIO.</h6>
+                            <div class="pf-item-button-wrapper">
+                                <div class="pf-button-left-stack">
+                                    <h3>Tools Used:</h3>
+                                    <div class="icon-stack">
+                                        <img src="images/resolve-icon.png" alt="">
+                                        <img src="images/ps-pf-icon.png" alt="">
+                                        <img src="images/powerpoint-icon.png" alt="">
+                                        <img src="images/vscode-icon.png" alt="">
+                                        <img src="images/onshape-icon.png" alt="">
+                                        <img src="images/figma-icon.png" alt="">
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 15px;" class="pf-dual-buttons">
+                                    <button class="pf-item-button pf-item-demo" onclick="location.href='https://csdpdemo.chiambucket.com'" type="button" >
+                                        DEMO
+                                        <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                        <path
+                                            clip-rule="evenodd"
+                                            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                            fill-rule="evenodd"
+                                        ></path>
+                                        </svg>
+                                    </button>
+                                    <button class="pf-item-button" onclick="articlecsdpOnClick()">
+                                        View Article
+                                        <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                        <path
+                                            clip-rule="evenodd"
+                                            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                            fill-rule="evenodd"
+                                        ></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-item-image-wrapper-blur">
+                        <img src="images/Ema-pf-context.png" alt="" class="pf-item-image">
+                    </div>
+                </div>
+                <div class="portfolio-items2 pf-item-card-bg">
+                    <div class="pf-items-wrapper">
+                        <div class="pf-item-tag">
+                            <div class="pf-item-tag-school">
+                                <h5>School Project</h5>
+                            </div>
+                        </div>
+                        <div class="pf-item-content pf-item2-content">
+                            <h1>Kauli Concept</h1>
+                            <h6>Kauli is a conceptual product I developed for a communication skills project, where I was tasked with creating and presenting an original idea to my teachers and peers. I used Blender to design the 3D scenes.</h6>
+                            <div class="pf-item-button-wrapper">
+                                <div class="pf-button-left-stack">
+                                    <h3>Tools Used:</h3>
+                                    <div class="icon-stack">
+                                        <img src="images/resolve-icon.png" alt="">
+                                        <img src="images/ps-pf-icon.png" alt="">
+                                        <img src="images/powerpoint-icon.png" alt="">
+                                        <img src="images/blender-icon.png" alt="">
+                                        <img src="images/onshape-icon.png" alt="">
+                                    </div>
+                                </div>
+                                <button class="pf-item-button" onclick="articleKauliOnClick()">
+                                    View Article
+                                    <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                      <path
+                                        clip-rule="evenodd"
+                                        d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                        fill-rule="evenodd"
+                                      ></path>
+                                    </svg>
+                                  </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-item-image-wrapper-blur">
+                        <img src="images/kauli3-pf-context.png" alt="" class="pf-item-image-kauli">
+                    </div>
+                </div>
+                <div class="portfolio-items2 pf-item-card-bg">
+                    <div class="pf-items-wrapper">
+                        <div class="pf-item-tag">
+                            <div class="pf-item-tag-personal">
+                                <h5>Personal Project</h5>
+                            </div>
+                        </div>
+                        <div class="pf-item-content pf-item2-content">
+                            <h1>Series One Light</h1>
+                            <h6>Seires One Light is my take on the popular <a href="https://zeromouse.co/">ZeroMouse</a> created by <a href="https://www.youtube.com/@optimumtech">Optimum Tech</a> it's an ultralight 20g mouse that helps me play "better" in FPS games.</h6>
+                            <div class="pf-item-button-wrapper">
+                                <div class="pf-button-left-stack">
+                                    <h3>Tools Used:</h3>
+                                    <div class="icon-stack">
+                                        <img src="images/ps-pf-icon.png" alt="">
+                                        <img src="images/onshape-icon.png" alt="">
+                                    </div>
+                                </div>
+                                <button class="pf-item-button" onclick="articleSolOnClick()">
+                                    View Article
+                                    <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                      <path
+                                        clip-rule="evenodd"
+                                        d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                        fill-rule="evenodd"
+                                      ></path>
+                                    </svg>
+                                  </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-item-image-wrapper-blur">
+                        <img src="images/Series1l-pf-context.png" alt="" class="pf-item-image-kauli">
+                    </div>
+                </div>
+                <div class="portfolio-items2 pf-item-card-bg">
+                    <div class="pf-items-wrapper">
+                        <div class="pf-item-tag">
+                            <div class="pf-item-tag-personal">
+                                <h5>Personal Project</h5>
+                            </div>
+                        </div>
+                        <div class="pf-item-content pf-item2-content">
+                            <h1>Copy Board</h1>
+                            <h6>Created because my school did not allow me to bring the dev board home, copied from the school's dev board's schematic.</h6>
+                            <div class="pf-item-button-wrapper">
+                                <div class="pf-button-left-stack">
+                                    <h3>Tools Used:</h3>
+                                    <div class="icon-stack">
+                                        <img src="images/Kicad-icon.png" alt="">
+                                    </div>
+                                </div>
+                                <button class="pf-item-button" onclick="articlecopyboardOnClick()">
+                                    View Article
+                                    <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                      <path
+                                        clip-rule="evenodd"
+                                        d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                        fill-rule="evenodd"
+                                      ></path>
+                                    </svg>
+                                  </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-item-image-wrapper-blur">
+                        <img src="images/CopyBoard-pf-context.png" alt="" class="pf-item-image-pandus">
+                    </div>
+                </div>
+                <div class="portfolio-items2">
+                    <div class="pf-items-wrapper">
+                        <div class="pf-item-tag">
+                            <div class="pf-item-tag-school">
+                                <h5>School Project</h5>
+                            </div>
+                        </div>
+                        <div class="pf-item-content pf-item2-content">
+                            <h1>ELEC-F Concept</h1>
+                            <h6>ELEC-F is a conceptual product developed by my team and me for an engineering course. It utilizes the M5-Stack Controller along with various sensors to help prevent fatalities in walk-in freezers.</h6>
+                            <div class="pf-item-button-wrapper">
+                                <div class="pf-button-left-stack">
+                                    <h3>Tools Used:</h3>
+                                    <div class="icon-stack">
+                                        <img src="images/resolve-icon.png" alt="">
+                                        <img src="images/ps-pf-icon.png" alt="">
+                                        <img src="images/powerpoint-icon.png" alt="">
+                                        <img src="images/figma-icon.png" alt="">
+                                    </div>
+                                </div>
+                                <button class="pf-item-button" onclick="articleElecfOnClick()">
+                                    View Article
+                                    <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                      <path
+                                        clip-rule="evenodd"
+                                        d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                        fill-rule="evenodd"
+                                      ></path>
+                                    </svg>
+                                  </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-item-image-wrapper-blur">
+                        <img src="images/elef2-pf-context.png" alt="" class="pf-item-image-kauli">
+                    </div>
+                </div>
+                <div class="portfolio-items2">
+                    <div class="pf-items-wrapper">
+                        <div class="pf-item-tag">
+                            <div class="pf-item-tag-personal">
+                                <h5>Personal Project</h5>
+                            </div>
+                        </div>
+                        <div class="pf-item-content pf-item2-content">
+                            <h1>Chiambucket Website</h1>
+                            <h6>Learn more about how this site was built and what i've learnt form this experience</h6>
+                            <div class="pf-item-button-wrapper">
+                                <div class="pf-button-left-stack">
+                                    <h3>Tools Used:</h3>
+                                    <div class="icon-stack">
+                                        <img src="images/chrome-icon.jpg" alt="">
+                                        <img src="images/figma-icon.png" alt="">
+                                        <img src="images/vscode-icon.png" alt="">
+                                    </div>
+                                </div>
+                                <button class="pf-item-button" onclick="articleWebsiteOnClick()">
+                                    View Article
+                                    <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                      <path
+                                        clip-rule="evenodd"
+                                        d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                        fill-rule="evenodd"
+                                      ></path>
+                                    </svg>
+                                  </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-item-image-wrapper-blur">
+                        <img src="images/cbk-pf-context.png" alt="" class="pf-item-image">
+                    </div>
+                </div>
+                <div class="portfolio-items2">
+                    <div class="pf-items-wrapper">
+                        <div class="pf-item-tag">
+                            <div class="pf-item-tag-school">
+                                <h5>School Project</h5>
+                            </div>
+                        </div>
+                        <div class="pf-item-content pf-item2-content">
+                            <h1>Web Development Prj</h1>
+                            <h6>This was the first fully functional website I created using HTML and CSS as the final assignment for my web development class. The Chiambucket website was my second attempt at web development.</h6>
+                            <div class="pf-item-button-wrapper">
+                                <div class="pf-button-left-stack">
+                                    <h3>Tools Used:</h3>
+                                    <div class="icon-stack">
+                                        <img src="images/vscode-icon.png" alt="">
+                                        <img src="images/chrome-icon.jpg" alt="">
+                                        <img src="images/canva-icon.png" alt="">
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 15px;" class="pf-dual-buttons">
+                                    <button class="pf-item-button pf-item-demo" onclick="location.href='https://tht.chiambucket.com'" type="button" >
+                                        DEMO
+                                        <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                        <path
+                                            clip-rule="evenodd"
+                                            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                            fill-rule="evenodd"
+                                        ></path>
+                                        </svg>
+                                    </button>
+                                    <button class="pf-item-button" onclick="articleThtOnClick()">
+                                        View Article
+                                        <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                        <path
+                                            clip-rule="evenodd"
+                                            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                            fill-rule="evenodd"
+                                        ></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-item-image-wrapper-blur">
+                        <img src="images/tht-cover.png" alt="" class="pf-item-image darken">
+                    </div>
+                </div>
+                <div class="portfolio-items2">
+                    <div class="pf-items-wrapper">
+                        <div class="pf-item-tag">
+                            <div class="pf-item-tag-personal">
+                                <h5>Personal Project</h5>
+                            </div>
+                        </div>
+                        <div class="pf-item-content pf-item2-content">
+                            <h1>Minecraft Server With Live Interactive Map</h1>
+                            <h6>Minecraft Server running Paper and featuring Dynmap a plugin that allows you to add an interactive map to minecraft multiplayer servers.</h6>
+                            <div class="pf-item-button-wrapper">
+                                <div class="pf-button-left-stack">
+                                    <h3>Tools Used:</h3>
+                                    <div class="icon-stack">
+                                        <img src="images/docker-icon.png" alt="">
+                                        <img src="images/chrome-icon.jpg" alt="">
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 15px;" class="pf-dual-buttons">
+                                    <button class="pf-item-button pf-item-demo" onclick="location.href='https://map.chiambucket.com'" type="button" >
+                                        DEMO
+                                        <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                        <path
+                                            clip-rule="evenodd"
+                                            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                            fill-rule="evenodd"
+                                        ></path>
+                                        </svg>
+                                    </button>
+                                    <button class="pf-item-button" onclick="articleMcOnClick()">
+                                        View Article
+                                        <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                        <path
+                                            clip-rule="evenodd"
+                                            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                            fill-rule="evenodd"
+                                        ></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-item-image-wrapper-blur pf-item-image-wrapper-blur-minecraft">
+                        <img src="images/mc-pf-context.png" alt="" class="pf-item-image darken-light">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

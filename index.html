@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Chiambucket</title>
+    <link rel="stylesheet" href="mainstyle.css">
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  />
+    <link rel="icon" type="image/png" href="images/icon.png">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="links.js"></script>
+    <script>
+        function eyeopen() {
+        $('#sukuna-blink').addClass('abm-top1-blink');
+    
+        setTimeout(() => {
+             $('#sukuna-blink').removeClass('abm-top1-blink');
+            }, 50);
+        }
+        $(document).ready(function() {
+            setInterval(eyeopen, 4000);
+        });
+        </script>
+</head>
+<body>
+    <main>
+        <div class="nav-holder">
+            <nav class="nav-closed" id="nav">
+                <a href="index.html" class="logo"><img src="images/logo.png" alt="LOGO" onclick="location.href= Home;return false;"></a>
+                <ul class="navitem" id="navitem">
+                    <li class="Nav-Menu-Items" id="Nav-Item-2"><a href="" onclick="location.href= Photography;return false;">Photography</a></li>
+                    <li class="Nav-Menu-Items" id="Nav-Item-3"><a href="" onclick="location.href= HomeLab;return false;">HomeLab</a></li>
+                    <li class="Nav-Menu-Items" id="Nav-Item-4"><a href="" onclick="location.href= Portfolio;return false;">Portfolio</a></li>
+                    <li class="Nav-Menu-Items" id="Nav-Item-5">
+                        <button class="button-hero" onclick="BucketCentralOnClick()">
+                        <div class="dots_border"></div>
+                        <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        class="sparkle"
+                        >
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="black"
+                            fill="black"
+                            d="M14.187 8.096L15 5.25L15.813 8.096C16.0231 8.83114 16.4171 9.50062 16.9577 10.0413C17.4984 10.5819 18.1679 10.9759 18.903 11.186L21.75 12L18.904 12.813C18.1689 13.0231 17.4994 13.4171 16.9587 13.9577C16.4181 14.4984 16.0241 15.1679 15.814 15.903L15 18.75L14.187 15.904C13.9769 15.1689 13.5829 14.4994 13.0423 13.9587C12.5016 13.4181 11.8321 13.0241 11.097 12.814L8.25 12L11.096 11.187C11.8311 10.9769 12.5006 10.5829 13.0413 10.0423C13.5819 9.50162 13.9759 8.83214 14.186 8.097L14.187 8.096Z"
+                        ></path>
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="black"
+                            fill="black"
+                            d="M6 14.25L5.741 15.285C5.59267 15.8785 5.28579 16.4206 4.85319 16.8532C4.42059 17.2858 3.87853 17.5927 3.285 17.741L2.25 18L3.285 18.259C3.87853 18.4073 4.42059 18.7142 4.85319 19.1468C5.28579 19.5794 5.59267 20.1215 5.741 20.715L6 21.75L6.259 20.715C6.40725 20.1216 6.71398 19.5796 7.14639 19.147C7.5788 18.7144 8.12065 18.4075 8.714 18.259L9.75 18L8.714 17.741C8.12065 17.5925 7.5788 17.2856 7.14639 16.853C6.71398 16.4204 6.40725 15.8784 6.259 15.285L6 14.25Z"
+                        ></path>
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="black"
+                            fill="black"
+                            d="M6.5 4L6.303 4.5915C6.24777 4.75718 6.15472 4.90774 6.03123 5.03123C5.90774 5.15472 5.75718 5.24777 5.5915 5.303L5 5.5L5.5915 5.697C5.75718 5.75223 5.90774 5.84528 6.03123 5.96877C6.15472 6.09226 6.24777 6.24282 6.303 6.4085L6.5 7L6.697 6.4085C6.75223 6.24282 6.84528 6.09226 6.96877 5.96877C7.09226 5.84528 7.24282 5.75223 7.4085 5.697L8 5.5L7.4085 5.303C7.24282 5.24777 7.09226 5.15472 6.96877 5.03123C6.84528 4.90774 6.75223 4.75718 6.697 4.5915L6.5 4Z"
+                        ></path>
+                        </svg>
+                        <span class="text_button">To BucketCentral</span>
+                        </button>
+                    </li>
+                </ul>
+                <label class="hamburger">
+                    <input type="checkbox" onclick="MenuBar()">
+                    <svg viewBox="0 0 32 32">
+                      <path class="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"></path>
+                      <path class="line" d="M7 16 27 16"></path>
+                    </svg>
+                  </label>
+            </nav>
+        </div>
+        <div class="irregular-screen">
+            Irregular screen size detected, Content may not be displayed correctly.
+        </div>
+        <div class="hero">
+            <a class="hero-topper" href="" onclick="location.href= Portfolio;return false;">
+                <div class="hero-topper-new-tag">
+                    New
+                </div>
+                <div class="hero-topper-content">
+                    LoRa Messaging Project
+                </div>
+                <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" class="hero-topper-arrow">
+                    <path fill="#E8E8E8" d="M338.752 104.704a64 64 0 000 90.496l316.8 316.8-316.8 316.8a64 64 0 0090.496 90.496l362.048-362.048a64 64 0 000-90.496L429.248 104.704a64 64 0 00-90.496 0z"/>
+                </svg>
+            </a>
+            <div class="hero-headline">
+                <span class="hero-headline-text">
+                    Creating with <span class="hero-headline-text-special">Intention.</span>
+                </span>
+            </div>
+            <div class="hero-subtitle">
+                New and Redesigned Chiambucket!
+            </div>
+            <button class="button-hero button-hero-main FloatUp" onclick="BucketCentralOnClick()">
+                <div class="dots_border"></div>
+                <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                class="sparkle"
+                >
+                <path
+                    class="path"
+                    stroke-linejoin="round"
+                    stroke-linecap="round"
+                    stroke="black"
+                    fill="black"
+                    d="M14.187 8.096L15 5.25L15.813 8.096C16.0231 8.83114 16.4171 9.50062 16.9577 10.0413C17.4984 10.5819 18.1679 10.9759 18.903 11.186L21.75 12L18.904 12.813C18.1689 13.0231 17.4994 13.4171 16.9587 13.9577C16.4181 14.4984 16.0241 15.1679 15.814 15.903L15 18.75L14.187 15.904C13.9769 15.1689 13.5829 14.4994 13.0423 13.9587C12.5016 13.4181 11.8321 13.0241 11.097 12.814L8.25 12L11.096 11.187C11.8311 10.9769 12.5006 10.5829 13.0413 10.0423C13.5819 9.50162 13.9759 8.83214 14.186 8.097L14.187 8.096Z"
+                ></path>
+                <path
+                    class="path"
+                    stroke-linejoin="round"
+                    stroke-linecap="round"
+                    stroke="black"
+                    fill="black"
+                    d="M6 14.25L5.741 15.285C5.59267 15.8785 5.28579 16.4206 4.85319 16.8532C4.42059 17.2858 3.87853 17.5927 3.285 17.741L2.25 18L3.285 18.259C3.87853 18.4073 4.42059 18.7142 4.85319 19.1468C5.28579 19.5794 5.59267 20.1215 5.741 20.715L6 21.75L6.259 20.715C6.40725 20.1216 6.71398 19.5796 7.14639 19.147C7.5788 18.7144 8.12065 18.4075 8.714 18.259L9.75 18L8.714 17.741C8.12065 17.5925 7.5788 17.2856 7.14639 16.853C6.71398 16.4204 6.40725 15.8784 6.259 15.285L6 14.25Z"
+                ></path>
+                <path
+                    class="path"
+                    stroke-linejoin="round"
+                    stroke-linecap="round"
+                    stroke="black"
+                    fill="black"
+                    d="M6.5 4L6.303 4.5915C6.24777 4.75718 6.15472 4.90774 6.03123 5.03123C5.90774 5.15472 5.75718 5.24777 5.5915 5.303L5 5.5L5.5915 5.697C5.75718 5.75223 5.90774 5.84528 6.03123 5.96877C6.15472 6.09226 6.24777 6.24282 6.303 6.4085L6.5 7L6.697 6.4085C6.75223 6.24282 6.84528 6.09226 6.96877 5.96877C7.09226 5.84528 7.24282 5.75223 7.4085 5.697L8 5.5L7.4085 5.303C7.24282 5.24777 7.09226 5.15472 6.96877 5.03123C6.84528 4.90774 6.75223 4.75718 6.697 4.5915L6.5 4Z"
+                ></path>
+                </svg>
+                <span class="text_button">To BucketCentral</span>
+            </button>
+            <div class="scroll-container FloatUp Scale1d1">
+                <a href="#index-content" class="container_mouse">
+                    <div>
+                    <span class="mouse-btn">
+                        <span class="mouse-scroll"></span>
+                    </span>
+                    <span class="scroll-text">Scroll Down</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="index-content" id="index-content">
+            <div class="index-content-border-wrapper">
+                <div class="index-content-border"></div>
+                <div class="index-content-wrapper">
+                    <div class="index-photos">
+                        <div class="index-photos-text index-photos-padding">
+                            <div class="index-photos-header">
+                                <h1>My Designs and Photos</h1>
+                            </div>
+                            <div class="index-photos-subtitle">
+                                <h1>
+                                    Im not a Pro but I try my best to make things look good!
+                                </h1>
+                            </div>
+                            <button class="pf-item-button" onclick="PhotographyOnClick()">
+                                View Photos
+                                <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                  <path
+                                    clip-rule="evenodd"
+                                    d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                    fill-rule="evenodd"
+                                  ></path>
+                                </svg>
+                              </button>
+                        </div>
+                        <div class="index-photos-image-wrapper">
+                            <img src="images/index-photos-gif.gif" alt="">
+                        </div>
+                    </div>
+                    <div class="index-photos index-server">
+                        <div class="index-photos-text">
+                            <div class="index-photos-header">
+                                <h1>HomeLab Servers</h1>
+                            </div>
+                            <div class="index-photos-subtitle">
+                                <h1>
+                                    The chiambucket servers run everything including this website, It makes many of my services avaliable on the web.
+                                </h1>
+                            </div>
+                            <button class="pf-item-button" onclick="HomelabOnClick()">
+                                View My Setup
+                                <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                  <path
+                                    clip-rule="evenodd"
+                                    d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                    fill-rule="evenodd"
+                                  ></path>
+                                </svg>
+                              </button>
+                        </div>
+                        <div class="index-server-image-wrapper ">
+                            <img src="images/dither2.png" alt="">
+                        </div>
+                        <div class="godray">
+                            <img src="images/godray.png" alt="">
+                        </div>
+                    </div>
+                    <div class="index-bucketcentral">
+                        <div class="index-bktctrl-txt index-photos-text">
+                            <div class="index-photos-header">
+                                <h1>BucketCentral</h1>
+                            </div>
+                            <div class="index-photos-subtitle">
+                                <h1>
+                                    All of your Chiambucket services in one place.
+                                </h1>
+                            </div>
+                            <button class="button-hero" onclick="BucketCentralOnClick()">
+                                <div class="dots_border"></div>
+                                <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                class="sparkle"
+                                >
+                                <path
+                                    class="path"
+                                    stroke-linejoin="round"
+                                    stroke-linecap="round"
+                                    stroke="black"
+                                    fill="black"
+                                    d="M14.187 8.096L15 5.25L15.813 8.096C16.0231 8.83114 16.4171 9.50062 16.9577 10.0413C17.4984 10.5819 18.1679 10.9759 18.903 11.186L21.75 12L18.904 12.813C18.1689 13.0231 17.4994 13.4171 16.9587 13.9577C16.4181 14.4984 16.0241 15.1679 15.814 15.903L15 18.75L14.187 15.904C13.9769 15.1689 13.5829 14.4994 13.0423 13.9587C12.5016 13.4181 11.8321 13.0241 11.097 12.814L8.25 12L11.096 11.187C11.8311 10.9769 12.5006 10.5829 13.0413 10.0423C13.5819 9.50162 13.9759 8.83214 14.186 8.097L14.187 8.096Z"
+                                ></path>
+                                <path
+                                    class="path"
+                                    stroke-linejoin="round"
+                                    stroke-linecap="round"
+                                    stroke="black"
+                                    fill="black"
+                                    d="M6 14.25L5.741 15.285C5.59267 15.8785 5.28579 16.4206 4.85319 16.8532C4.42059 17.2858 3.87853 17.5927 3.285 17.741L2.25 18L3.285 18.259C3.87853 18.4073 4.42059 18.7142 4.85319 19.1468C5.28579 19.5794 5.59267 20.1215 5.741 20.715L6 21.75L6.259 20.715C6.40725 20.1216 6.71398 19.5796 7.14639 19.147C7.5788 18.7144 8.12065 18.4075 8.714 18.259L9.75 18L8.714 17.741C8.12065 17.5925 7.5788 17.2856 7.14639 16.853C6.71398 16.4204 6.40725 15.8784 6.259 15.285L6 14.25Z"
+                                ></path>
+                                <path
+                                    class="path"
+                                    stroke-linejoin="round"
+                                    stroke-linecap="round"
+                                    stroke="black"
+                                    fill="black"
+                                    d="M6.5 4L6.303 4.5915C6.24777 4.75718 6.15472 4.90774 6.03123 5.03123C5.90774 5.15472 5.75718 5.24777 5.5915 5.303L5 5.5L5.5915 5.697C5.75718 5.75223 5.90774 5.84528 6.03123 5.96877C6.15472 6.09226 6.24777 6.24282 6.303 6.4085L6.5 7L6.697 6.4085C6.75223 6.24282 6.84528 6.09226 6.96877 5.96877C7.09226 5.84528 7.24282 5.75223 7.4085 5.697L8 5.5L7.4085 5.303C7.24282 5.24777 7.09226 5.15472 6.96877 5.03123C6.84528 4.90774 6.75223 4.75718 6.697 4.5915L6.5 4Z"
+                                ></path>
+                                </svg>
+                                <span class="text_button">To BucketCentral</span>
+                                </button>
+                        </div>
+                        <div class="index-bktctrl-image-wrapper">
+                            <img src="images/bucket-central.png" alt="">
+                        </div>
+                    </div>
+                </div>
+                <div class="index-content-border"></div>
+            </div>
+        </div>
+        <div class="blank"></div>
+        <div class="abm-bg">
+            <div class="aboutme-main-holder">
+                <div class="aboutme-top-holder">
+                    <div class="abm-top0 abm-grid-items-bg">
+                        <div class="wrappers">
+                            <div class="abm-largeheading">Hi<br>I am Braven,<br>I am an Engineer<br>that focuses on Design</div>
+                            <img src="images/wave.png" alt="">
+                        </div>
+                    </div>
+                    <div class="abm-top1 abm-grid-items-bg" id="sukuna-blink">
+                        <a href="https://www.pinterest.com/pin/665547651180427494/"></a>
+                    </div>
+                    <div class="abm-top2 abm-grid-items-bg">
+                        <p class="abm-key">Microcontrollers</p>
+                        <div class="imgstk">
+                            <img class="left" src="images/microchip-icon.png" alt="">
+                            <img src="images/esp-icon.png" alt="">
+                            <img src="images/PlatformIO-icon.png" alt="">
+                            <img class="right" src="images/arduino-icon.png" alt="">
+                        </div>
+                        <div class="abm-smallheading">
+                            Powerful hardware meets<br/>Powerful software
+                        </div>
+                    </div>
+                    <div class="abm-top3 abm-grid-items-bg">
+                        <p class="abm-key">
+                            Engineering
+                        </p>
+                        <div class="inner">
+                            <img src="images/abm-engineering.png" alt="">
+                            <div class="inner2">
+                                <div class="abm-largeheading">
+                                    A Design first<br/>Engineering approach.
+                                </div>
+                                <div class="abm-content">
+                                    I believe every engineer should be a designer, grounded in function, guided by human experience, and driven to create art.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="abm-top4 abm-grid-items-bg">
+                        <p class="abm-key">3D CAD & PCB Design</p>
+                        <div class="inner">
+                            <a href="Brolocator.html" class="abm-button">
+                                LORA Messenger 
+                                <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" class="hero-topper-arrow">
+                                    <path fill="#E8E8E8" d="M338.752 104.704a64 64 0 000 90.496l316.8 316.8-316.8 316.8a64 64 0 0090.496 90.496l362.048-362.048a64 64 0 000-90.496L429.248 104.704a64 64 0 00-90.496 0z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="abm-top5 abm-grid-items-bg">
+                        <div class="inner">
+                            <div class="left">
+                                <div class="abm-largeheading">
+                                    Intentional design,<br/>
+                                    Clearly communicated
+                                </div>
+                                <div class="abm-content">
+                                    No wasted space, no clutter just clean design that’s instantly understood. Every detail is intentional, considered, and purposeful.
+                                </div>
+                            </div>
+                            <div class="right">
+                                <p class="abm-key">
+                                    Design
+                                </p>
+                                <button onclick="PhotographyOnClick()" class="abm-button">
+                                    Design and Photos 
+                                    <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" class="hero-topper-arrow">
+                                        <path fill="#E8E8E8" d="M338.752 104.704a64 64 0 000 90.496l316.8 316.8-316.8 316.8a64 64 0 0090.496 90.496l362.048-362.048a64 64 0 000-90.496L429.248 104.704a64 64 0 00-90.496 0z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="abm-top6 abm-grid-items-bg">
+                        <img src="images/photoshop-icon-dark.png" class="top" alt="">
+                        <img src="images/figma-icon-dark.png" alt="">
+                        <img src="images/davinci-icon-dark.png" alt="">
+                        <img src="images/premier-icon-dark.png" alt="">
+                        <img src="images/spline-icon-dark.png" alt="">
+                        <img src="images/powerpoint-icon-dark.png" class="bottom" alt="">
+                    </div>
+                    <div class="abm-top7 abm-grid-items-bg">
+                        <div class="top">
+                            <p class="abm-key">
+                                Powerpoint
+                            </p>
+                            <a href="downloadable/CPB1v4.pptx">
+                                <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" class="hero-topper-arrow">
+                                    <path fill="#E8E8E8" d="M338.752 104.704a64 64 0 000 90.496l316.8 316.8-316.8 316.8a64 64 0 0090.496 90.496l362.048-362.048a64 64 0 000-90.496L429.248 104.704a64 64 0 00-90.496 0z"/>
+                                </svg>
+                            </a>
+                        </div>
+                        <img src="images/CPB1v4.gif" alt="">
+                        <div class="bottom">
+                            <div class="bottom-top">
+                                <img src="images/powerpoint-icon-dark.png" alt="">
+                                <div class="abm-smallheading">
+                                    Fun, Engaging,</br>
+                                    Never Overwhelming
+                                </div>
+                            </div>
+                            <div class="abm-content">
+                                Designing fun, interactive slides that keep audiences engaged while delivering key points with clarity, never overwhelming.                            
+                            </div>
+                        </div>
+                    </div>
+                    <div class="abm-top8 abm-grid-items-bg">
+                        <div class="top">
+                            <p class="abm-key">
+                                Figma
+                            </p>
+                        </div>
+                        <div class="center">
+                            <img class="back" src="images/ELECF.png" alt="">
+                            <img class="middle" src="images/Dashboard.png" alt="">
+                            <img class="front" src="images/Cdyspstart.png" alt="">
+                        </div>
+                        <div class="bottom">
+                            <img class="abm-logo-figma" src="images/figma-icon-dark.png" alt="">
+                            <div class="abm-smallheading">
+                                Clean, Functional
+                            </div>
+                            <div class="abm-content">
+                                Designing posters and interfaces that communicate instantly, without friction.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="abm-top9 abm-grid-items-bg">
+                        <div class="left">
+                            <img src="images/Davinci-showcase.gif" alt="">
+                        </div>
+                        <div class="right">
+                            <div class="right-top">
+                                <p class="abm-key">
+                                    DaVinci Resolve
+                                </p>
+                                <a href="https://www.youtube.com/@newkringster2564">
+                                    <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" class="hero-topper-arrow">
+                                        <path fill="#E8E8E8" d="M338.752 104.704a64 64 0 000 90.496l316.8 316.8-316.8 316.8a64 64 0 0090.496 90.496l362.048-362.048a64 64 0 000-90.496L429.248 104.704a64 64 0 00-90.496 0z"/>
+                                    </svg>
+                                </a>
+                            </div>
+                            <div class="right-bottom">
+                                <img src="images/davinci-icon-dark.png" alt="">
+                                <div class="abm-smallheading">
+                                    Clear, Creative, Experimental.
+                                </div>
+                                <div class="abm-content">
+                                    Creating engaging videos that add meaningful value and clearly communicate a project’s goals and vision.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="abm-top10 abm-grid-items-bg">
+                        <div class="left">
+                            <img src="images/abm-lr.jpg" alt="">
+                        </div>
+                        <div class="right">
+                            <div class="right-top">
+                                <p class="abm-key">
+                                    Photography
+                                </p>
+                                <a href="#photolink">
+                                    <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" class="hero-topper-arrow">
+                                        <path fill="#E8E8E8" d="M338.752 104.704a64 64 0 000 90.496l316.8 316.8-316.8 316.8a64 64 0 0090.496 90.496l362.048-362.048a64 64 0 000-90.496L429.248 104.704a64 64 0 00-90.496 0z"/>
+                                    </svg>
+                                </a>
+                            </div>
+                            <div class="right-bottom">
+                                <div class="inner">
+                                    <img src="images/lrc-icon-dark.png" alt="">
+                                    <div class="abm-smallheading">
+                                        Photography
+                                    </div>
+                                </div>
+                                <div class="abm-content">
+                                    Photography helps me find inspiration by enhancing my perspective, attention to detail, and approach to creative design.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="abm-top11 abm-grid-items-bg">
+                        <div class="top">
+                            <p class="abm-key">
+                                HomeLab
+                            </p>
+                            <a href="homelab.html">
+                                <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" class="hero-topper-arrow">
+                                    <path fill="#E8E8E8" d="M338.752 104.704a64 64 0 000 90.496l316.8 316.8-316.8 316.8a64 64 0 0090.496 90.496l362.048-362.048a64 64 0 000-90.496L429.248 104.704a64 64 0 00-90.496 0z"/>
+                                </svg>
+                            </a>
+                        </div>
+                        <div class="bottom">
+                            <div class="abm-largeheading">
+                                Servers that turn</br>
+                                Clean Energy to Experiences
+                            </div>
+                            <div class="abm-content">
+                                All Chiambucket servers are powered by solar export credits generated from daytime solar energy production.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="abm-top12 abm-grid-items-bg">
+                        <p class="abm-key">
+                            HomeLab
+                        </p>
+                        <div class="abm-smallheading">
+                            Powered by Ubiquity</br>
+                            Networking equipment
+                        </div>
+                    </div>
+                    <div class="abm-top13 abm-grid-items-bg">
+                        <p class="abm-key">
+                            Chiambucket Servers
+                        </p>
+                        <div class="bottom">
+                            <img src="images/abm-hl-server.png" alt="">
+                        </div>
+                    </div>
+                    <div class="abm-top14 abm-grid-items-bg">
+                        <div class="top">
+                            <p class="abm-key">
+                                HomeLab
+                            </p>
+                            <a href="homelab.html">
+                                <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" class="hero-topper-arrow">
+                                    <path fill="#E8E8E8" d="M338.752 104.704a64 64 0 000 90.496l316.8 316.8-316.8 316.8a64 64 0 0090.496 90.496l362.048-362.048a64 64 0 000-90.496L429.248 104.704a64 64 0 00-90.496 0z"/>
+                                </svg>
+                            </a>
+                        </div>
+                        <div class="abm-smallheading">
+                                Open-Source docker apps
+                            </div>
+                            <div class="abm-content">
+                                Open-Source Docker apps power all of chiambucket
+                            </div>
+                    </div>
+                </div>
+                <div id="portfolio-items-holder">
+                <div class="portfolio-items2 pf-item-card-bg pf-personal-highlights" id="blddm">
+                    <div class="pf-items-wrapper">
+                        <div class="pf-items-top">
+                            <div class="pf-item-tag">
+                                <div class="pf-item-tag-personal-best">
+                                    <h5>Highlights</h5>
+                                </div>
+                                <div class="pf-item-tag-personal">
+                                    <h5>Personal Project</h5>
+                                </div>
+                            </div>
+                            <div class="pf-info-dropdown">
+                                <label class="pf-info-dropdown-checkbox">
+                                    <input type="checkbox" id="brolocator-checkbox" onclick="blddf()">
+                                    <svg viewBox="0 0 512 512" height="1em" xmlns="http://www.w3.org/2000/svg" class="chevron-down"><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path></svg>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="pf-item-content pf-item2-content">
+                            <h1>LoRA Messenger</h1>
+                            <h6>Featuring the ESP32 Microcontroller, LoRA, 2-Way Voice communication over ESP-NOW, Designing a PCB with KiCAD & case with Onshape. All self-learnt.</h6>
+                            <div class="pf-item-button-wrapper">
+                                <div class="pf-button-left-stack">
+                                    <h3>Tools Used:</h3>
+                                    <div class="icon-stack">
+                                        <img src="images/ps-pf-icon.png" alt="">
+                                        <img src="images/vscode-icon.png" alt="">
+                                        <img src="images/onshape-icon.png" alt="">
+                                        <img src="images/Kicad-icon.png" alt="">
+                                        <img src="images/esp-icon.png" alt="">
+                                        <img src="images/PlatformIO-icon.png" alt="">
+                                    </div>
+                                </div>
+                                <button class="pf-item-button" onclick="articleBrolocatorOnClick()">
+                                    View Article
+                                    <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                      <path
+                                        clip-rule="evenodd"
+                                        d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                        fill-rule="evenodd"
+                                      ></path>
+                                    </svg>
+                                  </button>
+                            </div>
+                        </div>
+                        <div class="pf-hidden-content" id="bldd">
+                            <div style="display: flex; align-items: center;">
+                                <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        class="sparkle"
+                        style="width: 45px; height: 45px;"
+                        >
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#e5e5e5"
+                            fill="#e5e5e5"
+                            d="M14.187 8.096L15 5.25L15.813 8.096C16.0231 8.83114 16.4171 9.50062 16.9577 10.0413C17.4984 10.5819 18.1679 10.9759 18.903 11.186L21.75 12L18.904 12.813C18.1689 13.0231 17.4994 13.4171 16.9587 13.9577C16.4181 14.4984 16.0241 15.1679 15.814 15.903L15 18.75L14.187 15.904C13.9769 15.1689 13.5829 14.4994 13.0423 13.9587C12.5016 13.4181 11.8321 13.0241 11.097 12.814L8.25 12L11.096 11.187C11.8311 10.9769 12.5006 10.5829 13.0413 10.0423C13.5819 9.50162 13.9759 8.83214 14.186 8.097L14.187 8.096Z"
+                        ></path>
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#a0a0a0"
+                            fill="#a0a0a0"
+                            d="M6 14.25L5.741 15.285C5.59267 15.8785 5.28579 16.4206 4.85319 16.8532C4.42059 17.2858 3.87853 17.5927 3.285 17.741L2.25 18L3.285 18.259C3.87853 18.4073 4.42059 18.7142 4.85319 19.1468C5.28579 19.5794 5.59267 20.1215 5.741 20.715L6 21.75L6.259 20.715C6.40725 20.1216 6.71398 19.5796 7.14639 19.147C7.5788 18.7144 8.12065 18.4075 8.714 18.259L9.75 18L8.714 17.741C8.12065 17.5925 7.5788 17.2856 7.14639 16.853C6.71398 16.4204 6.40725 15.8784 6.259 15.285L6 14.25Z"
+                        ></path>
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#707070"
+                            fill="#707070"
+                            d="M6.5 4L6.303 4.5915C6.24777 4.75718 6.15472 4.90774 6.03123 5.03123C5.90774 5.15472 5.75718 5.24777 5.5915 5.303L5 5.5L5.5915 5.697C5.75718 5.75223 5.90774 5.84528 6.03123 5.96877C6.15472 6.09226 6.24777 6.24282 6.303 6.4085L6.5 7L6.697 6.4085C6.75223 6.24282 6.84528 6.09226 6.96877 5.96877C7.09226 5.84528 7.24282 5.75223 7.4085 5.697L8 5.5L7.4085 5.303C7.24282 5.24777 7.09226 5.15472 6.96877 5.03123C6.84528 4.90774 6.75223 4.75718 6.697 4.5915L6.5 4Z"
+                        ></path>
+                        </svg>
+                                <h1 class="pf-hidden-summary">Summary</h1>
+                            </div>
+                            <p class="pf-hidden-tags">3 Months • High Difficulty • Self-Learnt • 3D Design • PCB Design</p>
+                            <div class="pf-hidden-bottom">
+                                <div class="pf-hidden-left">
+                                <div class="pf-hidden-keypoints">
+                                    <div class="left">
+                                        <h3 class="pf-key">Features :</h3>
+                                        <p class="pf-point">- Messaging</p>
+                                        <p class="pf-point">- Voice calls 2-Way</p>
+                                        <p class="pf-point">- Battery Powered</p>
+                                        <h3 class="pf-key">Microcontroller :</h3>
+                                        <p class="pf-point">- ESP32 WROOM</p>
+                                        <p class="pf-point">- PlatformIO IDE VsCode</p>
+                                        <p class="pf-point">- Arduino Framework</p>
+                                        <h3 class="pf-key">Connectivity :</h3>
+                                        <p class="pf-point">- ESPNOW [Voice]</p>
+                                        <p class="pf-point">- LoRa p2p [Text]</p>
+                                    </div>
+                                    <div class="right">
+                                        <h3 class="pf-key">Audio :</h3>
+                                        <p class="pf-point">- I2S Mic and Speaker</p>
+                                        <h3 class="pf-key">Others :</h3>
+                                        <p class="pf-point">- Custom PCB</p>
+                                        <p class="pf-point">- Custom 3D Case</p>
+                                        <p class="pf-point">- TP4056 Charger</p>
+                                        <p class="pf-point">- Dual OLED Displays</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pf-hidden-right">
+                                <iframe width="560" height="315" src="https://www.youtube.com/embed/1nbiYCAtGPA?si=DX0zrik6DufUva5P" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-item-image-wrapper-blur">
+                        <img src="images/borlocator-pf-context.png" alt="" class="pf-item-image">
+                    </div>
+                </div>     
+                <div class="portfolio-items2 pf-item-card-bg" id="pdddm">
+                    <div class="pf-items-wrapper">
+                        <div class="pf-items-top">
+                            <div class="pf-item-tag">
+                                <div class="pf-item-tag-school">
+                                    <h5>School Project</h5>
+                                </div>
+                            </div>
+                            <div class="pf-info-dropdown">
+                                <label class="pf-info-dropdown-checkbox">
+                                    <input type="checkbox" id="brolocator-checkbox" onclick="pdddf()">
+                                    <svg viewBox="0 0 512 512" height="1em" xmlns="http://www.w3.org/2000/svg" class="chevron-down"><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path></svg>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="pf-item-content pf-item2-content">
+                            <h1>Pandus Dispenser</h1>
+                            <h6>Pandus was my first school project I worked on. It is made of of 6 different 3D printed components and Powered by an Ardunio uno.</h6>
+                            <div class="pf-item-button-wrapper">
+                                <div class="pf-button-left-stack">
+                                    <h3>Tools Used:</h3>
+                                    <div class="icon-stack">
+                                        <img src="images/resolve-icon.png" alt="">
+                                        <img src="images/ps-pf-icon.png" alt="">
+                                        <img src="images/powerpoint-icon.png" alt="">
+                                        <img src="images/vscode-icon.png" alt="">
+                                        <img src="images/onshape-icon.png" alt="">
+                                    </div>
+                                </div>
+                                <button class="pf-item-button" onclick="articlePandusOnClick()">
+                                    View Article
+                                    <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                      <path
+                                        clip-rule="evenodd"
+                                        d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                        fill-rule="evenodd"
+                                      ></path>
+                                    </svg>
+                                  </button>
+                            </div>
+                        </div>
+                        <div class="pf-hidden-content" id="pddd">
+                            <div style="display: flex; align-items: center;">
+                                <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        class="sparkle"
+                        style="width: 45px; height: 45px;"
+                        >
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#e5e5e5"
+                            fill="#e5e5e5"
+                            d="M14.187 8.096L15 5.25L15.813 8.096C16.0231 8.83114 16.4171 9.50062 16.9577 10.0413C17.4984 10.5819 18.1679 10.9759 18.903 11.186L21.75 12L18.904 12.813C18.1689 13.0231 17.4994 13.4171 16.9587 13.9577C16.4181 14.4984 16.0241 15.1679 15.814 15.903L15 18.75L14.187 15.904C13.9769 15.1689 13.5829 14.4994 13.0423 13.9587C12.5016 13.4181 11.8321 13.0241 11.097 12.814L8.25 12L11.096 11.187C11.8311 10.9769 12.5006 10.5829 13.0413 10.0423C13.5819 9.50162 13.9759 8.83214 14.186 8.097L14.187 8.096Z"
+                        ></path>
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#a0a0a0"
+                            fill="#a0a0a0"
+                            d="M6 14.25L5.741 15.285C5.59267 15.8785 5.28579 16.4206 4.85319 16.8532C4.42059 17.2858 3.87853 17.5927 3.285 17.741L2.25 18L3.285 18.259C3.87853 18.4073 4.42059 18.7142 4.85319 19.1468C5.28579 19.5794 5.59267 20.1215 5.741 20.715L6 21.75L6.259 20.715C6.40725 20.1216 6.71398 19.5796 7.14639 19.147C7.5788 18.7144 8.12065 18.4075 8.714 18.259L9.75 18L8.714 17.741C8.12065 17.5925 7.5788 17.2856 7.14639 16.853C6.71398 16.4204 6.40725 15.8784 6.259 15.285L6 14.25Z"
+                        ></path>
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#707070"
+                            fill="#707070"
+                            d="M6.5 4L6.303 4.5915C6.24777 4.75718 6.15472 4.90774 6.03123 5.03123C5.90774 5.15472 5.75718 5.24777 5.5915 5.303L5 5.5L5.5915 5.697C5.75718 5.75223 5.90774 5.84528 6.03123 5.96877C6.15472 6.09226 6.24777 6.24282 6.303 6.4085L6.5 7L6.697 6.4085C6.75223 6.24282 6.84528 6.09226 6.96877 5.96877C7.09226 5.84528 7.24282 5.75223 7.4085 5.697L8 5.5L7.4085 5.303C7.24282 5.24777 7.09226 5.15472 6.96877 5.03123C6.84528 4.90774 6.75223 4.75718 6.697 4.5915L6.5 4Z"
+                        ></path>
+                        </svg>
+                                <h1 class="pf-hidden-summary">Summary</h1>
+                            </div>
+                            <p class="pf-hidden-tags">1 Month • Medium Difficulty • First School Project • 3D Design • PyFirmata</p>
+                            <div class="pf-hidden-bottom">
+                                <div class="pf-hidden-left">
+                                <div class="pf-hidden-keypoints">
+                                    <div class="left">
+                                        <h3 class="pf-key">Features :</h3>
+                                        <p class="pf-point">- 3 water levels</p>
+                                        <p class="pf-point">- Auto wake</p>
+                                        <p class="pf-point">- Self closing "door"</p>
+                                        <p class="pf-point">- High brightness LED</p>
+                                        <h3 class="pf-key">Microcontroller :</h3>
+                                        <p class="pf-point">- Ardunio R3</p>
+                                        <h3 class="pf-key">Control :</h3>
+                                        <p class="pf-point">- PyFirmata</p>
+                                        <p class="pf-point">- custom lib from sch</p>
+                                    </div>
+                                    <div class="right">
+                                        <h3 class="pf-key">Components :</h3>
+                                        <p class="pf-point">- Servo</p>
+                                        <p class="pf-point">- LEDs</p>
+                                        <p class="pf-point">- Relays</p>
+                                        <p class="pf-point">- Buttons</p>
+                                        <p class="pf-point">- Peristaltic pump</p>
+                                        <p class="pf-point">- Infared distance sensor</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pf-hidden-right">
+                                <iframe width="560" height="315" src="https://www.youtube.com/embed/fIJQzOhCKQU?si=MTSPehSDtj-GXN7-" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-item-image-wrapper-blur">
+                        <img src="images/pandusarticle.png" alt="" class="pf-item-image-pandus">
+                    </div>
+                </div>
+                <div class="portfolio-items2 pf-item-card-bg" id="emddm">
+                    <div class="pf-items-wrapper">
+                        <div class="pf-items-top">
+                            <div class="pf-item-tag">
+                                <div class="pf-item-tag-school">
+                                    <h5>School Project</h5>
+                                </div>
+                            </div>
+                            <div class="pf-info-dropdown">
+                                <label class="pf-info-dropdown-checkbox">
+                                    <input type="checkbox" id="brolocator-checkbox" onclick="emddf()">
+                                    <svg viewBox="0 0 512 512" height="1em" xmlns="http://www.w3.org/2000/svg" class="chevron-down"><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path></svg>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="pf-item-content pf-item2-content">
+                            <h1>EMA Smart Home System</h1>
+                            <h6>BeagleBone Black Wireless, Click boards, Python, SocketIO.</h6>
+                            <div class="pf-item-button-wrapper">
+                                <div class="pf-button-left-stack">
+                                    <h3>Tools Used:</h3>
+                                    <div class="icon-stack">
+                                        <img src="images/resolve-icon.png" alt="">
+                                        <img src="images/ps-pf-icon.png" alt="">
+                                        <img src="images/powerpoint-icon.png" alt="">
+                                        <img src="images/vscode-icon.png" alt="">
+                                        <img src="images/onshape-icon.png" alt="">
+                                        <img src="images/figma-icon.png" alt="">
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 15px;" class="pf-dual-buttons">
+                                    <button class="pf-item-button pf-item-demo" onclick="location.href='https://csdpdemo.chiambucket.com'" type="button" >
+                                        DEMO
+                                        <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                        <path
+                                            clip-rule="evenodd"
+                                            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                            fill-rule="evenodd"
+                                        ></path>
+                                        </svg>
+                                    </button>
+                                    <button class="pf-item-button" onclick="articlecsdpOnClick()">
+                                        View Article
+                                        <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                        <path
+                                            clip-rule="evenodd"
+                                            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                            fill-rule="evenodd"
+                                        ></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pf-hidden-content" id="emdd">
+                            <div style="display: flex; align-items: center;">
+                                <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        class="sparkle"
+                        style="width: 45px; height: 45px;"
+                        >
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#e5e5e5"
+                            fill="#e5e5e5"
+                            d="M14.187 8.096L15 5.25L15.813 8.096C16.0231 8.83114 16.4171 9.50062 16.9577 10.0413C17.4984 10.5819 18.1679 10.9759 18.903 11.186L21.75 12L18.904 12.813C18.1689 13.0231 17.4994 13.4171 16.9587 13.9577C16.4181 14.4984 16.0241 15.1679 15.814 15.903L15 18.75L14.187 15.904C13.9769 15.1689 13.5829 14.4994 13.0423 13.9587C12.5016 13.4181 11.8321 13.0241 11.097 12.814L8.25 12L11.096 11.187C11.8311 10.9769 12.5006 10.5829 13.0413 10.0423C13.5819 9.50162 13.9759 8.83214 14.186 8.097L14.187 8.096Z"
+                        ></path>
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#a0a0a0"
+                            fill="#a0a0a0"
+                            d="M6 14.25L5.741 15.285C5.59267 15.8785 5.28579 16.4206 4.85319 16.8532C4.42059 17.2858 3.87853 17.5927 3.285 17.741L2.25 18L3.285 18.259C3.87853 18.4073 4.42059 18.7142 4.85319 19.1468C5.28579 19.5794 5.59267 20.1215 5.741 20.715L6 21.75L6.259 20.715C6.40725 20.1216 6.71398 19.5796 7.14639 19.147C7.5788 18.7144 8.12065 18.4075 8.714 18.259L9.75 18L8.714 17.741C8.12065 17.5925 7.5788 17.2856 7.14639 16.853C6.71398 16.4204 6.40725 15.8784 6.259 15.285L6 14.25Z"
+                        ></path>
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#707070"
+                            fill="#707070"
+                            d="M6.5 4L6.303 4.5915C6.24777 4.75718 6.15472 4.90774 6.03123 5.03123C5.90774 5.15472 5.75718 5.24777 5.5915 5.303L5 5.5L5.5915 5.697C5.75718 5.75223 5.90774 5.84528 6.03123 5.96877C6.15472 6.09226 6.24777 6.24282 6.303 6.4085L6.5 7L6.697 6.4085C6.75223 6.24282 6.84528 6.09226 6.96877 5.96877C7.09226 5.84528 7.24282 5.75223 7.4085 5.697L8 5.5L7.4085 5.303C7.24282 5.24777 7.09226 5.15472 6.96877 5.03123C6.84528 4.90774 6.75223 4.75718 6.697 4.5915L6.5 4Z"
+                        ></path>
+                        </svg>
+                                <h1 class="pf-hidden-summary">Summary</h1>
+                            </div>
+                            <p class="pf-hidden-tags">3 Months • High Difficulty • School group project • 3D Design • Python • WebSocket • Spline 3D</p>
+                            <div class="pf-hidden-bottom">
+                                <div class="pf-hidden-left">
+                                <div class="pf-hidden-keypoints">
+                                    <div class="left">
+                                        <h3 class="pf-key">Climate Node :</h3>
+                                        <p class="pf-point">- Measure temp & humd</p>
+                                        <p class="pf-point">- Detect humans</p>
+                                        <p class="pf-point">- Buzzer</p>
+                                        <h3 class="pf-key">Bathroom Node :</h3>
+                                        <p class="pf-point">- Shower timer</p>
+                                        <p class="pf-point">- Detect humans</p>
+                                        <p class="pf-point">- Buzzer</p>
+                                        <p class="pf-point">- OLED display</p>
+                                        <h3 class="pf-key">Kitchen Node :</h3>
+                                        <p class="pf-point">- Energy monitoring</p>
+                                        <p class="pf-point">- Flame detection</p>
+                                        <p class="pf-point">- Buzzer</p>
+                                        <h3 class="pf-key">Intrusion Node :</h3>
+                                        <p class="pf-point">- Knock detection</p>
+                                        <p class="pf-point">- Door state detection</p>
+                                        <p class="pf-point">- Buzzer</p>
+                                    </div>
+                                    <div class="right">
+                                        <h3 class="pf-key">Central Server :</h3>
+                                        <p class="pf-point">- Coordinates events</p>
+                                        <p class="pf-point">- Triggers alarms</p>
+                                        <p class="pf-point">- Hosts dashboard see <a href="https://csdpdemo.chiambucket.com">Demo</a></p>
+                                        <h3 class="pf-key">Others :</h3>
+                                        <p class="pf-point">- BeagleBone Black Wireless</p>
+                                        <p class="pf-point">- MikroBus Cape system</p>
+                                        <p class="pf-point">- Python SocketIO Flask [Backend]</p>
+                                        <p class="pf-point">- HTML JS  [Frontend]</p>
+                                        <p class="pf-point">- Spline 3D Live View [Frontend]</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pf-hidden-right">
+                                <iframe width="560" height="315" src="https://www.youtube.com/embed/PFhsRaakJAs?si=w-9Xhw7tuqFD_EbV" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-item-image-wrapper-blur">
+                        <img src="images/Ema-pf-context.png" alt="" class="pf-item-image">
+                    </div>
+                </div>
+                <div class="portfolio-items2" id="efddm">
+                    <div class="pf-items-wrapper">
+                        <div class="pf-items-top">
+                            <div class="pf-item-tag">
+                                <div class="pf-item-tag-school">
+                                    <h5>School Project</h5>
+                                </div>
+                            </div>
+                            <div class="pf-info-dropdown">
+                                <label class="pf-info-dropdown-checkbox">
+                                    <input type="checkbox" id="brolocator-checkbox" onclick="efddf()">
+                                    <svg viewBox="0 0 512 512" height="1em" xmlns="http://www.w3.org/2000/svg" class="chevron-down"><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path></svg>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="pf-item-content pf-item2-content">
+                            <h1>ELEC-F Concept</h1>
+                            <h6>ELEC-F is a conceptual product developed by my team and me for an engineering course. It utilizes the M5-Stack Controller along with various sensors to help prevent fatalities in walk-in freezers.</h6>
+                            <div class="pf-item-button-wrapper">
+                                <div class="pf-button-left-stack">
+                                    <h3>Tools Used:</h3>
+                                    <div class="icon-stack">
+                                        <img src="images/resolve-icon.png" alt="">
+                                        <img src="images/ps-pf-icon.png" alt="">
+                                        <img src="images/powerpoint-icon.png" alt="">
+                                        <img src="images/figma-icon.png" alt="">
+                                    </div>
+                                </div>
+                                <button class="pf-item-button" onclick="articleElecfOnClick()">
+                                    View Article
+                                    <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                      <path
+                                        clip-rule="evenodd"
+                                        d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                        fill-rule="evenodd"
+                                      ></path>
+                                    </svg>
+                                  </button>
+                            </div>
+                        </div>
+                        <div class="pf-hidden-content" id="efdd">
+                            <div style="display: flex; align-items: center;">
+                                <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        class="sparkle"
+                        style="width: 45px; height: 45px;"
+                        >
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#e5e5e5"
+                            fill="#e5e5e5"
+                            d="M14.187 8.096L15 5.25L15.813 8.096C16.0231 8.83114 16.4171 9.50062 16.9577 10.0413C17.4984 10.5819 18.1679 10.9759 18.903 11.186L21.75 12L18.904 12.813C18.1689 13.0231 17.4994 13.4171 16.9587 13.9577C16.4181 14.4984 16.0241 15.1679 15.814 15.903L15 18.75L14.187 15.904C13.9769 15.1689 13.5829 14.4994 13.0423 13.9587C12.5016 13.4181 11.8321 13.0241 11.097 12.814L8.25 12L11.096 11.187C11.8311 10.9769 12.5006 10.5829 13.0413 10.0423C13.5819 9.50162 13.9759 8.83214 14.186 8.097L14.187 8.096Z"
+                        ></path>
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#a0a0a0"
+                            fill="#a0a0a0"
+                            d="M6 14.25L5.741 15.285C5.59267 15.8785 5.28579 16.4206 4.85319 16.8532C4.42059 17.2858 3.87853 17.5927 3.285 17.741L2.25 18L3.285 18.259C3.87853 18.4073 4.42059 18.7142 4.85319 19.1468C5.28579 19.5794 5.59267 20.1215 5.741 20.715L6 21.75L6.259 20.715C6.40725 20.1216 6.71398 19.5796 7.14639 19.147C7.5788 18.7144 8.12065 18.4075 8.714 18.259L9.75 18L8.714 17.741C8.12065 17.5925 7.5788 17.2856 7.14639 16.853C6.71398 16.4204 6.40725 15.8784 6.259 15.285L6 14.25Z"
+                        ></path>
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#707070"
+                            fill="#707070"
+                            d="M6.5 4L6.303 4.5915C6.24777 4.75718 6.15472 4.90774 6.03123 5.03123C5.90774 5.15472 5.75718 5.24777 5.5915 5.303L5 5.5L5.5915 5.697C5.75718 5.75223 5.90774 5.84528 6.03123 5.96877C6.15472 6.09226 6.24777 6.24282 6.303 6.4085L6.5 7L6.697 6.4085C6.75223 6.24282 6.84528 6.09226 6.96877 5.96877C7.09226 5.84528 7.24282 5.75223 7.4085 5.697L8 5.5L7.4085 5.303C7.24282 5.24777 7.09226 5.15472 6.96877 5.03123C6.84528 4.90774 6.75223 4.75718 6.697 4.5915L6.5 4Z"
+                        ></path>
+                        </svg>
+                                <h1 class="pf-hidden-summary">Summary</h1>
+                            </div>
+                            <p class="pf-hidden-tags">X Months • X Difficulty • X • X • X</p>
+                            <div class="pf-hidden-bottom">
+                                <div class="pf-hidden-left">
+                                <div class="pf-hidden-keypoints">
+                                    <div class="left">
+                                        <h3 class="pf-key">Features :</h3>
+                                        <p class="pf-point">- Coming Soon...</p>
+                                    </div>
+                                    <div class="right">
+                                        <h3 class="pf-key">Features :</h3>
+                                        <p class="pf-point">- Coming soon...</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pf-hidden-right">
+                                Demo Video
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-item-image-wrapper-blur">
+                        <img src="images/elef2-pf-context.png" alt="" class="pf-item-image-kauli">
+                    </div>
+                </div>
+                <div class="portfolio-items2 pf-item-card-bg" id="klddm">
+                    <div class="pf-items-wrapper">
+                        <div class="pf-items-top">
+                            <div class="pf-item-tag">
+                                <div class="pf-item-tag-school">
+                                    <h5>School Project</h5>
+                                </div>
+                            </div>
+                            <div class="pf-info-dropdown">
+                                <label class="pf-info-dropdown-checkbox">
+                                    <input type="checkbox" id="brolocator-checkbox" onclick="klddf()">
+                                    <svg viewBox="0 0 512 512" height="1em" xmlns="http://www.w3.org/2000/svg" class="chevron-down"><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path></svg>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="pf-item-content pf-item2-content">
+                            <h1>Kauli Concept</h1>
+                            <h6>Kauli is a conceptual product I developed for a communication skills project, where I was tasked with creating and presenting an original idea to my teachers and peers. I used Blender to design the 3D scenes.</h6>
+                            <div class="pf-item-button-wrapper">
+                                <div class="pf-button-left-stack">
+                                    <h3>Tools Used:</h3>
+                                    <div class="icon-stack">
+                                        <img src="images/resolve-icon.png" alt="">
+                                        <img src="images/ps-pf-icon.png" alt="">
+                                        <img src="images/powerpoint-icon.png" alt="">
+                                        <img src="images/blender-icon.png" alt="">
+                                        <img src="images/onshape-icon.png" alt="">
+                                    </div>
+                                </div>
+                                <button class="pf-item-button" onclick="articleKauliOnClick()">
+                                    View Article
+                                    <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                      <path
+                                        clip-rule="evenodd"
+                                        d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                        fill-rule="evenodd"
+                                      ></path>
+                                    </svg>
+                                  </button>
+                            </div>
+                        </div>
+                        <div class="pf-hidden-content" id="kldd">
+                            <div style="display: flex; align-items: center;">
+                                <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        class="sparkle"
+                        style="width: 45px; height: 45px;"
+                        >
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#e5e5e5"
+                            fill="#e5e5e5"
+                            d="M14.187 8.096L15 5.25L15.813 8.096C16.0231 8.83114 16.4171 9.50062 16.9577 10.0413C17.4984 10.5819 18.1679 10.9759 18.903 11.186L21.75 12L18.904 12.813C18.1689 13.0231 17.4994 13.4171 16.9587 13.9577C16.4181 14.4984 16.0241 15.1679 15.814 15.903L15 18.75L14.187 15.904C13.9769 15.1689 13.5829 14.4994 13.0423 13.9587C12.5016 13.4181 11.8321 13.0241 11.097 12.814L8.25 12L11.096 11.187C11.8311 10.9769 12.5006 10.5829 13.0413 10.0423C13.5819 9.50162 13.9759 8.83214 14.186 8.097L14.187 8.096Z"
+                        ></path>
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#a0a0a0"
+                            fill="#a0a0a0"
+                            d="M6 14.25L5.741 15.285C5.59267 15.8785 5.28579 16.4206 4.85319 16.8532C4.42059 17.2858 3.87853 17.5927 3.285 17.741L2.25 18L3.285 18.259C3.87853 18.4073 4.42059 18.7142 4.85319 19.1468C5.28579 19.5794 5.59267 20.1215 5.741 20.715L6 21.75L6.259 20.715C6.40725 20.1216 6.71398 19.5796 7.14639 19.147C7.5788 18.7144 8.12065 18.4075 8.714 18.259L9.75 18L8.714 17.741C8.12065 17.5925 7.5788 17.2856 7.14639 16.853C6.71398 16.4204 6.40725 15.8784 6.259 15.285L6 14.25Z"
+                        ></path>
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#707070"
+                            fill="#707070"
+                            d="M6.5 4L6.303 4.5915C6.24777 4.75718 6.15472 4.90774 6.03123 5.03123C5.90774 5.15472 5.75718 5.24777 5.5915 5.303L5 5.5L5.5915 5.697C5.75718 5.75223 5.90774 5.84528 6.03123 5.96877C6.15472 6.09226 6.24777 6.24282 6.303 6.4085L6.5 7L6.697 6.4085C6.75223 6.24282 6.84528 6.09226 6.96877 5.96877C7.09226 5.84528 7.24282 5.75223 7.4085 5.697L8 5.5L7.4085 5.303C7.24282 5.24777 7.09226 5.15472 6.96877 5.03123C6.84528 4.90774 6.75223 4.75718 6.697 4.5915L6.5 4Z"
+                        ></path>
+                        </svg>
+                                <h1 class="pf-hidden-summary">Summary</h1>
+                            </div>
+                            <p class="pf-hidden-tags">X Months • X Difficulty • X • X • X</p>
+                            <div class="pf-hidden-bottom">
+                                <div class="pf-hidden-left">
+                                <div class="pf-hidden-keypoints">
+                                    <div class="left">
+                                        <h3 class="pf-key">Features :</h3>
+                                        <p class="pf-point">- Coming Soon...</p>
+                                    </div>
+                                    <div class="right">
+                                        <h3 class="pf-key">Features :</h3>
+                                        <p class="pf-point">- Coming soon...</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pf-hidden-right">
+                                Demo Video
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-item-image-wrapper-blur">
+                        <img src="images/kauli3-pf-context.png" alt="" class="pf-item-image-kauli">
+                    </div>
+                </div>
+                <div class="portfolio-items2 pf-item-card-bg" id="slddm">
+                    <div class="pf-items-wrapper">
+                        <div class="pf-items-top">
+                            <div class="pf-item-tag">
+                                <div class="pf-item-tag-personal">
+                                    <h5>Personal Project</h5>
+                                </div>
+                            </div>
+                            <div class="pf-info-dropdown">
+                                <label class="pf-info-dropdown-checkbox">
+                                    <input type="checkbox" id="brolocator-checkbox" onclick="slddf()">
+                                    <svg viewBox="0 0 512 512" height="1em" xmlns="http://www.w3.org/2000/svg" class="chevron-down"><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path></svg>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="pf-item-content pf-item2-content">
+                            <h1>Series One Light</h1>
+                            <h6>Seires One Light is my take on the popular <a href="https://zeromouse.co/">ZeroMouse</a> created by <a href="https://www.youtube.com/@optimumtech">Optimum Tech</a> it's an ultralight 20g mouse that helps me play "better" in FPS games.</h6>
+                            <div class="pf-item-button-wrapper">
+                                <div class="pf-button-left-stack">
+                                    <h3>Tools Used:</h3>
+                                    <div class="icon-stack">
+                                        <img src="images/ps-pf-icon.png" alt="">
+                                        <img src="images/onshape-icon.png" alt="">
+                                    </div>
+                                </div>
+                                <button class="pf-item-button" onclick="articleSolOnClick()">
+                                    View Article
+                                    <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                      <path
+                                        clip-rule="evenodd"
+                                        d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                        fill-rule="evenodd"
+                                      ></path>
+                                    </svg>
+                                  </button>
+                            </div>
+                        </div>
+                        <div class="pf-hidden-content" id="sldd">
+                            <div style="display: flex; align-items: center;">
+                                <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        class="sparkle"
+                        style="width: 45px; height: 45px;"
+                        >
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#e5e5e5"
+                            fill="#e5e5e5"
+                            d="M14.187 8.096L15 5.25L15.813 8.096C16.0231 8.83114 16.4171 9.50062 16.9577 10.0413C17.4984 10.5819 18.1679 10.9759 18.903 11.186L21.75 12L18.904 12.813C18.1689 13.0231 17.4994 13.4171 16.9587 13.9577C16.4181 14.4984 16.0241 15.1679 15.814 15.903L15 18.75L14.187 15.904C13.9769 15.1689 13.5829 14.4994 13.0423 13.9587C12.5016 13.4181 11.8321 13.0241 11.097 12.814L8.25 12L11.096 11.187C11.8311 10.9769 12.5006 10.5829 13.0413 10.0423C13.5819 9.50162 13.9759 8.83214 14.186 8.097L14.187 8.096Z"
+                        ></path>
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#a0a0a0"
+                            fill="#a0a0a0"
+                            d="M6 14.25L5.741 15.285C5.59267 15.8785 5.28579 16.4206 4.85319 16.8532C4.42059 17.2858 3.87853 17.5927 3.285 17.741L2.25 18L3.285 18.259C3.87853 18.4073 4.42059 18.7142 4.85319 19.1468C5.28579 19.5794 5.59267 20.1215 5.741 20.715L6 21.75L6.259 20.715C6.40725 20.1216 6.71398 19.5796 7.14639 19.147C7.5788 18.7144 8.12065 18.4075 8.714 18.259L9.75 18L8.714 17.741C8.12065 17.5925 7.5788 17.2856 7.14639 16.853C6.71398 16.4204 6.40725 15.8784 6.259 15.285L6 14.25Z"
+                        ></path>
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#707070"
+                            fill="#707070"
+                            d="M6.5 4L6.303 4.5915C6.24777 4.75718 6.15472 4.90774 6.03123 5.03123C5.90774 5.15472 5.75718 5.24777 5.5915 5.303L5 5.5L5.5915 5.697C5.75718 5.75223 5.90774 5.84528 6.03123 5.96877C6.15472 6.09226 6.24777 6.24282 6.303 6.4085L6.5 7L6.697 6.4085C6.75223 6.24282 6.84528 6.09226 6.96877 5.96877C7.09226 5.84528 7.24282 5.75223 7.4085 5.697L8 5.5L7.4085 5.303C7.24282 5.24777 7.09226 5.15472 6.96877 5.03123C6.84528 4.90774 6.75223 4.75718 6.697 4.5915L6.5 4Z"
+                        ></path>
+                        </svg>
+                                <h1 class="pf-hidden-summary">Summary</h1>
+                            </div>
+                            <p class="pf-hidden-tags">X Months • X Difficulty • X • X • X</p>
+                            <div class="pf-hidden-bottom">
+                                <div class="pf-hidden-left">
+                                <div class="pf-hidden-keypoints">
+                                    <div class="left">
+                                        <h3 class="pf-key">Features :</h3>
+                                        <p class="pf-point">- Coming Soon...</p>
+                                    </div>
+                                    <div class="right">
+                                        <h3 class="pf-key">Features :</h3>
+                                        <p class="pf-point">- Coming soon...</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pf-hidden-right">
+                                Demo Video
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-item-image-wrapper-blur">
+                        <img src="images/Series1l-pf-context.png" alt="" class="pf-item-image-kauli">
+                    </div>
+                </div>
+                <div class="portfolio-items2 pf-item-card-bg" id="cpddm">
+                    <div class="pf-items-wrapper">
+                        <div class="pf-items-top">
+                            <div class="pf-item-tag">
+                                <div class="pf-item-tag-personal">
+                                    <h5>Personal Project</h5>
+                                </div>
+                            </div>
+                            <div class="pf-info-dropdown">
+                                <label class="pf-info-dropdown-checkbox">
+                                    <input type="checkbox" id="brolocator-checkbox" onclick="cpddf()">
+                                    <svg viewBox="0 0 512 512" height="1em" xmlns="http://www.w3.org/2000/svg" class="chevron-down"><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path></svg>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="pf-item-content pf-item2-content">
+                            <h1>Copy Board</h1>
+                            <h6>Created because my school did not allow me to bring the dev board home, copied from the school's dev board's schematic.</h6>
+                            <div class="pf-item-button-wrapper">
+                                <div class="pf-button-left-stack">
+                                    <h3>Tools Used:</h3>
+                                    <div class="icon-stack">
+                                        <img src="images/Kicad-icon.png" alt="">
+                                    </div>
+                                </div>
+                                <button class="pf-item-button" onclick="articlecopyboardOnClick()">
+                                    View Article
+                                    <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                      <path
+                                        clip-rule="evenodd"
+                                        d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                        fill-rule="evenodd"
+                                      ></path>
+                                    </svg>
+                                  </button>
+                            </div>
+                        </div>
+                        <div class="pf-hidden-content" id="cpdd">
+                            <div style="display: flex; align-items: center;">
+                                <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        class="sparkle"
+                        style="width: 45px; height: 45px;"
+                        >
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#e5e5e5"
+                            fill="#e5e5e5"
+                            d="M14.187 8.096L15 5.25L15.813 8.096C16.0231 8.83114 16.4171 9.50062 16.9577 10.0413C17.4984 10.5819 18.1679 10.9759 18.903 11.186L21.75 12L18.904 12.813C18.1689 13.0231 17.4994 13.4171 16.9587 13.9577C16.4181 14.4984 16.0241 15.1679 15.814 15.903L15 18.75L14.187 15.904C13.9769 15.1689 13.5829 14.4994 13.0423 13.9587C12.5016 13.4181 11.8321 13.0241 11.097 12.814L8.25 12L11.096 11.187C11.8311 10.9769 12.5006 10.5829 13.0413 10.0423C13.5819 9.50162 13.9759 8.83214 14.186 8.097L14.187 8.096Z"
+                        ></path>
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#a0a0a0"
+                            fill="#a0a0a0"
+                            d="M6 14.25L5.741 15.285C5.59267 15.8785 5.28579 16.4206 4.85319 16.8532C4.42059 17.2858 3.87853 17.5927 3.285 17.741L2.25 18L3.285 18.259C3.87853 18.4073 4.42059 18.7142 4.85319 19.1468C5.28579 19.5794 5.59267 20.1215 5.741 20.715L6 21.75L6.259 20.715C6.40725 20.1216 6.71398 19.5796 7.14639 19.147C7.5788 18.7144 8.12065 18.4075 8.714 18.259L9.75 18L8.714 17.741C8.12065 17.5925 7.5788 17.2856 7.14639 16.853C6.71398 16.4204 6.40725 15.8784 6.259 15.285L6 14.25Z"
+                        ></path>
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#707070"
+                            fill="#707070"
+                            d="M6.5 4L6.303 4.5915C6.24777 4.75718 6.15472 4.90774 6.03123 5.03123C5.90774 5.15472 5.75718 5.24777 5.5915 5.303L5 5.5L5.5915 5.697C5.75718 5.75223 5.90774 5.84528 6.03123 5.96877C6.15472 6.09226 6.24777 6.24282 6.303 6.4085L6.5 7L6.697 6.4085C6.75223 6.24282 6.84528 6.09226 6.96877 5.96877C7.09226 5.84528 7.24282 5.75223 7.4085 5.697L8 5.5L7.4085 5.303C7.24282 5.24777 7.09226 5.15472 6.96877 5.03123C6.84528 4.90774 6.75223 4.75718 6.697 4.5915L6.5 4Z"
+                        ></path>
+                        </svg>
+                                <h1 class="pf-hidden-summary">Summary</h1>
+                            </div>
+                            <p class="pf-hidden-tags">X Months • X Difficulty • X • X • X</p>
+                            <div class="pf-hidden-bottom">
+                                <div class="pf-hidden-left">
+                                <div class="pf-hidden-keypoints">
+                                    <div class="left">
+                                        <h3 class="pf-key">Features :</h3>
+                                        <p class="pf-point">- Coming Soon...</p>
+                                    </div>
+                                    <div class="right">
+                                        <h3 class="pf-key">Features :</h3>
+                                        <p class="pf-point">- Coming soon...</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pf-hidden-right">
+                                Demo Video
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-item-image-wrapper-blur">
+                        <img src="images/CopyBoard-pf-context.png" alt="" class="pf-item-image-pandus">
+                    </div>
+                </div>
+                <div class="portfolio-items2" id="thddm">
+                    <div class="pf-items-wrapper">
+                        <div class="pf-items-top">
+                            <div class="pf-item-tag">
+                                <div class="pf-item-tag-school">
+                                    <h5>School Project</h5>
+                                </div>
+                            </div>
+                            <div class="pf-info-dropdown">
+                                <label class="pf-info-dropdown-checkbox">
+                                    <input type="checkbox" id="brolocator-checkbox" onclick="thddf()">
+                                    <svg viewBox="0 0 512 512" height="1em" xmlns="http://www.w3.org/2000/svg" class="chevron-down"><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path></svg>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="pf-item-content pf-item2-content">
+                            <h1>Web Development Prj</h1>
+                            <h6>This was the first fully functional website I created using HTML and CSS as the final assignment for my web development class. The Chiambucket website was my second attempt at web development.</h6>
+                            <div class="pf-item-button-wrapper">
+                                <div class="pf-button-left-stack">
+                                    <h3>Tools Used:</h3>
+                                    <div class="icon-stack">
+                                        <img src="images/vscode-icon.png" alt="">
+                                        <img src="images/chrome-icon.jpg" alt="">
+                                        <img src="images/canva-icon.png" alt="">
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 15px;" class="pf-dual-buttons">
+                                    <button class="pf-item-button pf-item-demo" onclick="location.href='https://tht.chiambucket.com'" type="button" >
+                                        DEMO
+                                        <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                        <path
+                                            clip-rule="evenodd"
+                                            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                            fill-rule="evenodd"
+                                        ></path>
+                                        </svg>
+                                    </button>
+                                    <button class="pf-item-button" onclick="articleThtOnClick()">
+                                        View Article
+                                        <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                        <path
+                                            clip-rule="evenodd"
+                                            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                            fill-rule="evenodd"
+                                        ></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pf-hidden-content" id="thdd">
+                            <div style="display: flex; align-items: center;">
+                                <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        class="sparkle"
+                        style="width: 45px; height: 45px;"
+                        >
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#e5e5e5"
+                            fill="#e5e5e5"
+                            d="M14.187 8.096L15 5.25L15.813 8.096C16.0231 8.83114 16.4171 9.50062 16.9577 10.0413C17.4984 10.5819 18.1679 10.9759 18.903 11.186L21.75 12L18.904 12.813C18.1689 13.0231 17.4994 13.4171 16.9587 13.9577C16.4181 14.4984 16.0241 15.1679 15.814 15.903L15 18.75L14.187 15.904C13.9769 15.1689 13.5829 14.4994 13.0423 13.9587C12.5016 13.4181 11.8321 13.0241 11.097 12.814L8.25 12L11.096 11.187C11.8311 10.9769 12.5006 10.5829 13.0413 10.0423C13.5819 9.50162 13.9759 8.83214 14.186 8.097L14.187 8.096Z"
+                        ></path>
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#a0a0a0"
+                            fill="#a0a0a0"
+                            d="M6 14.25L5.741 15.285C5.59267 15.8785 5.28579 16.4206 4.85319 16.8532C4.42059 17.2858 3.87853 17.5927 3.285 17.741L2.25 18L3.285 18.259C3.87853 18.4073 4.42059 18.7142 4.85319 19.1468C5.28579 19.5794 5.59267 20.1215 5.741 20.715L6 21.75L6.259 20.715C6.40725 20.1216 6.71398 19.5796 7.14639 19.147C7.5788 18.7144 8.12065 18.4075 8.714 18.259L9.75 18L8.714 17.741C8.12065 17.5925 7.5788 17.2856 7.14639 16.853C6.71398 16.4204 6.40725 15.8784 6.259 15.285L6 14.25Z"
+                        ></path>
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#707070"
+                            fill="#707070"
+                            d="M6.5 4L6.303 4.5915C6.24777 4.75718 6.15472 4.90774 6.03123 5.03123C5.90774 5.15472 5.75718 5.24777 5.5915 5.303L5 5.5L5.5915 5.697C5.75718 5.75223 5.90774 5.84528 6.03123 5.96877C6.15472 6.09226 6.24777 6.24282 6.303 6.4085L6.5 7L6.697 6.4085C6.75223 6.24282 6.84528 6.09226 6.96877 5.96877C7.09226 5.84528 7.24282 5.75223 7.4085 5.697L8 5.5L7.4085 5.303C7.24282 5.24777 7.09226 5.15472 6.96877 5.03123C6.84528 4.90774 6.75223 4.75718 6.697 4.5915L6.5 4Z"
+                        ></path>
+                        </svg>
+                                <h1 class="pf-hidden-summary">Summary</h1>
+                            </div>
+                            <p class="pf-hidden-tags">X Months • X Difficulty • X • X • X</p>
+                            <div class="pf-hidden-bottom">
+                                <div class="pf-hidden-left">
+                                <div class="pf-hidden-keypoints">
+                                    <div class="left">
+                                        <h3 class="pf-key">Features :</h3>
+                                        <p class="pf-point">- Coming Soon...</p>
+                                    </div>
+                                    <div class="right">
+                                        <h3 class="pf-key">Features :</h3>
+                                        <p class="pf-point">- Coming soon...</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pf-hidden-right">
+                                Demo Video
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-item-image-wrapper-blur">
+                        <img src="images/tht-cover.png" alt="" class="pf-item-image darken">
+                    </div>
+                </div>
+                <div class="portfolio-items2" id="mcddm">
+                    <div class="pf-items-wrapper">
+                        <div class="pf-items-top">
+                            <div class="pf-item-tag">
+                                <div class="pf-item-tag-personal">
+                                    <h5>Personal Project</h5>
+                                </div>
+                            </div>
+                            <div class="pf-info-dropdown">
+                                <label class="pf-info-dropdown-checkbox">
+                                    <input type="checkbox" id="brolocator-checkbox" onclick="mcddf()">
+                                    <svg viewBox="0 0 512 512" height="1em" xmlns="http://www.w3.org/2000/svg" class="chevron-down"><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path></svg>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="pf-item-content pf-item2-content">
+                            <h1>Minecraft Server With Live Interactive Map</h1>
+                            <h6>Minecraft Server running Paper and featuring Dynmap a plugin that allows you to add an interactive map to minecraft multiplayer servers.</h6>
+                            <div class="pf-item-button-wrapper">
+                                <div class="pf-button-left-stack">
+                                    <h3>Tools Used:</h3>
+                                    <div class="icon-stack">
+                                        <img src="images/docker-icon.png" alt="">
+                                        <img src="images/chrome-icon.jpg" alt="">
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 15px;" class="pf-dual-buttons">
+                                    <button class="pf-item-button pf-item-demo" onclick="location.href='https://map.chiambucket.com'" type="button" >
+                                        DEMO
+                                        <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                        <path
+                                            clip-rule="evenodd"
+                                            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                            fill-rule="evenodd"
+                                        ></path>
+                                        </svg>
+                                    </button>
+                                    <button class="pf-item-button" onclick="articleMcOnClick()">
+                                        View Article
+                                        <svg fill="currentColor" viewBox="0 0 24 24" class="pf-item-buttom-icon">
+                                        <path
+                                            clip-rule="evenodd"
+                                            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                                            fill-rule="evenodd"
+                                        ></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pf-hidden-content" id="mcdd">
+                            <div style="display: flex; align-items: center;">
+                                <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        class="sparkle"
+                        style="width: 45px; height: 45px;"
+                        >
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#e5e5e5"
+                            fill="#e5e5e5"
+                            d="M14.187 8.096L15 5.25L15.813 8.096C16.0231 8.83114 16.4171 9.50062 16.9577 10.0413C17.4984 10.5819 18.1679 10.9759 18.903 11.186L21.75 12L18.904 12.813C18.1689 13.0231 17.4994 13.4171 16.9587 13.9577C16.4181 14.4984 16.0241 15.1679 15.814 15.903L15 18.75L14.187 15.904C13.9769 15.1689 13.5829 14.4994 13.0423 13.9587C12.5016 13.4181 11.8321 13.0241 11.097 12.814L8.25 12L11.096 11.187C11.8311 10.9769 12.5006 10.5829 13.0413 10.0423C13.5819 9.50162 13.9759 8.83214 14.186 8.097L14.187 8.096Z"
+                        ></path>
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#a0a0a0"
+                            fill="#a0a0a0"
+                            d="M6 14.25L5.741 15.285C5.59267 15.8785 5.28579 16.4206 4.85319 16.8532C4.42059 17.2858 3.87853 17.5927 3.285 17.741L2.25 18L3.285 18.259C3.87853 18.4073 4.42059 18.7142 4.85319 19.1468C5.28579 19.5794 5.59267 20.1215 5.741 20.715L6 21.75L6.259 20.715C6.40725 20.1216 6.71398 19.5796 7.14639 19.147C7.5788 18.7144 8.12065 18.4075 8.714 18.259L9.75 18L8.714 17.741C8.12065 17.5925 7.5788 17.2856 7.14639 16.853C6.71398 16.4204 6.40725 15.8784 6.259 15.285L6 14.25Z"
+                        ></path>
+                        <path
+                            class="path"
+                            stroke-linejoin="round"
+                            stroke-linecap="round"
+                            stroke="#707070"
+                            fill="#707070"
+                            d="M6.5 4L6.303 4.5915C6.24777 4.75718 6.15472 4.90774 6.03123 5.03123C5.90774 5.15472 5.75718 5.24777 5.5915 5.303L5 5.5L5.5915 5.697C5.75718 5.75223 5.90774 5.84528 6.03123 5.96877C6.15472 6.09226 6.24777 6.24282 6.303 6.4085L6.5 7L6.697 6.4085C6.75223 6.24282 6.84528 6.09226 6.96877 5.96877C7.09226 5.84528 7.24282 5.75223 7.4085 5.697L8 5.5L7.4085 5.303C7.24282 5.24777 7.09226 5.15472 6.96877 5.03123C6.84528 4.90774 6.75223 4.75718 6.697 4.5915L6.5 4Z"
+                        ></path>
+                        </svg>
+                                <h1 class="pf-hidden-summary">Summary</h1>
+                            </div>
+                            <p class="pf-hidden-tags">X Months • X Difficulty • X • X • X</p>
+                            <div class="pf-hidden-bottom">
+                                <div class="pf-hidden-left">
+                                <div class="pf-hidden-keypoints">
+                                    <div class="left">
+                                        <h3 class="pf-key">Features :</h3>
+                                        <p class="pf-point">- Coming Soon...</p>
+                                    </div>
+                                    <div class="right">
+                                        <h3 class="pf-key">Features :</h3>
+                                        <p class="pf-point">- Coming soon...</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pf-hidden-right">
+                                Demo Video
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pf-item-image-wrapper-blur pf-item-image-wrapper-blur-minecraft">
+                        <img src="images/mc-pf-context.png" alt="" class="pf-item-image darken-light">
+                    </div>
+                </div>
+                </div>
+            </div>
+            <div class="photography-box photo-main-ver" id="photolink">
+                <div class="expand" id="expand">
+                    <button onclick="expandphoto()">
+                        Click to Expand
+                    </button>
+                </div>
+                <h1>Photography Highlights</h1>
+                            <!-- Lychee Photo Album Embed v1.0.0 -->
+                <link rel="stylesheet" href="https://photos.chiambucket.com/embed/lychee-embed.css?v=1.0.0">
+                <script src="https://photos.chiambucket.com/embed/lychee-embed.js?v=1.0.0"></script>
+                <div
+                    class="lyc"
+                    id="lyc"
+                    data-lychee-embed
+                    data-api-url="https://photos.chiambucket.com"
+                    data-mode="album"
+                    data-album-id="pxAS20i7_kWFVTC_Ke_HlDUk"
+                    data-layout="masonry"
+                    data-spacing="8"
+                    data-target-row-height="200"
+                    data-target-column-width="200"
+                    data-max-photos="none"
+                    data-sort-order="desc"
+                    data-header-placement="none"
+                >
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+            <button onclick="HomeOnClick()">
+                <div class="footer-left">
+                    <img src="images/logo.png" alt="Logo" class="footer-left-img">
+                    <span class="footer-left-text">Chiambucket Home</span>
+                </div>
+            </button>
+            <div class="footer-center">
+                <div class="footer-center-btn">
+                    <button class="btn" onclick="InstagramOnClick()">
+                        <svg
+                        width="30"
+                        height="30"
+                        fill="#e1306c"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        id="Instagram"
+                        >
+                        <path
+                            d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z"
+                        ></path>
+                        </svg>
+                    </button>
+                    <button class="btn" onclick="YoutubeOnClick()">
+                        <svg
+                        width="30"
+                        height="30"
+                        fill="#E62117"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="-2 -5 24 24"
+                        id="Youtube"
+                        >
+                        <path
+                            d="M15.812.017H4.145C1.855.017 0 1.852 0 4.116v5.768c0 2.264 1.856 4.1 4.145 4.1h11.667c2.29 0 4.145-1.836 4.145-4.1V4.116c0-2.264-1.856-4.1-4.145-4.1zM13.009 7.28L7.552 9.855a.219.219 0 0 1-.314-.196V4.35c0-.161.173-.266.318-.193l5.458 2.735a.216.216 0 0 1-.005.389z"
+                        ></path>
+                        </svg>
+                    </button>
+                    <button class="btn" onclick="WhatsappOnClick()">
+                        <svg
+                        width="30"
+                        height="30"
+                        fill="#25D366"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="-2 -2 24 24"
+                        id="Whataspp"
+                        >
+                        <path d='M9.516.012C4.206.262.017 4.652.033 9.929a9.798 9.798 0 0 0 1.085 4.465L.06 19.495a.387.387 0 0 0 .47.453l5.034-1.184a9.981 9.981 0 0 0 4.284 1.032c5.427.083 9.951-4.195 10.12-9.58C20.15 4.441 15.351-.265 9.516.011zm6.007 15.367a7.784 7.784 0 0 1-5.52 2.27 7.77 7.77 0 0 1-3.474-.808l-.701-.347-3.087.726.65-3.131-.346-.672A7.62 7.62 0 0 1 2.197 9.9c0-2.07.812-4.017 2.286-5.48a7.85 7.85 0 0 1 5.52-2.271c2.086 0 4.046.806 5.52 2.27a7.672 7.672 0 0 1 2.287 5.48c0 2.052-.825 4.03-2.287 5.481z'/><path d='M14.842 12.045l-1.931-.55a.723.723 0 0 0-.713.186l-.472.478a.707.707 0 0 1-.765.16c-.913-.367-2.835-2.063-3.326-2.912a.694.694 0 0 1 .056-.774l.412-.53a.71.71 0 0 0 .089-.726L7.38 5.553a.723.723 0 0 0-1.125-.256c-.539.453-1.179 1.14-1.256 1.903-.137 1.343.443 3.036 2.637 5.07 2.535 2.349 4.566 2.66 5.887 2.341.75-.18 1.35-.903 1.727-1.494a.713.713 0 0 0-.408-1.072z'/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="footer-right">
+                <span class="footer-right-text">
+                    &copy; Chiambucket 2025<br>
+                    Credits to content <button onclick="ContentCreditsOnClick()">HERE</button>
+                </span>
+            </div>
+        </footer>
+    </main>
+</body>
+</html>
