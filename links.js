@@ -135,6 +135,35 @@ function expandphoto() {
     $('#expand').addClass('loader-hide');
 }
 
+function expandphoto_highlight() {
+    $('#photography-highlight').removeClass('photography-restrict')
+    $('#expand-highlight').addClass('loader-hide');
+}
+
+function expandphoto_europe() {
+    $('#photography-europe').removeClass('photography-restrict')
+    $('#expand-europe').addClass('loader-hide');
+}
+function expandphoto_21by9() {
+    $('#photography-21by9').removeClass('photography-restrict')
+    $('#expand-21by9').addClass('loader-hide');
+}
+
+function expandphoto_china() {
+    $('#photography-china').removeClass('photography-restrict')
+    $('#expand-china').addClass('loader-hide');
+}
+
+function expandphoto_general() {
+    $('#photography-general').removeClass('photography-restrict')
+    $('#expand-general').addClass('loader-hide');
+}
+
+function expandphoto_zealand() {
+    $('#photography-zealand').removeClass('photography-restrict')
+    $('#expand-zealand').addClass('loader-hide');
+}
+
 let BlDd = false;
 function blddf() {
     if (BlDd == false) {
