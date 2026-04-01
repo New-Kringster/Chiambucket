@@ -15,7 +15,7 @@
 </head>
 <body>
     <main>
-        <div id="loader">
+        <div id="loader" class="hidden">
             <img src="images/logo.png" alt="">
         </div>
         <div class="nav-holder">
@@ -107,210 +107,230 @@
                 <div class="photography-body">
                     <h1 class="photography-other-tools">My Tools</h1>
                     <div class="photography-cards">
-                    <div class="photography-end-card1">
+                    <div class="photography-end-card1 photography-end-cards-style">
                         <div class="photography-end-card-content">
                             <img src="images/pr-icon.png" alt="pr-icon">
                             <h1>Premiere Pro<h1>
                             <h3>I learned Premiere Pro with Photoshop, but frequent crashes led me to switch to DaVinci Resolve with no regrets.</h3>        
                         </div>
                     </div>
-                    <div class="photography-end-card2">
+                    <div class="photography-end-card2 photography-end-cards-style">
                         <div class="photography-end-card-content">
                             <img src="images/il-icon.png" alt="il-icon">
                             <h1>Illustrator<h1>
                             <h3>Illustrator is a fairly simple tool I use for creating logos or SVGs, but I don’t use it as much as Photoshop.</h3>        
                         </div>
                     </div>
-                    <div class="photography-end-card3">
+                    <div class="photography-end-card3 photography-end-cards-style">
                         <div class="photography-end-card-content">
                             <img src="images/fm-icon.png" alt="fm-icon">
                             <h1>Figma<h1>
                             <h3>A highly powerful tool I use to prototype and create designs focused on shapes rather than images.</h3>        
                         </div>
                     </div>
-                    <div class="photography-end-card4">
+                    <div class="photography-end-card4 photography-end-cards-style">
                         <div class="photography-end-card-content">
                             <img src="images/ps-logo.png" alt="ps-icon">
                             <h1>Photoshop<h1>
                             <h3>I've used Photoshop since 2019, received professional training through my school's media club, and it remains my favorite tool.</h3>        
                         </div>
                     </div>
-                    <div class="photography-end-card5">
+                    <div class="photography-end-card5 photography-end-cards-style">
                         <div class="photography-end-card-content">
                             <img src="images/resolve-logo.webp" alt="rs-icon">
                             <h1>DaVinci Resolve<h1>
                             <h3>I regularly edit my videos using DaVinci, but I rarely post them. However, I have more content planned for the future.</h3>        
                         </div>
                     </div>
-                    <div class="photography-end-card4">
+                    <div class="photography-end-card4 photography-end-cards-style">
                         <div class="photography-end-card-content">
                             <img src="images/lrc-logo.png" alt="fm-icon">
                             <h1>Lightroom<h1>
                             <h3>Lightroom provides me with powerful tools to enhance images and recover details from unusable shots.</h3>        
                         </div>
                     </div>
-                    </div>
+                </div>
             </div>
         </div>
-        <div class="photography-box">
-            <h1>Highlights</h1>
-                        <!-- Lychee Photo Album Embed v1.0.0 -->
-            <link rel="stylesheet" href="https://photos.chiambucket.com/embed/lychee-embed.css?v=1.0.0">
-            <script src="https://photos.chiambucket.com/embed/lychee-embed.js?v=1.0.0"></script>
-            <div
-                id="photography-highlight"
-                class="photography-restrict"
-                data-lychee-embed
-                data-api-url="https://photos.chiambucket.com"
-                data-mode="album"
-                data-album-id="pxAS20i7_kWFVTC_Ke_HlDUk"
-                data-layout="masonry"
-                data-spacing="8"
-                data-target-row-height="200"
-                data-target-column-width="200"
-                data-max-photos="none"
-                data-sort-order="desc"
-                data-header-placement="none"
-            ></div>
-            <div class="expand-photography" id="expand-highlight">
-                <button onclick="expandphoto_highlight()">
-                    Click to Expand
-                </button>
+        <div class="photography-box-wrapper">
+            <div class="photography-box">
+                <div class="phototop">
+                    <h1>Highlights</h1>
+                    <a href="https://photos.chiambucket.com/gallery/pxAS20i7_kWFVTC_Ke_HlDUk"><img src="images/arrow.png" alt=""></a>
+                </div>
+                            <!-- Lychee Photo Album Embed v1.0.0 -->
+                <link rel="stylesheet" href="https://photos.chiambucket.com/embed/lychee-embed.css?v=1.0.0">
+                <script src="https://photos.chiambucket.com/embed/lychee-embed.js?v=1.0.0"></script>
+                <div
+                    id="photography-highlight"
+                    class="photography-restrict"
+                    data-lychee-embed
+                    data-api-url="https://photos.chiambucket.com"
+                    data-mode="album"
+                    data-album-id="pxAS20i7_kWFVTC_Ke_HlDUk"
+                    data-layout="masonry"
+                    data-spacing="8"
+                    data-target-row-height="150"
+                    data-target-column-width="150"
+                    data-max-photos="none"
+                    data-sort-order="desc"
+                    data-header-placement="none"
+                ></div>
+                <div class="expand-photography" id="expand-highlight">
+                    <button onclick="expandphoto_highlight()">
+                        Click to Expand
+                    </button>
+                </div>
             </div>
-        </div>
-        <div class="photography-box">
-            <h1>Europe</h1>
-                        <!-- Lychee Photo Album Embed v1.0.0 -->
-            <link rel="stylesheet" href="https://photos.chiambucket.com/embed/lychee-embed.css?v=1.0.0">
-            <script src="https://photos.chiambucket.com/embed/lychee-embed.js?v=1.0.0"></script>
-
-            <div
-                id="photography-europe"
-                class="photography-restrict"
-                data-lychee-embed
-                data-api-url="https://photos.chiambucket.com"
-                data-mode="album"
-                data-album-id="LhvwBoxDDt6VdG3HvKrDMi1Z"
-                data-layout="masonry"
-                data-spacing="8"
-                data-target-row-height="200"
-                data-target-column-width="200"
-                data-max-photos="none"
-                data-sort-order="desc"
-                data-header-placement="none"
-            ></div>
-            <div class="expand-photography" id="expand-europe">
-                <button onclick="expandphoto_europe()">
-                    Click to Expand
-                </button>
+            <div class="photography-box">
+                <div class="phototop">
+                    <h1>Europe</h1>
+                    <a href="https://photos.chiambucket.com/gallery/LhvwBoxDDt6VdG3HvKrDMi1Z"><img src="images/arrow.png" alt=""></a>
+                </div>
+                            <!-- Lychee Photo Album Embed v1.0.0 -->
+                <link rel="stylesheet" href="https://photos.chiambucket.com/embed/lychee-embed.css?v=1.0.0">
+                <script src="https://photos.chiambucket.com/embed/lychee-embed.js?v=1.0.0"></script>
+    
+                <div
+                    id="photography-europe"
+                    class="photography-restrict"
+                    data-lychee-embed
+                    data-api-url="https://photos.chiambucket.com"
+                    data-mode="album"
+                    data-album-id="LhvwBoxDDt6VdG3HvKrDMi1Z"
+                    data-layout="masonry"
+                    data-spacing="8"
+                    data-target-row-height="150"
+                    data-target-column-width="150"
+                    data-max-photos="none"
+                    data-sort-order="desc"
+                    data-header-placement="none"
+                ></div>
+                <div class="expand-photography" id="expand-europe">
+                    <button onclick="expandphoto_europe()">
+                        Click to Expand
+                    </button>
+                </div>
             </div>
-        </div>
-        <div class="photography-box">
-            <h1>21:9</h1>
-                        <!-- Lychee Photo Album Embed v1.0.0 -->
-            <link rel="stylesheet" href="https://photos.chiambucket.com/embed/lychee-embed.css?v=1.0.0">
-            <script src="https://photos.chiambucket.com/embed/lychee-embed.js?v=1.0.0"></script>
-
-            <div
-                id="photography-21by9"
-                class="photography-restrict"
-                data-lychee-embed
-                data-api-url="https://photos.chiambucket.com"
-                data-mode="album"
-                data-album-id="cZ6uVEzxH72ygIJLPbnxZAiN"
-                data-layout="masonry"
-                data-spacing="8"
-                data-target-row-height="200"
-                data-target-column-width="200"
-                data-max-photos="none"
-                data-sort-order="desc"
-                data-header-placement="none"
-            ></div>
-            <div class="expand-photography" id="expand-21by9">
-                <button onclick="expandphoto_21by9()">
-                    Click to Expand
-                </button>
+            <div class="photography-box">
+                <div class="phototop">
+                    <h1>21:9</h1>
+                    <a href="https://photos.chiambucket.com/gallery/cZ6uVEzxH72ygIJLPbnxZAiN"><img src="images/arrow.png" alt=""></a>
+                </div>
+                            <!-- Lychee Photo Album Embed v1.0.0 -->
+                <link rel="stylesheet" href="https://photos.chiambucket.com/embed/lychee-embed.css?v=1.0.0">
+                <script src="https://photos.chiambucket.com/embed/lychee-embed.js?v=1.0.0"></script>
+    
+                <div
+                    id="photography-21by9"
+                    class="photography-restrict"
+                    data-lychee-embed
+                    data-api-url="https://photos.chiambucket.com"
+                    data-mode="album"
+                    data-album-id="cZ6uVEzxH72ygIJLPbnxZAiN"
+                    data-layout="masonry"
+                    data-spacing="8"
+                    data-target-row-height="150"
+                    data-target-column-width="150"
+                    data-max-photos="none"
+                    data-sort-order="desc"
+                    data-header-placement="none"
+                ></div>
+                <div class="expand-photography" id="expand-21by9">
+                    <button onclick="expandphoto_21by9()">
+                        Click to Expand
+                    </button>
+                </div>
             </div>
-        </div>
-        <div class="photography-box">
-            <h1>China</h1>
-                        <!-- Lychee Photo Album Embed v1.0.0 -->
-            <link rel="stylesheet" href="https://photos.chiambucket.com/embed/lychee-embed.css?v=1.0.0">
-            <script src="https://photos.chiambucket.com/embed/lychee-embed.js?v=1.0.0"></script>
-
-            <div
-                id="photography-china"
-                class="photography-restrict"
-                data-lychee-embed
-                data-api-url="https://photos.chiambucket.com"
-                data-mode="album"
-                data-album-id="LscJWL46nCkW76KiKEY4csiI"
-                data-layout="masonry"
-                data-spacing="8"
-                data-target-row-height="200"
-                data-target-column-width="200"
-                data-max-photos="none"
-                data-sort-order="desc"
-                data-header-placement="none"
-            ></div>
-            <div class="expand-photography" id="expand-china">
-                <button onclick="expandphoto_china()">
-                    Click to Expand
-                </button>
+            <div class="photography-box">
+                <div class="phototop">
+                    <h1>China</h1>
+                    <a href="https://photos.chiambucket.com/gallery/LscJWL46nCkW76KiKEY4csiI"><img src="images/arrow.png" alt=""></a>
+                </div>
+                            <!-- Lychee Photo Album Embed v1.0.0 -->
+                <link rel="stylesheet" href="https://photos.chiambucket.com/embed/lychee-embed.css?v=1.0.0">
+                <script src="https://photos.chiambucket.com/embed/lychee-embed.js?v=1.0.0"></script>
+    
+                <div
+                    id="photography-china"
+                    class="photography-restrict"
+                    data-lychee-embed
+                    data-api-url="https://photos.chiambucket.com"
+                    data-mode="album"
+                    data-album-id="LscJWL46nCkW76KiKEY4csiI"
+                    data-layout="masonry"
+                    data-spacing="8"
+                    data-target-row-height="150"
+                    data-target-column-width="150"
+                    data-max-photos="none"
+                    data-sort-order="desc"
+                    data-header-placement="none"
+                ></div>
+                <div class="expand-photography" id="expand-china">
+                    <button onclick="expandphoto_china()">
+                        Click to Expand
+                    </button>
+                </div>
             </div>
-        </div>
-        <div class="photography-box">
-            <h1>New Zealand</h1>
-                        <!-- Lychee Photo Album Embed v1.0.0 -->
-            <link rel="stylesheet" href="https://photos.chiambucket.com/embed/lychee-embed.css?v=1.0.0">
-            <script src="https://photos.chiambucket.com/embed/lychee-embed.js?v=1.0.0"></script>
-
-            <div
-                id="photography-zealand"
-                class="photography-restrict"
-                data-lychee-embed
-                data-api-url="https://photos.chiambucket.com"
-                data-mode="album"
-                data-album-id="RgKkSumOaHmpoMKbNxPU-o-0"
-                data-layout="masonry"
-                data-spacing="8"
-                data-target-row-height="200"
-                data-target-column-width="200"
-                data-max-photos="none"
-                data-sort-order="desc"
-                data-header-placement="none"
-            ></div>
-            <div class="expand-photography" id="expand-zealand">
-                <button onclick="expandphoto_zealand()">
-                    Click to Expand
-                </button>
+            <div class="photography-box">
+                <div class="phototop">
+                    <h1>New Zealand</h1>
+                    <a href="https://photos.chiambucket.com/gallery/RgKkSumOaHmpoMKbNxPU-o-0"><img src="images/arrow.png" alt=""></a>
+                </div>
+                            <!-- Lychee Photo Album Embed v1.0.0 -->
+                <link rel="stylesheet" href="https://photos.chiambucket.com/embed/lychee-embed.css?v=1.0.0">
+                <script src="https://photos.chiambucket.com/embed/lychee-embed.js?v=1.0.0"></script>
+    
+                <div
+                    id="photography-zealand"
+                    class="photography-restrict"
+                    data-lychee-embed
+                    data-api-url="https://photos.chiambucket.com"
+                    data-mode="album"
+                    data-album-id="RgKkSumOaHmpoMKbNxPU-o-0"
+                    data-layout="masonry"
+                    data-spacing="8"
+                    data-target-row-height="150"
+                    data-target-column-width="150"
+                    data-max-photos="none"
+                    data-sort-order="desc"
+                    data-header-placement="none"
+                ></div>
+                <div class="expand-photography" id="expand-zealand">
+                    <button onclick="expandphoto_zealand()">
+                        Click to Expand
+                    </button>
+                </div>
             </div>
-        </div>
-        <div class="photography-box">
-            <h1>General</h1>
-                        <!-- Lychee Photo Album Embed v1.0.0 -->
-            <link rel="stylesheet" href="https://photos.chiambucket.com/embed/lychee-embed.css?v=1.0.0">
-            <script src="https://photos.chiambucket.com/embed/lychee-embed.js?v=1.0.0"></script>
-
-            <div
-                id="photography-general"
-                class="photography-restrict"
-                data-lychee-embed
-                data-api-url="https://photos.chiambucket.com"
-                data-mode="album"
-                data-album-id="X1sod6pbc0khZPykFISHCjzg"
-                data-layout="masonry"
-                data-spacing="8"
-                data-target-row-height="200"
-                data-target-column-width="200"
-                data-max-photos="none"
-                data-sort-order="desc"
-                data-header-placement="none"
-            ></div>
-            <div class="expand-photography" id="expand-general">
-                <button onclick="expandphoto_general()">
-                    Click to Expand
-                </button>
+            <div class="photography-box">
+                <div class="phototop">
+                    <h1>General</h1>
+                    <a href="https://photos.chiambucket.com/gallery/RgKkSumOaHmpoMKbNxPU-o-0"><img src="images/arrow.png" alt=""></a>
+                </div>
+                            <!-- Lychee Photo Album Embed v1.0.0 -->
+                <link rel="stylesheet" href="https://photos.chiambucket.com/embed/lychee-embed.css?v=1.0.0">
+                <script src="https://photos.chiambucket.com/embed/lychee-embed.js?v=1.0.0"></script>
+    
+                <div
+                    id="photography-general"
+                    class="photography-restrict"
+                    data-lychee-embed
+                    data-api-url="https://photos.chiambucket.com"
+                    data-mode="album"
+                    data-album-id="X1sod6pbc0khZPykFISHCjzg"
+                    data-layout="masonry"
+                    data-spacing="8"
+                    data-target-row-height="150"
+                    data-target-column-width="150"
+                    data-max-photos="none"
+                    data-sort-order="desc"
+                    data-header-placement="none"
+                ></div>
+                <div class="expand-photography" id="expand-general">
+                    <button onclick="expandphoto_general()">
+                        Click to Expand
+                    </button>
+                </div>
             </div>
         </div>
         <footer class="footer">

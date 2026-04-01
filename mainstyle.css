@@ -288,6 +288,9 @@ a {
 .FloatDown {
   animation: 500ms ease FloatDown;
 }
+.fadeout {
+
+}
 
 @keyframes FloatUp {
   0% {
@@ -1042,11 +1045,13 @@ html {
 /* Footer */
 
 .footer {
-  background-color: #000;
   display: flex;
+  box-shadow: 0px 10px 15px -5px rgba(230, 230, 230, 0.378) inset;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid #efefef;
+  border-top: 1px solid #737373;
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
   z-index: 999;
   padding: 30px 80px 30px 80px;
 }
@@ -1157,6 +1162,27 @@ html {
   border-top: solid #aeaeae 1px;
   border-radius: 30px;
 }
+.phototop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.phototop img {
+  width: 20px;
+  transform: rotate(315deg);
+}
+.phototop a {
+  padding: 15px 20px;
+  border-radius: 30px;
+  transform: translateY(3px);
+  background-color: #d8d8d82e;
+  display: flex;
+  align-items: center;
+  transition: 250ms ease;
+}
+.phototop a:hover {
+  background-color: #d8d8d86b;
+}
 .photography-restrict {
   height: 20vh;
   overflow: hidden;
@@ -1178,6 +1204,13 @@ html {
   padding: 5px 20px;
   border-radius: 999px;
   color: #d8d8d8e6;
+  transition: 250ms ease;
+}
+
+.expand-photography button:hover {
+  background-color: #ffffffb5;
+  color: #4a4a4ac5;
+  transform: scale(1.02);
 }
 
 .photo-main-ver {
@@ -1202,6 +1235,12 @@ html {
   background-color: #ffffff4d;
   padding: 5px 20px;
   border-radius: 999px;
+  transition: 250ms ease;
+}
+.photo-main-ver .expand button:hover {
+  background-color: #ffffffb5;
+  color: #4a4a4ac5;
+  transform: scale(1.02);
 }
 .photography-box h1 {
   background: linear-gradient(119deg, rgb(171, 171, 171) 0%, rgba(232,232,232,1) 100%);
@@ -1320,61 +1359,49 @@ html {
   margin: 0 auto;
 }
 
-.photography-end-card1 {
+.photography-collage::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  height: 100px;
+  background: linear-gradient(180deg,rgba(255, 255, 255, 0) 0%, rgba(0, 0, 0, 1) 100%);
+}
+
+.photography-end-cards-style {
   width: 250px;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 40px 30px;
   border-radius: 30px;
+}
+
+.photography-end-card1 {
   background: rgb(27,6,40);
   background: linear-gradient(326deg, rgba(27,6,40,1) 20%, rgb(120, 40, 165) 100%);
   border: 2px solid rgb(72, 25, 98);
   box-shadow: 0px 0px 250px 1px rgba(120, 40, 165,0.6);
 }
 .photography-end-card2 {
-  width: 250px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 30px;
-  border-radius: 30px;
   background: rgb(29,19,0);
   background: linear-gradient(326deg, rgba(29,19,0,1) 0%, rgba(208,134,0,1) 100%);
   border: 2px solid rgb(131, 85, 0);
   box-shadow: 0px 0px 250px 1px rgba(208,134,0,0.6);
 }
 .photography-end-card3 {
-  width: 250px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 30px;
-  border-radius: 30px;
   background: rgb(29, 5, 0);
   background: linear-gradient(326deg, rgba(29,19,0,1) 0%, rgb(208, 52, 0) 100%);
   box-shadow: 0px 0px 250px 1px rgba(208,55,0,0.6);
   border: 2px solid rgb(80, 21, 13);
 }
 .photography-end-card4 {
-  width: 250px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 30px;
-  border-radius: 30px;
   background: rgb(27,6,40);
   background: linear-gradient(326deg, rgb(6, 10, 40) 20%, rgb(40, 40, 165) 100%);
   border: 2px solid rgb(32, 25, 98);
   box-shadow: 0px 0px 250px 1px rgba(40, 40, 165,0.6);
 }
 .photography-end-card5 {
-  width: 250px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 30px;
-  border-radius: 30px;
   background: rgb(27,6,40);
   background: linear-gradient(326deg, rgb(6, 32, 40) 20%, rgb(40, 140, 165) 100%);
   border: 2px solid rgb(25, 71, 98);
@@ -1404,6 +1431,11 @@ html {
   margin-top: 50px;
   font-size: 4em;
 }
+
+.photography-box-wrapper {
+  margin: 15vh 0 5vh 0;
+}
+
 .portfolio-call-to-action {
   background-image: url(images/layered-waves-haikei.svg);
   height: 900px;
@@ -2352,12 +2384,13 @@ html {
 
 .abm-grid-items-bg {
   background-color: rgba(26, 26, 26, 0.7);
-  border-left: 1px solid rgba(255, 255, 255, 0.15);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  /*border-left: 1px solid rgba(255, 255, 255, 0.15);*/
+  /*border-bottom: 1px solid rgba(255, 255, 255, 0.15);*/
   border-right: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 30px;
   padding: 2rem;
-  box-shadow: 0 4px 10.5px 0 rgba(0, 0, 0, 0.70) inset;
+  /*box-shadow: 0 4px 10.5px 0 rgba(0, 0, 0, 0.70) inset;*/
 }
 
 .abm-key {
@@ -3039,6 +3072,11 @@ html {
       align-items: center;
       justify-content: center;
     }
+    .photography-collage {
+      height: 100vh;
+      background-position-y: 50vh;
+      position: relative;
+    }
     .photography-card {
       margin-top: 15vh;
     }
@@ -3078,8 +3116,24 @@ html {
     .photography-body-item-bottom {
       margin-top: 50px;
     }
+    .photography-end-cards-style {
+      width: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 20px;
+    }
+    .photography-end-card-content h1 {
+      font-size: 1.4em;
+    }
+    .photography-end-card-content h3 {
+      font-size: 0.8em;
+    }
+    .photography-end-card-content img {
+      width: 50px;
+    }
     .photography-cards {
-      flex-direction: column;
+      gap: 20px;
     }
     .portfolio-cta-content h1{
       font-size: 3em;
@@ -3563,4 +3617,5 @@ html {
   .abm-top8 .center {
     height: 300px;
   }
+
 }
