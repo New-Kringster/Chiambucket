@@ -288,9 +288,6 @@ a {
 .FloatDown {
   animation: 500ms ease FloatDown;
 }
-.fadeout {
-
-}
 
 @keyframes FloatUp {
   0% {
