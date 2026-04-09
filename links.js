@@ -1,6 +1,3 @@
-src="https://code.jquery.com/jquery-3.7.1.min.js";
-integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=";
-crossorigin="anonymous";
 let Home = "index.html";
 let AboutMe = "aboutme.html";
 let Photography = "photography.html";
@@ -105,6 +102,36 @@ function articlecsdpOnClick() {
 $(window).on("load",function(){
     $("#loader").fadeOut()
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+    /* for article section light up */
+    const sections = document.querySelectorAll("section");
+    const navLinks = document.querySelectorAll(".article-chapter-wrapper a");
+    console.log(sections);
+    console.log(navLinks);
+    const Chapterobserver = new IntersectionObserver(
+        (entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+            navLinks.forEach((link) => link.classList.remove("article-chapter-selected"));
+    
+            const activeLink = document.querySelector(
+                `.article-chapter-wrapper a[href="#${entry.target.id}"]`
+            );
+    
+            if (activeLink) {
+                activeLink.classList.add("article-chapter-selected");
+            }
+            }
+        });
+        },
+        {
+        threshold: 0.15
+        }
+    );
+    
+    sections.forEach((section) => Chapterobserver.observe(section));
+})
 function MenuBar() {
     if (MenuState == false) {
         MenuState = true
@@ -289,6 +316,7 @@ function Hideherobg() {
 function Wakebg() {
     $('#portfolio-items-holder').addClass('portfolio-items-holder-show');
 }
+
 let firstcall = true
 const bottomElement = document.querySelector('.detect-reach');
 const tohideelement = document.querySelector('.portfolio-hero-bg')
@@ -302,8 +330,11 @@ const observer = new IntersectionObserver((entries) => {
     firstcall = false
 });
 
-observer.observe(bottomElement)
-
+try {
+    observer.observe(bottomElement)
+} catch (error) {
+    console.log('disappear below not avaliable')
+}
 function scrolll() {
     var left = document.querySelector(".portfolio-hero-bottom");
     $('#left-arrow-hidden').addClass('portfolio-items-holder-show');

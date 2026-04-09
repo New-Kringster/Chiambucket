@@ -78,6 +78,19 @@
             <div class="article-fade">
             </div>
             <div class="article-body">
+                <div class="article-chapters">
+                    <div class="article-chapters-ultimate-wrapper">
+                        <h1>Chapters</h1>
+                        <nav class="article-chapter-wrapper">
+                            <a href="#Functionality">Functionality</a>
+                            <a href="#ProjectDevelopment">Project Development</a>
+                            <a href="#Code">Code</a>
+                            <a href="#PCBDesign">PCB Design</a>
+                            <a href="#threeDDesign">3D Design</a>
+                            <a href="#Assembly">Assembly</a>
+                        </nav>
+                    </div>
+                </div>
                 <div class="article-body-wrapper">
                     <div class="article-header">
                         <div class="pf-item-tag">
@@ -105,7 +118,7 @@
                         <h1>Demo Video</h1>
                         <iframe width="560" height="315" src="https://www.youtube.com/embed/1nbiYCAtGPA?si=DX0zrik6DufUva5P" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                     </div>
-                    <div class="article-real-body">
+                    <section class="article-real-body" id="Functionality">
                         <h1>Functionality</h1>
                         <p style="padding-left: 20px;">- Use LoRA for long distance messaging</br> - 2-Way Voice communication when in range of ESP-NOW </br> - Powered off of rechargeable LiPo batteries </br> - 2 Displays cuz its cool </br> - A mode for range testing </br> - Decent & simple to use UI</p>
                         <img src="images/Brolocator1.png" alt="">
@@ -114,19 +127,19 @@
                         <img src="images/Brolocator4.png" alt="">
                         <img src="images/Brolocator5.png" alt="">
                         <img src="images/Brolocator6.png" alt="">
-                    </div>
-                    <div class="article-real-body">
+                    </section>
+                    <section id="ProjectDevelopment" class="article-real-body">
                         <h1>Project Development</h1>
                         <p>Brolocator is my first deep dive into the microcontrollers, it was also my first attempt at designing a PCB. I used PlatformIO to code the ESP32, and with some help from Youtube and ChatGPT, I was able to learn how use each component to create the Brolocator.</p>
                         <img src="images/Brolocator7.png" alt="">
                         <span>Developement of the Brolocator</span>
-                    </div>
-                    <div class="article-real-body">
+                    </section>
+                    <section id="Code" class="article-real-body">
                         <h1>Coding</h1>
                         <p>Based on my research, PlatformIO was the best coice for developing code for the ESP32. You can download the PlatfornIO Project <a href="https://file.chiambucket.com/public/api/raw?hash=Uw31ufKRXVAmviDG4Y3zsw">HERE</a></p>
                         <img src="images/Brolocator8.png" alt="">
-                    </div>
-                    <div class="article-real-body">
+                    </section>
+                    <section id="PCBDesign" class="article-real-body">
                         <h1>PCB Design</h1>
                         <p>I used KiCAD to design a PCB for all the components to go on. You can download the KiCAD files <a href="https://file.chiambucket.com/public/api/raw?hash=y5dKQ_glrduAHZ2b09PwFw">HERE</a></p>
                         <img src="images/Brolocator9.png" alt="">
@@ -134,8 +147,8 @@
                         <img src="images/Brolocator10.png" alt="">
                         <span>Board</span>
                         <img src="images/Brolocator11.png" alt="">
-                    </div>
-                    <div class="article-real-body">
+                    </section>
+                    <section id="threeDDesign" class="article-real-body">
                         <h1>3D Design</h1>
                         <p>I used Onshape to design a Case for the board. You can get the files <a href="https://cad.onshape.com/documents/06f42027d48061220c14a0ca/w/a8ae7436030816f045f9e912/e/ee2cc98ca48e0de54fb6f19a?renderMode=0&uiState=69242b3fb36228e1cf876de1">HERE</a></p>
                         <img src="images/Brolocator12.png" alt="">
@@ -144,8 +157,8 @@
                         <span>Design iterations</span>
                         <img src="images/Brolocator17.png" alt="">
                         <span>Learning from design failures</span>
-                    </div>
-                    <div class="article-real-body">
+                    </section>
+                    <section id="Assembly" class="article-real-body">
                         <h1>Assembly</h1>
                         <p>Assembly of all components together</p>
                         <img src="images/Brolocator13.jpg" alt="">
@@ -154,7 +167,7 @@
                         <span>Fitting PCB into case</span>
                         <img src="images/Brolocator15.jpg" alt="">
                         <span>Complete</span>
-                    </div>
+                    </section>
                     <div class="next-article">
                         Check Out The Next Article
                         <button class="pf-item-button" onclick="PortfolioOnClick()">
@@ -168,6 +181,9 @@
                             </svg>
                           </button>
                     </div>
+                </div>
+                <div class="article-balance">
+
                 </div>
             </div>
         </div>
