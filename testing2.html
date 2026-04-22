@@ -9,6 +9,8 @@
       margin: 0;
       font-family: Arial, sans-serif;
       display: flex;
+      height: 200vh;
+      background: linear-gradient(0deg, rgb(222,222,222)0%, rgb(20,20,20)100%);
     }
 
     .article-chapter-wrapper {
@@ -60,35 +62,7 @@
   </style>
 </head>
 <body>
-  <nav class="article-chapter-wrapper">
-    <h2>Chapters</h2>
-    <a href="#chapter1">Chapter 1</a>
-    <a href="#chapter2">Chapter 2</a>
-    <a href="#chapter3">Chapter 3</a>
-    <a href="#chapter4">Chapter 4</a>
-  </nav>
-
-  <main class="content">
-    <section id="chapter1">
-      <h1>Chapter 1</h1>
-      <p>Content for chapter 1...</p>
-    </section>
-
-    <section id="chapter2">
-      <h1>Chapter 2</h1>
-      <p>Content for chapter 2...</p>
-    </section>
-
-    <section id="chapter3">
-      <h1>Chapter 3</h1>
-      <p>Content for chapter 3...</p>
-    </section>
-
-    <section id="chapter4">
-      <h1>Chapter 4</h1>
-      <p>Content for chapter 4...</p>
-    </section>
-  </main>
+  <script src="http://127.0.0.1:5500/banner.js"></script>
 
   <script>
     const sections = document.querySelectorAll("section");
@@ -121,5 +95,6 @@
 
     sections.forEach((section) => observer.observe(section));
   </script>
+
 </body>
 </html>

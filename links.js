@@ -15,6 +15,7 @@ let aritcleTht = "comingsoon.html"
 let aritcleElecf = "comingsoon.html"
 let aritcleSol = "comingsoon.html"
 let Brolocator = "Brolocator.html"
+let ProjJune = "ProjectJune.html"
 let Copyboard = "comingsoon.html"
 let csdp = "csdp.html"
 
@@ -22,6 +23,7 @@ let csdp = "csdp.html"
 let Instagram = "https://www.instagram.com/bombastic_demise?igsh=MTQzZWQ0ODQyZmlyMg%3D%3D&utm_source=qr"
 let Youtube = "https://www.youtube.com/@newkringster2564"
 let Whatsapp = "https://wa.me/6597100366"
+let Github = "https://github.com/New-Kringster"
 
 /* Bucket hosted links */
 let photogallery = "https://photos.chiambucket.com"
@@ -57,6 +59,10 @@ function YoutubeOnClick() {
 
 function WhatsappOnClick() {
     window.location = Whatsapp;
+}
+
+function GithubOnClick() {
+    window.location = Github;
 }
 
 function PhotogalleryOnClick() {
@@ -99,6 +105,28 @@ function articlecopyboardOnClick() {
 function articlecsdpOnClick() {
     window.location = csdp;
 }
+function articleProjJuneOnClick() {
+    window.location = ProjJune;
+}
+
+$(function () {
+    $("#header").load("header.html", function (response, status, xhr) {
+        if (status === "error") {
+            console.error("Failed to load header.html", xhr.status, xhr.statusText);
+        } else {
+            console.log("header.html loaded successfully");
+        }
+    });
+
+    $("#footers").load("footer.html", function (response, status, xhr) {
+        if (status === "error") {
+            console.error("Failed to load footer.html", xhr.status, xhr.statusText);
+        } else {
+            console.log("footer.html loaded successfully");
+        }
+    });
+});
+
 $(window).on("load",function(){
     $("#loader").fadeOut()
 });
@@ -189,6 +217,20 @@ function expandphoto_general() {
 function expandphoto_zealand() {
     $('#photography-zealand').removeClass('photography-restrict')
     $('#expand-zealand').addClass('loader-hide');
+}
+
+let PjDd = false;
+function pjddf() {
+    if (PjDd == false) {
+        PjDd = true
+        $('#pjdd').addClass('pf-hidden-content-shown');
+        $('#pjddm').addClass('portfolio-items2-open');
+    } 
+    else {
+        PjDd = false;
+        $('#pjdd').removeClass('pf-hidden-content-shown');
+        $('#pjddm').removeClass('portfolio-items2-open');
+    }
 }
 
 let BlDd = false;
