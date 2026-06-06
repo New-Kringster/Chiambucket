@@ -486,7 +486,7 @@ export default function HomeClient() {
                 <div className="hp-media-body"><span className="hp-key">Photography</span><h3 className="hp-tile-h">Through a different lens.</h3><p className="hp-tile-p">Photography sharpens my perspective, attention to detail, and approach to design.</p></div>
               </div>
               {/* PowerPoint */}
-              <div className="hp-tile hp-tile-ppt hp-clickable" data-reveal data-delay="1" role="link" tabIndex={0} onClick={() => { window.location.href = '/downloadable/CPB1v4.pptx'; }} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}>
+              <div className="hp-tile hp-tile-ppt hp-clickable" data-reveal data-delay="1" role="link" tabIndex={0} onClick={() => { window.location.href = 'https://content.chiambucket.com/downloadable/CPB1v4.pptx'; }} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}>
                 <span className="hp-tile-go"><AU /></span>
                 <span className="hp-key">PowerPoint</span>
                 <div className="hp-ppt-media"><video autoPlay loop muted playsInline><source src="/images/CPB1v4.webm" type="video/webm" /><source src="/images/CPB1v4.mp4" type="video/mp4" /></video></div>

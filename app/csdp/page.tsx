@@ -266,8 +266,8 @@ export default function CsdpPage() {
           <section id="SlideDeck" className="art-section" data-reveal>
             <h2>Slide Deck</h2>
             <div className="art-embed art-pdf">
-              <object data="/downloadable/csdpf1.pdf" type="application/pdf">
-                <p>Alt link <a href="/downloadable/csdpf1.pdf">to the PDF!</a></p>
+              <object data="https://content.chiambucket.com/downloadable/csdpf1.pdf" type="application/pdf">
+                <p>Alt link <a href="https://content.chiambucket.com/downloadable/csdpf1.pdf">to the PDF!</a></p>
               </object>
             </div>
           </section>
@@ -276,8 +276,8 @@ export default function CsdpPage() {
           <section id="Documentation" className="art-section" data-reveal>
             <h2>Documentation</h2>
             <div className="art-embed art-pdf">
-              <object data="/downloadable/csdpf2.pdf" type="application/pdf">
-                <p>Alt link <a href="/downloadable/csdpf2.pdf">to the PDF!</a></p>
+              <object data="https://content.chiambucket.com/downloadable/csdpf2.pdf" type="application/pdf">
+                <p>Alt link <a href="https://content.chiambucket.com/downloadable/csdpf2.pdf">to the PDF!</a></p>
               </object>
             </div>
           </section>
