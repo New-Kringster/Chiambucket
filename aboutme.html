@@ -3,7 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Chiambucket</title>
+    <title>About Me — Chiambucket</title>
+    <meta name="description" content="About Braven Chiam — designer, engineer, and photographer based in Singapore.">
+    <meta name="author" content="Braven Chiam">
+    <link rel="canonical" href="https://www.chiambucket.com/aboutme.html">
+    <meta property="og:site_name" content="Chiambucket">
+    <meta property="og:type" content="profile">
+    <meta property="og:title" content="About Me — Chiambucket">
+    <meta property="og:description" content="About Braven Chiam — designer, engineer, and photographer based in Singapore.">
+    <meta property="og:url" content="https://www.chiambucket.com/aboutme.html">
+    <meta property="og:image" content="https://www.chiambucket.com/images/logo.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="About Me — Chiambucket">
+    <meta name="twitter:description" content="About Braven Chiam — designer, engineer, and photographer based in Singapore.">
     <link rel="stylesheet" href="mainstyle.css">
     <link
     rel="stylesheet"
@@ -28,70 +40,16 @@
 <body>
     <main>
         <div id="loader">
-            <img src="images/logo.png" alt="">
+            <img src="images/logo.webp" alt="">
         </div>
-        <div class="nav-holder">
-            <nav class="nav-closed" id="nav">
-                <a href="index.html" class="logo"><img src="images/logo.png" alt="LOGO" onclick="location.href= Home;return false;"></a>
-                <ul class="navitem" id="navitem">
-                    <li class="Nav-Menu-Items" id="Nav-Item-1"><a href="" onclick="location.href= AboutMe;return false;">About ME</a></li>
-                    <li class="Nav-Menu-Items" id="Nav-Item-2"><a href="" onclick="location.href= Photography;return false;">Photography</a></li>
-                    <li class="Nav-Menu-Items" id="Nav-Item-3"><a href="" onclick="location.href= HomeLab;return false;">HomeLab</a></li>
-                    <li class="Nav-Menu-Items" id="Nav-Item-4"><a href="" onclick="location.href= Portfolio;return false;">Portfolio</a></li>
-                    <li class="Nav-Menu-Items" id="Nav-Item-5">
-                        <button class="button-hero" onclick="BucketCentralOnClick()">
-                        <div class="dots_border"></div>
-                        <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        class="sparkle"
-                        >
-                        <path
-                            class="path"
-                            stroke-linejoin="round"
-                            stroke-linecap="round"
-                            stroke="black"
-                            fill="black"
-                            d="M14.187 8.096L15 5.25L15.813 8.096C16.0231 8.83114 16.4171 9.50062 16.9577 10.0413C17.4984 10.5819 18.1679 10.9759 18.903 11.186L21.75 12L18.904 12.813C18.1689 13.0231 17.4994 13.4171 16.9587 13.9577C16.4181 14.4984 16.0241 15.1679 15.814 15.903L15 18.75L14.187 15.904C13.9769 15.1689 13.5829 14.4994 13.0423 13.9587C12.5016 13.4181 11.8321 13.0241 11.097 12.814L8.25 12L11.096 11.187C11.8311 10.9769 12.5006 10.5829 13.0413 10.0423C13.5819 9.50162 13.9759 8.83214 14.186 8.097L14.187 8.096Z"
-                        ></path>
-                        <path
-                            class="path"
-                            stroke-linejoin="round"
-                            stroke-linecap="round"
-                            stroke="black"
-                            fill="black"
-                            d="M6 14.25L5.741 15.285C5.59267 15.8785 5.28579 16.4206 4.85319 16.8532C4.42059 17.2858 3.87853 17.5927 3.285 17.741L2.25 18L3.285 18.259C3.87853 18.4073 4.42059 18.7142 4.85319 19.1468C5.28579 19.5794 5.59267 20.1215 5.741 20.715L6 21.75L6.259 20.715C6.40725 20.1216 6.71398 19.5796 7.14639 19.147C7.5788 18.7144 8.12065 18.4075 8.714 18.259L9.75 18L8.714 17.741C8.12065 17.5925 7.5788 17.2856 7.14639 16.853C6.71398 16.4204 6.40725 15.8784 6.259 15.285L6 14.25Z"
-                        ></path>
-                        <path
-                            class="path"
-                            stroke-linejoin="round"
-                            stroke-linecap="round"
-                            stroke="black"
-                            fill="black"
-                            d="M6.5 4L6.303 4.5915C6.24777 4.75718 6.15472 4.90774 6.03123 5.03123C5.90774 5.15472 5.75718 5.24777 5.5915 5.303L5 5.5L5.5915 5.697C5.75718 5.75223 5.90774 5.84528 6.03123 5.96877C6.15472 6.09226 6.24777 6.24282 6.303 6.4085L6.5 7L6.697 6.4085C6.75223 6.24282 6.84528 6.09226 6.96877 5.96877C7.09226 5.84528 7.24282 5.75223 7.4085 5.697L8 5.5L7.4085 5.303C7.24282 5.24777 7.09226 5.15472 6.96877 5.03123C6.84528 4.90774 6.75223 4.75718 6.697 4.5915L6.5 4Z"
-                        ></path>
-                        </svg>
-                        <span class="text_button">To BucketCentral</span>
-                        </button>
-                    </li>
-                </ul>
-                <label class="hamburger">
-                    <input type="checkbox" onclick="MenuBar()">
-                    <svg viewBox="0 0 32 32">
-                      <path class="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"></path>
-                      <path class="line" d="M7 16 27 16"></path>
-                    </svg>
-                  </label>
-            </nav>
-        </div>
+        <div class="nav-holder" id="nav-holder"></div>
         <div class="abm-bg">
             <div class="aboutme-main-holder">
                 <div class="aboutme-top-holder">
                     <div class="abm-top0 abm-grid-items-bg">
                         <div class="wrappers">
                             <h1>Hi<br>I am Braven,<br>I shape designs<br>And stir up Creations!</h1>
-                            <img src="images/wave.png" alt="">
+                            <img src="images/wave.webp" alt="">
                         </div>
                     </div>
                     <div class="abm-top1 abm-grid-items-bg" id="sukuna-blink">
@@ -102,28 +60,28 @@
                         <div class="abm-core-skills-holder">
                             <div class="abm-core-skills-macos abm-core-skills">
                                 <div class="abm-core-skills-inside">
-                                    <img src="images/abm-images/apple-icon.png" alt="apple-icon">
+                                    <img src="images/abm-images/apple-icon.webp" alt="apple-icon">
                                     <h2>MacOS</h2>
                                     <p>I have four years of daily experience working with macOS and am highly comfortable using this operating system.</p>
                                 </div>
                             </div>
                             <div class="abm-core-skills-windows abm-core-skills">
                                 <div class="abm-core-skills-inside">
-                                    <img src="images/abm-images/windows-icon.png" alt="apple-icon">
+                                    <img src="images/abm-images/windows-icon.webp" alt="apple-icon">
                                     <h2>Windows</h2>
                                     <p>Ten years of experience with Windows. Starting with Windows XP, Including experinece with Windows Server 2016.</p>
                                 </div>
                             </div>
                             <div class="abm-core-skills-linux abm-core-skills">
                                 <div class="abm-core-skills-inside">
-                                    <img src="images/abm-images/Linux-icon.png" alt="apple-icon">
+                                    <img src="images/abm-images/Linux-icon.webp" alt="apple-icon">
                                     <h2>Linux</h2>
                                     <p>Two year of experience so far. I Mainly use Debian, Ubuntu and mint but do plan on trying out other distros.</p>
                                 </div>
                             </div>
                             <div class="abm-core-skills-photography abm-core-skills">
                                 <div class="abm-core-skills-inside">
-                                    <img src="images/abm-images/camera-icon.png" alt="apple-icon">
+                                    <img src="images/abm-images/camera-icon.webp" alt="apple-icon">
                                     <h2>Photography</h2>
                                     <p>I've explored popular digital art software like Photoshop and Davinci Resolve and have hands-on experience in photography and videography.</p>
                                 </div>
@@ -135,7 +93,7 @@
                             </div>
                             <div class="abm-core-skills-homelab abm-core-skills">
                                 <div class="abm-core-skills-inside">
-                                    <img src="images/abm-images/Server-icon.png" alt="apple-icon">
+                                    <img src="images/abm-images/Server-icon.webp" alt="apple-icon">
                                     <h2>HomeLab</h2>
                                     <p>I set up my own homelab to gain practical experience in managing servers and the software that powers them. Including Unraid and Proxmox.</p>
                                 </div>
@@ -147,7 +105,7 @@
                             </div>
                             <div class="abm-core-skills-engineering abm-core-skills">
                                 <div class="abm-core-skills-inside">
-                                    <img src="images/abm-images/Engineering-icon.png" alt="apple-icon">
+                                    <img src="images/abm-images/Engineering-icon.webp" alt="apple-icon">
                                     <h2>Engineering</h2>
                                     <p>I am currently pursuing my engineering diploma, with hands-on experience in electronics and some familiarity with CAD software and coding.</p>
                                 </div>
@@ -164,17 +122,17 @@
                             <div class="1">
                                 <h3>My Socials</h3>
                                 <div>
-                                    <a href="https://www.youtube.com/@newkringster2564"><img src="images/yt-icon.png" alt=""></a>
+                                    <a href="https://www.youtube.com/@newkringster2564"><img src="images/yt-icon.webp" alt=""></a>
                                     <a href="https://www.instagram.com/bombastic_demise?igsh=MTQzZWQ0ODQyZmlyMg%3D%3D&utm_source=qr"><img src="images/ig-icon.webp" alt=""></a>
-                                    <a href="https://wa.me/6597100366"><img src="images/whatsapp-iocn.png" alt=""></a>
-                                    <a href="https://beatleader.com/u/76561198998366329/scores/stars/desc/1"><img src="images/beatleader-icon.png" alt=""></a>
+                                    <a href="https://wa.me/6597100366"><img src="images/whatsapp-iocn.webp" alt=""></a>
+                                    <a href="https://beatleader.com/u/76561198998366329/scores/stars/desc/1"><img src="images/beatleader-icon.webp" alt=""></a>
                                 </div>
                             </div>
                             <div class="2">
                                 <h3>My Favourite Games</h3>
                                 <div>
-                                    <a href="https://beatsaber.com/"><img src="images/bs-icon.jpeg" alt="" style="border-radius: 8px;"></a>
-                                    <a href="https://playvalorant.com/en-us/"><img src="images/val-icon.jpg" alt=""></a>
+                                    <a href="https://beatsaber.com/"><img src="images/bs-icon.webp" alt="" style="border-radius: 8px;"></a>
+                                    <a href="https://playvalorant.com/en-us/"><img src="images/val-icon.webp" alt=""></a>
     
     
                                 </div>
@@ -188,26 +146,26 @@
                                 <div class="abm-apps-design">
                                     <h3>Design Tools</h3>
                                     <div>
-                                        <a href="https://www.adobe.com/sg/products/photoshop/landpa.html?sdid=GVTYXXRQ&mv=search&mv2=paidsearch&ef_id=Cj0KCQjwtpLABhC7ARIsALBOCVriiCuwx8EKxfqCKKMgptWjAePhGBbKziba5rIRGoiIrmwaIDjUFc4aAut4EALw_wcB:G:s&s_kwcid=AL!3085!3!697507944455!e!!g!!photoshop!184169684!12788303444&gad_source=1&gbraid=0AAAAADraYsIPxufiZd672UXwypjf-IOBP&gclid=Cj0KCQjwtpLABhC7ARIsALBOCVriiCuwx8EKxfqCKKMgptWjAePhGBbKziba5rIRGoiIrmwaIDjUFc4aAut4EALw_wcB"><img src="images/ps-logo.png" alt=""></a>
+                                        <a href="https://www.adobe.com/sg/products/photoshop/landpa.html?sdid=GVTYXXRQ&mv=search&mv2=paidsearch&ef_id=Cj0KCQjwtpLABhC7ARIsALBOCVriiCuwx8EKxfqCKKMgptWjAePhGBbKziba5rIRGoiIrmwaIDjUFc4aAut4EALw_wcB:G:s&s_kwcid=AL!3085!3!697507944455!e!!g!!photoshop!184169684!12788303444&gad_source=1&gbraid=0AAAAADraYsIPxufiZd672UXwypjf-IOBP&gclid=Cj0KCQjwtpLABhC7ARIsALBOCVriiCuwx8EKxfqCKKMgptWjAePhGBbKziba5rIRGoiIrmwaIDjUFc4aAut4EALw_wcB"><img src="images/ps-logo.webp" alt=""></a>
                                         <a href="https://www.blackmagicdesign.com/products/davinciresolve/?gad_source=1&gbraid=0AAAAADPHK_b_s3tTPbihykBpP95uvjynw&gclid=Cj0KCQjwtpLABhC7ARIsALBOCVpc_2UAFo-7gy0MmVlxyKxdnxOZK_dk7PAGjQxhE-7r2xaNfSD_6PQaAhBBEALw_wcB"><img src="images/resolve-logo.webp" alt=""></a>
-                                        <a href="https://www.figma.com/"><img src="images/fm-icon.png" alt=""></a>
-                                        <a href="https://www.adobe.com/sg/products/photoshop-lightroom-classic/lightroom-cc-vs-lightroom-classic.html"><img src="images/lrc-logo.png" alt=""></a>
-                                        <a href="https://www.blender.org/"><img src="images/blender-logo.png" alt=""></a>
-                                        <a href="https://spline.design/"><img src="images/abm-images/spline-app-icon.png" alt=""></a>
+                                        <a href="https://www.figma.com/"><img src="images/fm-icon.webp" alt=""></a>
+                                        <a href="https://www.adobe.com/sg/products/photoshop-lightroom-classic/lightroom-cc-vs-lightroom-classic.html"><img src="images/lrc-logo.webp" alt=""></a>
+                                        <a href="https://www.blender.org/"><img src="images/blender-logo.webp" alt=""></a>
+                                        <a href="https://spline.design/"><img src="images/abm-images/spline-app-icon.webp" alt=""></a>
                                     </div>
                                 </div>
                                 <div class="abm-apps-Other-Tools">
                                     <h3>Other Tools</h3>
                                     <div>
-                                        <a href="https://www.onshape.com/en/"><img src="images/onshape-logo.png" alt=""></a>
+                                        <a href="https://www.onshape.com/en/"><img src="images/onshape-logo.webp" alt=""></a>
                                         <a href="https://powerpoint.cloud.microsoft/en-gb/"><img src="images/powerpoint-icon.webp" alt=""></a>
                                         <a href="https://word.cloud.microsoft/en-gb/"><img src="images/word-icon.webp" alt="" style="border-radius: 8px;"></a>
-                                        <a href="https://excel.cloud.microsoft/en-gb/"><img src="images/excell-icon.png" alt="" style="border-radius: 8px;"></a>
-                                        <a href="https://www.canva.com/en/"><img src="images/canva-icon.png" alt="" style="border-radius: 8px;"></a>
-                                        <a href="https://tailscale.com/"><img src="images/tailscale-icon.jpeg" alt="" style="border-radius: 8px;"></a>
-                                        <a href="https://www.autodesk.com/sg/products/fusion-360/overview?mktvar002=6800728|SEM|18955888228|148836317452|kwd-297110963881&term=1-YEAR&tab=subscription&utm_source=GGL&utm_medium=SEM&utm_campaign=GGL_D-M_Fusion-360_APAC_SG_eComm_SEM_BR_NA_MIX_0064_6800728&utm_id=6800728&utm_term=kwd-297110963881&gad_source=1&gbraid=0AAAAADMqutky0RO8xXDUqRJGBY8SCmAtj&gclid=Cj0KCQjwtpLABhC7ARIsALBOCVo2d0RsWKRt2rigNWSn7XPz4_7hSxrPzL2mGXy4_AWZIdvKUqoL_XYaAgl1EALw_wcB&plc=FSN"><img src="images/fusion-icon.png" alt="" style="border-radius: 8px;"></a>
-                                        <a href="https://www.jetbrains.com/pycharm"><img src="images/PyCharm-Icon.png" alt=""></a>
-                                        <a href="https://code.visualstudio.com/"><img src="images/vsc-icon.png" alt=""></a>
+                                        <a href="https://excel.cloud.microsoft/en-gb/"><img src="images/excell-icon.webp" alt="" style="border-radius: 8px;"></a>
+                                        <a href="https://www.canva.com/en/"><img src="images/canva-icon.webp" alt="" style="border-radius: 8px;"></a>
+                                        <a href="https://tailscale.com/"><img src="images/tailscale-icon.webp" alt="" style="border-radius: 8px;"></a>
+                                        <a href="https://www.autodesk.com/sg/products/fusion-360/overview?mktvar002=6800728|SEM|18955888228|148836317452|kwd-297110963881&term=1-YEAR&tab=subscription&utm_source=GGL&utm_medium=SEM&utm_campaign=GGL_D-M_Fusion-360_APAC_SG_eComm_SEM_BR_NA_MIX_0064_6800728&utm_id=6800728&utm_term=kwd-297110963881&gad_source=1&gbraid=0AAAAADMqutky0RO8xXDUqRJGBY8SCmAtj&gclid=Cj0KCQjwtpLABhC7ARIsALBOCVo2d0RsWKRt2rigNWSn7XPz4_7hSxrPzL2mGXy4_AWZIdvKUqoL_XYaAgl1EALw_wcB&plc=FSN"><img src="images/fusion-icon.webp" alt="" style="border-radius: 8px;"></a>
+                                        <a href="https://www.jetbrains.com/pycharm"><img src="images/PyCharm-Icon.webp" alt=""></a>
+                                        <a href="https://code.visualstudio.com/"><img src="images/vsc-icon.webp" alt=""></a>
                                     </div>
                                 </div>
                             </div>
@@ -215,15 +173,15 @@
                                 <h3>Technologies</h3>
                                 <div>
                                     <a href="https://www.python.org/psf-landing/"><img src="images/python-icon.webp" alt=""></a>
-                                    <a href="https://www.w3.org/"><img src="images/html-icon.png" alt=""></a>
-                                    <a href="https://www.w3.org/"><img src="images/css-icon.png" alt=""></a>
-                                    <a href="https://www.w3.org/"><img src="images/javascript-icon.png" alt="" style="border-radius: 8px;"></a>
-                                    <a href="https://www.docker.com/"><img src="images/docker-icon.png" alt="" style="border-radius: 8px;"></a>
-                                    <a href="https://www.proxmox.com/en/"><img src="images/proxmox-icon.png" alt=""></a>
-                                    <a href="https://ollama.com/"><img src="images/ollama-icon.png" alt=""></a>
-                                    <a href="https://unraid.net/?srsltid=AfmBOooWGaEZPILdMg96UgcPLZ9O--NIrHhhD5nlHLfSqZ3fi9mE4wcG"><img src="images/unraid-icon.png" alt=""></a>
-                                    <a href="https://casaos.zimaspace.com/"><img src="images/casaos-icon.jpeg" alt="" style="border-radius: 8px;"></a>
-                                    <a href="https://www.ui.com/"><img src="images/unifi-icon.png" alt="" style="border-radius: 8px;"></a>
+                                    <a href="https://www.w3.org/"><img src="images/html-icon.webp" alt=""></a>
+                                    <a href="https://www.w3.org/"><img src="images/css-icon.webp" alt=""></a>
+                                    <a href="https://www.w3.org/"><img src="images/javascript-icon.webp" alt="" style="border-radius: 8px;"></a>
+                                    <a href="https://www.docker.com/"><img src="images/docker-icon.webp" alt="" style="border-radius: 8px;"></a>
+                                    <a href="https://www.proxmox.com/en/"><img src="images/proxmox-icon.webp" alt=""></a>
+                                    <a href="https://ollama.com/"><img src="images/ollama-icon.webp" alt=""></a>
+                                    <a href="https://unraid.net/?srsltid=AfmBOooWGaEZPILdMg96UgcPLZ9O--NIrHhhD5nlHLfSqZ3fi9mE4wcG"><img src="images/unraid-icon.webp" alt=""></a>
+                                    <a href="https://casaos.zimaspace.com/"><img src="images/casaos-icon.webp" alt="" style="border-radius: 8px;"></a>
+                                    <a href="https://www.ui.com/"><img src="images/unifi-icon.webp" alt="" style="border-radius: 8px;"></a>
                                 </div>
     
     
@@ -241,9 +199,9 @@
                                     <div class="pf-item-button-wrapper">
                                         <div class="pf-button-left-stack">
                                             <div class="icon-stack">
-                                                <img src="images/chrome-icon.jpg" alt="">
-                                                <img src="images/figma-icon.png" alt="">
-                                                <img src="images/vscode-icon.png" alt="">
+                                                <img src="images/chrome-icon.webp" alt="">
+                                                <img src="images/figma-icon.webp" alt="">
+                                                <img src="images/vscode-icon.webp" alt="">
                                             </div>
                                         </div>
                                         <button class="pf-item-button" onclick="articleWebsiteOnClick()">
@@ -268,11 +226,11 @@
                             <div class="pf-item-button-wrapper">
                                 <div class="pf-button-left-stack">
                                     <div class="icon-stack">
-                                        <img src="images/resolve-icon.png" alt="">
-                                        <img src="images/ps-pf-icon.png" alt="">
-                                        <img src="images/powerpoint-icon.png" alt="">
-                                        <img src="images/vscode-icon.png" alt="">
-                                        <img src="images/onshape-icon.png" alt="">
+                                        <img src="images/resolve-icon.webp" alt="">
+                                        <img src="images/ps-pf-icon.webp" alt="">
+                                        <img src="images/powerpoint-icon.webp" alt="">
+                                        <img src="images/vscode-icon.webp" alt="">
+                                        <img src="images/onshape-icon.webp" alt="">
                                     </div>
                                 </div>
                                 <button class="pf-item-button" onclick="articlePandusOnClick()">
@@ -295,10 +253,10 @@
                             <div class="pf-item-button-wrapper">
                                 <div class="pf-button-left-stack">
                                     <div class="icon-stack">
-                                        <img src="images/resolve-icon.png" alt="">
-                                        <img src="images/ps-pf-icon.png" alt="">
-                                        <img src="images/powerpoint-icon.png" alt="">
-                                        <img src="images/figma-icon.png" alt="">
+                                        <img src="images/resolve-icon.webp" alt="">
+                                        <img src="images/ps-pf-icon.webp" alt="">
+                                        <img src="images/powerpoint-icon.webp" alt="">
+                                        <img src="images/figma-icon.webp" alt="">
                                     </div>
                                 </div>
                                 <button class="pf-item-button" onclick="articleElecfOnClick()">
@@ -321,8 +279,8 @@
                             <div class="pf-item-button-wrapper">
                                 <div class="pf-button-left-stack">
                                     <div class="icon-stack">
-                                        <img src="images/ps-pf-icon.png" alt="">
-                                        <img src="images/onshape-icon.png" alt="">
+                                        <img src="images/ps-pf-icon.webp" alt="">
+                                        <img src="images/onshape-icon.webp" alt="">
                                     </div>
                                 </div>
                                 <button class="pf-item-button" onclick="articleSolOnClick()">
@@ -359,7 +317,7 @@
         <footer class="footer">
             <button onclick="HomeOnClick()">
                 <div class="footer-left">
-                    <img src="images/logo.png" alt="Logo" class="footer-left-img">
+                    <img src="images/logo.webp" alt="Logo" class="footer-left-img">
                     <span class="footer-left-text">Chiambucket Home</span>
                 </div>
             </button>

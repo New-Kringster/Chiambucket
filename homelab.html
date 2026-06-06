@@ -3,7 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Chiambucket</title>
+    <title>HomeLab — Chiambucket</title>
+    <meta name="description" content="Braven Chiam's homelab — self-hosted servers, Docker apps, Nginx Proxy Manager, PaperlessNGX, and more.">
+    <meta name="author" content="Braven Chiam">
+    <link rel="canonical" href="https://www.chiambucket.com/homelab.html">
+    <meta property="og:site_name" content="Chiambucket">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="HomeLab — Chiambucket">
+    <meta property="og:description" content="Braven Chiam's homelab — self-hosted servers, Docker apps, Nginx Proxy Manager, PaperlessNGX, and more.">
+    <meta property="og:url" content="https://www.chiambucket.com/homelab.html">
+    <meta property="og:image" content="https://www.chiambucket.com/images/logo.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="HomeLab — Chiambucket">
+    <meta name="twitter:description" content="Braven Chiam's homelab — self-hosted servers, Docker apps, Nginx Proxy Manager, PaperlessNGX, and more.">
     <link rel="stylesheet" href="mainstyle.css">
     <link
     rel="stylesheet"
@@ -14,78 +26,19 @@
     <script src="links.js"></script>
     <script>
         function stopanim() {
-            document.getAnimations().forEach(
-                animation => {
-                    animation.pause()
-                    console.log('stop complete')
-                })
-            console.log('stopped anim homelab')
+            document.getAnimations().forEach(animation => animation.pause());
         }
-        $(window).on("load",function(){
-            setTimeout(stopanim,5000)
-            console.log('loadcheck-loaded-stop anim')
-            });
+        $(window).on("load", function () {
+            setTimeout(stopanim, 5000);
+        });
     </script>
 </head>
 <body>
     <main>
         <div id="loader">
-            <img src="images/logo.png" alt="">
+            <img src="images/logo.webp" alt="">
         </div>
-        <div class="nav-holder">
-          <nav class="nav-closed" id="nav">
-              <a href="index.html" class="logo"><img src="images/logo.png" alt="LOGO" onclick="location.href= Home;return false;"></a>
-              <ul class="navitem" id="navitem">
-                  <li class="Nav-Menu-Items" id="Nav-Item-2"><a href="" onclick="location.href= Photography;return false;">Photography</a></li>
-                  <li class="Nav-Menu-Items" id="Nav-Item-3"><a href="" onclick="location.href= HomeLab;return false;">HomeLab</a></li>
-                  <li class="Nav-Menu-Items" id="Nav-Item-4"><a href="" onclick="location.href= Portfolio;return false;">Portfolio</a></li>
-                  <li class="Nav-Menu-Items" id="Nav-Item-5">
-                      <button class="button-hero" onclick="BucketCentralOnClick()">
-                      <div class="dots_border"></div>
-                      <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      class="sparkle"
-                      >
-                      <path
-                          class="path"
-                          stroke-linejoin="round"
-                          stroke-linecap="round"
-                          stroke="black"
-                          fill="black"
-                          d="M14.187 8.096L15 5.25L15.813 8.096C16.0231 8.83114 16.4171 9.50062 16.9577 10.0413C17.4984 10.5819 18.1679 10.9759 18.903 11.186L21.75 12L18.904 12.813C18.1689 13.0231 17.4994 13.4171 16.9587 13.9577C16.4181 14.4984 16.0241 15.1679 15.814 15.903L15 18.75L14.187 15.904C13.9769 15.1689 13.5829 14.4994 13.0423 13.9587C12.5016 13.4181 11.8321 13.0241 11.097 12.814L8.25 12L11.096 11.187C11.8311 10.9769 12.5006 10.5829 13.0413 10.0423C13.5819 9.50162 13.9759 8.83214 14.186 8.097L14.187 8.096Z"
-                      ></path>
-                      <path
-                          class="path"
-                          stroke-linejoin="round"
-                          stroke-linecap="round"
-                          stroke="black"
-                          fill="black"
-                          d="M6 14.25L5.741 15.285C5.59267 15.8785 5.28579 16.4206 4.85319 16.8532C4.42059 17.2858 3.87853 17.5927 3.285 17.741L2.25 18L3.285 18.259C3.87853 18.4073 4.42059 18.7142 4.85319 19.1468C5.28579 19.5794 5.59267 20.1215 5.741 20.715L6 21.75L6.259 20.715C6.40725 20.1216 6.71398 19.5796 7.14639 19.147C7.5788 18.7144 8.12065 18.4075 8.714 18.259L9.75 18L8.714 17.741C8.12065 17.5925 7.5788 17.2856 7.14639 16.853C6.71398 16.4204 6.40725 15.8784 6.259 15.285L6 14.25Z"
-                      ></path>
-                      <path
-                          class="path"
-                          stroke-linejoin="round"
-                          stroke-linecap="round"
-                          stroke="black"
-                          fill="black"
-                          d="M6.5 4L6.303 4.5915C6.24777 4.75718 6.15472 4.90774 6.03123 5.03123C5.90774 5.15472 5.75718 5.24777 5.5915 5.303L5 5.5L5.5915 5.697C5.75718 5.75223 5.90774 5.84528 6.03123 5.96877C6.15472 6.09226 6.24777 6.24282 6.303 6.4085L6.5 7L6.697 6.4085C6.75223 6.24282 6.84528 6.09226 6.96877 5.96877C7.09226 5.84528 7.24282 5.75223 7.4085 5.697L8 5.5L7.4085 5.303C7.24282 5.24777 7.09226 5.15472 6.96877 5.03123C6.84528 4.90774 6.75223 4.75718 6.697 4.5915L6.5 4Z"
-                      ></path>
-                      </svg>
-                      <span class="text_button">To BucketCentral</span>
-                      </button>
-                  </li>
-              </ul>
-              <label class="hamburger">
-                  <input type="checkbox" onclick="MenuBar()">
-                  <svg viewBox="0 0 32 32">
-                    <path class="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"></path>
-                    <path class="line" d="M7 16 27 16"></path>
-                  </svg>
-                </label>
-          </nav>
-        </div>
+        <div class="nav-holder" id="nav-holder"></div>
         <div class="irregular-screen">
             Irregular screen size detected, Content may not be displayed correctly.
         </div>
@@ -99,22 +52,22 @@
             </div> 
             <div class="homelab-hero">
                 <div class="hl-flywrapper1">
-                    <img src="images/paperless-icon.png" alt="">
+                    <img src="images/paperless-icon.webp" alt="">
                 </div>
                 <div class="hl-flywrapper2">
                     <img src="images/netdata-icon.webp" alt="">
                 </div>
                 <div class="hl-flywrapper3">
-                    <img src="images/npm-icon.png" alt="">
+                    <img src="images/npm-icon.webp" alt="">
                 </div>
                 <div class="hl-flywrapper4">
-                    <img src="images/wordpress-icon.png" alt="">
+                    <img src="images/wordpress-icon.webp" alt="">
                 </div>
                 <div class="hl-flywrapper5">
-                    <img src="images/upsnap-icon.png" alt="">
+                    <img src="images/upsnap-icon.webp" alt="">
                 </div>
                 <div class="hl-flywrapper6">
-                    <img src="images/mysql-icon.png" alt="">
+                    <img src="images/mysql-icon.webp" alt="">
                 </div>
                 <div class="homelab-hero-header photography-header-headline">
                     <h1>Servers That Just Run</h1>
@@ -484,77 +437,77 @@
                             </div>
                         </div>
                         <div class="homelab-body-apps-item-bottom">
-                            <img src="images/netdatacontext.png" alt="">
+                            <img src="images/netdatacontext.webp" alt="">
                         </div>
                     </div>
                 </div>
                 <div class="homelab-body-apps-item-wrapper homelab-body-apps-item-wrapper1">
                     <div class="homelab-body-apps-item">
                         <div class="homelab-body-apps-item-top">
-                            <img src="images/npm-icon.png" alt="netdataicon">
+                            <img src="images/npm-icon.webp" alt="netdataicon">
                             <div class="homelab-body-apps-item-text">
                                 <h2>Nginx Proxy Manager</h2>
                                 <p>Simple and easy-to-use Reverse Proxy Manager. But I am looking into Traefik as it is more secure and has load-balancing.</p>
                             </div>
                         </div>
                         <div class="homelab-body-apps-item-bottom">
-                            <img src="images/NPMcontext.png" alt="">
+                            <img src="images/NPMcontext.webp" alt="">
                         </div>
                     </div>
                 </div>
                 <div class="homelab-body-apps-item-wrapper">
                     <div class="homelab-body-apps-item">
                         <div class="homelab-body-apps-item-top">
-                            <img src="images/paperless-icon.png" alt="netdataicon">
+                            <img src="images/paperless-icon.webp" alt="netdataicon">
                             <div class="homelab-body-apps-item-text">
                                 <h2>PaperlessNGX</h2>
                                 <p>PaperlessNGX Helps me index all my documents and PDFs allowing them to be easily accessible from any device.</p>
                             </div>
                         </div>
                         <div class="homelab-body-apps-item-bottom">
-                            <img src="images/paperless-context.png" alt="">
+                            <img src="images/paperless-context.webp" alt="">
                         </div>
                     </div>
                 </div>
                 <div class="homelab-body-apps-item-wrapper homelab-body-apps-item-wrapper2">
                     <div class="homelab-body-apps-item">
                         <div class="homelab-body-apps-item-top">
-                            <img src="images/upsnap-icon.png" alt="netdataicon">
+                            <img src="images/upsnap-icon.webp" alt="netdataicon">
                             <div class="homelab-body-apps-item-text">
                                 <h2>UpSnap</h2>
                                 <p>Just a simple docker that allows me to perform wake-on LAN requests through a well-crafted web interface.</p>
                             </div>
                         </div>
                         <div class="homelab-body-apps-item-bottom">
-                            <img src="images/upsnap-context.png" alt="">
+                            <img src="images/upsnap-context.webp" alt="">
                         </div>
                     </div>
                 </div>
                 <div class="homelab-body-apps-item-wrapper homelab-body-apps-item-wrapper3">
                     <div class="homelab-body-apps-item">
                         <div class="homelab-body-apps-item-top">
-                            <img src="images/lychee-icon.png" alt="netdataicon">
+                            <img src="images/lychee-icon.webp" alt="netdataicon">
                             <div class="homelab-body-apps-item-text">
                                 <h2>Lychee</h2>
                                 <p>A Simple Docker applet that allows me to share my gallery in high quality, Access it <a href="https://photos.chiambucket.com/">HERE</a></p>
                             </div>
                         </div>
                         <div class="homelab-body-apps-item-bottom">
-                            <img src="images/lychee-context.png" alt="">
+                            <img src="images/lychee-context.webp" alt="">
                         </div>
                     </div>
                 </div>
                 <div class="homelab-body-apps-item-wrapper homelab-body-apps-item-wrapper4">
                     <div class="homelab-body-apps-item">
                         <div class="homelab-body-apps-item-top">
-                            <img src="images/fireshare-icon.png" alt="netdataicon" style="border-radius: 0px;">
+                            <img src="images/fireshare-icon.webp" alt="netdataicon" style="border-radius: 0px;">
                             <div class="homelab-body-apps-item-text">
                                 <h2>Fireshare</h2>
                                 <p>Fireshare lets me and my friends share our game clips without any upload size limits.</p>
                             </div>
                         </div>
                         <div class="homelab-body-apps-item-bottom">
-                            <img src="images/fireshare-context.png" alt="">
+                            <img src="images/fireshare-context.webp" alt="">
                         </div>
                     </div>
                 </div>
@@ -568,49 +521,49 @@
                             </div>
                         </div>
                         <div class="homelab-body-apps-item-bottom">
-                            <img src="images/crafty-context.png" alt="">
+                            <img src="images/crafty-context.webp" alt="">
                         </div>
                     </div>
                 </div>
                 <div class="homelab-body-apps-item-wrapper homelab-body-apps-item-wrapper6">
                     <div class="homelab-body-apps-item">
                         <div class="homelab-body-apps-item-top">
-                            <img src="images/automatic-icon.png" alt="netdataicon" style="border-radius: 0px;">
+                            <img src="images/automatic-icon.webp" alt="netdataicon" style="border-radius: 0px;">
                             <div class="homelab-body-apps-item-text">
                                 <h2>Automatic1111</h2>
                                 <p>Automatic 1111 is a web-based GUI for stable diffusion generative image generation.</p>
                             </div>
                         </div>
                         <div class="homelab-body-apps-item-bottom">
-                            <img src="images/automatic-context.png" alt="">
+                            <img src="images/automatic-context.webp" alt="">
                         </div>
                     </div>
                 </div>
                 <div class="homelab-body-apps-item-wrapper homelab-body-apps-item-wrapper7">
                     <div class="homelab-body-apps-item">
                         <div class="homelab-body-apps-item-top">
-                            <img src="images/openwebui-icon.png" alt="netdataicon" style="border-radius: 0px;">
+                            <img src="images/openwebui-icon.webp" alt="netdataicon" style="border-radius: 0px;">
                             <div class="homelab-body-apps-item-text">
                                 <h2>Open Web UI</h2>
                                 <p>Open Web UI is a web-based GUI for Ollama, a Large language model manager, Open Web UI allows me to chat with the LLMs running on my Ollama instance.</p>
                             </div>
                         </div>
                         <div class="homelab-body-apps-item-bottom">
-                            <img src="images/openwebui-context.png" alt="">
+                            <img src="images/openwebui-context.webp" alt="">
                         </div>
                     </div>
                 </div>
                 <div class="homelab-body-apps-item-wrapper homelab-body-apps-item-wrapper8">
                     <div class="homelab-body-apps-item">
                         <div class="homelab-body-apps-item-top">
-                            <img src="images/netboot-icon.png" alt="netdataicon">
+                            <img src="images/netboot-icon.webp" alt="netdataicon">
                             <div class="homelab-body-apps-item-text">
                                 <h2>NetBootXYZ</h2>
                                 <p>NetBoot.xyz turned my Ventoy boot USB stick obsolete overnight. It offers a wide range of bootable installers and rescue tools via PXE boot over LAN.</p>
                             </div>
                         </div>
                         <div class="homelab-body-apps-item-bottom">
-                            <img src="images/netboot-context.png" alt="">
+                            <img src="images/netboot-context.webp" alt="">
                         </div>
                     </div>
                 </div>
@@ -624,7 +577,7 @@
                             </div>
                         </div>
                         <div class="homelab-body-apps-item-bottom">
-                            <img src="images/ost-context.png" alt="">
+                            <img src="images/ost-context.webp" alt="">
                         </div>
                     </div>
                 </div>
@@ -638,21 +591,21 @@
                             </div>
                         </div>
                         <div class="homelab-body-apps-item-bottom">
-                            <img src="images/portainer-context.png" alt="">
+                            <img src="images/portainer-context.webp" alt="">
                         </div>
                     </div>
                 </div>
                 <div class="homelab-body-apps-item-wrapper homelab-body-apps-item-wrapper10">
                     <div class="homelab-body-apps-item">
                         <div class="homelab-body-apps-item-top">
-                            <img src="images/alist-icon.png" alt="netdataicon">
+                            <img src="images/alist-icon.webp" alt="netdataicon">
                             <div class="homelab-body-apps-item-text">
                                 <h2>Alist</h2>
                                 <p>Google Drive alternative for me to access my files while using my own storage.</p>
                             </div>
                         </div>
                         <div class="homelab-body-apps-item-bottom">
-                            <img src="images/alist-context.png" alt="">
+                            <img src="images/alist-context.webp" alt="">
                         </div>
                     </div>
                 </div>
@@ -666,35 +619,35 @@
                             </div>
                         </div>
                         <div class="homelab-body-apps-item-bottom">
-                            <img src="images/immich-context.jpg" alt="">
+                            <img src="images/immich-context.webp" alt="">
                         </div>
                     </div>
                 </div>
                 <div class="homelab-body-apps-item-wrapper homelab-body-apps-item-wrapper9">
                     <div class="homelab-body-apps-item">
                         <div class="homelab-body-apps-item-top">
-                            <img src="images/syncthing-icon.png" alt="netdataicon">
+                            <img src="images/syncthing-icon.webp" alt="netdataicon">
                             <div class="homelab-body-apps-item-text">
                                 <h2>Syncthing</h2>
                                 <p>The most Goated piece of software to ever exist, backups, versions, syncs my files between devices.</p>
                             </div>
                         </div>
                         <div class="homelab-body-apps-item-bottom">
-                            <img src="images/syncthing-context.png" alt="">
+                            <img src="images/syncthing-context.webp" alt="">
                         </div>
                     </div>
                 </div>
                 <div class="homelab-body-apps-item-wrapper">
                     <div class="homelab-body-apps-item">
                         <div class="homelab-body-apps-item-top">
-                            <img src="images/nginx-icon.png" alt="netdataicon" style="border-radius: 0px;">
+                            <img src="images/nginx-icon.webp" alt="netdataicon" style="border-radius: 0px;">
                             <div class="homelab-body-apps-item-text">
                                 <h2>Nginx</h2>
                                 <p>Lets me run this very website you are on right now!</p>
                             </div>
                         </div>
                         <div class="homelab-body-apps-item-bottom">
-                            <img src="images/nginx-context.png" alt="">
+                            <img src="images/nginx-context.webp" alt="">
                         </div>
                     </div>
                 </div>

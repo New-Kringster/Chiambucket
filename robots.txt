@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /testing.html
+Disallow: /testing2.html
+Disallow: /banner-making.html
+Disallow: /comingsoon.html
+
+Sitemap: https://www.chiambucket.com/sitemap.xml

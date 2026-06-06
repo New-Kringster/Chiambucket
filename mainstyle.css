@@ -1,51 +1,73 @@
 @font-face {
     font-family: 'oswaldreg';
-    src: url(fonts/Oswald-Regular.ttf);
+    src: url(fonts/Oswald-Regular.woff2) format('woff2'),
+         url(fonts/Oswald-Regular.ttf) format('truetype');
+  font-display: swap;
 }
 
 @font-face {
     font-family: 'oswaldbold';
-    src: url(fonts/Oswald-Bold.ttf);
+    src: url(fonts/Oswald-Bold.woff2) format('woff2'),
+         url(fonts/Oswald-Bold.ttf) format('truetype');
+  font-display: swap;
 }
 
 @font-face {
   font-family: 'mextrine';
-  src: url(fonts/MextrineSans_PERSONAL_USE_ONLY.otf);
+  src: url(fonts/MextrineSans_PERSONAL_USE_ONLY.woff2) format('woff2'),
+       url(fonts/MextrineSans_PERSONAL_USE_ONLY.otf) format('opentype');
+  font-display: swap;
 }
 
 @font-face {
   font-family: "roboto";
-  src: url(fonts/Roboto-Regular.ttf);
+  src: url(fonts/Roboto-Regular.woff2) format('woff2'),
+       url(fonts/Roboto-Regular.ttf) format('truetype');
+  font-display: swap;
 }
 
 @font-face {
   font-family: "roboto-thin";
-  src: url(fonts/Roboto-Thin.ttf);
+  src: url(fonts/Roboto-Thin.woff2) format('woff2'),
+       url(fonts/Roboto-Thin.ttf) format('truetype');
+  font-display: swap;
 }
 
 @font-face {
   font-family: 'GreaterTheory';
-  src: url(fonts/GreaterTheory.otf);
+  src: url(fonts/GreaterTheory.woff2) format('woff2'),
+       url(fonts/GreaterTheory.otf) format('opentype');
+  font-display: swap;
 }
 @font-face {
   font-family: 'dmsans';
-  src: url(fonts/DMSans.ttf);
+  src: url(fonts/DMSans.woff2) format('woff2'),
+       url(fonts/DMSans.ttf) format('truetype');
+  font-display: swap;
 }
 @font-face {
   font-family: 'monda';
-  src: url(fonts/monda.ttf);
+  src: url(fonts/monda.woff2) format('woff2'),
+       url(fonts/monda.ttf) format('truetype');
+  font-display: swap;
 }
 @font-face {
   font-family: 'inter';
-  src: url(fonts/Inter.ttf);
+  src: url(fonts/Inter.woff2) format('woff2'),
+       url(fonts/Inter.ttf) format('truetype');
+  font-display: swap;
 }
 @font-face {
   font-family: 'gcreg';
-  src: url(fonts/gcreg.ttf);
+  src: url(fonts/gcreg.woff2) format('woff2'),
+       url(fonts/gcreg.ttf) format('truetype');
+  font-display: swap;
 }
 @font-face {
   font-family: 'ddt';
-  src: url(fonts/DegularDemo-Thin.otf);
+  src: url(fonts/DegularDemo-Thin.woff2) format('woff2'),
+       url(fonts/DegularDemo-Thin.otf) format('opentype');
+  font-display: swap;
 }
 @keyframes FloatDown {
   0% {
@@ -353,12 +375,38 @@ a {
 }
 
 :root {
+    /* ── Font sizes ── */
     --fs-big: 5rem;
     --fs-big-mq: 3rem;
     --fs-standard: 2rem;
     --fs-standard-mq: 1rem;
     --fs-small: 1rem;
     --fs-small-mq: 0.5rem;
+
+    /* ── Color palette ── */
+    --color-bg:           #000000;
+    --color-text:         #e8e8e8;
+    --color-text-muted:   #d8d8d8;
+    --color-accent:       #006bb3;
+    --color-accent-light: #5e79db;
+}
+
+/* ── Utility: portfolio card summary header ── */
+.pf-summary-header {
+    display: flex;
+    align-items: center;
+}
+
+/* ── Utility: sparkle icon in summary headers ── */
+.sparkle-summary {
+    width: 45px;
+    height: 45px;
+}
+
+/* ── Utility: dual-button row in portfolio cards ── */
+.pf-dual-buttons {
+    display: flex;
+    gap: 15px;
 }
 
 html {
@@ -606,7 +654,7 @@ html {
 }
 
 .hero {
-  background-image: url(/images/hero-bg.jpg);
+  background-image: url(/images/hero-bg.webp);
   height: 100svh;
   display: flex;
   align-items: center;
@@ -778,7 +826,7 @@ html {
   background-color: #000;
   margin-left: 5px;
 }
-.index-photos-image-wrapper img{
+.index-photos-image-wrapper img, .index-photos-image-wrapper video{
   width: 600px;
 }
 .index-photos-image-wrapper {
@@ -823,7 +871,7 @@ html {
   flex-direction: column;
   align-items: center;
   position: relative;
-  background-image: url(images/bucketcentral-bg.png);
+  background-image: url(images/bucketcentral-bg.webp);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -983,8 +1031,9 @@ html {
   .button-hero .sparkle {
     position: relative;
     z-index: 10;
-  
+
     width: 1.75rem;
+    color: hsl(0, 0%, 100%);
   }
   
   .button-hero .sparkle .path {
@@ -1148,7 +1197,7 @@ html {
 .photography-collage {
   height: 160vh;
   width: 100vw;
-  background-image: url(images/collage.png);
+  background-image: url(images/collage.webp);
   background-repeat: no-repeat;
   background-position: bottom;
   background-size: 170vh;
@@ -2491,15 +2540,15 @@ html {
   align-items: center;
   justify-content: center;
   background-color: rgba(26, 26, 26, 0.7);
-  background-image: url(images/chibi-sukuna.png);
+  background-image: url(images/chibi-sukuna.webp);
   background-size: 30rem;
   background-repeat: no-repeat;
 }
 .abm-top1:hover {
-  background-image: url(images/chibi-sukuna-eye-closed.png);
+  background-image: url(images/chibi-sukuna-eye-closed.webp);
 }
 .abm-top1-blink {
-  background-image: url(images/sukuna-blink.png) !important;
+  background-image: url(images/sukuna-blink.webp) !important;
 }
 .abm-top1 a {
   width: 100%;
@@ -2558,7 +2607,7 @@ html {
   justify-self: stretch;
   position: relative;
   overflow: hidden;
-  background-image: url(images/abm-3d.png);
+  background-image: url(images/abm-3d.webp);
   background-position: bottom;
   background-size: cover;
   background-repeat: no-repeat;
@@ -2623,7 +2672,7 @@ html {
 .abm-top5 {
   grid-row: 12 / span 4;
   grid-column: 1 / span 4;
-  background-image: url(images/abm-design.png);
+  background-image: url(images/abm-design.webp);
   background-position: top;
   background-size: cover;
   background-repeat: no-repeat;
@@ -2687,7 +2736,7 @@ grid-column: 5 / span 1;
 .abm-top7 svg {
   width: 24px;
 }
-.abm-top7 img{
+.abm-top7 img, .abm-top7 video{
   width: 100%;
   border-radius: 17px;
   border: 1px solid #5B5B5B;
@@ -2784,7 +2833,7 @@ grid-column: 5 / span 1;
   flex-shrink: 0;
   height: 100%;
 }
-.abm-top9 .left img {
+.abm-top9 .left img, .abm-top9 .left video {
   height: 100%;
   border-radius: 17px;
   border: 1px solid #5B5B5B;
@@ -2860,7 +2909,7 @@ grid-column: 5 / span 1;
   height: 761.6px;
   grid-row: 25 / span 4;
   grid-column: 1 / span 3;
-  background-image: url(images/abm-hl.png);
+  background-image: url(images/abm-hl.webp);
   background-position: bottom;
   background-repeat: no-repeat;
   background-size: cover;
@@ -2886,7 +2935,7 @@ grid-column: 5 / span 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background-image: url(images/abm-udm.png);
+  background-image: url(images/abm-udm.webp);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -2923,7 +2972,7 @@ grid-column: 5 / span 1;
   grid-column: 1 / span 3;
   justify-self: stretch;
   padding: 40px;
-  background-image: url(images/unified-apps.png);
+  background-image: url(images/unified-apps.webp);
   background-size: 110%;
   background-repeat: no-repeat;
   background-position: bottom;
@@ -2949,7 +2998,8 @@ grid-column: 5 / span 1;
   justify-content: left;
   color: #979797;
 }
-.article-chapters h1 {
+.article-chapters h1,
+.article-chapters h2 {
   font-size: clamp(12px,3vw,3rem);
 }
 .article-chapters-ultimate-wrapper {
@@ -2984,7 +3034,7 @@ grid-column: 5 / span 1;
   width: 100%;
   height: 100vh;
   top: 0;
-  background-image: url(images/pandusarticle.png);
+  background-image: url(images/pandusarticle.webp);
   background-size: cover;
   background-position: top center;
   filter: blur(10px);
@@ -2994,7 +3044,7 @@ grid-column: 5 / span 1;
   width: 100%;
   height: 100vh;
   top: -80px;
-  background-image: url(images/csdp-bg.png);
+  background-image: url(images/csdp-bg.webp);
   background-size: cover;
   background-position: top center;
   filter: blur(5px);
@@ -3004,14 +3054,14 @@ grid-column: 5 / span 1;
   width: 100%;
   height: 100vh;
   top: -180px;
-  background-image: url(images/borlocator-pf-context.png);
+  background-image: url(images/borlocator-pf-context.webp);
   background-size: cover;
   background-position: top center;
   filter: blur(10px);
   position: fixed;
 }
 .article-ProjJune-image {
-  background-image: url(images/ProjJuneBanner1.png);
+  background-image: url(images/ProjJuneBanner1.webp);
   background-position-x: center;
   position: fixed;
   background-repeat: no-repeat;
@@ -3027,7 +3077,7 @@ grid-column: 5 / span 1;
   -webkit-text-fill-color: transparent;
 }
 .article-elecf-image {
-  background-image: url(images/elecf-img.png);
+  background-image: url(images/elecf-img.webp);
   transform: scale(0.7);
 }
 .article-content {
@@ -3076,6 +3126,26 @@ grid-column: 5 / span 1;
   background-color: #121212;
   padding: 20px 25px;
 }
+.project {
+  padding: 30px;
+  border-radius: 20px;
+  background: #111;
+  color: white;
+  font-family: Arial, sans-serif;
+  }
+  .github-button {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 12px 18px;
+  background: white;
+  color: black;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: bold;
+  }
+  .github-button:hover {
+  background: #ddd;
+  }
 .article-no-style {
   border-top: unset;
   border-left: unset;
@@ -3093,14 +3163,15 @@ grid-column: 5 / span 1;
 .article-real-body object {
   height: 800px;
 }
-.article-real-body img {
+.article-real-body img, .article-real-body video {
   width: 100%;
   margin-top: 2vh;
   border-radius: 21px;
   border-top: 1px solid #454545;
   border-left: 1px solid #454545;
 }
-.article-real-body h1{
+.article-real-body h1,
+.article-real-body h2 {
   font-size: 2rem;
   padding-left: 0.5rem;
 
@@ -3185,7 +3256,7 @@ grid-column: 5 / span 1;
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  background-image: url(images/profiless.jpg);
+  background-image: url(images/profiless.webp);
 }
 .tyr-profile {
   background-image: url(https://framerusercontent.com/images/Z3GPice7XE0ttZhHBYRI737GQtA.png?scale-down-to=512&width=854&height=486);
@@ -3196,7 +3267,7 @@ grid-column: 5 / span 1;
   background-image: url(https://www.ongkian.com/css/images/Passport_Photo.jpg);
 }
 .braven-profile {
-  background-image: url(images/nk-black.png);
+  background-image: url(images/nk-black.webp);
   background-size: 80%;
   background-color: #000;
 }
@@ -3208,7 +3279,8 @@ grid-column: 5 / span 1;
   align-items: center;
   gap: 12px;
 }
-.team-members-title h1 {
+.team-members-title h1,
+.team-members-title h3 {
   color: #FFF;
   font-family: 'monda';
   font-size: 20px;

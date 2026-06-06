@@ -16,62 +16,9 @@
 <body>
     <main>
         <div id="loader">
-            <img src="images/logo.png" alt="">
+            <img src="images/logo.webp" alt="">
         </div>
-        <div class="nav-holder">
-            <nav class="nav-closed" id="nav">
-                <a href="index.html" class="logo"><img src="images/logo.png" alt="LOGO" onclick="location.href= Home;return false;"></a>
-                <ul class="navitem" id="navitem">
-                    <li class="Nav-Menu-Items" id="Nav-Item-2"><a href="" onclick="location.href= Photography;return false;">Photography</a></li>
-                    <li class="Nav-Menu-Items" id="Nav-Item-3"><a href="" onclick="location.href= HomeLab;return false;">HomeLab</a></li>
-                    <li class="Nav-Menu-Items" id="Nav-Item-4"><a href="" onclick="location.href= Portfolio;return false;">Portfolio</a></li>
-                    <li class="Nav-Menu-Items" id="Nav-Item-5">
-                        <button class="button-hero" onclick="BucketCentralOnClick()">
-                        <div class="dots_border"></div>
-                        <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        class="sparkle"
-                        >
-                        <path
-                            class="path"
-                            stroke-linejoin="round"
-                            stroke-linecap="round"
-                            stroke="black"
-                            fill="black"
-                            d="M14.187 8.096L15 5.25L15.813 8.096C16.0231 8.83114 16.4171 9.50062 16.9577 10.0413C17.4984 10.5819 18.1679 10.9759 18.903 11.186L21.75 12L18.904 12.813C18.1689 13.0231 17.4994 13.4171 16.9587 13.9577C16.4181 14.4984 16.0241 15.1679 15.814 15.903L15 18.75L14.187 15.904C13.9769 15.1689 13.5829 14.4994 13.0423 13.9587C12.5016 13.4181 11.8321 13.0241 11.097 12.814L8.25 12L11.096 11.187C11.8311 10.9769 12.5006 10.5829 13.0413 10.0423C13.5819 9.50162 13.9759 8.83214 14.186 8.097L14.187 8.096Z"
-                        ></path>
-                        <path
-                            class="path"
-                            stroke-linejoin="round"
-                            stroke-linecap="round"
-                            stroke="black"
-                            fill="black"
-                            d="M6 14.25L5.741 15.285C5.59267 15.8785 5.28579 16.4206 4.85319 16.8532C4.42059 17.2858 3.87853 17.5927 3.285 17.741L2.25 18L3.285 18.259C3.87853 18.4073 4.42059 18.7142 4.85319 19.1468C5.28579 19.5794 5.59267 20.1215 5.741 20.715L6 21.75L6.259 20.715C6.40725 20.1216 6.71398 19.5796 7.14639 19.147C7.5788 18.7144 8.12065 18.4075 8.714 18.259L9.75 18L8.714 17.741C8.12065 17.5925 7.5788 17.2856 7.14639 16.853C6.71398 16.4204 6.40725 15.8784 6.259 15.285L6 14.25Z"
-                        ></path>
-                        <path
-                            class="path"
-                            stroke-linejoin="round"
-                            stroke-linecap="round"
-                            stroke="black"
-                            fill="black"
-                            d="M6.5 4L6.303 4.5915C6.24777 4.75718 6.15472 4.90774 6.03123 5.03123C5.90774 5.15472 5.75718 5.24777 5.5915 5.303L5 5.5L5.5915 5.697C5.75718 5.75223 5.90774 5.84528 6.03123 5.96877C6.15472 6.09226 6.24777 6.24282 6.303 6.4085L6.5 7L6.697 6.4085C6.75223 6.24282 6.84528 6.09226 6.96877 5.96877C7.09226 5.84528 7.24282 5.75223 7.4085 5.697L8 5.5L7.4085 5.303C7.24282 5.24777 7.09226 5.15472 6.96877 5.03123C6.84528 4.90774 6.75223 4.75718 6.697 4.5915L6.5 4Z"
-                        ></path>
-                        </svg>
-                        <span class="text_button">To BucketCentral</span>
-                        </button>
-                    </li>
-                </ul>
-                <label class="hamburger">
-                    <input type="checkbox" onclick="MenuBar()">
-                    <svg viewBox="0 0 32 32">
-                      <path class="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"></path>
-                      <path class="line" d="M7 16 27 16"></path>
-                    </svg>
-                  </label>
-            </nav>
-        </div>
+        <div class="nav-holder" id="nav-holder"></div>
         <div class="article-image article-elecf-image">
         </div>
         <div class="article-content">
@@ -89,10 +36,10 @@
                         <h3>ELEC-F is a conceptual product developed by my team and me for an engineering course. It utilizes the M5-Stack Controller along with various sensors to help prevent fatalities in walk-in freezers.</h3>
                         <div class="pf-button-left-stack article-header-icons">
                             <div class="icon-stack">
-                                <img src="images/resolve-icon.png" alt="">
-                                <img src="images/ps-pf-icon.png" alt="">
-                                <img src="images/powerpoint-icon.png" alt="">
-                                <img src="images/figma-icon.png" alt="">
+                                <img src="images/resolve-icon.webp" alt="">
+                                <img src="images/ps-pf-icon.webp" alt="">
+                                <img src="images/powerpoint-icon.webp" alt="">
+                                <img src="images/figma-icon.webp" alt="">
                             </div>
                         </div>
                     </div>
@@ -103,27 +50,30 @@
                     <div class="article-real-body">
                         <h1>Project Background</h1>
                         <p>Pandus was the first major project I undertook as a first-year student at Nanyang Polytechnic. The assignment was open-ended, with no specific theme, and we were provided with various components including an Arduino Uno, 4G servo, LEDs, buttons, sliding switches, an infrared collision detection module, and a bundle of wires. Initially, I planned to create a water dispenser, but after discovering that someone else had already chosen that idea, I decided to pivot and develop a syrup dispenser instead—hence the unconventional choice.</p>
-                        <img src="images/pandus-article-img1.jpeg" alt="">
+                        <img src="images/pandus-article-img1.webp" alt="">
                         <span>BTS of how a part of the video was filmed</span>
                     </div>
                     <div class="article-real-body">
                         <h1>Design process</h1>
                         <p>Pandus was designed using Onshape. With limited prior experience, I spent a significant amount of time learning how to use the software effectively. Eventually, I created the final design shown below, which I chose to proceed with for the project. Due to time constraints, I wasn't able to create any prototypes beforehand, so I took a leap of faith and sent the design straight to the 3D printer. Fortunately, everything fit perfectly on the first try. CLICK <a href="https://cad.onshape.com/documents/5010f3da2be8b0cad10575b0/w/c1baff5b3751dfe2426baad4/e/d042961855d215532e28db65">HERE</a> FOR A LIVE PREVIEW OF THE MODEL</p>
-                        <img src="images/pandus2.png" alt="">
-                        <img src="images/pandus3.png" alt="">
+                        <img src="images/pandus2.webp" alt="">
+                        <img src="images/pandus3.webp" alt="">
                     </div>
                     <div class="article-real-body">
                         <h1>Control and Function</h1>
                         <p>We were taught to code using Python and utilized the Firmata library to enable communication with the Arduino. Below are examples of the components and flowcharts illustrating how the system functioned. Since Tinkercad lacked some of the components I needed, I used substitute parts and labeled them accordingly to indicate their intended functions. In addition to the components provided, I purchased high-powered LEDs, a DC pump, a relay board, and used a separate power bank to power the high-current components.</p>
-                        <img src="images/pandus4.png" alt="">
-                        <img src="images/pandus5.png" alt="">
-                        <img src="images/pandus6.jpeg" alt="">
-                        <img src="images/pandus7.jpeg" alt="">
+                        <img src="images/pandus4.webp" alt="">
+                        <img src="images/pandus5.webp" alt="">
+                        <img src="images/pandus6.webp" alt="">
+                        <img src="images/pandus7.webp" alt="">
                     </div>
                     <div class="article-real-body">
                         <h1>Cover Image</h1>
                         <p>I was especially proud of how the cover image turned out. I captured four separate photos of Pandus under different lighting conditions and blended them together in Photoshop to create the final composition.</p>
-                        <img src="images/pandus7.gif" alt="">
+                        <video autoplay loop muted playsinline>
+                        <source src="images/pandus7.webm" type="video/webm">
+                        <source src="images/pandus7.mp4" type="video/mp4">
+                    </video>
                         <span>An animation on how it was created</span>
                     </div>
                     <div class="next-article">

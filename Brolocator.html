@@ -3,7 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brolocator</title>
+    <title>LoRA Messenger (Brolocator) — Chiambucket</title>
+    <meta name="description" content="Project article: a LoRA-based peer-to-peer messenger with 2-way voice, built with ESP32, KiCad, and custom PCB.">
+    <meta name="author" content="Braven Chiam">
+    <link rel="canonical" href="https://www.chiambucket.com/Brolocator.html">
+    <meta property="og:site_name" content="Chiambucket">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="LoRA Messenger (Brolocator) — Chiambucket">
+    <meta property="og:description" content="Project article: a LoRA-based peer-to-peer messenger with 2-way voice, built with ESP32, KiCad, and custom PCB.">
+    <meta property="og:url" content="https://www.chiambucket.com/Brolocator.html">
+    <meta property="og:image" content="https://www.chiambucket.com/images/logo.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="LoRA Messenger (Brolocator) — Chiambucket">
+    <meta name="twitter:description" content="Project article: a LoRA-based peer-to-peer messenger with 2-way voice, built with ESP32, KiCad, and custom PCB.">
     <link rel="stylesheet" href="mainstyle.css">
     <link
     rel="stylesheet"
@@ -12,66 +24,41 @@
     <link rel="icon" type="image/png" href="images/icon.png">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="links.js"></script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "LoRA Messenger (Brolocator)",
+  "description": "A LoRA-based peer-to-peer messenger with 2-way voice transmission, built with ESP32, KiCad, and custom PCB.",
+  "url": "https://www.chiambucket.com/Brolocator.html",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://www.chiambucket.com/Brolocator.html"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Braven Chiam",
+    "url": "https://www.chiambucket.com"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Braven Chiam",
+    "url": "https://www.chiambucket.com"
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Chiambucket",
+    "url": "https://www.chiambucket.com"
+  }
+}
+    </script>
 </head>
 <body>
     <main>
         <div id="loader">
-            <img src="images/logo.png" alt="">
+            <img src="images/logo.webp" alt="">
         </div>
-        <div class="nav-holder">
-            <nav class="nav-closed" id="nav">
-                <a href="index.html" class="logo"><img src="images/logo.png" alt="LOGO" onclick="location.href= Home;return false;"></a>
-                <ul class="navitem" id="navitem">
-                    <li class="Nav-Menu-Items" id="Nav-Item-2"><a href="" onclick="location.href= Photography;return false;">Photography</a></li>
-                    <li class="Nav-Menu-Items" id="Nav-Item-3"><a href="" onclick="location.href= HomeLab;return false;">HomeLab</a></li>
-                    <li class="Nav-Menu-Items" id="Nav-Item-4"><a href="" onclick="location.href= Portfolio;return false;">Portfolio</a></li>
-                    <li class="Nav-Menu-Items" id="Nav-Item-5">
-                        <button class="button-hero" onclick="BucketCentralOnClick()">
-                        <div class="dots_border"></div>
-                        <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        class="sparkle"
-                        >
-                        <path
-                            class="path"
-                            stroke-linejoin="round"
-                            stroke-linecap="round"
-                            stroke="black"
-                            fill="black"
-                            d="M14.187 8.096L15 5.25L15.813 8.096C16.0231 8.83114 16.4171 9.50062 16.9577 10.0413C17.4984 10.5819 18.1679 10.9759 18.903 11.186L21.75 12L18.904 12.813C18.1689 13.0231 17.4994 13.4171 16.9587 13.9577C16.4181 14.4984 16.0241 15.1679 15.814 15.903L15 18.75L14.187 15.904C13.9769 15.1689 13.5829 14.4994 13.0423 13.9587C12.5016 13.4181 11.8321 13.0241 11.097 12.814L8.25 12L11.096 11.187C11.8311 10.9769 12.5006 10.5829 13.0413 10.0423C13.5819 9.50162 13.9759 8.83214 14.186 8.097L14.187 8.096Z"
-                        ></path>
-                        <path
-                            class="path"
-                            stroke-linejoin="round"
-                            stroke-linecap="round"
-                            stroke="black"
-                            fill="black"
-                            d="M6 14.25L5.741 15.285C5.59267 15.8785 5.28579 16.4206 4.85319 16.8532C4.42059 17.2858 3.87853 17.5927 3.285 17.741L2.25 18L3.285 18.259C3.87853 18.4073 4.42059 18.7142 4.85319 19.1468C5.28579 19.5794 5.59267 20.1215 5.741 20.715L6 21.75L6.259 20.715C6.40725 20.1216 6.71398 19.5796 7.14639 19.147C7.5788 18.7144 8.12065 18.4075 8.714 18.259L9.75 18L8.714 17.741C8.12065 17.5925 7.5788 17.2856 7.14639 16.853C6.71398 16.4204 6.40725 15.8784 6.259 15.285L6 14.25Z"
-                        ></path>
-                        <path
-                            class="path"
-                            stroke-linejoin="round"
-                            stroke-linecap="round"
-                            stroke="black"
-                            fill="black"
-                            d="M6.5 4L6.303 4.5915C6.24777 4.75718 6.15472 4.90774 6.03123 5.03123C5.90774 5.15472 5.75718 5.24777 5.5915 5.303L5 5.5L5.5915 5.697C5.75718 5.75223 5.90774 5.84528 6.03123 5.96877C6.15472 6.09226 6.24777 6.24282 6.303 6.4085L6.5 7L6.697 6.4085C6.75223 6.24282 6.84528 6.09226 6.96877 5.96877C7.09226 5.84528 7.24282 5.75223 7.4085 5.697L8 5.5L7.4085 5.303C7.24282 5.24777 7.09226 5.15472 6.96877 5.03123C6.84528 4.90774 6.75223 4.75718 6.697 4.5915L6.5 4Z"
-                        ></path>
-                        </svg>
-                        <span class="text_button">To BucketCentral</span>
-                        </button>
-                    </li>
-                </ul>
-                <label class="hamburger">
-                    <input type="checkbox" onclick="MenuBar()">
-                    <svg viewBox="0 0 32 32">
-                      <path class="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"></path>
-                      <path class="line" d="M7 16 27 16"></path>
-                    </svg>
-                  </label>
-            </nav>
-        </div>
+        <div class="nav-holder" id="nav-holder"></div>
         <div class="article-Brolocator-image">
         </div>
         <div class="article-content">
@@ -80,7 +67,7 @@
             <div class="article-body">
                 <div class="article-chapters">
                     <div class="article-chapters-ultimate-wrapper">
-                        <h1>Chapters</h1>
+                        <h2>Chapters</h2>
                         <nav class="article-chapter-wrapper">
                             <a href="#Functionality">Functionality</a>
                             <a href="#ProjectDevelopment">Project Development</a>
@@ -102,67 +89,67 @@
                         <h3>I started this project with the goal of learning how to use the ESP32 Microcontroller. with the help of youtube and ChatGPT, I created "Brolocator" a device that allows you to send messages over long distances without internet. It can also perform crude Full-Duplex 2-Way Voice transmissions within range of ESP-NOW.</h3>
                         <div class="pf-button-left-stack article-header-icons">
                             <div class="icon-stack">
-                                <img src="images/ps-pf-icon.png" alt="">
-                                <img src="images/vscode-icon.png" alt="">
-                                <img src="images/onshape-icon.png" alt="">
-                                <img src="images/Kicad-icon.png" alt="">
-                                <img src="images/esp-icon.png" alt="">
-                                <img src="images/PlatformIO-icon.png" alt="">
+                                <img src="images/ps-pf-icon.webp" alt="">
+                                <img src="images/vscode-icon.webp" alt="">
+                                <img src="images/onshape-icon.webp" alt="">
+                                <img src="images/Kicad-icon.webp" alt="">
+                                <img src="images/esp-icon.webp" alt="">
+                                <img src="images/PlatformIO-icon.webp" alt="">
                             </div>
                         </div>
                     </div>
                     <div class="article-real-body">
-                        <h1>Demo Video</h1>
+                        <h2>Demo Video</h2>
                         <iframe width="560" height="315" src="https://www.youtube.com/embed/1nbiYCAtGPA?si=DX0zrik6DufUva5P" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                     </div>
                     <section class="article-real-body article-no-style" id="Functionality">
-                        <h1>Functionality</h1>
+                        <h2>Functionality</h2>
                         <p style="padding-left: 20px;">- Use LoRA for long distance messaging</br> - 2-Way Voice communication when in range of ESP-NOW </br> - Powered off of rechargeable LiPo batteries </br> - 2 Displays cuz its cool </br> - A mode for range testing </br> - Decent & simple to use UI</p>
-                        <img src="images/Brolocator1.png" alt="">
-                        <img src="images/Brolocator2.png" alt="">
-                        <img src="images/Brolocator3.png" alt="">
-                        <img src="images/Brolocator4.png" alt="">
-                        <img src="images/Brolocator5.png" alt="">
-                        <img src="images/Brolocator6.png" alt="">
+                        <img src="images/Brolocator1.webp" alt="" loading="lazy">
+                        <img src="images/Brolocator2.webp" alt="" loading="lazy">
+                        <img src="images/Brolocator3.webp" alt="" loading="lazy">
+                        <img src="images/Brolocator4.webp" alt="" loading="lazy">
+                        <img src="images/Brolocator5.webp" alt="" loading="lazy">
+                        <img src="images/Brolocator6.webp" alt="" loading="lazy">
                     </section>
                     <section id="ProjectDevelopment" class="article-real-body">
-                        <h1>Project Development</h1>
+                        <h2>Project Development</h2>
                         <p>Brolocator is my first deep dive into the microcontrollers, it was also my first attempt at designing a PCB. I used PlatformIO to code the ESP32, and with some help from Youtube and ChatGPT, I was able to learn how use each component to create the Brolocator.</p>
-                        <img src="images/Brolocator7.png" alt="">
+                        <img src="images/Brolocator7.webp" alt="" loading="lazy">
                         <span>Developement of the Brolocator</span>
                     </section>
                     <section id="Code" class="article-real-body">
-                        <h1>Coding</h1>
+                        <h2>Coding</h2>
                         <p>Based on my research, PlatformIO was the best coice for developing code for the ESP32. You can download the PlatfornIO Project <a href="https://file.chiambucket.com/public/api/raw?hash=Uw31ufKRXVAmviDG4Y3zsw">HERE</a></p>
-                        <img src="images/Brolocator8.png" alt="">
+                        <img src="images/Brolocator8.webp" alt="" loading="lazy">
                     </section>
                     <section id="PCBDesign" class="article-real-body">
-                        <h1>PCB Design</h1>
+                        <h2>PCB Design</h2>
                         <p>I used KiCAD to design a PCB for all the components to go on. You can download the KiCAD files <a href="https://file.chiambucket.com/public/api/raw?hash=y5dKQ_glrduAHZ2b09PwFw">HERE</a></p>
-                        <img src="images/Brolocator9.png" alt="">
+                        <img src="images/Brolocator9.webp" alt="" loading="lazy">
                         <span>Schematic</span>
-                        <img src="images/Brolocator10.png" alt="">
+                        <img src="images/Brolocator10.webp" alt="" loading="lazy">
                         <span>Board</span>
-                        <img src="images/Brolocator11.png" alt="">
+                        <img src="images/Brolocator11.webp" alt="" loading="lazy">
                     </section>
                     <section id="threeDDesign" class="article-real-body">
-                        <h1>3D Design</h1>
+                        <h2>3D Design</h2>
                         <p>I used Onshape to design a Case for the board. You can get the files <a href="https://cad.onshape.com/documents/06f42027d48061220c14a0ca/w/a8ae7436030816f045f9e912/e/ee2cc98ca48e0de54fb6f19a?renderMode=0&uiState=69242b3fb36228e1cf876de1">HERE</a></p>
-                        <img src="images/Brolocator12.png" alt="">
+                        <img src="images/Brolocator12.webp" alt="" loading="lazy">
                         <span>3D model of the Brolocator case</span>
-                        <img src="images/Brolocator16.jpg" alt="">
+                        <img src="images/Brolocator16.webp" alt="" loading="lazy">
                         <span>Design iterations</span>
-                        <img src="images/Brolocator17.png" alt="">
+                        <img src="images/Brolocator17.webp" alt="" loading="lazy">
                         <span>Learning from design failures</span>
                     </section>
                     <section id="Assembly" class="article-real-body">
-                        <h1>Assembly</h1>
+                        <h2>Assembly</h2>
                         <p>Assembly of all components together</p>
-                        <img src="images/Brolocator13.jpg" alt="">
+                        <img src="images/Brolocator13.webp" alt="" loading="lazy">
                         <span>All components soldert to the PCB and working</span>
-                        <img src="images/Brolocator14.jpg" alt="">
+                        <img src="images/Brolocator14.webp" alt="" loading="lazy">
                         <span>Fitting PCB into case</span>
-                        <img src="images/Brolocator15.jpg" alt="">
+                        <img src="images/Brolocator15.webp" alt="" loading="lazy">
                         <span>Complete</span>
                     </section>
                     <div class="next-article">

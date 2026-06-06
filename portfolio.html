@@ -3,7 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Chiambucket</title>
+    <title>Portfolio — Chiambucket</title>
+    <meta name="description" content="Engineering and design portfolio by Braven Chiam — LoRA messenger, autonomous RC rover, smart home systems, and more.">
+    <meta name="author" content="Braven Chiam">
+    <link rel="canonical" href="https://www.chiambucket.com/portfolio.html">
+    <meta property="og:site_name" content="Chiambucket">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Portfolio — Chiambucket">
+    <meta property="og:description" content="Engineering and design portfolio by Braven Chiam — LoRA messenger, autonomous RC rover, smart home systems, and more.">
+    <meta property="og:url" content="https://www.chiambucket.com/portfolio.html">
+    <meta property="og:image" content="https://www.chiambucket.com/images/logo.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Portfolio — Chiambucket">
+    <meta name="twitter:description" content="Engineering and design portfolio by Braven Chiam — LoRA messenger, autonomous RC rover, smart home systems, and more.">
     <link rel="stylesheet" href="mainstyle.css">
     <link
     rel="stylesheet"
@@ -16,62 +28,9 @@
 <body>
     <main>
         <div id="loader">
-            <img src="images/logo.png" alt="">
+            <img src="images/logo.webp" alt="">
         </div>
-        <div class="nav-holder">
-            <nav class="nav-closed" id="nav">
-                <a href="index.html" class="logo"><img src="images/logo.png" alt="LOGO" onclick="location.href= Home;return false;"></a>
-                <ul class="navitem" id="navitem">
-                    <li class="Nav-Menu-Items" id="Nav-Item-2"><a href="" onclick="location.href= Photography;return false;">Photography</a></li>
-                    <li class="Nav-Menu-Items" id="Nav-Item-3"><a href="" onclick="location.href= HomeLab;return false;">HomeLab</a></li>
-                    <li class="Nav-Menu-Items" id="Nav-Item-4"><a href="" onclick="location.href= Portfolio;return false;">Portfolio</a></li>
-                    <li class="Nav-Menu-Items" id="Nav-Item-5">
-                        <button class="button-hero" onclick="BucketCentralOnClick()">
-                        <div class="dots_border"></div>
-                        <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        class="sparkle"
-                        >
-                        <path
-                            class="path"
-                            stroke-linejoin="round"
-                            stroke-linecap="round"
-                            stroke="black"
-                            fill="black"
-                            d="M14.187 8.096L15 5.25L15.813 8.096C16.0231 8.83114 16.4171 9.50062 16.9577 10.0413C17.4984 10.5819 18.1679 10.9759 18.903 11.186L21.75 12L18.904 12.813C18.1689 13.0231 17.4994 13.4171 16.9587 13.9577C16.4181 14.4984 16.0241 15.1679 15.814 15.903L15 18.75L14.187 15.904C13.9769 15.1689 13.5829 14.4994 13.0423 13.9587C12.5016 13.4181 11.8321 13.0241 11.097 12.814L8.25 12L11.096 11.187C11.8311 10.9769 12.5006 10.5829 13.0413 10.0423C13.5819 9.50162 13.9759 8.83214 14.186 8.097L14.187 8.096Z"
-                        ></path>
-                        <path
-                            class="path"
-                            stroke-linejoin="round"
-                            stroke-linecap="round"
-                            stroke="black"
-                            fill="black"
-                            d="M6 14.25L5.741 15.285C5.59267 15.8785 5.28579 16.4206 4.85319 16.8532C4.42059 17.2858 3.87853 17.5927 3.285 17.741L2.25 18L3.285 18.259C3.87853 18.4073 4.42059 18.7142 4.85319 19.1468C5.28579 19.5794 5.59267 20.1215 5.741 20.715L6 21.75L6.259 20.715C6.40725 20.1216 6.71398 19.5796 7.14639 19.147C7.5788 18.7144 8.12065 18.4075 8.714 18.259L9.75 18L8.714 17.741C8.12065 17.5925 7.5788 17.2856 7.14639 16.853C6.71398 16.4204 6.40725 15.8784 6.259 15.285L6 14.25Z"
-                        ></path>
-                        <path
-                            class="path"
-                            stroke-linejoin="round"
-                            stroke-linecap="round"
-                            stroke="black"
-                            fill="black"
-                            d="M6.5 4L6.303 4.5915C6.24777 4.75718 6.15472 4.90774 6.03123 5.03123C5.90774 5.15472 5.75718 5.24777 5.5915 5.303L5 5.5L5.5915 5.697C5.75718 5.75223 5.90774 5.84528 6.03123 5.96877C6.15472 6.09226 6.24777 6.24282 6.303 6.4085L6.5 7L6.697 6.4085C6.75223 6.24282 6.84528 6.09226 6.96877 5.96877C7.09226 5.84528 7.24282 5.75223 7.4085 5.697L8 5.5L7.4085 5.303C7.24282 5.24777 7.09226 5.15472 6.96877 5.03123C6.84528 4.90774 6.75223 4.75718 6.697 4.5915L6.5 4Z"
-                        ></path>
-                        </svg>
-                        <span class="text_button">To BucketCentral</span>
-                        </button>
-                    </li>
-                </ul>
-                <label class="hamburger">
-                    <input type="checkbox" onclick="MenuBar()">
-                    <svg viewBox="0 0 32 32">
-                      <path class="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"></path>
-                      <path class="line" d="M7 16 27 16"></path>
-                    </svg>
-                  </label>
-            </nav>
-        </div>
+        <div class="nav-holder" id="nav-holder"></div>
         <div class="portfolio-hero-bottom">
             <div id="portfolio-items-holder">
                 <div class="portfolio-items2 pf-item-card-bg pf-personal-highlights" id="blddm">
@@ -99,12 +58,12 @@
                                 <div class="pf-button-left-stack">
                                     <h3>Tools Used:</h3>
                                     <div class="icon-stack">
-                                        <img src="images/ps-pf-icon.png" alt="">
-                                        <img src="images/vscode-icon.png" alt="">
-                                        <img src="images/onshape-icon.png" alt="">
-                                        <img src="images/Kicad-icon.png" alt="">
-                                        <img src="images/esp-icon.png" alt="">
-                                        <img src="images/PlatformIO-icon.png" alt="">
+                                        <img src="images/ps-pf-icon.webp" alt="">
+                                        <img src="images/vscode-icon.webp" alt="">
+                                        <img src="images/onshape-icon.webp" alt="">
+                                        <img src="images/Kicad-icon.webp" alt="">
+                                        <img src="images/esp-icon.webp" alt="">
+                                        <img src="images/PlatformIO-icon.webp" alt="">
                                     </div>
                                 </div>
                                 <button class="pf-item-button" onclick="articleBrolocatorOnClick()">
@@ -156,7 +115,7 @@
                         </div>
                     </div>
                     <div class="pf-item-image-wrapper-blur">
-                        <img src="images/borlocator-pf-context.png" alt="" class="pf-item-image">
+                        <img src="images/borlocator-pf-context.webp" alt="" class="pf-item-image">
                     </div>
                 </div>     
                 <div class="portfolio-items2 pf-item-card-bg">
@@ -173,11 +132,11 @@
                                 <div class="pf-button-left-stack">
                                     <h3>Tools Used:</h3>
                                     <div class="icon-stack">
-                                        <img src="images/resolve-icon.png" alt="">
-                                        <img src="images/ps-pf-icon.png" alt="">
-                                        <img src="images/powerpoint-icon.png" alt="">
-                                        <img src="images/vscode-icon.png" alt="">
-                                        <img src="images/onshape-icon.png" alt="">
+                                        <img src="images/resolve-icon.webp" alt="">
+                                        <img src="images/ps-pf-icon.webp" alt="">
+                                        <img src="images/powerpoint-icon.webp" alt="">
+                                        <img src="images/vscode-icon.webp" alt="">
+                                        <img src="images/onshape-icon.webp" alt="">
                                     </div>
                                 </div>
                                 <button class="pf-item-button" onclick="articlePandusOnClick()">
@@ -194,7 +153,7 @@
                         </div>
                     </div>
                     <div class="pf-item-image-wrapper-blur">
-                        <img src="images/pandusarticle.png" alt="" class="pf-item-image-pandus">
+                        <img src="images/pandusarticle.webp" alt="" class="pf-item-image-pandus">
                     </div>
                 </div>
                 <div class="portfolio-items2 pf-item-card-bg">
@@ -211,12 +170,12 @@
                                 <div class="pf-button-left-stack">
                                     <h3>Tools Used:</h3>
                                     <div class="icon-stack">
-                                        <img src="images/resolve-icon.png" alt="">
-                                        <img src="images/ps-pf-icon.png" alt="">
-                                        <img src="images/powerpoint-icon.png" alt="">
-                                        <img src="images/vscode-icon.png" alt="">
-                                        <img src="images/onshape-icon.png" alt="">
-                                        <img src="images/figma-icon.png" alt="">
+                                        <img src="images/resolve-icon.webp" alt="">
+                                        <img src="images/ps-pf-icon.webp" alt="">
+                                        <img src="images/powerpoint-icon.webp" alt="">
+                                        <img src="images/vscode-icon.webp" alt="">
+                                        <img src="images/onshape-icon.webp" alt="">
+                                        <img src="images/figma-icon.webp" alt="">
                                     </div>
                                 </div>
                                 <div style="display: flex; gap: 15px;" class="pf-dual-buttons">
@@ -245,7 +204,7 @@
                         </div>
                     </div>
                     <div class="pf-item-image-wrapper-blur">
-                        <img src="images/Ema-pf-context.png" alt="" class="pf-item-image">
+                        <img src="images/Ema-pf-context.webp" alt="" class="pf-item-image">
                     </div>
                 </div>
                 <div class="portfolio-items2 pf-item-card-bg">
@@ -262,11 +221,11 @@
                                 <div class="pf-button-left-stack">
                                     <h3>Tools Used:</h3>
                                     <div class="icon-stack">
-                                        <img src="images/resolve-icon.png" alt="">
-                                        <img src="images/ps-pf-icon.png" alt="">
-                                        <img src="images/powerpoint-icon.png" alt="">
-                                        <img src="images/blender-icon.png" alt="">
-                                        <img src="images/onshape-icon.png" alt="">
+                                        <img src="images/resolve-icon.webp" alt="">
+                                        <img src="images/ps-pf-icon.webp" alt="">
+                                        <img src="images/powerpoint-icon.webp" alt="">
+                                        <img src="images/blender-icon.webp" alt="">
+                                        <img src="images/onshape-icon.webp" alt="">
                                     </div>
                                 </div>
                                 <button class="pf-item-button" onclick="articleKauliOnClick()">
@@ -283,7 +242,7 @@
                         </div>
                     </div>
                     <div class="pf-item-image-wrapper-blur">
-                        <img src="images/kauli3-pf-context.png" alt="" class="pf-item-image-kauli">
+                        <img src="images/kauli3-pf-context.webp" alt="" class="pf-item-image-kauli">
                     </div>
                 </div>
                 <div class="portfolio-items2 pf-item-card-bg">
@@ -300,8 +259,8 @@
                                 <div class="pf-button-left-stack">
                                     <h3>Tools Used:</h3>
                                     <div class="icon-stack">
-                                        <img src="images/ps-pf-icon.png" alt="">
-                                        <img src="images/onshape-icon.png" alt="">
+                                        <img src="images/ps-pf-icon.webp" alt="">
+                                        <img src="images/onshape-icon.webp" alt="">
                                     </div>
                                 </div>
                                 <button class="pf-item-button" onclick="articleSolOnClick()">
@@ -318,7 +277,7 @@
                         </div>
                     </div>
                     <div class="pf-item-image-wrapper-blur">
-                        <img src="images/Series1l-pf-context.png" alt="" class="pf-item-image-kauli">
+                        <img src="images/Series1l-pf-context.webp" alt="" class="pf-item-image-kauli">
                     </div>
                 </div>
                 <div class="portfolio-items2 pf-item-card-bg">
@@ -335,7 +294,7 @@
                                 <div class="pf-button-left-stack">
                                     <h3>Tools Used:</h3>
                                     <div class="icon-stack">
-                                        <img src="images/Kicad-icon.png" alt="">
+                                        <img src="images/Kicad-icon.webp" alt="">
                                     </div>
                                 </div>
                                 <button class="pf-item-button" onclick="articlecopyboardOnClick()">
@@ -352,7 +311,7 @@
                         </div>
                     </div>
                     <div class="pf-item-image-wrapper-blur">
-                        <img src="images/CopyBoard-pf-context.png" alt="" class="pf-item-image-pandus">
+                        <img src="images/CopyBoard-pf-context.webp" alt="" class="pf-item-image-pandus">
                     </div>
                 </div>
                 <div class="portfolio-items2">
@@ -369,10 +328,10 @@
                                 <div class="pf-button-left-stack">
                                     <h3>Tools Used:</h3>
                                     <div class="icon-stack">
-                                        <img src="images/resolve-icon.png" alt="">
-                                        <img src="images/ps-pf-icon.png" alt="">
-                                        <img src="images/powerpoint-icon.png" alt="">
-                                        <img src="images/figma-icon.png" alt="">
+                                        <img src="images/resolve-icon.webp" alt="">
+                                        <img src="images/ps-pf-icon.webp" alt="">
+                                        <img src="images/powerpoint-icon.webp" alt="">
+                                        <img src="images/figma-icon.webp" alt="">
                                     </div>
                                 </div>
                                 <button class="pf-item-button" onclick="articleElecfOnClick()">
@@ -389,7 +348,7 @@
                         </div>
                     </div>
                     <div class="pf-item-image-wrapper-blur">
-                        <img src="images/elef2-pf-context.png" alt="" class="pf-item-image-kauli">
+                        <img src="images/elef2-pf-context.webp" alt="" class="pf-item-image-kauli">
                     </div>
                 </div>
                 <div class="portfolio-items2">
@@ -406,9 +365,9 @@
                                 <div class="pf-button-left-stack">
                                     <h3>Tools Used:</h3>
                                     <div class="icon-stack">
-                                        <img src="images/chrome-icon.jpg" alt="">
-                                        <img src="images/figma-icon.png" alt="">
-                                        <img src="images/vscode-icon.png" alt="">
+                                        <img src="images/chrome-icon.webp" alt="">
+                                        <img src="images/figma-icon.webp" alt="">
+                                        <img src="images/vscode-icon.webp" alt="">
                                     </div>
                                 </div>
                                 <button class="pf-item-button" onclick="articleWebsiteOnClick()">
@@ -425,7 +384,7 @@
                         </div>
                     </div>
                     <div class="pf-item-image-wrapper-blur">
-                        <img src="images/cbk-pf-context.png" alt="" class="pf-item-image">
+                        <img src="images/cbk-pf-context.webp" alt="" class="pf-item-image">
                     </div>
                 </div>
                 <div class="portfolio-items2">
@@ -442,9 +401,9 @@
                                 <div class="pf-button-left-stack">
                                     <h3>Tools Used:</h3>
                                     <div class="icon-stack">
-                                        <img src="images/vscode-icon.png" alt="">
-                                        <img src="images/chrome-icon.jpg" alt="">
-                                        <img src="images/canva-icon.png" alt="">
+                                        <img src="images/vscode-icon.webp" alt="">
+                                        <img src="images/chrome-icon.webp" alt="">
+                                        <img src="images/canva-icon.webp" alt="">
                                     </div>
                                 </div>
                                 <div style="display: flex; gap: 15px;" class="pf-dual-buttons">
@@ -473,7 +432,7 @@
                         </div>
                     </div>
                     <div class="pf-item-image-wrapper-blur">
-                        <img src="images/tht-cover.png" alt="" class="pf-item-image darken">
+                        <img src="images/tht-cover.webp" alt="" class="pf-item-image darken">
                     </div>
                 </div>
                 <div class="portfolio-items2">
@@ -490,8 +449,8 @@
                                 <div class="pf-button-left-stack">
                                     <h3>Tools Used:</h3>
                                     <div class="icon-stack">
-                                        <img src="images/docker-icon.png" alt="">
-                                        <img src="images/chrome-icon.jpg" alt="">
+                                        <img src="images/docker-icon.webp" alt="">
+                                        <img src="images/chrome-icon.webp" alt="">
                                     </div>
                                 </div>
                                 <div style="display: flex; gap: 15px;" class="pf-dual-buttons">
@@ -520,7 +479,7 @@
                         </div>
                     </div>
                     <div class="pf-item-image-wrapper-blur pf-item-image-wrapper-blur-minecraft">
-                        <img src="images/mc-pf-context.png" alt="" class="pf-item-image darken-light">
+                        <img src="images/mc-pf-context.webp" alt="" class="pf-item-image darken-light">
                     </div>
                 </div>
             </div>

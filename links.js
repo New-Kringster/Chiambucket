@@ -1,390 +1,163 @@
-let Home = "index.html";
-let AboutMe = "aboutme.html";
-let Photography = "photography.html";
-let HomeLab = "homelab.html";
-let Portfolio = "index.html#portfolio-items-holder";
-let BucketCentral = "comingsoon.html";
-let ContentCredits = "comingsoon.html"
+/* ─── Page Routes ──────────────────────────────────────────── */
+const Home         = "index.html";
+const AboutMe      = "aboutme.html";
+const Photography  = "photography.html";
+const HomeLab      = "homelab.html";
+const Portfolio    = "index.html#portfolio-items-holder";
+const BucketCentral   = "comingsoon.html";
+const ContentCredits  = "comingsoon.html";
 
-/* Article Links*/
-let aritcleWebsite = "comingsoon.html"
-let aritcleMc = "comingsoon.html"
-let aritclePandus = "pandus.html"
-let aritcleKauli = "comingsoon.html"
-let aritcleTht = "comingsoon.html"
-let aritcleElecf = "comingsoon.html"
-let aritcleSol = "comingsoon.html"
-let Brolocator = "Brolocator.html"
-let ProjJune = "ProjectJune.html"
-let Copyboard = "comingsoon.html"
-let csdp = "csdp.html"
+/* ─── Article Routes ───────────────────────────────────────── */
+const articleWebsite  = "comingsoon.html";
+const articleMc       = "comingsoon.html";
+const articlePandus   = "pandus.html";
+const articleKauli    = "comingsoon.html";
+const articleTht      = "comingsoon.html";
+const articleElecf    = "comingsoon.html";
+const articleSol      = "comingsoon.html";
+const Brolocator      = "Brolocator.html";
+const ProjJune        = "ProjectJune.html";
+const Copyboard       = "comingsoon.html";
+const csdp            = "csdp.html";
 
-/* External social links */
-let Instagram = "https://www.instagram.com/bombastic_demise?igsh=MTQzZWQ0ODQyZmlyMg%3D%3D&utm_source=qr"
-let Youtube = "https://www.youtube.com/@newkringster2564"
-let Whatsapp = "https://wa.me/6597100366"
-let Github = "https://github.com/New-Kringster"
+/* ─── External Links ───────────────────────────────────────── */
+const Instagram    = "https://www.instagram.com/bombastic_demise?igsh=MTQzZWQ0ODQyZmlyMg%3D%3D&utm_source=qr";
+const Youtube      = "https://www.youtube.com/@newkringster2564";
+const Whatsapp     = "https://wa.me/6597100366";
+const Github       = "https://github.com/New-Kringster";
+const photogallery = "https://photos.chiambucket.com";
 
-/* Bucket hosted links */
-let photogallery = "https://photos.chiambucket.com"
+/* ─── Navigation Utility ───────────────────────────────────── */
 let MenuState = false;
 
-function BucketCentralOnClick() {
-    window.location = BucketCentral;
+function navigate(url) {
+    window.location = url;
 }
 
-function PhotographyOnClick() {
-    window.location = Photography;
-}
+// Named shortcuts kept for HTML onclick compatibility
+function BucketCentralOnClick()      { navigate(BucketCentral); }
+function PhotographyOnClick()        { navigate(Photography); }
+function HomelabOnClick()            { navigate(HomeLab); }
+function HomeOnClick()               { navigate(Home); }
+function ContentCreditsOnClick()     { navigate(ContentCredits); }
+function InstagramOnClick()          { navigate(Instagram); }
+function YoutubeOnClick()            { navigate(Youtube); }
+function WhatsappOnClick()           { navigate(Whatsapp); }
+function GithubOnClick()             { navigate(Github); }
+function PhotogalleryOnClick()       { navigate(photogallery); }
+function PortfolioOnClick()          { navigate(Portfolio); }
+function articleWebsiteOnClick()     { navigate(articleWebsite); }
+function articlePandusOnClick()      { navigate(articlePandus); }
+function articleKauliOnClick()       { navigate(articleKauli); }
+function articleThtOnClick()         { navigate(articleTht); }
+function articleElecfOnClick()       { navigate(articleElecf); }
+function articleSolOnClick()         { navigate(articleSol); }
+function articleMcOnClick()          { navigate(articleMc); }
+function articleBrolocatorOnClick()  { navigate(Brolocator); }
+function articlecopyboardOnClick()   { navigate(Copyboard); }
+function articlecsdpOnClick()        { navigate(csdp); }
+function articleProjJuneOnClick()    { navigate(ProjJune); }
 
-function HomelabOnClick() {
-    window.location = HomeLab
-}
-
-function HomeOnClick() {
-    window.location = Home;
-}
-
-function ContentCreditsOnClick() {
-    window.location = ContentCredits;
-}
-
-function InstagramOnClick() {
-    window.location = Instagram;
-}
-
-function YoutubeOnClick() {
-    window.location = Youtube;
-}
-
-function WhatsappOnClick() {
-    window.location = Whatsapp;
-}
-
-function GithubOnClick() {
-    window.location = Github;
-}
-
-function PhotogalleryOnClick() {
-    window.location = photogallery;
-}
-
-function PortfolioOnClick() {
-    window.location = Portfolio;
-}
-function articleWebsiteOnClick() {
-    window.location = aritcleWebsite;
-}
-function articlePandusOnClick() {
-    window.location = aritclePandus;
-}
-function articleKauliOnClick() {
-    window.location = aritcleKauli;
-}
-function articleThtOnClick() {
-    window.location = aritcleTht;
-}
-function articleElecfOnClick() {
-    window.location = aritcleElecf;
-}
-function articleElecfOnClick() {
-    window.location = aritcleElecf;
-}
-function articleSolOnClick() {
-    window.location = aritcleSol;
-}
-function articleMcOnClick() {
-    window.location = aritcleMc;
-}
-function articleBrolocatorOnClick() {
-    window.location = Brolocator;
-}
-function articlecopyboardOnClick() {
-    window.location = Copyboard;
-}
-function articlecsdpOnClick() {
-    window.location = csdp;
-}
-function articleProjJuneOnClick() {
-    window.location = ProjJune;
-}
-
-$(function () {
-    $("#header").load("header.html", function (response, status, xhr) {
-        if (status === "error") {
-            console.error("Failed to load header.html", xhr.status, xhr.statusText);
-        } else {
-            console.log("header.html loaded successfully");
-        }
-    });
-
-    $("#footers").load("footer.html", function (response, status, xhr) {
-        if (status === "error") {
-            console.error("Failed to load footer.html", xhr.status, xhr.statusText);
-        } else {
-            console.log("footer.html loaded successfully");
-        }
-    });
-});
-
-$(window).on("load",function(){
-    $("#loader").fadeOut()
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-    /* for article section light up */
-    const sections = document.querySelectorAll("section");
-    const navLinks = document.querySelectorAll(".article-chapter-wrapper a");
-    console.log(sections);
-    console.log(navLinks);
-    const Chapterobserver = new IntersectionObserver(
-        (entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-            navLinks.forEach((link) => link.classList.remove("article-chapter-selected"));
-    
-            const activeLink = document.querySelector(
-                `.article-chapter-wrapper a[href="#${entry.target.id}"]`
-            );
-    
-            if (activeLink) {
-                activeLink.classList.add("article-chapter-selected");
-            }
-            }
-        });
-        },
-        {
-        threshold: 0.15
-        }
-    );
-    
-    sections.forEach((section) => Chapterobserver.observe(section));
-})
+/* ─── Mobile Menu ──────────────────────────────────────────── */
 function MenuBar() {
-    if (MenuState == false) {
-        MenuState = true
-        console.log("MenuState is now true (open)")
+    MenuState = !MenuState;
+    if (MenuState) {
         $('#nav').removeClass('nav-closed').addClass('nav-open');
         $('#navitem').removeClass('navitem').addClass('navitem-open');
-        $('#Nav-Item-1').removeClass('Nav-Menu-Items').addClass('Nav-Menu-Items-Open');
-        $('#Nav-Item-2').removeClass('Nav-Menu-Items').addClass('Nav-Menu-Items-Open');
-        $('#Nav-Item-3').removeClass('Nav-Menu-Items').addClass('Nav-Menu-Items-Open');
-        $('#Nav-Item-4').removeClass('Nav-Menu-Items').addClass('Nav-Menu-Items-Open');
-        $('#Nav-Item-5').removeClass('Nav-Menu-Items').addClass('Nav-Menu-Items-Open');
-    } 
-    else {
-        MenuState = false;
-        console.log("MenuState is now false (closed)");
+        $('.Nav-Menu-Items').removeClass('Nav-Menu-Items').addClass('Nav-Menu-Items-Open');
+    } else {
         $('#nav').removeClass('nav-open').addClass('nav-closed');
         $('#navitem').removeClass('navitem-open').addClass('navitem');
-        $('#Nav-Item-1').removeClass('Nav-Menu-Items-Open').addClass('Nav-Menu-Items');
-        $('#Nav-Item-2').removeClass('Nav-Menu-Items-Open').addClass('Nav-Menu-Items');
-        $('#Nav-Item-3').removeClass('Nav-Menu-Items-Open').addClass('Nav-Menu-Items');
-        $('#Nav-Item-4').removeClass('Nav-Menu-Items-Open').addClass('Nav-Menu-Items');
-        $('#Nav-Item-5').removeClass('Nav-Menu-Items-Open').addClass('Nav-Menu-Items');
+        $('.Nav-Menu-Items-Open').removeClass('Nav-Menu-Items-Open').addClass('Nav-Menu-Items');
     }
 }
 
+/* ─── Photo Album Expand ───────────────────────────────────── */
 function expandphoto() {
-    $('#lyc').removeClass('lyc')
+    $('#lyc').removeClass('lyc');
     $('#expand').addClass('loader-hide');
 }
 
-function expandphoto_highlight() {
-    $('#photography-highlight').removeClass('photography-restrict')
-    $('#expand-highlight').addClass('loader-hide');
+function expandPhoto(albumId) {
+    $('#photography-' + albumId).removeClass('photography-restrict');
+    $('#expand-' + albumId).addClass('loader-hide');
 }
 
-function expandphoto_europe() {
-    $('#photography-europe').removeClass('photography-restrict')
-    $('#expand-europe').addClass('loader-hide');
-}
-function expandphoto_21by9() {
-    $('#photography-21by9').removeClass('photography-restrict')
-    $('#expand-21by9').addClass('loader-hide');
+/* ─── Portfolio Card Toggles ───────────────────────────────── */
+function toggleCard(contentId, menuId) {
+    $('#' + contentId).toggleClass('pf-hidden-content-shown');
+    $('#' + menuId).toggleClass('portfolio-items2-open');
 }
 
-function expandphoto_china() {
-    $('#photography-china').removeClass('photography-restrict')
-    $('#expand-china').addClass('loader-hide');
-}
-
-function expandphoto_general() {
-    $('#photography-general').removeClass('photography-restrict')
-    $('#expand-general').addClass('loader-hide');
-}
-
-function expandphoto_zealand() {
-    $('#photography-zealand').removeClass('photography-restrict')
-    $('#expand-zealand').addClass('loader-hide');
-}
-
-let PjDd = false;
-function pjddf() {
-    if (PjDd == false) {
-        PjDd = true
-        $('#pjdd').addClass('pf-hidden-content-shown');
-        $('#pjddm').addClass('portfolio-items2-open');
-    } 
-    else {
-        PjDd = false;
-        $('#pjdd').removeClass('pf-hidden-content-shown');
-        $('#pjddm').removeClass('portfolio-items2-open');
-    }
-}
-
-let BlDd = false;
-function blddf() {
-    if (BlDd == false) {
-        BlDd = true
-        $('#bldd').addClass('pf-hidden-content-shown');
-        $('#blddm').addClass('portfolio-items2-open');
-    } 
-    else {
-        BlDd = false;
-        $('#bldd').removeClass('pf-hidden-content-shown');
-        $('#blddm').removeClass('portfolio-items2-open');
-    }
-}
-let PdDd = false;
-function pdddf() {
-    if (PdDd == false) {
-        PdDd = true
-        $('#pddd').addClass('pf-hidden-content-shown');
-        $('#pdddm').addClass('portfolio-items2-open');
-    } 
-    else {
-        PdDd = false;
-        $('#pddd').removeClass('pf-hidden-content-shown');
-        $('#pdddm').removeClass('portfolio-items2-open');
-    }
-}
-let EmDd = false;
-function emddf() {
-    if (EmDd == false) {
-        EmDd = true
-        $('#emdd').addClass('pf-hidden-content-shown');
-        $('#emddm').addClass('portfolio-items2-open');
-    } 
-    else {
-        EmDd = false;
-        $('#emdd').removeClass('pf-hidden-content-shown');
-        $('#emddm').removeClass('portfolio-items2-open');
-    }
-}
-let KlDd = false;
-function klddf() {
-    if (KlDd == false) {
-        KlDd = true
-        $('#kldd').addClass('pf-hidden-content-shown');
-        $('#klddm').addClass('portfolio-items2-open');
-    } 
-    else {
-        KlDd = false;
-        $('#kldd').removeClass('pf-hidden-content-shown');
-        $('#klddm').removeClass('portfolio-items2-open');
-    }
-}
-let SlDd = false;
-function slddf() {
-    if (SlDd == false) {
-        SlDd = true
-        $('#sldd').addClass('pf-hidden-content-shown');
-        $('#slddm').addClass('portfolio-items2-open');
-    } 
-    else {
-        SlDd = false;
-        $('#sldd').removeClass('pf-hidden-content-shown');
-        $('#slddm').removeClass('portfolio-items2-open');
-    }
-}
-let CpDd = false;
-function cpddf() {
-    if (CpDd == false) {
-        CpDd = true
-        $('#cpdd').addClass('pf-hidden-content-shown');
-        $('#cpddm').addClass('portfolio-items2-open');
-    } 
-    else {
-        CpDd = false;
-        $('#cpdd').removeClass('pf-hidden-content-shown');
-        $('#cpddm').removeClass('portfolio-items2-open');
-    }
-}
-let EfDd = false;
-function efddf() {
-    if (EfDd == false) {
-        EfDd = true
-        $('#efdd').addClass('pf-hidden-content-shown');
-        $('#efddm').addClass('portfolio-items2-open');
-    } 
-    else {
-        EfDd = false;
-        $('#efdd').removeClass('pf-hidden-content-shown');
-        $('#efddm').removeClass('portfolio-items2-open');
-    }
-}
-let ThDd = false;
-function thddf() {
-    if (ThDd == false) {
-        ThDd = true
-        $('#thdd').addClass('pf-hidden-content-shown');
-        $('#thddm').addClass('portfolio-items2-open');
-    } 
-    else {
-        ThDd = false;
-        $('#thdd').removeClass('pf-hidden-content-shown');
-        $('#thddm').removeClass('portfolio-items2-open');
-    }
-}
-let McDd = false;
-function mcddf() {
-    if (McDd == false) {
-        McDd = true
-        $('#mcdd').addClass('pf-hidden-content-shown');
-        $('#mcddm').addClass('portfolio-items2-open');
-    } 
-    else {
-        McDd = false;
-        $('#mcdd').removeClass('pf-hidden-content-shown');
-        $('#mcddm').removeClass('portfolio-items2-open');
-    }
-}
-
-
+/* ─── Portfolio Hero Scroll & Visibility ───────────────────── */
 function Hideherobg() {
     $('#portfolio-hero-bg').addClass('hidden');
 }
+
 function Wakebg() {
     $('#portfolio-items-holder').addClass('portfolio-items-holder-show');
 }
 
-let firstcall = true
+let firstcall = true;
 const bottomElement = document.querySelector('.detect-reach');
-const tohideelement = document.querySelector('.portfolio-hero-bg')
 
 const observer = new IntersectionObserver((entries) => {
-    console.log(entries)
-    if (firstcall == false) {
+    if (!firstcall) {
         setTimeout(Wakebg, 1);
         setTimeout(Hideherobg, 200);
-       }
-    firstcall = false
+    }
+    firstcall = false;
 });
 
 try {
-    observer.observe(bottomElement)
+    observer.observe(bottomElement);
 } catch (error) {
-    console.log('disappear below not avaliable')
+    // .detect-reach not present on this page
 }
+
 function scrolll() {
     var left = document.querySelector(".portfolio-hero-bottom");
     $('#left-arrow-hidden').addClass('portfolio-items-holder-show');
-    left.scrollBy(500, 0)
-    console.log('pf-scrl-L')
+    left.scrollBy(500, 0);
 }
+
 function scrollr() {
     var right = document.querySelector(".portfolio-hero-bottom");
-    right.scrollBy(-500, 0)
-    console.log('pf-scrl-R')
+    right.scrollBy(-500, 0);
 }
+
+/* ─── Shared Components ────────────────────────────────────── */
+$(function () {
+    $("#nav-holder").load("nav.html");
+    $("#footers").load("footer.html");
+});
+
+$(window).on("load", function () {
+    $("#loader").fadeOut();
+});
+
+/* ─── Article Scroll-Spy ───────────────────────────────────── */
+document.addEventListener("DOMContentLoaded", () => {
+    const sections  = document.querySelectorAll("section");
+    const navLinks  = document.querySelectorAll(".article-chapter-wrapper a");
+
+    const chapterObserver = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    navLinks.forEach((link) => link.classList.remove("article-chapter-selected"));
+
+                    const activeLink = document.querySelector(
+                        `.article-chapter-wrapper a[href="#${entry.target.id}"]`
+                    );
+                    if (activeLink) {
+                        activeLink.classList.add("article-chapter-selected");
+                    }
+                }
+            });
+        },
+        { threshold: 0.15 }
+    );
+
+    sections.forEach((section) => chapterObserver.observe(section));
+});
