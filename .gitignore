@@ -1,0 +1,15 @@
+# Next.js
+.next/
+out/
+node_modules/
+npm-debug.log*
+
+# Vercel
+.vercel
+
+# Local env
+.env.local
+.env*.local
+
+# Dev tooling (not deployed)
+temporary screenshots/
