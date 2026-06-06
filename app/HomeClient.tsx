@@ -264,9 +264,13 @@ export default function HomeClient() {
     applyFilter();
   }, []);
 
-  /* ── Word rotator ── */
+  /* ── Word rotator (with cleanup so intervals don't stack on re-visits) ── */
   useEffect(() => {
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
+    const intervals: ReturnType<typeof setInterval>[] = [];
+    const resizeHandlers: Array<() => void> = [];
+
     function initRoller(el: HTMLElement, startDelay: number) {
       const em = el.querySelector('em') as HTMLElement | null;
       const words = (el.getAttribute('data-words') || '').split(',').map((s) => s.trim()).filter(Boolean);
@@ -284,10 +288,19 @@ export default function HomeClient() {
         em!.classList.remove('is-in'); em!.classList.add('is-out');
         setTimeout(() => { i = ni; em!.textContent = words[i]; em!.classList.remove('is-out'); void em!.offsetWidth; em!.classList.add('is-in'); }, 360);
       };
-      setTimeout(() => setInterval(tick, 2800), startDelay);
-      window.addEventListener('resize', () => { el.style.width = widthOf(words[i]) + 'px'; });
+      const t = setTimeout(() => { intervals.push(setInterval(tick, 2800)); }, startDelay);
+      timeouts.push(t);
+      const onResize = () => { el.style.width = widthOf(words[i]) + 'px'; };
+      window.addEventListener('resize', onResize);
+      resizeHandlers.push(onResize);
     }
     document.querySelectorAll<HTMLElement>('.hp-roll').forEach((el, idx) => initRoller(el, idx * 1100));
+
+    return () => {
+      timeouts.forEach(clearTimeout);
+      intervals.forEach(clearInterval);
+      resizeHandlers.forEach((h) => window.removeEventListener('resize', h));
+    };
   }, []);
 
   /* ── Lychee gallery ── */
@@ -338,6 +351,13 @@ export default function HomeClient() {
 
     current = 'highlight'; mount(albums.highlight);
   };
+
+  /* ── Re-init Lychee on return visits (script already loaded, onLoad won't fire again) ── */
+  useEffect(() => {
+    if ((window as any).LycheeEmbed) {
+      initLychee();
+    }
+  }, []);
 
   /* ── Peek button helper ── */
   const peek = (e: React.MouseEvent<HTMLButtonElement>) => openProject(e.currentTarget);
