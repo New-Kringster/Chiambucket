@@ -1,11 +1,11 @@
 /* ─── Page Routes ──────────────────────────────────────────── */
 const Home         = "index.html";
-const AboutMe      = "aboutme.html";
 const Photography  = "photography.html";
 const HomeLab      = "homelab.html";
 const Portfolio    = "index.html#portfolio-items-holder";
 const BucketCentral   = "comingsoon.html";
-const ContentCredits  = "comingsoon.html";
+const ContentCredits  = "credits.html";
+const Contact         = "contact.html";
 
 /* ─── Article Routes ───────────────────────────────────────── */
 const articleWebsite  = "comingsoon.html";
@@ -40,6 +40,7 @@ function PhotographyOnClick()        { navigate(Photography); }
 function HomelabOnClick()            { navigate(HomeLab); }
 function HomeOnClick()               { navigate(Home); }
 function ContentCreditsOnClick()     { navigate(ContentCredits); }
+function ContactOnClick()            { navigate(Contact); }
 function InstagramOnClick()          { navigate(Instagram); }
 function YoutubeOnClick()            { navigate(Youtube); }
 function WhatsappOnClick()           { navigate(Whatsapp); }
@@ -135,6 +136,39 @@ $(function () {
 $(window).on("load", function () {
     $("#loader").fadeOut();
 });
+
+/* ─── Cursor Spotlight ─────────────────────────────────────── */
+document.addEventListener('mousemove', (e) => {
+    document.documentElement.style.setProperty('--cursor-x', e.clientX + 'px');
+    document.documentElement.style.setProperty('--cursor-y', e.clientY + 'px');
+});
+
+/* ─── Scroll Reveal ─────────────────────────────────────────── */
+document.addEventListener("DOMContentLoaded", () => {
+    const revealEls = document.querySelectorAll('[data-reveal]');
+    if (revealEls.length === 0) return;
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                revealObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+    revealEls.forEach(el => revealObserver.observe(el));
+});
+
+/* ─── Nav scroll glow ───────────────────────────────────────── */
+window.addEventListener('scroll', () => {
+    const holder = document.querySelector('.nav-holder');
+    if (holder) {
+        if (window.scrollY > 60) {
+            holder.classList.add('nav-scrolled');
+        } else {
+            holder.classList.remove('nav-scrolled');
+        }
+    }
+}, { passive: true });
 
 /* ─── Article Scroll-Spy ───────────────────────────────────── */
 document.addEventListener("DOMContentLoaded", () => {

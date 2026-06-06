@@ -1,0 +1,10 @@
+# Dev tooling and scratch files — keep these out of the production deploy
+serve.mjs
+screenshot.mjs
+screenshot-static.mjs
+temporary screenshots/
+testing.html
+testing2.html
+banner-making.html
+reference1.png
+*.pdf
