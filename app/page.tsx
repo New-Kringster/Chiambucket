@@ -18,6 +18,44 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: 'Braven Chiam',
+    url: 'https://www.chiambucket.com/',
+    image: 'https://www.chiambucket.com/images/logo.png',
+    jobTitle: 'Engineer & Designer',
+    email: 'mailto:braven@chiambucket.com',
+    address: { '@type': 'PostalAddress', addressLocality: 'Singapore', addressCountry: 'SG' },
+    alumniOf: { '@type': 'CollegeOrUniversity', name: 'Nanyang Polytechnic' },
+    knowsAbout: [
+      'Electronics Engineering', 'PCB Design', 'Embedded Systems', 'ESP32',
+      'Microcontrollers', '3D CAD', 'UI Design', 'Photography', 'Self-hosting',
+    ],
+    sameAs: [
+      'https://github.com/New-Kringster',
+      'https://www.instagram.com/bombastic_demise',
+      'https://www.youtube.com/@newkringster2564',
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Chiambucket',
+    url: 'https://www.chiambucket.com/',
+    author: { '@type': 'Person', name: 'Braven Chiam' },
+  },
+];
+
 export default function HomePage() {
-  return <HomeClient />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <HomeClient />
+    </>
+  );
 }

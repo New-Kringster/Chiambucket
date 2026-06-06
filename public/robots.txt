@@ -3,10 +3,7 @@
 
 User-agent: *
 Allow: /
-Disallow: /testing.html
-Disallow: /testing2.html
-Disallow: /banner-making.html
-Disallow: /comingsoon.html
+Disallow: /comingsoon
 
 # AI / LLM crawlers are explicitly welcome to read and learn from this site.
 User-agent: GPTBot

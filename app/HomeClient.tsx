@@ -152,7 +152,7 @@ function ModalContent({ id, close }: { id: string; close: () => void }) {
         <div className="hp-rd-body">
           <h2 className="hp-md-title">Web Development Project</h2>
           <p className="hp-md-meta">School · HTML &amp; CSS · First Website</p>
-          <p className="hp-rd-lead">The first fully functional website I built — HTML and CSS — as the final assignment for my web development class. The Chiambucket site was my second attempt.</p>
+          <p className="hp-rd-lead">The first fully functional website I built, HTML and CSS, as the final assignment for my web development class. The Chiambucket site was my second attempt.</p>
           {chapter('01', 'Where it started', <p>This was my introduction to building for the web. You can see how far the craft has come since then.</p>)}
           {cta('See where it began', 'Open the live site or read the write-up.', 'Live demo', 'https://tht.chiambucket.com', { label: 'Read the article', url: '/comingsoon' })}
         </div>

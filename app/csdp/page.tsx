@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import ArticleRecommendations from '../../components/ArticleRecommendations';
 import ArticleScrollSpy from '../../components/ArticleScrollSpy';
 
 export const metadata: Metadata = {
@@ -10,199 +11,285 @@ export const metadata: Metadata = {
     description: 'A multi-node smart-home system on BeagleBone Black with a live Spline 3D dashboard.',
     url: 'https://www.chiambucket.com/csdp',
     type: 'article',
+    images: [{ url: '/images/Ema-pf-context.webp' }],
   },
 };
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'EMA Smart Home System',
+  description: 'A multi-node smart-home system on BeagleBone Black, Python and SocketIO, with a live Spline 3D dashboard. Awarded an A grade.',
+  image: 'https://www.chiambucket.com/images/Ema-pf-context.webp',
+  author: { '@type': 'Person', name: 'Braven Chiam', url: 'https://www.chiambucket.com/' },
+  publisher: { '@type': 'Person', name: 'Braven Chiam' },
+  mainEntityOfPage: 'https://www.chiambucket.com/csdp',
+};
+
+const BackArrow = () => (
+  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+);
+const Circle = () => (
+  <svg fill="currentColor" viewBox="0 0 24 24" className="pf-item-buttom-icon" aria-hidden="true"><path clipRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z" fillRule="evenodd" /></svg>
+);
+
 export default function CsdpPage() {
   return (
-    <main>
+    <main className="art">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <ArticleScrollSpy />
-      <div className="article-csdp-image"></div>
-      <div className="article-content">
-        <div className="article-fade"></div>
-        <div className="article-body">
-          <div className="article-chapters">
-            <div className="article-chapters-ultimate-wrapper">
-              <h2>Chapters</h2>
-              <nav className="article-chapter-wrapper">
-                <a href="#ProjBackground">Project Background</a>
-                <a href="#DesignProcess">Design Process</a>
-                <a href="#Climate">- Climate Node</a>
-                <a href="#Bathroom">- Bathroom Node</a>
-                <a href="#Kitchen">- Kitchen Node</a>
-                <a href="#Intrusion">- Intrusion Node</a>
-                <a href="#Connectivity">Connectivity</a>
-                <a href="#SlideDeck">Slide Deck</a>
-                <a href="#Documentation">Documentation</a>
-              </nav>
+
+      {/* Feature hero */}
+      <header className="art-hero">
+        <div className="art-hero-bg"><img src="/images/Ema-pf-context.webp" alt="EMA Smart Home System" /></div>
+        <div className="art-hero-scrim"></div>
+        <div className="art-hero-inner hp-section">
+          <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> All projects</a>
+          <div className="art-tags">
+            <span className="hp-md-tag school">School Project</span>
+          </div>
+          <h1 className="art-title">EMA Smart <em>Home</em></h1>
+          <p className="art-lead">The EMA smart home system was the most complex group project I have worked on, requiring us to apply concepts and skills learned across multiple courses. Our team was awarded an &ldquo;A&rdquo; for the project.</p>
+          <div className="art-toolrow">
+            <span className="hp-key">Built with</span>
+            <div className="icon-stack">
+              <img src="/images/resolve-icon.webp" alt="DaVinci Resolve" />
+              <img src="/images/ps-pf-icon.webp" alt="Photoshop" />
+              <img src="/images/powerpoint-icon.webp" alt="PowerPoint" />
+              <img src="/images/vscode-icon.webp" alt="VS Code" />
+              <img src="/images/onshape-icon.webp" alt="Onshape" />
+              <img src="/images/figma-icon.webp" alt="Figma" />
             </div>
           </div>
-          <div className="article-body-wrapper">
-            <div className="article-header">
-              <div className="pf-item-tag">
-                <div className="pf-item-tag-school"><h5>School Project</h5></div>
-              </div>
-              <h1>EMA Smart home system</h1>
-              <h3>The EMA smart home system was the most complex group project I have worked on, requiring us to apply concepts and skills learned across multiple courses. Our team was awarded an &quot;A&quot; for the project.</h3>
-              <div className="pf-button-left-stack article-header-icons">
-                <div className="icon-stack">
-                  <img src="/images/resolve-icon.webp" alt="" />
-                  <img src="/images/ps-pf-icon.webp" alt="" />
-                  <img src="/images/powerpoint-icon.webp" alt="" />
-                  <img src="/images/vscode-icon.webp" alt="" />
-                  <img src="/images/onshape-icon.webp" alt="" />
-                  <img src="/images/figma-icon.webp" alt="" />
+        </div>
+      </header>
+
+      {/* Body */}
+      <div className="art-body hp-section">
+        <aside className="art-rail">
+          <div className="art-rail-inner">
+            <span className="hp-eyebrow">Chapters</span>
+            <nav className="art-chapters article-chapter-wrapper">
+              <a href="#PromoVideo">Promotional Video</a>
+              <a href="#Team">Team</a>
+              <a href="#ProjBackground">Project Background</a>
+              <a href="#DesignProcess">Design Process</a>
+              <a href="#Climate" className="sub">Climate Node</a>
+              <a href="#Bathroom" className="sub">Bathroom Node</a>
+              <a href="#Kitchen" className="sub">Kitchen Node</a>
+              <a href="#Intrusion" className="sub">Intrusion Node</a>
+              <a href="#Connectivity">Connectivity</a>
+              <a href="#SlideDeck">Slide Deck</a>
+              <a href="#Documentation">Documentation</a>
+            </nav>
+          </div>
+        </aside>
+
+        <div className="art-content">
+
+          {/* Promotional Video */}
+          <section id="PromoVideo" className="art-section" data-reveal>
+            <h2>Promotional Video</h2>
+            <div className="art-video">
+              <iframe
+                src="https://www.youtube.com/embed/PFhsRaakJAs?si=t2kIXeFsMyZwU73l"
+                title="EMA Smart Home System promotional video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </section>
+
+          {/* Team */}
+          <section id="Team" className="art-section" data-reveal>
+            <h2>Team</h2>
+            <div className="art-team">
+              <div className="art-team-row">
+                <div className="art-team-id">
+                  <div className="art-team-avatar tyr-profile"></div>
+                  <div>
+                    <b>Tan Yong Rui</b>
+                    <span>Team Leader, Docs, Code</span>
+                  </div>
                 </div>
+                <a
+                  className="art-team-link"
+                  href="https://tanyongrui11.framer.website/project/www-pentaclay-com"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  View Profile <img src="/images/fwd-arrow.svg" alt="" />
+                </a>
+              </div>
+
+              <div className="art-team-row">
+                <div className="art-team-id">
+                  <div className="art-team-avatar braven-profile"></div>
+                  <div>
+                    <b>Braven (me)</b>
+                    <span>Art, Code, Design</span>
+                  </div>
+                </div>
+                <a
+                  className="art-team-link"
+                  href="/"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  View Profile <img src="/images/fwd-arrow.svg" alt="" />
+                </a>
+              </div>
+
+              <div className="art-team-row">
+                <div className="art-team-id">
+                  <div className="art-team-avatar zx-profile"></div>
+                  <div>
+                    <b>Ong Zheng Xian</b>
+                    <span>Docs, Code</span>
+                  </div>
+                </div>
+                <a
+                  className="art-team-link"
+                  href="https://www.ongkian.com"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  View Profile <img src="/images/fwd-arrow.svg" alt="" />
+                </a>
+              </div>
+
+              <div className="art-team-row">
+                <div className="art-team-id">
+                  <div className="art-team-avatar jyc-profile"></div>
+                  <div>
+                    <b>Joycelyn Wong</b>
+                    <span>Docs, Code</span>
+                  </div>
+                </div>
+                <a
+                  className="art-team-link"
+                  href="https://joycelynwong.framer.website/projects/ema"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  View Profile <img src="/images/fwd-arrow.svg" alt="" />
+                </a>
+              </div>
+
+              <div className="art-team-row">
+                <div className="art-team-id">
+                  <div className="art-team-avatar"></div>
+                  <div>
+                    <b>Benjamin Lee</b>
+                    <span>Team Member</span>
+                  </div>
+                </div>
+                <span className="art-team-link is-disabled">No Profile</span>
               </div>
             </div>
-            <div className="article-real-body article-no-style" style={{ marginTop: '3vh' }}>
-              <div className="team-members">
-                <h3>Team Members</h3>
-                <div className="team-members-member">
-                  <div className="team-members-left">
-                    <div className="team-members-profile tyr-profile"></div>
-                    <div className="team-members-title">
-                      <h3>Tan Yong Rui</h3>
-                      <p>Team Leader, Docs, Code</p>
-                    </div>
-                  </div>
-                  <a target="_blank" rel="noopener" href="https://tanyongrui11.framer.website/project/www-pentaclay-com" className="team-members-right">
-                    <h2>View Profile</h2>
-                    <img src="/images/fwd-arrow.svg" alt="" />
-                  </a>
-                </div>
-                <div className="team-members-member">
-                  <div className="team-members-left">
-                    <div className="team-members-profile braven-profile"></div>
-                    <div className="team-members-title">
-                      <h3>Braven (me)</h3>
-                      <p>Art, Code, Design</p>
-                    </div>
-                  </div>
-                  <a target="_blank" rel="noopener" href="/" className="team-members-right">
-                    <h2>View Profile</h2>
-                    <img src="/images/fwd-arrow.svg" alt="" />
-                  </a>
-                </div>
-                <div className="team-members-member">
-                  <div className="team-members-left">
-                    <div className="team-members-profile zx-profile"></div>
-                    <div className="team-members-title">
-                      <h3>Ong Zheng Xian</h3>
-                      <p>Docs, Code</p>
-                    </div>
-                  </div>
-                  <a target="_blank" rel="noopener" href="https://www.ongkian.com" className="team-members-right">
-                    <h2>View Profile</h2>
-                    <img src="/images/fwd-arrow.svg" alt="" />
-                  </a>
-                </div>
-                <div className="team-members-member">
-                  <div className="team-members-left">
-                    <div className="team-members-profile jyc-profile"></div>
-                    <div className="team-members-title">
-                      <h3>Joycelyn Wong</h3>
-                      <p>Docs, Code</p>
-                    </div>
-                  </div>
-                  <a target="_blank" rel="noopener" href="https://joycelynwong.framer.website/projects/ema" className="team-members-right">
-                    <h2>View Profile</h2>
-                    <img src="/images/fwd-arrow.svg" alt="" />
-                  </a>
-                </div>
-                <div className="team-members-member">
-                  <div className="team-members-left">
-                    <div className="team-members-profile"></div>
-                    <div className="team-members-title">
-                      <h3>Benjamin Lee</h3>
-                      <p>Team Member</p>
-                    </div>
-                  </div>
-                  <a target="_blank" rel="noopener" href="#" className="team-members-right team-members-right-disabled">
-                    <h2>No Profile</h2>
-                  </a>
-                </div>
-              </div>
-            </div>
-            <div className="article-real-body">
-              <h2>Promotional Video</h2>
-              <iframe width="560" height="315" src="https://www.youtube.com/embed/PFhsRaakJAs?si=t2kIXeFsMyZwU73l" title="YouTube video player" frameBorder={0} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
-            </div>
-            <section id="ProjBackground" className="article-real-body">
-              <h2>Project Background</h2>
-              <p>Given four BeagleBone Black Wireless boards and a selection of MikroBUS click modules, we were challenged to create a Wi-Fi connected system that supports sustainable living. Our solution was a smart home system that monitors energy usage in real time and intelligently controls devices to minimize consumption. To further extend its capabilities, we integrated an intrusion-detection node into the system.</p>
-              <img src="/images/csdp1.webp" alt="" loading="lazy" />
-              <span>Intended placement of each board within a home</span>
-            </section>
-            <section id="DesignProcess" className="article-real-body">
-              <h2>Design process</h2>
-              <p>As a software-driven project, we focused on user interface design, prioritizing clarity, readability, and efficient communication of information. We also added Spline3D into the final design for more clarity. <a href="https://csdpdemo.chiambucket.com">DEMO PAGE</a></p>
-              <img src="/images/csdp2.webp" alt="" loading="lazy" />
-              <span>Figma mockup of the UI that was used</span>
+          </section>
+
+          {/* Project Background */}
+          <section id="ProjBackground" className="art-section" data-reveal>
+            <h2>Project Background</h2>
+            <p>Given four BeagleBone Black Wireless boards and a selection of MikroBUS click modules, we were challenged to create a Wi-Fi connected system that supports sustainable living. Our solution was a smart home system that monitors energy usage in real time and intelligently controls devices to minimize consumption. To further extend its capabilities, we integrated an intrusion-detection node into the system.</p>
+            <figure className="art-fig">
+              <img src="/images/csdp1.webp" alt="Intended placement of each board within a home" loading="lazy" />
+              <figcaption>Intended placement of each board within a home</figcaption>
+            </figure>
+          </section>
+
+          {/* Design Process */}
+          <section id="DesignProcess" className="art-section" data-reveal>
+            <h2>Design Process</h2>
+            <p>As a software-driven project, we focused on user interface design, prioritizing clarity, readability, and efficient communication of information. We also added Spline3D into the final design for more clarity. <a href="https://csdpdemo.chiambucket.com" target="_blank" rel="noopener">DEMO PAGE</a></p>
+            <figure className="art-fig">
+              <img src="/images/csdp2.webp" alt="Figma mockup of the UI that was used" loading="lazy" />
+              <figcaption>Figma mockup of the UI that was used</figcaption>
+            </figure>
+            <figure className="art-fig">
               <video autoPlay loop muted playsInline>
                 <source src="/images/csdp3.webm" type="video/webm" />
                 <source src="/images/csdp3.mp4" type="video/mp4" />
               </video>
-              <span>Screenshot of the final UI that was made</span>
+              <figcaption>Screenshot of the final UI that was made</figcaption>
+            </figure>
+            <figure className="art-fig">
               <video autoPlay loop muted playsInline>
                 <source src="/images/csdp4.webm" type="video/webm" />
                 <source src="/images/csdp4.mp4" type="video/mp4" />
               </video>
-              <span>Live visualisation of actions using Spline3D</span>
-            </section>
-            <section id="Climate" className="article-real-body">
-              <h2>Climate Node</h2>
-              <p>The climate node monitors for temperature, humidity and the presence of humans, it toggles the fan on only when a person is detected and the environment is warm and humid</p>
-              <img src="/images/csdp5.webp" alt="" loading="lazy" />
-            </section>
-            <section id="Bathroom" className="article-real-body">
-              <h2>Bathroom Node</h2>
-              <p>The bathroom node allows you to set a timer for how long you would want to shower for, using the buttons and display. It automatically starts when it detects you entering the shower. A buzzer is sounded when your time is up</p>
-              <img src="/images/csdp6.webp" alt="" loading="lazy" />
-            </section>
-            <section id="Kitchen" className="article-real-body">
-              <h2>Kitchen Node</h2>
-              <p>The kitchen node monitors energy usage from the fridge and reports an energy score on the dashboard, It also functions as a fire alarm, the alarm sounds across all nodes if there is an uncontrolled fire detected.</p>
-              <img src="/images/csdp7.webp" alt="" loading="lazy" />
-            </section>
-            <section id="Intrusion" className="article-real-body">
-              <h2>Intrusion Node</h2>
-              <p>The intrusion node detects for door knocks and the opening of the door at unusual times and starts an alarm across all nodes</p>
-              <img src="/images/csdp8.webp" alt="" loading="lazy" />
-            </section>
-            <section id="Connectivity" className="article-real-body">
-              <h2>Connectivity</h2>
-              <p>Each board connects to a SocketIO web server which hosts the dashboard and coordinates events and alarms too.</p>
-              <img src="/images/csdp9.webp" alt="" loading="lazy" />
-              <span>A chart of how each system connects with each other</span>
-            </section>
-            <section id="SlideDeck" className="article-real-body side-bar-scroll">
-              <h2>Slide Deck</h2>
-              <object data="/downloadable/csdpf1.pdf" type="application/pdf" width="100%" height="100%">
+              <figcaption>Live visualisation of actions using Spline3D</figcaption>
+            </figure>
+          </section>
+
+          {/* Climate Node */}
+          <section id="Climate" className="art-section" data-reveal>
+            <h2>Climate Node</h2>
+            <p>The climate node monitors for temperature, humidity and the presence of humans, it toggles the fan on only when a person is detected and the environment is warm and humid</p>
+            <img src="/images/csdp5.webp" alt="Climate node hardware" loading="lazy" />
+          </section>
+
+          {/* Bathroom Node */}
+          <section id="Bathroom" className="art-section" data-reveal>
+            <h2>Bathroom Node</h2>
+            <p>The bathroom node allows you to set a timer for how long you would want to shower for, using the buttons and display. It automatically starts when it detects you entering the shower. A buzzer is sounded when your time is up</p>
+            <img src="/images/csdp6.webp" alt="Bathroom node hardware" loading="lazy" />
+          </section>
+
+          {/* Kitchen Node */}
+          <section id="Kitchen" className="art-section" data-reveal>
+            <h2>Kitchen Node</h2>
+            <p>The kitchen node monitors energy usage from the fridge and reports an energy score on the dashboard, It also functions as a fire alarm, the alarm sounds across all nodes if there is an uncontrolled fire detected.</p>
+            <img src="/images/csdp7.webp" alt="Kitchen node hardware" loading="lazy" />
+          </section>
+
+          {/* Intrusion Node */}
+          <section id="Intrusion" className="art-section" data-reveal>
+            <h2>Intrusion Node</h2>
+            <p>The intrusion node detects for door knocks and the opening of the door at unusual times and starts an alarm across all nodes</p>
+            <img src="/images/csdp8.webp" alt="Intrusion node hardware" loading="lazy" />
+          </section>
+
+          {/* Connectivity */}
+          <section id="Connectivity" className="art-section" data-reveal>
+            <h2>Connectivity</h2>
+            <p>Each board connects to a SocketIO web server which hosts the dashboard and coordinates events and alarms too.</p>
+            <figure className="art-fig">
+              <img src="/images/csdp9.webp" alt="A chart of how each system connects with each other" loading="lazy" />
+              <figcaption>A chart of how each system connects with each other</figcaption>
+            </figure>
+          </section>
+
+          {/* Slide Deck */}
+          <section id="SlideDeck" className="art-section" data-reveal>
+            <h2>Slide Deck</h2>
+            <div className="art-embed art-pdf">
+              <object data="/downloadable/csdpf1.pdf" type="application/pdf">
                 <p>Alt link <a href="/downloadable/csdpf1.pdf">to the PDF!</a></p>
               </object>
-            </section>
-            <section id="Documentation" className="article-real-body side-bar-scroll">
-              <h2>Documentation</h2>
-              <object data="/downloadable/csdpf2.pdf" type="application/pdf" width="100%" height="100%">
+            </div>
+          </section>
+
+          {/* Documentation */}
+          <section id="Documentation" className="art-section" data-reveal>
+            <h2>Documentation</h2>
+            <div className="art-embed art-pdf">
+              <object data="/downloadable/csdpf2.pdf" type="application/pdf">
                 <p>Alt link <a href="/downloadable/csdpf2.pdf">to the PDF!</a></p>
               </object>
-            </section>
-            <div className="next-article">
-              Check Out The Next Article
-              <a href="/portfolio" className="pf-item-button">
-                View Next Article
-                <svg fill="currentColor" viewBox="0 0 24 24" className="pf-item-buttom-icon">
-                  <path clipRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z" fillRule="evenodd" />
-                </svg>
-              </a>
             </div>
+          </section>
+
+          <div className="art-next">
+            <span className="art-next-label">Check out the next article</span>
+            <a href="/#portfolio-items-holder" className="hp-btn">All projects <Circle /></a>
           </div>
-          <div className="article-balance"></div>
+
         </div>
       </div>
-      <div className="article-bottom-fade"></div>
-      <div className="article-bottom-fade2"></div>
+      <ArticleRecommendations exclude="proj-ema" />
     </main>
   );
 }

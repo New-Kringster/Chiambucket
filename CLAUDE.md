@@ -1,141 +1,138 @@
 # Chiambucket — Project Overview
 
-Personal portfolio/personal website for Braven Chiam. Dark-themed, design-forward, self-hosted on a homelab server.
+Personal portfolio/personal website for Braven Chiam. Dark-themed, design-forward ("Refined Editorial Dark"). Built with Next.js and deployed on Vercel.
 
 ## Stack
 
-- **Pure HTML + CSS + vanilla JS** — no build tools, no frameworks
-- **jQuery 3.7.1** — loaded from CDN, used for DOM manipulation and AJAX includes
-- **animate.css** — loaded from CDN for some entrance animations
-- **No package.json, no bundler, no TypeScript**
+- **Next.js 15 (App Router) + React 19 + TypeScript** — `app/` directory, server components by default
+- **Vercel Analytics + Speed Insights** — loaded in `app/layout.tsx`
+- **animate.css** — loaded from CDN (a few entrance animations)
+- **Lychee** — self-hosted photo gallery embedded via a remote script (homepage + photography)
+- **No Tailwind, no CSS-in-JS.** One global stylesheet: `public/mainstyle.css` (~5700 lines)
+- jQuery is **gone** — the old jQuery `.load()` includes were replaced by React components. `links.js`/`nav.html`/`footer.html`/`projects.js` etc. are legacy and no longer used by the app.
 
-## File Structure
+## Routing (Next.js App Router)
 
-| File | Purpose |
-|------|---------|
-| `index.html` | Homepage (redesigned, `hp-*` classes) — hero, "what I do" disciplines, About bento, Projects (flagship spotlight + Capabilities showcase + filterable gallery + chaptered reader modal), HomeLab band, switchable Photography gallery, CTA |
-| `contact.html` | Contact page — email `braven@chiambucket.com` + socials (uses `ct-*` classes) |
-| `credits.html` | Colophon / content credits (uses `cr-*` + shared `ct-*` hero) — built with Claude Opus 4, hosted on Vercel, open-source tools. Linked from the footer's "Credits to content" button (`ContentCredits` route) |
-| `photography.html` | Photography page — collage, albums (Europe, China, NZ, etc.) |
-| `homelab.html` | HomeLab page — server cards, Docker apps showcase |
-| `portfolio.html` | Standalone portfolio page (separate from index section) |
-| `Brolocator.html` | Article: LoRA Messenger project |
-| `ProjectJune.html` | Article: Project June RC vehicle |
-| `csdp.html` | Article: EMA Smart Home System (school project) |
-| `pandus.html` | Article: Pandus Dispenser (school project) |
-| `comingsoon.html` | Placeholder for unfinished pages |
-| `404.html` | Custom 404 page |
-| `footer.html` | Shared footer — loaded via jQuery `.load()` on all pages |
-| `mainstyle.css` | Single global stylesheet for the entire site (~5400 lines). Homepage redesign lives in the `HOMEPAGE REDESIGN v3` / `v3.1` / `v3.2` sections at the end (`hp-*`, `ct-*`) |
-| `links.js` | Centralised URL/route config + all global JS functions |
-| `projects.js` | Homepage Projects gallery: search, filter (with transition animation) + chaptered reader modal (loaded only on `index.html`) |
-| `banner.js` | Banner-making utility |
-| `banner-making.html` | Interactive banner-maker tool (dev utility) |
-| `elecf.html` | Article: Elec-F Concept project |
-| `vercel.json` / `.vercelignore` | Vercel deploy config (static, no build): long-cache headers for assets, security headers; `.vercelignore` excludes dev tooling |
-| `robots.txt` / `sitemap.xml` / `llms.txt` | SEO + AI-crawler files (keep `sitemap.xml` and `llms.txt` in sync when adding pages) |
+Routes are file-based under `app/<route>/page.tsx`. There is no `links.js` router anymore.
 
-(`aboutme.html` was removed — its content lives in the homepage About bento; do not re-add links to it.)
+| Route | File | Purpose |
+|-------|------|---------|
+| `/` | `app/page.tsx` → `app/HomeClient.tsx` | Homepage (`hp-*` classes): hero, disciplines, About bento, Projects (spotlight + capabilities + filterable gallery + chaptered reader modal), HomeLab band, switchable photography gallery, CTA |
+| `/photography` | `app/photography/page.tsx` → `PhotographyClient.tsx` | Editorial hero + "My Tools" cards + six Lychee galleries |
+| `/contact` | `app/contact/page.tsx` → `ContactClient.tsx` | Email + socials (`ct-*`) |
+| `/credits` | `app/credits/page.tsx` | Colophon (`cr-*` + shared `ct-*` hero): built with Claude, hosted on Vercel, open-source tools |
+| `/homelab` | `app/homelab/page.tsx` | HomeLab page — **intentionally still in the older style; not yet redesigned** |
+| `/project-june` | `app/project-june/page.tsx` | Article: Project June 5G rover — **the gold-standard `art-*` article template** |
+| `/brolocator` | `app/brolocator/page.tsx` | Article: LoRA Messenger |
+| `/csdp` | `app/csdp/page.tsx` | Article: EMA Smart Home (has team rows + embedded PDFs) |
+| `/pandus` | `app/pandus/page.tsx` | Article: Pandus Dispenser |
+| `/elecf` | `app/elecf/page.tsx` | Article: Elec-F Concept |
+| `/comingsoon` | `app/comingsoon/page.tsx` | Placeholder (noindex) |
+| 404 | `app/not-found.tsx` | Custom 404 |
 
-## Routing / Navigation
+- **`next.config.mjs`** keeps permanent redirects from the old `.html` URLs to the clean routes (`/ProjectJune.html` → `/project-june`, etc.). `/portfolio` and `/portfolio.html` both redirect to `/#portfolio-items-holder` (the portfolio page was removed; its content lives in the homepage Projects section).
+- **`app/layout.tsx`** is the root layout: links `mainstyle.css` + animate.css, renders the `#loader`, `<ClientEffects/>`, `<Nav/>`, `{children}`, `<Footer/>`, plus Analytics/Speed Insights. It also holds site-wide `metadata` (metadataBase, OG defaults).
+- Legacy root `*.html` files (`index.html`, `ProjectJune.html`, …) are **dead** — Next does not serve them; they remain only as historical reference.
 
-All navigation is handled in `links.js` — URLs are stored as variables (e.g. `let Photography = "photography.html"`) and navigated with `window.location`. To add a new page or change a URL, update `links.js`.
+## Shared components (`components/`)
 
-## Shared Components
+- **`ArticleRecommendations.tsx`** (`'use client'`) — renders a "More to explore" project card grid at the end of every article page. Self-contained: includes all project data, the peek-modal system (same chapter content as homepage), and a "Load more" button (shows 3 cards initially, all on click). Takes an `exclude` prop (the current article's project ID, e.g. `"proj-june"`). Import it at the bottom of any article `main` element.
+- **`Nav.tsx`** (`'use client'`) — the nav with hamburger toggle; uses Next `<Link>`.
+- **`Footer.tsx`** (`'use client'`) — shared footer (logo, socials, credits link).
+- **`ClientEffects.tsx`** (`'use client'`) — global effects: page-loader fade, cursor spotlight, nav scroll glow, and the `[data-reveal]` scroll-reveal IntersectionObserver (re-runs on every route change via `usePathname`, so new pages animate in).
+- **`ArticleScrollSpy.tsx`** (`'use client'`) — highlights the active chapter in article rails. It observes `<section>` elements and toggles `.article-chapter-selected` on `.article-chapter-wrapper a[href="#id"]`. Article rails therefore carry BOTH classes: `class="art-chapters article-chapter-wrapper"`.
 
-- **Nav**: `nav.html` is injected via `$("#nav-holder").load("nav.html")` in `links.js`. Every page needs `<div class="nav-holder" id="nav-holder"></div>` and a `<script src="links.js">` to get the nav.
-- **Footer**: `footer.html` is injected via `$("#footers").load("footer.html")` in `links.js`. Every page needs `<div id="footers"></div>` and a `<script src="links.js">` to get the footer.
+## Design system (all in `public/mainstyle.css`)
 
-## CSS Conventions
+The file is one large stylesheet, organised by comment sections. Three families matter:
 
-- Single file `mainstyle.css` — sections are delineated by comments (e.g. `/* Photography */`, `/* Homelab */`, `/* Portfolio */`)
-- CSS custom properties (variables) are minimal — only font sizes in `:root` and some component-level `--var` patterns
-- Fonts loaded via `@font-face` from local `/fonts/` folder: `oswaldreg`, `oswaldbold`, `inter`, `dmsans`, `GreaterTheory`, `gcreg`, `ddt`, `mextrine`, `monda`, `roboto`
-- Color scheme: pure black background (`#000`), off-white text (`#e8e8e8`, `#d8d8d8`), accent blue (`#006bb3`, `#5e79db`)
-- Gradients and `backdrop-filter: blur()` used heavily for glassmorphism effects
-- Responsive breakpoints exist — mobile nav switches to hamburger menu
+- **Homepage** — `HOMEPAGE REDESIGN v3 / v3.1 / v3.2 / v3.3` near the end. Tokens live in `:root` as `--hp-*` (`--hp-glass`, `--hp-line`, `--hp-blue`, `--hp-indigo`, `--hp-sky`, `--hp-ink`, …). Reusable: `.hp-band`, `.hp-section`, `.hp-eyebrow`, `.hp-btn` / `.hp-btn-ghost`, `.hp-md-tag.personal|.school|.highlight`, `.hp-pf-*` (project cards/grid), `.hp-cap-*`, `.hp-spot-*`, `.seh-*` / `.peh-*` (editorial section headers), `.icon-stack`.
+- **Page heroes** — `.ct-wrap` + `.ct-aura` + `.ct-kicker` + `.ct-title` (with `<em>` gradient accent) + `.ct-sub` (contact/portfolio/photography/comingsoon/404 heroes). `.cr-*` for the credits cards. **Aura gotcha:** keep `<div class="ct-aura">` (or `hp-hero-aura`/`art-hero-aura`) as the first child and let the higher-specificity `> .aura` rule re-assert `position:absolute`, otherwise the `> *` `z-index:2` rule drops it into flow.
+- **Articles** — `ARTICLE REDESIGN` section at the very end. Namespace `.art-*`: `.art-hero` (feature header: `.art-hero-bg` img + `.art-hero-scrim` + `.art-hero-aura` + `.art-hero-inner`), `.art-back`, `.art-title`, `.art-lead`, `.art-toolrow`; `.art-body` (2-col grid) with sticky `.art-rail` + `.art-chapters`; `.art-section` blocks (use `data-reveal`); `.art-fig`+`<figcaption>`, `.art-grid` (2-up image gallery), `.art-video` / `.art-embed` / `.art-embed.art-pdf`, `.art-repo` (GitHub callout), `.art-team*` (csdp team rows), `.art-next` (closing CTA). Images are height-capped (`max-height:76vh`, `width:auto`) so tall portrait shots don't blow up the page.
 
-## JS Patterns
+**When building/extending a page, REUSE these classes.** New bespoke CSS for a single page should be a scoped `<style>` block in that page's component with a unique prefix, not a global edit (avoids touching the shared file and prevents collisions).
 
-- **Homepage Projects gallery** (`projects.js`): cards are `.hp-pf-card` with `data-type` (personal/school), optional `data-highlight="1"`, `data-search` keywords, and `data-article` (full-article URL). `setProjectFilter()`/`filterProjects()` handle the filter chips + search box (filter changes fade + stagger-in via the `.just-shown` animation). Two actions per card: the **"Peek summary"** button (`.hp-pf-peek`, a hover overlay on the thumb on desktop, persistent on touch via `@media (hover:none)`) calls `openProject()` to open the chaptered reader modal (`#hp-modal`); the footer **"Read article"** button calls `openArticle()` which navigates to the card's `data-article`. The modal clones each card's `<template class="hp-pf-detail">`, a reader of `.hp-rd-hero` image + `.hp-rd-chapter` blocks (optional `.hp-rd-fig` images) + a persuasive `.hp-rd-cta`. To add a project, copy a `.hp-pf-card` block in `index.html` (set `data-article`); no JS edits needed. Give a card an `id` to open its reader from elsewhere, e.g. the flagship spotlight calls `openProject('proj-june')`.
-- **Projects grid is flexbox** (`.hp-pf-grid { display:flex; justify-content:center }`), not grid, so partial rows stay centered. Cards are `box-sizing:border-box` with `flex: 0 1 calc((100% - 38px)/3)`. Note: the band keeps the legacy `id="portfolio-items-holder"` (nav anchor), whose old CSS is neutralized by `#portfolio-items-holder.hp-projects-band { ... }`.
-- **Flagship spotlight + Capabilities**: the Projects section opens with `.hp-spotlight` (a featured Project June card) and `.hp-cap` (a skills-by-category showcase, anchored `#capabilities`), both built from the resume content.
-- The old `toggleCard(contentId, menuId)` inline expand pattern is no longer used on the homepage (replaced by the gallery + modal); it is still referenced by other pages.
-- **Photography gallery switcher** (inline script at the bottom of `index.html`): `switchGallery(key, btn)` swaps the embedded Lychee album in place using `window.LycheeEmbed.createLycheeEmbed(node, {albumId})`, with a fade transition on `#hp-gallery-stage`. Album IDs are in the script; the mount node deliberately omits `data-lychee-embed` so the library's auto-init skips it.
-- Photo album expand: `expandPhoto(albumId)` in `links.js` removes `photography-restrict` class; `expandphoto()` (no args) handles the main highlights embed separately
-- All navigation uses `navigate(url)` in `links.js`; named shortcuts (`BucketCentralOnClick` etc.) kept for HTML onclick compatibility
-- Scroll-spy for article chapters uses `IntersectionObserver` in `links.js`
-- **Word rotators** (inline script in `index.html`): the script drives every `.hp-roll` on the page (hero "Creating with Intention." and the closing CTA "make something with intention."), cycling the synonyms in each one's `data-words` attr, animating out/in (`.is-out`/`.is-in`) and tweening the container width. Respects `prefers-reduced-motion`. The rotating `<em>` needs a roomy `line-height` (1.28) so the gradient (`background-clip:text`) doesn't slice off tall letter tops. A few other small touches live in the `v3.3` CSS: hero-kicker sheen, spotlight star pulse, staggered capability-card reveal.
-- **Aura gotcha** (`.hp-hero`, `.ct-wrap`, `.cr-hero`): each wrapper has a `> *` rule forcing children to `position: relative; z-index: 2`, which overrides the `.ct-aura`/aura's own `position: absolute` (equal specificity) and drops the 600px-tall aura into flow, pushing content way down. Always re-assert `position: absolute` on the aura with a `> .aura` selector (higher specificity).
-- Page loader: `#loader` div with `fadeOut()` on window load
+## SEO / AI scraping
 
-## Assets
+- **`public/robots.txt`, `public/sitemap.xml`, `public/llms.txt`** — these MUST live in `public/` (Next only serves `public/` at the root; copies in the repo root return 404). Keep `sitemap.xml` and `llms.txt` in sync with clean routes whenever you add/rename a page.
+- **Metadata**: server components export `const metadata: Metadata`. A page that needs client interactivity is split into a server `page.tsx` (which owns `metadata`) + a `*Client.tsx` (`'use client'`) child — see `app/page.tsx`/`HomeClient.tsx`, `app/contact/`, `app/photography/`. Never put `metadata` in a `'use client'` file (it silently does nothing).
+- **JSON-LD**: injected via `<script type="application/ld+json" dangerouslySetInnerHTML=...>`. Home = `Person` + `WebSite`; article pages = `Article`; portfolio = `ItemList`; photography = `ImageGallery`. Mirror the existing block when adding a page.
 
-- `/images/` — all site images, icons, GIFs, banners
-- `/fonts/` — all local font files
-- `/downloadable/` — files users can download (PPTX, PDF)
+## CSS conventions
 
-## Pages Still Incomplete / Placeholders
+- Single file `public/mainstyle.css`; sections delineated by comments.
+- Fonts via local `@font-face`: `oswaldreg`, `oswaldbold`, `inter`, `dmsans`, `gcreg`, `ddt`, `GreaterTheory`, `mextrine`, `monda`, `roboto` (in `public/fonts/`).
+- Pair a display face (oswald/gcreg) with a body face (dmsans/inter). Tight tracking on big headings, generous line-height on body.
+- Colors: pure black `#000`, off-white text `#e8e8e8`/`#d8d8d8`, accent blue `#0a7ec7`/`#006bb3`, indigo `#5e79db`, sky `#7fa8ff`. Glassmorphism via `var(--hp-glass)` + `backdrop-filter`.
+- Responsive: mobile nav is a hamburger; layouts collapse to single column. Always verify mobile (390px).
 
-Several article links point to `comingsoon.html`:
-- BucketCentral, Kauli, THT, ELECF, SOL, Minecraft, Copyboard article pages
-- `contact.html` and `credits.html` are now real pages (credits = the `ContentCredits` route, linked from the footer).
+## Assets (`public/`)
 
-## Copy / Content Conventions
+- `public/images/` — all images, icons, GIFs, videos (webm/mp4)
+- `public/fonts/` — local fonts
+- `public/downloadable/` — PPTX/PDF downloads
+- `public/mainstyle.css` — the global stylesheet
 
-- **No em dashes (`—`).** Prefer commas (or split into sentences). This applies to all user-facing copy.
-- When adding pages, update `sitemap.xml` and `llms.txt`, and keep the JSON-LD schema in `<head>` accurate.
+## Local development
 
-## Known Quirks
+- **Dev server:** `npm run dev` (Next defaults to port 3000; this project is often run on **3001**). The user starts it themselves — do not start a second instance or restart it.
+- **Do NOT run `npm run build` (`next build`) while the dev server is running** — build overwrites `.next` and the dev server starts serving 500s until it is restarted. For type validation use `npx tsc --noEmit` instead.
 
-- `mainstyle.css` is one large file — styles for all pages live here, organised by comment sections
-- Navigation links in HTML use `onclick="navigate(VariableName); return false;"` with real `href` fallbacks
-- The homepage was redesigned ("Refined Editorial Dark", `hp-*` classes). The old homepage classes (`.hero`, `.index-*`, `.abm-top*`, `.portfolio-items2`/`.pf-*`) remain in `mainstyle.css` for other pages but are no longer used by `index.html`
-- `testing.html` and `testing2.html` are dev scratch files, not part of the real site
+## Screenshot workflow
 
-## Always Do First
-- **Invoke the `frontend-design` skill** before writing any frontend code, every session, no exceptions.
-
-## Reference Images
-- If a reference image is provided: match layout, spacing, typography, and color exactly. Swap in placeholder content (images via `https://placehold.co/`, generic copy). Do not improve or add to the design.
-- If no reference image: design from scratch with high craft (see guardrails below).
-- Screenshot your output, compare against reference, fix mismatches, re-screenshot. Do at least 2 comparison rounds. Stop only when no visible differences remain or user says so.
-
-## Local Server
-- **Always serve on localhost** — never screenshot a `file:///` URL.
-- Start the dev server: `node serve.mjs` (serves the project root at `http://localhost:3000`)
-- `serve.mjs` lives in the project root. Start it in the background before taking any screenshots.
-- If the server is already running, do not start a second instance.
+- Puppeteer is at `/opt/homebrew/lib/node_modules/puppeteer`.
+- **`shot.mjs`** (preferred) — `node shot.mjs <url> <label> [desktop|mobile|WxH] [full]`. It scrolls the page first so `[data-reveal]` sections animate in and lazy images load. Scroll to a section with `SCROLLY=<px> node shot.mjs <url> <label> desktop`. Saves to `temporary screenshots/screenshot-N-…png` (auto-incremented).
+- `screenshot.mjs` — the older desktop-only, top-of-page helper.
+- Always screenshot from `http://localhost:<port>`, never `file:///`. After capturing, Read the PNG and compare against the homepage / `project-june` reference; fix mismatches and re-shoot (≥2 passes).
 
 ## Deployment
-- The site is a static site, deployable to **Vercel** with no build step (framework preset "Other", no build command, output = repo root).
-- `vercel.json` sets long-cache headers for static assets and basic security headers; `cleanUrls` is intentionally **off** because links use explicit `.html` (e.g. `navigate("photography.html")`).
-- `.vercelignore` keeps dev tooling (`serve.mjs`, `screenshot*.mjs`, `temporary screenshots/`, scratch HTML, PDFs) out of the deploy. `404.html` is served automatically by Vercel.
 
-## Screenshot Workflow
-- Puppeteer is installed globally at `/opt/homebrew/lib/node_modules/puppeteer`. Chrome cache is at `~/.cache/puppeteer/`.
-- **Always screenshot from localhost:** `node screenshot.mjs http://localhost:3000`
-- Screenshots are saved automatically to `./temporary screenshots/screenshot-N.png` (auto-incremented, never overwritten).
-- Optional label suffix: `node screenshot.mjs http://localhost:3000 label` → saves as `screenshot-N-label.png`
-- `screenshot.mjs` lives in the project root. Use it as-is.
-- After screenshotting, read the PNG from `temporary screenshots/` with the Read tool — Claude can see and analyze the image directly.
-- When comparing, be specific: "heading is 32px but reference shows ~24px", "card gap is 16px but should be 24px"
-- Check: spacing/padding, font size/weight/line-height, colors (exact hex), alignment, border-radius, shadows, image sizing
+- Static-friendly Next.js app on **Vercel** (every route prerenders as static). `npm run build` must pass.
+- `vercel.json` sets security headers. `.vercelignore` keeps dev tooling (`serve.mjs`, `screenshot*.mjs`, `shot.mjs`, `temporary screenshots/`, scratch HTML, PDFs) out of the deploy.
 
-## Anti-Generic Guardrails
-- **Colors:** Never use default Tailwind palette (indigo-500, blue-600, etc.). Pick a custom brand color and derive from it.
-- **Shadows:** Never use flat `shadow-md`. Use layered, color-tinted shadows with low opacity.
-- **Typography:** Never use the same font for headings and body. Pair a display/serif with a clean sans. Apply tight tracking (`-0.03em`) on large headings, generous line-height (`1.7`) on body.
-- **Gradients:** Layer multiple radial gradients. Add grain/texture via SVG noise filter for depth.
-- **Animations:** Only animate `transform` and `opacity`. Never `transition-all`. Use spring-style easing.
-- **Interactive states:** Every clickable element needs hover, focus-visible, and active states. No exceptions.
-- **Images:** Add a gradient overlay (`bg-gradient-to-t from-black/60`) and a color treatment layer with `mix-blend-multiply`.
-- **Spacing:** Use intentional, consistent spacing tokens — not random Tailwind steps.
-- **Depth:** Surfaces should have a layering system (base → elevated → floating), not all sit at the same z-plane.
+## Pages still incomplete / placeholders
 
-## Hard Rules
-- Do not add sections, features, or content not in the reference
-- Do not "improve" a reference design — match it
-- Do not stop after one screenshot pass
-- Do not use `transition-all`
-- Do not use default Tailwind blue/indigo as primary color
+- These project articles still point to `/comingsoon`: Kauli, Series One Light, Copy Board, Web Development, Minecraft.
+- `/homelab` has not yet been moved to the editorial redesign.
+
+## Copy / content conventions
+
+- **No em dashes (`—`).** Use commas or split into sentences. Applies to all user-facing copy.
+- When adding a page: update `public/sitemap.xml` + `public/llms.txt`, add the right JSON-LD, and ensure `metadata` is on a server component.
+
+## After every change — checklist
+
+Run through this after ANY code change before reporting done:
+
+1. **Mobile responsiveness** — check the affected page at 390px width. Layouts must collapse gracefully; no overflow, truncated text, or broken spacing.
+2. **SEO / AI crawlers** — if a page was added or renamed: update `public/sitemap.xml`, `public/llms.txt`, ensure the page's server component exports `metadata` with title + description + canonical, and has JSON-LD structured data.
+3. **No em dashes in rendered copy** — use commas or split sentences. Never `—` in any text visible to the user.
+4. **Update CLAUDE.md** — if the architecture, routing, components, or CSS conventions changed, reflect it here.
+5. **Update README.md** — if user-facing information (stack, deploy steps, routes, features) changed, update it.
+
+## Always do first
+
+- **Invoke the `frontend-design` skill** before writing any frontend code, every session, no exceptions.
+
+## Reference images
+
+- If a reference image is provided: match layout, spacing, typography, and color exactly. Swap in placeholder content. Do not improve or add to the design.
+- If no reference: design from scratch with high craft (see guardrails). For this site, "the reference" is usually the homepage / `project-june` editorial language — match it.
+- Screenshot your output, compare against the reference, fix mismatches, re-screenshot. At least 2 rounds.
+
+## Anti-generic guardrails
+
+- **Colors:** custom brand palette only (never default Tailwind indigo/blue).
+- **Shadows:** layered, color-tinted, low opacity (never flat `shadow-md`).
+- **Typography:** distinct display + body pairing; tight tracking on large headings, line-height ~1.7 on body.
+- **Gradients/texture:** layered radial gradients, subtle grain/aura for depth.
+- **Animations:** only `transform` and `opacity`; spring-style easing; never `transition-all`.
+- **Interactive states:** every clickable element needs hover, focus-visible, and active states.
+- **Images:** gradient overlay/scrim for legibility over photos.
+- **Depth:** a layering system (base → elevated → floating), not one flat z-plane.
+
+## Hard rules
+
+- Do not add sections/features/content not asked for; match the reference, don't "improve" it.
+- Do not stop after one screenshot pass.
+- Do not use `transition-all` or default Tailwind blue/indigo as primary color.

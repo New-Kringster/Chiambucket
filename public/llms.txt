@@ -1,0 +1,37 @@
+# Chiambucket, Braven Chiam
+
+> Braven Chiam is an engineer who designs, based in Singapore. He builds hardware and software with a design-first mindset, designs interfaces and media, shoots photography, and runs a solar-powered self-hosted homelab. "Chiambucket" is his personal website and the home of his self-hosted services.
+
+## About Braven
+- An engineer-designer: believes every engineer should also be a designer, grounded in function and guided by human experience.
+- Year 3 Electronic & Computer Engineering student at Nanyang Polytechnic (NYP), Singapore. Diploma 2024 to 2027, Director's List (Y2S1).
+- Four disciplines that work together: Engineering, Design, Photography, and a HomeLab.
+- Engineering: microcontrollers (ESP32, Arduino, ATmega328), custom PCB design (KiCAD, EAGLE), 3D CAD (Onshape, Blender), embedded firmware (PlatformIO, C/C++). Mostly self-taught.
+- Wireless: LoRa (point-to-point), ESP-NOW, MQTT, WebRTC, SocketIO, 5G cellular.
+- Design: UI/interface design (Figma), posters and graphics (Photoshop), video (DaVinci Resolve, Premiere Pro), slide design (PowerPoint), 3D (Spline, Blender).
+- Infrastructure: Proxmox, Docker, Nginx, Tailscale, Wireguard, Cloudflare, Unifi.
+- Experience: macOS (4 years), Windows (10 years, including Windows Server), Linux (Debian, Ubuntu, Mint, UnRAID).
+- Based in Singapore. Email: braven@chiambucket.com. Phone: +65 9710 0366.
+- The site is built with Next.js 15 (React) and hosted on Vercel.
+
+## Key pages
+- [Home](https://www.chiambucket.com/): a single-page overview of everything Braven does, with a project gallery, capability showcase and photography.
+- [Contact](https://www.chiambucket.com/contact): email (braven@chiambucket.com) and social links.
+- [Photography](https://www.chiambucket.com/photography): galleries including Highlights, Europe, China, New Zealand, 21:9 and General.
+- [HomeLab](https://www.chiambucket.com/homelab): 3 servers, 18TB+ storage and 16+ self-hosted Docker apps (Immich, PaperlessNGX, Syncthing, Nginx Proxy Manager, NetData, Lychee, Open WebUI, Portainer, Crafty and more). The public site itself is now hosted on Vercel.
+- [Credits](https://www.chiambucket.com/credits): colophon. The site was designed and built with Claude Opus 4 (Anthropic) and is hosted on Vercel.
+
+## Projects
+- Project June: a 5G radio-controlled vehicle with 3 simultaneous live WebRTC video streams, MQTT control and telemetry, a full sensor suite (Neo8M GPS, gyroscope, accelerometer, barometer, ultrasonic, light), custom PWM motor control and an Onshape chassis. Built in 3 weeks. [Article](https://www.chiambucket.com/project-june)
+- LoRA Messenger: an ESP32 messenger with peer-to-peer text over LoRa and 2-way voice over ESP-NOW, a custom reflow-soldered KiCAD PCB, an Onshape 3D-printed case, dual OLEDs and TP4056 charging. [Article](https://www.chiambucket.com/brolocator)
+- EMA Smart Home System: a 5-node BeagleBone Black smart-home system (climate, intrusion, energy, fire, shower timing) with a Python Flask + SocketIO backend and a live Spline 3D dashboard. [Article](https://www.chiambucket.com/csdp)
+- Pandus Dispenser: a 6-part 3D-printed water dispenser driven by an Arduino Uno and PyFirmata. [Article](https://www.chiambucket.com/pandus)
+- ELEC-F Concept: a conceptual M5Stack safety product designed to help prevent fatalities in walk-in freezers. [Article](https://www.chiambucket.com/elecf)
+- Copy Board: a KiCAD recreation of NYP's ATMega328 dev board, with sourced replacement parts and first hands-on reflow soldering.
+- Other projects: Kauli Concept (Blender), Series One Light (ultralight 20g mouse), a Web Development project, and a Minecraft live map.
+
+## Contact
+- Email: braven@chiambucket.com
+- YouTube: https://www.youtube.com/@newkringster2564
+- Instagram: https://www.instagram.com/bombastic_demise
+- GitHub: https://github.com/New-Kringster
