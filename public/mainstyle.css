@@ -1124,31 +1124,13 @@ html {
   width: 80px;
 }
 
-.footer-center-txt {
-  width: 100%;
-  text-align: center;
-  font-size: 0.8rem;
-  padding-bottom: 2rem;
-}
-
 /* F-Center */
-.footer-center-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  gap: 50px;
-}
 .footer-center {
   border-top: 1px solid #454545;
   border-left: 1px solid #454545;
   background: linear-gradient(175deg, rgb(37, 37, 37) 0%, rgb(21, 21, 21) 100%);
   padding: 15px 25px;
   border-radius: 999px;
-}
-
-.footer-social-text {
-  color: #e8e8e8;
 }
 
 /* F-Right */
@@ -1163,29 +1145,62 @@ html {
 .footer-right-text button{
   color: #5e79db;
 }
-/* Social Buttons */
-
-.btn {
-  display: grid;
-  place-items: center;
-  transition: ease 0.5s;
+/* ── Social dock: icons rest dim + monochrome, bloom into brand colour with a
+   lifted underline + name tooltip on hover/focus (echoes the glass-pill language
+   used across hp-* cards). `--brand` is set per-icon from Footer.tsx. ── */
+.footer-social { position: relative; display: flex; align-items: center; gap: 2px; }
+.footer-social-btn {
+  position: relative; display: grid; place-items: center;
+  width: 46px; height: 46px; border-radius: 13px;
+  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
 }
-
-.btn:hover {
- transform: scale(1.1);
+.footer-social-btn::before {
+  content: ''; position: absolute; inset: 2px; border-radius: 11px;
+  background: rgba(255,255,255,0.05); border: 1px solid transparent;
+  opacity: 0; transform: scale(0.9);
+  transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease;
 }
-
-.btn svg {
-  transition: transform 0.5s;
+.footer-social-btn::after {
+  content: ''; position: absolute; bottom: 6px; left: 50%; width: 0; height: 2px;
+  border-radius: 2px; background: var(--brand, var(--hp-sky)); transform: translateX(-50%);
+  opacity: 0; transition: width 0.32s cubic-bezier(0.16,1,0.3,1), opacity 0.25s ease;
 }
-
-.btn:hover svg {
-  transform: scale(0.9);
-  fill: #333333;
+.footer-social-btn:hover,
+.footer-social-btn:focus-visible { transform: translateY(-3px); }
+.footer-social-btn:hover::before,
+.footer-social-btn:focus-visible::before {
+  opacity: 1; transform: scale(1); border-color: color-mix(in srgb, var(--brand, var(--hp-sky)) 35%, transparent);
 }
-/* The GitHub glyph carries its own inline fill="#fff" on the <path>, which the
-   svg-level hover fill can't reach; recolour the path directly so it dims too. */
-.btn:hover svg path { fill: #333333; }
+.footer-social-btn:hover::after,
+.footer-social-btn:focus-visible::after { width: 16px; opacity: 1; }
+.footer-social-btn svg {
+  position: relative; z-index: 1; width: 19px; height: 19px;
+  filter: grayscale(1) opacity(0.45);
+  transition: filter 0.4s ease, transform 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+.footer-social-btn:hover svg,
+.footer-social-btn:focus-visible svg {
+  filter: grayscale(0) opacity(1) drop-shadow(0 0 10px color-mix(in srgb, var(--brand, var(--hp-sky)) 55%, transparent));
+  transform: scale(1.1);
+}
+.footer-social-btn:focus-visible { outline: none; }
+.footer-social-btn:focus-visible::before { box-shadow: 0 0 0 1px var(--hp-sky); }
+.footer-social-tip {
+  position: absolute; bottom: calc(100% + 14px); left: 50%; transform: translate(-50%, 6px);
+  padding: 6px 12px; border-radius: 8px; white-space: nowrap;
+  font-family: 'inter'; font-size: 0.66rem; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase;
+  background: var(--hp-ink); color: #101114; pointer-events: none;
+  opacity: 0; transition: opacity 0.25s ease, transform 0.32s cubic-bezier(0.16,1,0.3,1);
+}
+.footer-social-tip::after {
+  content: ''; position: absolute; top: 100%; left: 50%; width: 7px; height: 7px;
+  background: var(--hp-ink); border-radius: 0 0 2px 0; transform: translateX(-50%) rotate(45deg) translateY(-3px);
+}
+.footer-social-btn:hover .footer-social-tip,
+.footer-social-btn:focus-visible .footer-social-tip { opacity: 1; transform: translate(-50%, 0); }
+@media (hover: none) {
+  .footer-social-tip { display: none; }
+}
 
 /* ── Shared detail modal (capabilities + photography tools) ── */
 .im-scrim {
@@ -5043,6 +5058,9 @@ html[data-theme="datacenter"] {
 .hp-tile-tools { justify-content: space-between; gap: 1rem; }
 .hp-tile-tools .hp-iconrow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 11px; }
 .hp-tile-tools .hp-iconrow img { width: 100%; height: auto; aspect-ratio: 1; padding: 11px; border-radius: 14px; }
+/* Rolling word echoes the tile's own copy ("raster / vector / 3D / motion"); a soft
+   sky tint + slightly heavier weight sets it apart from the surrounding sentence. */
+.hp-tools-p .hp-roll em { font-family: 'dmsans'; font-weight: 600; color: var(--hp-sky); }
 
 /* Media tiles (davinci / photo) */
 .hp-media-tile { position: relative; overflow: hidden; }
@@ -5674,15 +5692,14 @@ html[data-theme="datacenter"] {
    bigger mobile section titles · slimmer mobile search · card peek
    ═══════════════════════════════════════════════════════════════ */
 
-/* ── Hero word rotator: "Creating with Intention / Purpose / ..." ── */
-.hp-roll { display: inline-block; white-space: nowrap; transition: width 0.5s cubic-bezier(0.16,1,0.3,1); }
-/* taller line-height gives the gradient (background-clip:text) leading room so the
-   tops of tall letters like 'I' aren't sliced off; baseline alignment is preserved */
-.hp-roll em { display: inline-block; line-height: 1.28; }
-.hp-roll em.is-out { animation: hpRollOut 0.38s cubic-bezier(0.6,0,0.7,0.2) forwards; }
-.hp-roll em.is-in { animation: hpRollIn 0.55s cubic-bezier(0.16,1,0.3,1) both; }
-@keyframes hpRollOut { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-0.46em); opacity: 0; } }
-@keyframes hpRollIn { from { transform: translateY(0.52em); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+/* ── Hero word rotator: "Creating with Intention / Purpose / ..." ──
+   RollingWord (components/RollingWord.tsx) drives the cross-fade + spring
+   width with framer-motion; this just lays out the track + measuring row.
+   Taller line-height gives the gradient (background-clip:text) leading room
+   so the tops of tall letters like 'I' aren't sliced off. */
+.hp-roll { position: relative; display: inline-block; overflow: hidden; vertical-align: top; white-space: nowrap; }
+.hp-roll em { display: inline-block; line-height: 1.28; white-space: nowrap; }
+.hp-roll-measure { position: absolute; top: 0; left: 0; visibility: hidden; pointer-events: none; display: flex; }
 
 /* ── Micro-animation: slow sheen across the hero kicker ── */
 .hp-hero-kicker {
@@ -5755,8 +5772,6 @@ html[data-theme="datacenter"] {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hp-roll em.is-out, .hp-roll em.is-in { animation: none; }
-  .hp-roll { transition: none; }
   .hp-hero-kicker { animation: none; }
   .hp-spot-badge svg { animation: none; }
   .hp-cap-card { opacity: 1; }
