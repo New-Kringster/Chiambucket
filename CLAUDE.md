@@ -43,6 +43,7 @@ Routes are file-based under `app/<route>/page.tsx`. There is no `links.js` route
 - **`Footer.tsx`** (`'use client'`) — shared footer (logo, socials, credits link).
 - **`ClientEffects.tsx`** (`'use client'`) — global effects: page-loader fade, cursor spotlight, nav scroll glow, and the `[data-reveal]` scroll-reveal IntersectionObserver (re-runs on every route change via `usePathname`, so new pages animate in).
 - **`ArticleScrollSpy.tsx`** (`'use client'`) — highlights the active chapter in article rails. It observes `<section>` elements and toggles `.article-chapter-selected` on `.article-chapter-wrapper a[href="#id"]`. Article rails therefore carry BOTH classes: `class="art-chapters article-chapter-wrapper"`.
+- **`ArticleLightbox.tsx`** (`'use client'`, mounted once in `app/layout.tsx`) — global click-to-zoom for article images. A delegated listener opens any `<img>` inside `.art-body` in a full-screen viewer (click image to toggle a 2.4x loupe that follows the cursor; Esc/scrim/× to close). A floating magnifier cue tracks hovered images as the affordance. CSS (`.art-lb*`, `.art-zoom-cue`, the `cursor:zoom-in` hover-lift) lives in the ARTICLE section of `mainstyle.css`. Opt a subtree out with `data-no-zoom` (used by interactive widgets and tiny icon grids); linked images (`<a><img></a>`) are skipped automatically.
 
 ## Design system (all in `public/mainstyle.css`)
 

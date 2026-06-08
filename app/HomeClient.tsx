@@ -178,6 +178,7 @@ export default function HomeClient() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalAnimOpen, setModalAnimOpen] = useState(false);
   const [activeProject, setActiveProject] = useState<string | null>(null);
+  const [projectsExpanded, setProjectsExpanded] = useState(false); // mobile-only collapse
 
   /* ── Modal ── */
   const openProject = (cardEl: Element | string) => {
@@ -571,12 +572,12 @@ export default function HomeClient() {
               <label className="hp-pf-search-wrap">
                 <SR />
                 <input id="hp-pf-search" className="hp-pf-search" type="search" placeholder="Search projects, tools, tech…"
-                  onInput={() => (window as any).filterProjects?.()} aria-label="Search projects" />
+                  onInput={() => { setProjectsExpanded(true); (window as any).filterProjects?.(); }} aria-label="Search projects" />
               </label>
               <div className="hp-pf-filters" role="group" aria-label="Filter projects">
                 {[['all','All'],['highlight','Highlights'],['personal','Personal'],['school','School']].map(([f, label], i) => (
                   <button key={f} className={`hp-pf-filter${i === 0 ? ' is-active' : ''}`} data-filter={f}
-                    onClick={(e) => (window as any).setProjectFilter?.(e.currentTarget)}>
+                    onClick={(e) => { setProjectsExpanded(true); (window as any).setProjectFilter?.(e.currentTarget); }}>
                     {label}
                   </button>
                 ))}
@@ -584,7 +585,7 @@ export default function HomeClient() {
             </div>
 
             {/* Project cards grid */}
-            <div className="hp-pf-grid" id="hp-pf-grid">
+            <div className={`hp-pf-grid${projectsExpanded ? '' : ' is-clamped'}`} id="hp-pf-grid">
 
               {/* Project June */}
               <article id="proj-june" className="hp-pf-card" data-article="/project-june" data-type="personal" data-highlight="1" data-search="project june 5g rc rover vehicle webrtc mqtt esp32 gps gyroscope laser spline cellular video personal highlight">
@@ -757,6 +758,11 @@ export default function HomeClient() {
               </article>
 
             </div>
+            {!projectsExpanded && (
+              <div className="hp-pf-showmore-wrap">
+                <button className="hp-pf-showmore" onClick={() => setProjectsExpanded(true)}>Show all projects <CR /></button>
+              </div>
+            )}
             <p className="hp-pf-empty" id="hp-pf-empty" hidden>No projects match that search. Try another keyword.</p>
           </div>
         </section>
@@ -767,11 +773,11 @@ export default function HomeClient() {
             <div className="hp-homelab-text">
               <span className="hp-eyebrow">Infrastructure</span>
               <h2 className="hp-homelab-h">Servers that turn clean energy into experiences.</h2>
-              <p className="hp-homelab-p">The Chiambucket homelab runs a stack of self-hosted services on solar export credits, with Ubiquiti networking and open-source Docker apps behind it. Lately I&apos;m leaning more toward cloud hosting too, so this site itself now lives on Vercel.</p>
+              <p className="hp-homelab-p">My homelab runs a stack of self-hosted services on solar export credits, with Ubiquiti networking and open-source Docker apps behind it. Lately I&apos;m leaning more toward cloud hosting too, so this site itself now lives on Vercel.</p>
               <div className="hp-homelab-stats">
                 <div className="hp-homelab-stat"><b>3</b><span>servers</span></div>
-                <div className="hp-homelab-stat"><b>18TB+</b><span>usable storage</span></div>
-                <div className="hp-homelab-stat"><b>16+</b><span>self-hosted apps</span></div>
+                <div className="hp-homelab-stat"><b>24TB</b><span>usable storage</span></div>
+                <div className="hp-homelab-stat"><b>38</b><span>self-hosted apps</span></div>
               </div>
               <div className="hp-stack-strip">
                 <div className="hp-stack-label">Running right now</div>

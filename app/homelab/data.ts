@@ -17,6 +17,13 @@ export const WEIGHT_META: Record<Weight, { label: string; level: number }> = {
   diagnostic:  { label: 'On demand',     level: 2 },
 };
 
+export interface ServerDetail {
+  tagline: string;
+  story: string[];                       // expanded narrative paragraphs
+  highlights: string[];                  // quick "what makes it matter" bullets
+  visual: 'runs' | 'pxe' | 'wake';       // which animated explainer to render
+}
+
 export interface Server {
   id: string;
   name: string;
@@ -27,6 +34,7 @@ export interface Server {
   statusLabel: string;
   specs: { k: string; v: string }[];
   blurb: string;
+  detail: ServerDetail;
 }
 
 export const SERVERS: Server[] = [
@@ -48,6 +56,21 @@ export const SERVERS: Server[] = [
     ],
     blurb:
       'The workhorse. Unraid drives a parity-protected array for bulk data plus a ZFS NVMe mirror for anything that needs speed, and it hosts the bulk of the Docker stack. Almost everything you reach on the network ends up here.',
+    detail: {
+      tagline: 'The workhorse that holds it all.',
+      story: [
+        'NewMain is the heart of the rack. Unraid lets me pool mismatched drives into one parity-protected array for bulk data, while a separate ZFS mirror of two NVMe drives handles anything that needs real speed: Docker app-data, databases and the containers that cannot wait on spinning disks.',
+        'Almost every service on this page runs here. When you open a photo, drop a file, or hit any chiambucket.com subdomain, this is the machine that answers. The GTX 1070 inside it does the heavy pixel work too: video transcoding and the face recognition that powers Immich photo search.',
+        'It is the one node I keep boring on purpose. Boring means it stays up, and everything else leans on it.',
+      ],
+      highlights: [
+        'Parity array survives a two-drive failure',
+        'ZFS NVMe mirror for hot app-data and VM disks',
+        'Hosts the bulk of the Docker stack',
+        'GTX 1070 drives Immich face recognition, ML and transcoding',
+      ],
+      visual: 'runs',
+    },
   },
   {
     id: 'caca',
@@ -66,6 +89,21 @@ export const SERVERS: Server[] = [
     ],
     blurb:
       'A tiny ThinkCentre that used to be my main server. It now runs the always on half of a Proxmox PXE cluster, hosting the CasaOS and Debian virtual machines that used to live on bare metal.',
+    detail: {
+      tagline: 'Small, silent, always on.',
+      story: [
+        'CaCa is a tiny ThinkCentre that used to be my main server. Instead of retiring it, I turned it into the always-on half of a Proxmox PXE cluster.',
+        'It carries no operating system of its own. It network-boots over PXE, pulling its disk over the wire instead of off a local drive, then runs the CasaOS and Debian virtual machines that used to live on bare metal.',
+        'Because it sips power, this is the node that stays awake around the clock, so something is always listening even when the heavy iron is asleep.',
+      ],
+      highlights: [
+        'No local OS drive, pure PXE network boot',
+        'Hosts the CasaOS and Debian VMs',
+        'Low power draw, online 24/7',
+        'Clusters with Adell for live migration',
+      ],
+      visual: 'pxe',
+    },
   },
   {
     id: 'adell',
@@ -84,6 +122,21 @@ export const SERVERS: Server[] = [
     ],
     blurb:
       'The heavy iron. Twenty Xeon cores and 128 GB of RAM, joined to the same PXE cluster as CaCa. It is hungry, so it stays asleep and only wakes through UpSnap when a job actually needs the muscle.',
+    detail: {
+      tagline: 'Heavy iron, only when it earns it.',
+      story: [
+        'Adell is the muscle: twenty Xeon cores and 128 GB of RAM in the same Proxmox cluster as CaCa. That power is hungry, so it does not run around the clock.',
+        'It sleeps until a job actually needs it. One button in UpSnap sends a Wake-on-LAN packet, Adell boots over the network, does the heavy lifting, then drops back to sleep.',
+        'It is my lesson in spending watts deliberately: capacity on tap, not capacity always burning.',
+      ],
+      highlights: [
+        'Twenty Xeon cores, 128 GB RAM',
+        'Wakes on demand via Wake-on-LAN',
+        'PXE-booted, no local OS drive',
+        'Idle and near-silent until a heavy job lands',
+      ],
+      visual: 'wake',
+    },
   },
 ];
 
@@ -98,6 +151,7 @@ export interface Service {
   url?: string;        // public link shown on the card
   statusKey?: string;  // hostname pinged by the live-status route
   featured?: boolean;  // the current build, surfaced first with an accent
+  long?: string[];     // deeper explanation shown in the detail modal
 }
 
 export const CATEGORIES = [
@@ -113,12 +167,20 @@ export const SERVICES: Service[] = [
   {
     name: 'OpenClaw', icon: '/images/openclaw-icon.webp', category: 'Project Backbone', weight: 'dev', hosts: ['NewMain'], featured: true,
     blurb: 'My current build. An agentic workflow runner I am wiring up so agents can drive real tasks against the lab, the rack teaching itself to run itself. Very much under construction.',
+    long: [
+      'OpenClaw is the project I am actively building right now. The idea is to give an agent a safe seat inside the lab so it can run real jobs: spin up a container, check a service, ship a small app, and report back.',
+      'It is the natural next step after wiring Claude into a VM I can SSH into. Instead of me being the one who clicks every button, the lab starts to operate parts of itself, with me watching the results.',
+    ],
   },
 
   // ── Edge & Access ──
   {
     name: 'Nginx Proxy Manager', icon: '/images/npm-icon.webp', category: 'Edge & Access', weight: 'very-high', hosts: ['NewMain'],
     blurb: 'The front door. Every container points here. NPM terminates SSL and routes each chiambucket.com subdomain to the right service, now hardened with a CrowdSec bouncer that auto bans hostile traffic.',
+    long: [
+      'Everything public goes through here first. One inbound address hits NPM, which terminates SSL and forwards each chiambucket.com subdomain to the right container behind it, so nothing else is ever exposed directly.',
+      'The CrowdSec bouncer sits in front and watches for the patterns of an attack, then quietly bans the source before it becomes a problem. It is the single most important box to keep healthy, because if it falls over, everything public goes with it.',
+    ],
   },
   {
     name: 'Tailscale', icon: '/images/tailscale-icon.webp', category: 'Edge & Access', weight: 'high', hosts: ['NewMain'],
@@ -141,6 +203,10 @@ export const SERVICES: Service[] = [
   {
     name: 'Immich', icon: '/images/immich-icon.webp', category: 'Files & Sharing', weight: 'extreme', hosts: ['NewMain'],
     blurb: 'My self-hosted Google Photos. Automatic phone backup, machine learning search, and albums, all on my own storage. The single most used service in the rack.',
+    long: [
+      'Immich is the reason the whole rack earns its keep. Every photo and video off my phone backs up here automatically, then lives on my own storage instead of a subscription I rent forever.',
+      'It is also the heaviest tenant on NewMain. The GTX 1070 accelerates the machine learning behind its search and face grouping, exactly the kind of always-on workload that taught me how to budget CPU, GPU, memory and storage for something real.',
+    ],
   },
   {
     name: 'Lychee', icon: '/images/lychee-icon.webp', category: 'Files & Sharing', weight: 'high', hosts: ['NewMain'],
@@ -160,6 +226,10 @@ export const SERVICES: Service[] = [
   {
     name: 'File Browser Quantum', icon: '/images/fbq-icon.webp', category: 'Files & Sharing', weight: 'high', hosts: ['NewMain'],
     blurb: 'Web access to the same files I reach over NFS and SMB at home, with link sharing on top. Still the latest stop in a long hunt for the perfect browser, after Nextcloud, FileBrowser, Alist, and SFTPGo.',
+    long: [
+      'This is the current answer to a question I keep re-asking: what is the cleanest way to get at my files from a browser? It serves the exact same data I already reach over NFS and SMB, plus shareable links on top.',
+      'It earned its spot the hard way, after a run through Nextcloud, the original FileBrowser, Alist and SFTPGo. Each one taught me something about how I actually use storage, and File Browser Quantum is what stuck, for now.',
+    ],
   },
   {
     name: 'Syncthing', icon: '/images/syncthing-icon.webp', category: 'Files & Sharing', weight: 'low', hosts: ['NewMain'],
@@ -216,6 +286,10 @@ export const SERVICES: Service[] = [
   {
     name: 'coturn', icon: '/images/coturn-icon.png', iconRound: true, category: 'Project Backbone', weight: 'low', hosts: ['NewMain'],
     blurb: 'A TURN and STUN server I stood up for Project June, so its three WebRTC camera streams could punch through cellular NAT.',
+    long: [
+      'coturn is the clearest example of the homelab feeding a hardware project. Project June streams three live camera feeds over a 5G connection, and cellular networks hide devices behind layers of NAT that WebRTC cannot cross on its own.',
+      'Standing up my own TURN and STUN relay gave those streams a fixed point on the public internet to meet at, so the rover could be driven from anywhere. It is a quiet, low-load service that simply has to be there when it counts.',
+    ],
   },
   {
     name: 'Mosquitto', icon: '/images/mosquitto-icon.svg', category: 'Project Backbone', weight: 'low', hosts: ['NewMain'],

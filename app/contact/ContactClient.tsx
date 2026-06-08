@@ -79,6 +79,13 @@ export default function ContactClient() {
             </svg>
             GitHub
           </a>
+          <a className="ct-social" href="https://www.linkedin.com/in/braven-chiambucket/" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="4" stroke="#0a66c2" strokeWidth="1.8" />
+              <path d="M7.5 10.5V17M7.5 7.5v.01M11.5 17v-3.5a2 2 0 0 1 4 0V17M11.5 10.5V17" stroke="#0a66c2" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            LinkedIn
+          </a>
           <a className="ct-social" href="https://wa.me/6597100366" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M3 21l1.6-4.3A8 8 0 1 1 12 20a8.4 8.4 0 0 1-4-1L3 21z" stroke="#25d366" strokeWidth="1.8" strokeLinejoin="round" />

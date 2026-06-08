@@ -119,8 +119,8 @@ export default function SystemMap() {
         <svg className="hl2-map-svg" viewBox="0 0 1120 640" role="img" aria-label="Network topology diagram">
           {/* VLAN zones (only the two adjacent server-rack groups get a backing) */}
           <g className="hl2-zones">
-            <Zone x={20} y={384} w={136} h={98} color={VLAN_COLOR.unraid} label="UNRAID VLAN" active={active === 'unraid'} />
-            <Zone x={164} y={384} w={298} h={98} color={VLAN_COLOR.server} label="SERVER VLAN" dashed active={active === 'server'} />
+            <Zone x={19} y={384} w={142} h={98} color={VLAN_COLOR.unraid} label="UNRAID VLAN" active={active === 'unraid'} />
+            <Zone x={169} y={384} w={292} h={98} color={VLAN_COLOR.server} label="SERVER VLAN" dashed active={active === 'server'} />
           </g>
 
           {/* edges */}

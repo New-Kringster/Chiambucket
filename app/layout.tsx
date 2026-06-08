@@ -5,6 +5,7 @@ import './globals.css';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 import ClientEffects from '../components/ClientEffects';
+import ArticleLightbox from '../components/ArticleLightbox';
 import { THEME_MAP } from '../lib/theme';
 
 export const viewport: Viewport = {
@@ -47,6 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Irregular screen size detected, Content may not be displayed correctly.
         </div>
         <ClientEffects />
+        <ArticleLightbox />
         <Nav />
         {children}
         <Footer />

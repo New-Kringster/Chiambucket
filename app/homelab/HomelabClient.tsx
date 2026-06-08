@@ -2,8 +2,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import './homelab.css';
-import { SERVERS, SERVICES, CATEGORIES, WEIGHT_META, ACCESS_METHODS, type Weight } from './data';
+import { SERVERS, SERVICES, CATEGORIES, WEIGHT_META, ACCESS_METHODS, type Weight, type Server, type Service } from './data';
 import SystemMap from './SystemMap';
+import MachineModal from './MachineModal';
+import ServiceModal from './ServiceModal';
 
 /* ── live status hook (graceful: unknown until the ping returns) ── */
 type StatusMap = Record<string, 'up' | 'down'>;
@@ -24,8 +26,12 @@ function useStatus() {
   return { status, synced };
 }
 
-/* ── small reveal wrapper ── */
-function Reveal({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+/* ── small reveal wrapper (optionally interactive) ── */
+function Reveal({ children, className, delay = 0, onClick, role, tabIndex, onKeyDown, ariaLabel }: {
+  children: React.ReactNode; className?: string; delay?: number;
+  onClick?: () => void; role?: string; tabIndex?: number;
+  onKeyDown?: (e: React.KeyboardEvent) => void; ariaLabel?: string;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: '0px 0px -12% 0px' });
   return (
@@ -35,6 +41,11 @@ function Reveal({ children, className, delay = 0 }: { children: React.ReactNode;
       initial={{ opacity: 0, y: 26 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
+      onClick={onClick}
+      role={role}
+      tabIndex={tabIndex}
+      onKeyDown={onKeyDown}
+      aria-label={ariaLabel}
     >
       {children}
     </motion.div>
@@ -57,6 +68,8 @@ export default function HomelabClient() {
   const { status, synced } = useStatus();
   const [filter, setFilter] = useState<string>('All');
   const [stackOpen, setStackOpen] = useState(false);
+  const [openServer, setOpenServer] = useState<Server | null>(null);
+  const [openService, setOpenService] = useState<Service | null>(null);
 
   const publicKeys = SERVICES.filter((s) => s.statusKey).map((s) => s.statusKey!) as string[];
   const onlineCount = publicKeys.filter((k) => status[k] === 'up').length;
@@ -161,7 +174,10 @@ export default function HomelabClient() {
           <Reveal><SectionHead n="02" eyebrow="The hardware" title="Three machines, three jobs." /></Reveal>
           <div className="hl2-machines">
             {SERVERS.map((s, i) => (
-              <Reveal key={s.id} delay={i * 0.08} className={`hl2-machine ${s.status}`}>
+              <Reveal key={s.id} delay={i * 0.08} className={`hl2-machine ${s.status}`}
+                onClick={() => setOpenServer(s)} role="button" tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenServer(s); } }}
+                ariaLabel={`${s.name} details`}>
                 <div className="hl2-machine-photo">
                   <img src={s.photo} alt={`${s.name} server`} />
                   <span className={`hl2-machine-state ${s.status}`}><i className="hl2-dot" />{s.statusLabel}</span>
@@ -178,6 +194,7 @@ export default function HomelabClient() {
                       <div key={sp.k}><dt>{sp.k}</dt><dd>{sp.v}</dd></div>
                     ))}
                   </dl>
+                  <span className="hl2-machine-more">Open the deep dive <Arrow /></span>
                 </div>
               </Reveal>
             ))}
@@ -267,12 +284,20 @@ export default function HomelabClient() {
                   initial={{ opacity: 0, scale: 0.96 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.4, delay: Math.min(i * 0.025, 0.3) }}
+                  onClick={() => setOpenService(s)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenService(s); } }}
+                  aria-label={`${s.name} details`}
                 >
                   <div className="hl2-svc-top">
                     <span className="hl2-svc-ico"><img src={s.icon} alt="" style={s.iconRound ? { borderRadius: '22%' } : undefined} /></span>
                     <span className={`hl2-svc-status ${s.statusKey ? (live === 'up' ? 'up' : live === 'down' ? 'down' : 'wait') : s.featured ? 'build' : 'self'}`}>
                       <i className="hl2-dot" />
                       {s.statusKey ? (live === 'up' ? 'online' : live === 'down' ? 'offline' : '…') : s.featured ? 'current build' : 'self-hosted'}
+                    </span>
+                    <span className="hl2-svc-expand" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" /></svg>
                     </span>
                   </div>
                   <h3 className="hl2-svc-name">{s.name}</h3>
@@ -282,7 +307,7 @@ export default function HomelabClient() {
                     <span className="hl2-svc-hosts">{s.hosts.join(' · ')}</span>
                   </div>
                   {s.url && (
-                    <a className="hl2-svc-link" href={s.url} target="_blank" rel="noopener">
+                    <a className="hl2-svc-link" href={s.url} target="_blank" rel="noopener" onClick={(e) => e.stopPropagation()}>
                       {s.url.replace('https://', '')} <Arrow />
                     </a>
                   )}
@@ -357,6 +382,9 @@ export default function HomelabClient() {
           </Reveal>
         </div>
       </section>
+
+      <MachineModal server={openServer} onClose={() => setOpenServer(null)} />
+      <ServiceModal service={openService} status={status} onClose={() => setOpenService(null)} />
     </main>
   );
 }
