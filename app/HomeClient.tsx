@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import Script from 'next/script';
 import InfoModal, { type InfoItem } from '../components/InfoModal';
-import RollingWord from '../components/RollingWord';
 
 /* Capability cards (Projects section) → detail pop-ups. Content drawn from the real builds. */
 const CAPABILITIES: InfoItem[] = [
@@ -300,6 +299,45 @@ export default function HomeClient() {
     applyFilter();
   }, []);
 
+  /* ── Word rotator (with cleanup so intervals don't stack on re-visits) ── */
+  useEffect(() => {
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
+    const intervals: ReturnType<typeof setInterval>[] = [];
+    const resizeHandlers: Array<() => void> = [];
+
+    function initRoller(el: HTMLElement, startDelay: number) {
+      const em = el.querySelector('em') as HTMLElement | null;
+      const words = (el.getAttribute('data-words') || '').split(',').map((s) => s.trim()).filter(Boolean);
+      if (!em || words.length < 2) return;
+      let i = 0;
+      const widthOf = (text: string) => {
+        const g = em!.cloneNode(false) as HTMLElement;
+        g.textContent = text; g.style.cssText = 'position:absolute;left:-9999px;visibility:hidden;width:auto';
+        el.appendChild(g); const w = g.getBoundingClientRect().width; el.removeChild(g); return w;
+      };
+      el.style.width = widthOf(words[0]) + 'px';
+      const tick = () => {
+        const ni = (i + 1) % words.length;
+        el.style.width = widthOf(words[ni]) + 'px';
+        em!.classList.remove('is-in'); em!.classList.add('is-out');
+        setTimeout(() => { i = ni; em!.textContent = words[i]; em!.classList.remove('is-out'); void em!.offsetWidth; em!.classList.add('is-in'); }, 360);
+      };
+      const t = setTimeout(() => { intervals.push(setInterval(tick, 2800)); }, startDelay);
+      timeouts.push(t);
+      const onResize = () => { el.style.width = widthOf(words[i]) + 'px'; };
+      window.addEventListener('resize', onResize);
+      resizeHandlers.push(onResize);
+    }
+    document.querySelectorAll<HTMLElement>('.hp-roll').forEach((el, idx) => initRoller(el, idx * 1100));
+
+    return () => {
+      timeouts.forEach(clearTimeout);
+      intervals.forEach(clearInterval);
+      resizeHandlers.forEach((h) => window.removeEventListener('resize', h));
+    };
+  }, []);
+
   /* ── Lychee gallery ── */
   const initLychee = () => {
     const albums: Record<string, string> = {
@@ -388,7 +426,7 @@ export default function HomeClient() {
           </a>
           <div className="hp-hero-kicker">Braven Chiam · Singapore</div>
           <h1 className="hp-hero-title hero-headline-text">
-            Creating with <RollingWord words={['Intention.', 'Purpose.', 'Meaning.', 'Intent.', 'Vision.']} ariaLabel="Intention." />
+            Creating with <span className="hp-roll" data-words="Intention.,Purpose.,Meaning.,Intent.,Vision." aria-label="Intention"><em>Intention.</em></span>
           </h1>
           <p className="hp-hero-sub">I&apos;m an engineer who designs. I build hardware and software with a design-first mindset, from 5G rovers and custom PCBs to a solar-powered homelab and photography.</p>
           <div className="hp-hero-cta">
@@ -473,7 +511,7 @@ export default function HomeClient() {
                 <div className="hp-iconrow">
                   <img src="/images/photoshop-icon-dark.webp" alt="Photoshop" /><img src="/images/figma-icon-dark.webp" alt="Figma" /><img src="/images/davinci-icon-dark.webp" alt="DaVinci Resolve" /><img src="/images/premier-icon-dark.webp" alt="Premiere Pro" /><img src="/images/spline-icon-dark.webp" alt="Spline" /><img src="/images/powerpoint-icon-dark.webp" alt="PowerPoint" />
                 </div>
-                <p className="hp-tile-p hp-tools-p">A toolkit I reach for daily, equally at home in <RollingWord words={['raster.', 'vector.', '3D.', 'motion.']} interval={2200} startDelay={2200} /></p>
+                <p className="hp-tile-p">A toolkit I reach for daily, from raster and vector to 3D and motion.</p>
               </div>
               {/* Photography */}
               <div className="hp-tile hp-media-tile hp-tile-photo hp-clickable" data-reveal role="link" tabIndex={0} onClick={() => { window.location.href = '#photolink'; }} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}>
@@ -824,7 +862,7 @@ export default function HomeClient() {
         {/* ── CLOSING CTA ── */}
         <section className="hp-cta" data-reveal>
           <span className="hp-eyebrow">Get in touch</span>
-          <h2>Let&apos;s make something with <RollingWord words={['intention.', 'purpose.', 'meaning.', 'care.', 'soul.']} ariaLabel="intention." startDelay={1100} /></h2>
+          <h2>Let&apos;s make something with <span className="hp-roll" data-words="intention.,purpose.,meaning.,care.,soul." aria-label="intention"><em>intention.</em></span></h2>
           <div className="hp-cta-row">
             <button className="hp-btn" onClick={() => { window.location.href = '/contact'; }}>Contact me <AC /></button>
             <button className="hp-btn hp-btn-ghost" onClick={() => { window.location.href = '/comingsoon'; }}>Explore BucketCentral</button>
