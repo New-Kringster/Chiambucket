@@ -119,6 +119,20 @@
 .hl2-machine-photo { position: relative; padding: 22px 22px 0; background: radial-gradient(120% 90% at 50% 0%, rgba(47,139,212,0.12), transparent 70%); }
 .hl2-machine-photo img { width: 100%; display: block; filter: drop-shadow(0 16px 26px rgba(0,0,0,0.6)); transition: transform .6s cubic-bezier(.16,1,.3,1); }
 .hl2-machine:hover .hl2-machine-photo img { transform: scale(1.04) translateY(-4px); }
+
+/* "The real thing" — actual rack photo in the machines section */
+.hl2-rackreal { display: grid; grid-template-columns: auto 1fr; gap: clamp(26px, 4vw, 56px); align-items: center; margin-top: clamp(40px, 5vw, 64px); }
+.hl2-rackreal-photo { position: relative; margin: 0; border-radius: 18px; overflow: hidden; border: 1px solid var(--dc-line, rgba(120,200,230,0.14)); box-shadow: 0 30px 70px -34px rgba(0,0,0,0.85); }
+.hl2-rackreal-photo img { display: block; height: clamp(380px, 52vh, 540px); width: auto; max-width: 100%; }
+.hl2-rackreal-photo::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(72% 76% at 50% 42%, transparent 30%, rgba(4,7,10,0.55) 72%, rgba(4,7,10,0.92) 100%); }
+.hl2-rackreal-text .hl2-eyebrow { display: block; margin-bottom: 0.5rem; }
+.hl2-rackreal-text h3 { font-family: 'oswaldbold', sans-serif; font-size: clamp(1.5rem, 3vw, 2.1rem); letter-spacing: -0.01em; color: #eaf6fb; margin: 0 0 0.6rem; }
+.hl2-rackreal-text p { font-family: 'dmsans', sans-serif; font-size: clamp(1rem, 1.4vw, 1.08rem); line-height: 1.7; color: var(--dc-dim, rgba(207,233,242,0.62)); max-width: 48ch; margin: 0; }
+@media (max-width: 760px) {
+  .hl2-rackreal { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 24px; }
+  .hl2-rackreal-text p { margin-inline: auto; }
+  .hl2-rackreal-photo img { height: clamp(340px, 60vh, 460px); }
+}
 .hl2-machine-state { position: absolute; top: 16px; right: 16px; display: inline-flex; align-items: center; gap: 7px; font-family: var(--dc-mono); font-size: 0.64rem; letter-spacing: 0.08em; text-transform: uppercase;
   padding: 5px 10px; border-radius: 999px; background: rgba(4,8,11,0.7); border: 1px solid var(--dc-line); }
 .hl2-machine-state.always-on { color: var(--dc-online); } .hl2-machine-state.always-on .hl2-dot { background: var(--dc-online); animation: hl2pulse 2.4s ease-in-out infinite; }

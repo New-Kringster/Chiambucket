@@ -1,6 +1,36 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Script from 'next/script';
+import InfoModal, { type InfoItem } from '../components/InfoModal';
+
+/* Capability cards (Projects section) → detail pop-ups. Content drawn from the real builds. */
+const CAPABILITIES: InfoItem[] = [
+  { eyebrow: 'Capability', title: 'Microcontrollers & Firmware',
+    blurb: 'The brains of almost everything I build. I write bare-metal firmware in C and C++ on the ESP32 and Arduino families, flashing and debugging over PlatformIO.',
+    points: ['ESP32 firmware for the Project June rover and the LoRA Messenger', 'Custom PWM motor control, servo steering and sensor drivers', 'Reading a whole suite of sensors at once while keeping the loop fast'],
+    chips: ['ESP32', 'Arduino', 'ATmega328', 'PlatformIO', 'C / C++'] },
+  { eyebrow: 'Capability', title: 'PCB Design',
+    blurb: 'Taking a circuit from a schematic to a board I can hold. I design in KiCAD, route the layout, then reflow-solder the SMD parts by hand.',
+    points: ['The LoRA Messenger’s custom board, reflowed at home', 'A from-scratch recreation of my school’s ATmega328 dev board', 'Schematic capture, footprint sourcing and respins'],
+    chips: ['KiCAD', 'EAGLE', 'SMD reflow', 'Schematic capture'] },
+  { eyebrow: 'Capability', title: 'Wireless Comms',
+    blurb: 'Getting devices to talk, near or far. I pick the radio and protocol to fit the job, from long-range LoRa to low-latency WebRTC video over cellular.',
+    points: ['Three live WebRTC camera streams over 5G on Project June', 'Long-range text on LoRa and two-way voice on ESP-NOW', 'MQTT telemetry brokered through my homelab'],
+    chips: ['LoRa', 'ESP-NOW', 'MQTT', 'WebRTC', 'SocketIO', '5G'] },
+  { eyebrow: 'Capability', title: '3D & CAD',
+    blurb: 'Designing the physical shell. I model enclosures and parts in Onshape, visualise in Blender, then 3D print and iterate until the fit is right.',
+    points: ['The rover chassis and the LoRA Messenger’s handheld case', 'Tolerance-tuned fits and print-in-place mechanisms', 'Concept renders for pitches and posters'],
+    chips: ['Onshape', 'Blender', '3D printing', 'Enclosure design'] },
+  { eyebrow: 'Capability', title: 'Design & Media',
+    blurb: 'The design-first half of the work. I move between interfaces, posters, motion and 3D so a project communicates, not just functions.',
+    points: ['UI and dashboards in Figma, often with Spline 3D scenes', 'Posters and graphics in Photoshop', 'Project films cut and graded in DaVinci Resolve'],
+    chips: ['Figma', 'Photoshop', 'DaVinci Resolve', 'Premiere Pro', 'Spline 3D'] },
+  { eyebrow: 'Capability', title: 'Infrastructure',
+    blurb: 'Where my projects live and how I reach them. I run a self-hosted homelab on Proxmox and Docker, fronted by Nginx and a segmented UniFi network.',
+    points: ['Self-hosted services behind Nginx Proxy Manager and CrowdSec', 'A WireGuard and Tailscale mesh to reach home from anywhere', 'coturn and MQTT that back real hardware projects'],
+    chips: ['Proxmox', 'Docker', 'Nginx', 'Tailscale', 'Wireguard', 'Unifi'],
+    link: { label: 'Explore the HomeLab', url: '/homelab' } },
+];
 
 /* ── Shared icon helpers ── */
 const AC = () => <svg aria-hidden="true"><use href="#icon-arrow-circle" /></svg>;
@@ -100,13 +130,16 @@ function ModalContent({ id, close }: { id: string; close: () => void }) {
     );
     case 'proj-elecf': return (
       <>
-        {hero('/images/elef2-pf-context.webp', 'ELEC-F Concept', ['School Project'], 'school')}
+        {hero('/images/elef2-pf-context.webp', 'ELEC-F Safe Freezer System', ['School Project'], 'school')}
         <div className="hp-rd-body">
           <h2 className="hp-md-title">ELEC-F Concept</h2>
-          <p className="hp-md-meta">Concept · Engineering Course · Team Project</p>
-          <p className="hp-rd-lead">A conceptual safety product my team developed, built around the M5Stack controller and a set of sensors.</p>
-          {chapter('01', 'The problem', <><p>Walk-in freezers can trap workers inside. Our concept uses the M5Stack and sensors to detect when someone is stuck and raise the alarm before it becomes fatal.</p><img className="hp-rd-fig" src="/images/elecf-img.webp" alt="ELEC-F concept" loading="lazy" /></>)}
-          {cta('See the concept in full', 'The research, the pitch and the design.', 'Read the full article', '/elecf')}
+          <p className="hp-md-meta">Safe Freezer Storage System · Team of 4 · Engineering Course · M5Stack · ToF + PIR</p>
+          <p className="hp-rd-lead">A freezer safety system my team and I designed for an engineering course. Walk-in factory freezers can trap the people working inside them, so ELEC-F watches the door and the room and sounds the alarm before the cold turns dangerous.</p>
+          <div className="hp-md-video"><iframe src="https://www.youtube.com/embed/8De2ahk-GPo" title="ELEC-F Safe Freezer System" frameBorder={0} allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe></div>
+          {chapter('01', 'The problem', <><p>Faulty latches, frozen seals or simple unawareness can leave a worker shut inside a walk-in freezer, where hypothermia sets in fast. ELEC-F exists to cut that time down and reassure whoever is trapped.</p><img className="hp-rd-fig" src="/images/elecf-prototype1.avif" alt="The ELEC-F freezer prototype" loading="lazy" /></>)}
+          {chapter('02', 'How it works', <><p>A ToF sensor reads whether the door is open or closed, and a PIR sensor checks if anyone is still inside. Shut the door with a person in, and a timer arms. Overrun it, and the RGB unit flashes while the buzzer sounds.</p><img className="hp-rd-fig" src="/images/elecf-door-armed.png" alt="ELEC-F armed state on the M5Stack" loading="lazy" /></>)}
+          {chapter('03', 'Built on M5Stack', <><p>Two M5Stack Fire controllers and a Mini Hub tie the ToF, PIR and RGB units together, chosen because they keep working at the sub-zero temperatures a freezer demands.</p><img className="hp-rd-fig" src="/images/elecf-controller-sensors.png" alt="The M5Stack controller wired to its sensors" loading="lazy" /></>)}
+          {cta('See the full concept', 'The research, the build and an interactive walkthrough.', 'Read the full article', '/elecf')}
         </div>
       </>
     );
@@ -179,6 +212,7 @@ export default function HomeClient() {
   const [modalAnimOpen, setModalAnimOpen] = useState(false);
   const [activeProject, setActiveProject] = useState<string | null>(null);
   const [projectsExpanded, setProjectsExpanded] = useState(false); // mobile-only collapse
+  const [openCap, setOpenCap] = useState<InfoItem | null>(null); // capability detail modal
 
   /* ── Modal ── */
   const openProject = (cardEl: Element | string) => {
@@ -549,17 +583,14 @@ export default function HomeClient() {
                 <p className="hp-cap-p">The toolkit below is the sum of these projects, mostly self-taught, one problem at a time.</p>
               </div>
               <div className="hp-cap-grid">
-                {[
-                  { title: 'Microcontrollers & Firmware', chips: ['ESP32','Arduino','ATmega328','PlatformIO','C / C++'] },
-                  { title: 'PCB Design', chips: ['KiCAD','EAGLE','SMD reflow','Schematic capture'] },
-                  { title: 'Wireless Comms', chips: ['LoRa','ESP-NOW','MQTT','WebRTC','SocketIO','5G'] },
-                  { title: '3D & CAD', chips: ['Onshape','Blender','3D printing','Enclosure design'] },
-                  { title: 'Design & Media', chips: ['Figma','Photoshop','DaVinci Resolve','Premiere Pro','Spline 3D'] },
-                  { title: 'Infrastructure', chips: ['Proxmox','Docker','Nginx','Tailscale','Wireguard','Unifi'] },
-                ].map(({ title, chips }) => (
-                  <div key={title} className="hp-cap-card">
-                    <h4>{title}</h4>
-                    <div className="hp-cap-chips">{chips.map((c) => <span key={c}>{c}</span>)}</div>
+                {CAPABILITIES.map((cap) => (
+                  <div key={cap.title} className="hp-cap-card" role="button" tabIndex={0}
+                    aria-label={`${cap.title} details`}
+                    onClick={() => setOpenCap(cap)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenCap(cap); } }}>
+                    <span className="hp-cap-plus" aria-hidden="true">+</span>
+                    <h4>{cap.title}</h4>
+                    <div className="hp-cap-chips">{cap.chips!.map((c) => <span key={c}>{c}</span>)}</div>
                   </div>
                 ))}
               </div>
@@ -664,7 +695,7 @@ export default function HomeClient() {
                 </div>
                 <div className="hp-pf-info">
                   <h3 className="hp-pf-name">ELEC-F Concept</h3>
-                  <p className="hp-pf-blurb">A conceptual M5-Stack product with sensors designed to help prevent fatalities in walk-in freezers.</p>
+                  <p className="hp-pf-blurb">A freezer safety system on M5Stack. ToF and PIR sensors catch a worker trapped in a walk-in freezer, then a timer and alarm raise help.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/figma-icon.webp" alt="" /><img src="/images/ps-pf-icon.webp" alt="" /><img src="/images/resolve-icon.webp" alt="" /></div>
                     <button className="hp-pf-view" onClick={() => { window.location.href = '/elecf'; }}>Read article <AU /></button>
@@ -849,6 +880,8 @@ export default function HomeClient() {
           </div>
         </div>
       </div>
+
+      <InfoModal item={openCap} onClose={() => setOpenCap(null)} />
     </>
   );
 }

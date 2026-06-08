@@ -199,6 +199,17 @@ export default function HomelabClient() {
               </Reveal>
             ))}
           </div>
+
+          <Reveal className="hl2-rackreal">
+            <figure className="hl2-rackreal-photo">
+              <img src="/images/hl-rack-real.jpg" alt="The Chiambucket homelab rack, fully assembled" loading="lazy" />
+            </figure>
+            <div className="hl2-rackreal-text">
+              <span className="hl2-eyebrow">The real thing</span>
+              <h3>All three, in one cabinet.</h3>
+              <p>No render, no diagram. This is the actual rack in the corner of my room: the patch panel and its blue runs up top, the servers behind the mesh door, quietly humming through whatever I throw at them.</p>
+            </div>
+          </Reveal>
         </div>
       </section>
 

@@ -186,7 +186,7 @@ export default function ElecfPage() {
           <section id="Logic" className="art-section" data-reveal>
             <h2>The logic</h2>
             <p>Here is the full decision loop the M5Stack runs, from setting the timer to sounding the alarm. The buttons adjust the limit while the door is open; once it closes, the stopwatch takes over and the sensors decide what happens next.</p>
-            <img src="/images/elecf-main.avif" alt="ELEC-F software flowchart showing the full decision loop" loading="lazy" />
+            <img className="art-diagram" src="/images/elecf-main.avif" alt="ELEC-F software flowchart showing the full decision loop" loading="lazy" />
             <figure className="art-fig">
               <img src="/images/elecf-blockdiagram.avif" alt="ELEC-F system block diagram" loading="lazy" />
               <figcaption>System block diagram</figcaption>

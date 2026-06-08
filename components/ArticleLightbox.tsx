@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-type Pic = { src: string; alt: string };
+type Pic = { src: string; alt: string; lit: boolean };
 
 /* Click-to-zoom for article images. A single delegated listener opens any
    image inside `.art-body` in a full-screen viewer; a floating magnifier cue
@@ -34,7 +34,7 @@ export default function ArticleLightbox() {
       e.preventDefault();
       window.clearTimeout(closeT.current);
       setZoomed(false);
-      setPic({ src: img.currentSrc || img.src, alt: img.alt || '' });
+      setPic({ src: img.currentSrc || img.src, alt: img.alt || '', lit: img.classList.contains('art-diagram') });
       requestAnimationFrame(() => setOpen(true));
     };
     document.addEventListener('click', onClick);
@@ -130,7 +130,7 @@ export default function ArticleLightbox() {
       </button>
       <img
         ref={imgRef}
-        className={`art-lb-img${zoomed ? ' zoomed' : ''}`}
+        className={`art-lb-img${zoomed ? ' zoomed' : ''}${pic.lit ? ' lit' : ''}`}
         src={pic.src}
         alt={pic.alt}
         onClick={toggleZoom}

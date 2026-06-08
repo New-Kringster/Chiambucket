@@ -1,36 +1,49 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import InfoModal, { type InfoItem } from '../../components/InfoModal';
 
 const tools = [
   {
     img: '/images/pr-icon.webp',
     name: 'Premiere Pro',
     desc: 'I learned Premiere Pro with Photoshop, but frequent crashes led me to switch to DaVinci Resolve with no regrets.',
+    add: 'It taught me the fundamentals of a timeline, but it mostly lives in my history now.',
+    chips: ['Video editing', 'Timelines', 'Where I started'],
   },
   {
     img: '/images/il-icon.webp',
     name: 'Illustrator',
     desc: "Illustrator is a fairly simple tool I use for creating logos or SVGs, but I don't use it as much as Photoshop.",
+    add: 'When something needs to scale cleanly or live as an SVG, this is where it gets drawn.',
+    chips: ['Logos', 'Vector / SVG', 'Icons'],
   },
   {
     img: '/images/fm-icon.webp',
     name: 'Figma',
     desc: 'A highly powerful tool I use to prototype and create designs focused on shapes rather than images.',
+    add: 'Most of my interfaces and posters start as Figma frames before they become code or print.',
+    chips: ['UI design', 'Prototyping', 'Layout'],
   },
   {
     img: '/images/ps-logo.webp',
     name: 'Photoshop',
     desc: "I've used Photoshop since 2019, received professional training through my school's media club, and it remains my favorite tool.",
+    add: 'From retouching photos to laying out posters, it is the tool I reach for first.',
+    chips: ['Photo editing', 'Posters', 'Compositing'],
   },
   {
     img: '/images/resolve-logo.webp',
     name: 'DaVinci Resolve',
     desc: 'I regularly edit my videos using DaVinci, but I rarely post them. However, I have more content planned for the future.',
+    add: 'Editing, colour and export all live in one place, which is exactly why it replaced Premiere for me.',
+    chips: ['Video editing', 'Colour grading', 'Project films'],
   },
   {
     img: '/images/lrc-logo.webp',
     name: 'Lightroom',
     desc: 'Lightroom provides me with powerful tools to enhance images and recover details from unusable shots.',
+    add: 'It is the last stop for most of my photos, pulling back highlights and shadows a JPEG would have lost.',
+    chips: ['Photo editing', 'Colour', 'RAW workflow'],
   },
 ];
 
@@ -44,6 +57,8 @@ const galleries = [
 ];
 
 export default function PhotographyClient() {
+  const [openTool, setOpenTool] = useState<InfoItem | null>(null);
+
   const expandPhoto = (albumId: string) => {
     const el = document.getElementById('photography-' + albumId);
     if (el) el.classList.remove('photography-restrict');
@@ -130,17 +145,24 @@ export default function PhotographyClient() {
             </div>
           </div>
           <div className="hp-cap-grid ph-tools-grid" data-reveal>
-            {tools.map(({ img, name, desc }) => (
-              <div key={name} className="cr-card ph-tool-card">
-                <div className="ph-tool-card-inner">
-                  <img src={img} alt={`${name} icon`} className="ph-tool-icon" />
-                  <div>
-                    <h3 className="ph-tool-name">{name}</h3>
-                    <p className="ph-tool-desc">{desc}</p>
+            {tools.map((t) => {
+              const item: InfoItem = { icon: t.img, eyebrow: 'Tool', title: t.name, blurb: t.desc, add: t.add, chips: t.chips };
+              return (
+                <div key={t.name} className="cr-card ph-tool-card" role="button" tabIndex={0}
+                  aria-label={`${t.name} details`}
+                  onClick={() => setOpenTool(item)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTool(item); } }}>
+                  <span className="ph-tool-plus" aria-hidden="true">+</span>
+                  <div className="ph-tool-card-inner">
+                    <img src={t.img} alt={`${t.name} icon`} className="ph-tool-icon" />
+                    <div>
+                      <h3 className="ph-tool-name">{t.name}</h3>
+                      <p className="ph-tool-desc">{t.desc}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -256,8 +278,12 @@ export default function PhotographyClient() {
           border: 1px solid var(--hp-line);
           border-radius: 20px;
           box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+          cursor: pointer;
           transition: transform 0.45s cubic-bezier(0.16,1,0.3,1), border-color 0.4s ease, box-shadow 0.4s ease;
         }
+        .ph-tool-card:focus-visible { outline: 2px solid var(--hp-sky); outline-offset: 3px; }
+        .ph-tool-plus { position: absolute; top: 14px; right: 16px; font-family: 'inter'; font-size: 1.05rem; line-height: 1; color: rgba(255,255,255,0.28); transition: color 0.25s ease, transform 0.3s ease; z-index: 1; }
+        .ph-tool-card:hover .ph-tool-plus { color: var(--hp-sky); transform: rotate(90deg); }
         .ph-tool-card::before {
           content: ''; position: absolute; top: 0; left: 20px; right: 20px; height: 1px;
           background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--hp-sky) 55%, transparent), transparent);
@@ -381,6 +407,8 @@ export default function PhotographyClient() {
           transform: translateY(-2px);
         }
       `}</style>
+
+      <InfoModal item={openTool} onClose={() => setOpenTool(null)} />
     </main>
   );
 }
