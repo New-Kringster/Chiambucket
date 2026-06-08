@@ -135,6 +135,13 @@ export default function BrolocatorPage() {
               </div>
               <a className="hp-btn" href="https://file.chiambucket.com/public/api/raw?hash=Uw31ufKRXVAmviDG4Y3zsw" target="_blank" rel="noopener">Download Project <Circle /></a>
             </div>
+            <div className="art-repo">
+              <div className="art-repo-text">
+                <strong>Brolocator on GitHub</strong>
+                <span>The full source for the Brolocator firmware, hosted alongside the PlatformIO project.</span>
+              </div>
+              <a className="hp-btn" href="https://github.com/New-Kringster/Bro_Locator" target="_blank" rel="noopener">View GitHub Repo <Circle /></a>
+            </div>
           </section>
 
           <section id="PCBDesign" className="art-section" data-reveal>

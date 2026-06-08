@@ -1,9 +1,15 @@
 'use client';
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { themeForPath } from '../lib/theme';
 
 export default function ClientEffects() {
   const pathname = usePathname();
+
+  // Keep the per-page accent theme in sync across client-side navigation
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', themeForPath(pathname));
+  }, [pathname]);
 
   // One-time effects: page loader, cursor spotlight, nav scroll glow
   useEffect(() => {

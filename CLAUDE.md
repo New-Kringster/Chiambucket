@@ -6,9 +6,10 @@ Personal portfolio/personal website for Braven Chiam. Dark-themed, design-forwar
 
 - **Next.js 15 (App Router) + React 19 + TypeScript** — `app/` directory, server components by default
 - **Vercel Analytics + Speed Insights** — loaded in `app/layout.tsx`
+- **framer-motion** — installed (`framer-motion`); available for React animations when CSS isn't enough. Prefer CSS for simple transitions; reach for it for orchestrated/gesture/layout animations.
 - **animate.css** — loaded from CDN (a few entrance animations)
 - **Lychee** — self-hosted photo gallery embedded via a remote script (homepage + photography)
-- **No Tailwind, no CSS-in-JS.** One global stylesheet: `public/mainstyle.css` (~5700 lines)
+- **No Tailwind, no CSS-in-JS.** One global stylesheet: `public/mainstyle.css` (~5900 lines)
 - jQuery is **gone** — the old jQuery `.load()` includes were replaced by React components. `links.js`/`nav.html`/`footer.html`/`projects.js` etc. are legacy and no longer used by the app.
 
 ## Routing (Next.js App Router)
@@ -21,7 +22,7 @@ Routes are file-based under `app/<route>/page.tsx`. There is no `links.js` route
 | `/photography` | `app/photography/page.tsx` → `PhotographyClient.tsx` | Editorial hero + "My Tools" cards + six Lychee galleries |
 | `/contact` | `app/contact/page.tsx` → `ContactClient.tsx` | Email + socials (`ct-*`) |
 | `/credits` | `app/credits/page.tsx` | Colophon (`cr-*` + shared `ct-*` hero): built with Claude, hosted on Vercel, open-source tools |
-| `/homelab` | `app/homelab/page.tsx` | HomeLab page — **intentionally still in the older style; not yet redesigned** |
+| `/homelab` | `app/homelab/page.tsx` → `HomelabClient.tsx` | HomeLab — the most interactive page. Bespoke **"datacenter" theme** (`hl2-*`/`dc-*`). Server `page.tsx` owns metadata + JSON-LD; client renders hero, mission pillars, machine cards (real server photos), the **interactive `SystemMap`**, storage/PXE, the filterable service stack with **live status dots**, and access methods. Content lives in `app/homelab/data.ts`; styles in `app/homelab/homelab.css` (imported, not in `mainstyle.css`); animations via **framer-motion** |
 | `/project-june` | `app/project-june/page.tsx` | Article: Project June 5G rover — **the gold-standard `art-*` article template** |
 | `/brolocator` | `app/brolocator/page.tsx` | Article: LoRA Messenger |
 | `/csdp` | `app/csdp/page.tsx` | Article: EMA Smart Home (has team rows + embedded PDFs) |
@@ -33,6 +34,7 @@ Routes are file-based under `app/<route>/page.tsx`. There is no `links.js` route
 - **`next.config.mjs`** keeps permanent redirects from the old `.html` URLs to the clean routes (`/ProjectJune.html` → `/project-june`, etc.). `/portfolio` and `/portfolio.html` both redirect to `/#portfolio-items-holder` (the portfolio page was removed; its content lives in the homepage Projects section).
 - **`app/layout.tsx`** is the root layout: links `mainstyle.css` + animate.css, renders the `#loader`, `<ClientEffects/>`, `<Nav/>`, `{children}`, `<Footer/>`, plus Analytics/Speed Insights. It also holds site-wide `metadata` (metadataBase, OG defaults).
 - Legacy root `*.html` files (`index.html`, `ProjectJune.html`, …) are **dead** — Next does not serve them; they remain only as historical reference.
+- **`app/api/homelab-status/route.ts`** is the one dynamic endpoint (a serverless function): it pings the public `*.chiambucket.com` services server-side and returns up/down JSON for the homelab page's live status dots. Everything else still prerenders as static.
 
 ## Shared components (`components/`)
 
@@ -51,6 +53,15 @@ The file is one large stylesheet, organised by comment sections. Three families 
 - **Articles** — `ARTICLE REDESIGN` section at the very end. Namespace `.art-*`: `.art-hero` (feature header: `.art-hero-bg` img + `.art-hero-scrim` + `.art-hero-aura` + `.art-hero-inner`), `.art-back`, `.art-title`, `.art-lead`, `.art-toolrow`; `.art-body` (2-col grid) with sticky `.art-rail` + `.art-chapters`; `.art-section` blocks (use `data-reveal`); `.art-fig`+`<figcaption>`, `.art-grid` (2-up image gallery), `.art-video` / `.art-embed` / `.art-embed.art-pdf`, `.art-repo` (GitHub callout), `.art-team*` (csdp team rows), `.art-next` (closing CTA). Images are height-capped (`max-height:76vh`, `width:auto`) so tall portrait shots don't blow up the page.
 
 **When building/extending a page, REUSE these classes.** New bespoke CSS for a single page should be a scoped `<style>` block in that page's component with a unique prefix, not a global edit (avoids touching the shared file and prevents collisions).
+
+## Per-page accent theming
+
+Pages are recoloured by a single `data-theme` attribute on `<html>` so each route reads distinctly while staying cohesive. All hues are sampled from the **Frame 6 gradient** (navy → lavender → mauve → violet), saved in `temporary screenshots/Frame 6.png`.
+
+- **`lib/theme.ts`** — `THEME_MAP` (route → theme name) + `themeForPath()`. Themes: `blue` (default), `violet`, `indigo`, `mauve`, `steel`, `datacenter`. Home and `project-june` stay `blue` (the signature/flagship); photography = `violet`, contact/credits/brolocator = `indigo`, csdp = `mauve`, pandus = `steel`, elecf = `violet`, homelab = `datacenter` (cyan + emerald, mission-control).
+- **Set in two places:** an inline `<script>` in `app/layout.tsx` `<head>` sets it before paint (no flash); `components/ClientEffects.tsx` updates it on client-side navigation (`themeForPath(pathname)`).
+- **How it recolours:** `:root` in `mainstyle.css` defines `--aura-1/2/3` (hero/page auras), `--em-grad` + `--title-grad` (gradient accent words), `--orb-edge` (section-number stroke), and overrides `--hp-blue/-deep`, `--hp-indigo`, `--hp-sky`. Each `html[data-theme="…"]` block re-points those tokens. **To theme a new page:** add its route to `THEME_MAP`; to add a new palette, add a `html[data-theme="…"]` block next to the others. Auras/buttons/links/gradient text follow automatically — don't hardcode accent rgba values, use the tokens.
+- The homepage hero has a drifting aura plus two free-floating orbs (`.hp-hero::before/::after`); the photography hero has a masked photo-montage backdrop (`index-photos-gif.webm`) + grain. Big section numbers (`.seh-number`/`.peh-number`) are dim with a luminous `-webkit-text-stroke` edge (var `--orb-edge`) for legibility.
 
 ## SEO / AI scraping
 
@@ -93,7 +104,6 @@ The file is one large stylesheet, organised by comment sections. Three families 
 ## Pages still incomplete / placeholders
 
 - These project articles still point to `/comingsoon`: Kauli, Series One Light, Copy Board, Web Development, Minecraft.
-- `/homelab` has not yet been moved to the editorial redesign.
 
 ## Copy / content conventions
 
@@ -113,6 +123,12 @@ Run through this after ANY code change before reporting done:
 ## Always do first
 
 - **Invoke the `frontend-design` skill** before writing any frontend code, every session, no exceptions.
+
+## Working style
+
+- **Use subagents when it helps.** Spawn Sonnet or Haiku agents to parallelise or offload well-scoped actions/coding (research, repetitive edits, asset prep). Keep creative CSS that needs cohesion + screenshot iteration on the main thread; avoid multiple agents editing `mainstyle.css` at once (merge conflicts).
+- **Use any skills the task needs**, including newer ones like image generation (`gpt-image-2`) for custom assets/textures, and `ui-ux-pro-max` for design reference. `frontend-design` is still mandatory first.
+- **Iterate on every design** until it's clean and pleasing on **both desktop and mobile (390px)**: screenshot with `shot.mjs`, Read the PNG, fix mismatches, re-shoot — at least two passes. Check the affected page at both widths before reporting done.
 
 ## Reference images
 

@@ -5,6 +5,7 @@ import './globals.css';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 import ClientEffects from '../components/ClientEffects';
+import { THEME_MAP } from '../lib/theme';
 
 export const viewport: Viewport = {
   themeColor: '#000000',
@@ -24,8 +25,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Set the per-page accent theme before paint to avoid a colour flash */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var m=${JSON.stringify(THEME_MAP)};var p=location.pathname;if(p.length>1&&p.slice(-1)==='/')p=p.slice(0,-1);document.documentElement.setAttribute('data-theme',m[p]||'blue');})();`,
+          }}
+        />
         <link rel="stylesheet" href="/mainstyle.css" />
         <link
           rel="stylesheet"

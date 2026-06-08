@@ -18,7 +18,7 @@
 - [Home](https://www.chiambucket.com/): a single-page overview of everything Braven does, with a project gallery, capability showcase and photography.
 - [Contact](https://www.chiambucket.com/contact): email (braven@chiambucket.com) and social links.
 - [Photography](https://www.chiambucket.com/photography): galleries including Highlights, Europe, China, New Zealand, 21:9 and General.
-- [HomeLab](https://www.chiambucket.com/homelab): 3 servers, 18TB+ storage and 16+ self-hosted Docker apps (Immich, PaperlessNGX, Syncthing, Nginx Proxy Manager, NetData, Lychee, Open WebUI, Portainer, Crafty and more). The public site itself is now hosted on Vercel.
+- [HomeLab](https://www.chiambucket.com/homelab): A three-node self-hosted homelab used as a hands-on cloud-engineering, networking and software-design sandbox that supports Braven's hardware projects. NewMain (Unraid) plus a Proxmox PXE cluster (CaCa always on, Adell on demand) run around 38 services behind a segmented UniFi network with VLANs and WPA3-Enterprise RADIUS auth. Services include Immich, Nginx Proxy Manager with CrowdSec, Lychee, Pingvin Share, PairDrop, Fireshare, Tailscale, Shadowsocks, UpStat, Paperless-NGX, coturn and Mosquitto.
 - [Credits](https://www.chiambucket.com/credits): colophon. The site was designed and built with Claude Opus 4 (Anthropic) and is hosted on Vercel.
 
 ## Projects

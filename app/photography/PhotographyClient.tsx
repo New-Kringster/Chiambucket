@@ -83,8 +83,16 @@ export default function PhotographyClient() {
       <link rel="stylesheet" href="https://photos.chiambucket.com/embed/lychee-embed.css?v=1.0.0" />
 
       {/* ── HERO ── */}
-      <section className="ct-wrap">
+      <section className="ct-wrap ph-hero">
+        <div className="ph-hero-media" aria-hidden="true">
+          <video autoPlay loop muted playsInline poster="/images/abm-lr.webp">
+            <source src="/images/index-photos-gif.webm" type="video/webm" />
+            <source src="/images/index-photos-gif.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <div className="ph-hero-scrim" aria-hidden="true"></div>
         <div className="ct-aura"></div>
+        <div className="ph-hero-grain" aria-hidden="true"></div>
         <span className="ct-kicker">Photography</span>
         <h1 className="ct-title">
           Through a <em>different lens.</em>
@@ -150,31 +158,39 @@ export default function PhotographyClient() {
         </div>
 
         <div className="photography-box-wrapper">
-          {galleries.map(({ id, title, albumId, galleryUrl }) => (
-            <div key={id} className="photography-box" data-reveal>
-              <div className="phototop">
-                <h1>{title}</h1>
-                <a href={galleryUrl} target="_blank" rel="noopener" aria-label={`Open ${title} gallery`}>
-                  <img src="/images/arrow.webp" alt="" />
+          {galleries.map(({ id, title, albumId, galleryUrl }, i) => (
+            <div key={id} className="photography-box ph-gallery" data-reveal>
+              <div className="ph-gallery-head">
+                <div className="ph-gallery-head-l">
+                  <span className="ph-gallery-num">{String(i + 1).padStart(2, '0')}</span>
+                  <h2 className="ph-gallery-title">{title}</h2>
+                </div>
+                <a className="ph-gallery-open" href={galleryUrl} target="_blank" rel="noopener" aria-label={`Open ${title} gallery`}>
+                  View album
+                  <svg viewBox="0 0 24 24" fill="none" width="15" height="15" aria-hidden="true">
+                    <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M17 7H9M17 7V15" />
+                  </svg>
                 </a>
               </div>
-              <div
-                id={`photography-${id}`}
-                className="photography-restrict"
-                data-lychee-embed=""
-                data-api-url="https://photos.chiambucket.com"
-                data-mode="album"
-                data-album-id={albumId}
-                data-layout="masonry"
-                data-spacing="8"
-                data-target-row-height="150"
-                data-target-column-width="150"
-                data-max-photos="none"
-                data-sort-order="desc"
-                data-header-placement="none"
-              ></div>
-              <div className="expand-photography" id={`expand-${id}`}>
-                <button onClick={() => expandPhoto(id)}>Click to Expand</button>
+              <div className="ph-gallery-frame">
+                <div
+                  id={`photography-${id}`}
+                  className="photography-restrict"
+                  data-lychee-embed=""
+                  data-api-url="https://photos.chiambucket.com"
+                  data-mode="album"
+                  data-album-id={albumId}
+                  data-layout="masonry"
+                  data-spacing="8"
+                  data-target-row-height="150"
+                  data-target-column-width="150"
+                  data-max-photos="none"
+                  data-sort-order="desc"
+                  data-header-placement="none"
+                ></div>
+                <div className="expand-photography" id={`expand-${id}`}>
+                  <button onClick={() => expandPhoto(id)}>Show all photos</button>
+                </div>
               </div>
             </div>
           ))}
@@ -183,6 +199,35 @@ export default function PhotographyClient() {
 
       {/* bespoke overrides scoped to photography page */}
       <style>{`
+        /* ── Hero: photographic montage backdrop + violet aura + grain ── */
+        .ph-hero { position: relative; overflow: hidden; }
+        .ph-hero > .ph-hero-media,
+        .ph-hero > .ph-hero-scrim,
+        .ph-hero > .ph-hero-grain { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+        .ph-hero-grain { z-index: 1; }
+        .ph-hero-media video {
+          width: 100%; height: 100%; object-fit: cover;
+          opacity: 0.26; filter: saturate(1.05) contrast(1.02);
+          -webkit-mask-image: radial-gradient(ellipse 82% 72% at 50% 42%, #000 28%, transparent 80%);
+          mask-image: radial-gradient(ellipse 82% 72% at 50% 42%, #000 28%, transparent 80%);
+          animation: phHeroPan 44s ease-in-out infinite alternate;
+        }
+        @keyframes phHeroPan {
+          from { transform: scale(1.08) translate3d(-1%, -1%, 0); }
+          to   { transform: scale(1.17) translate3d(1.5%, 1%, 0); }
+        }
+        .ph-hero-scrim {
+          background:
+            linear-gradient(180deg, rgba(6,6,9,0.58) 0%, rgba(6,6,9,0.30) 40%, rgba(6,6,9,0.72) 100%),
+            radial-gradient(ellipse 70% 62% at 50% 44%, transparent 38%, rgba(6,6,9,0.6) 100%);
+        }
+        .ph-hero-grain {
+          opacity: 0.4; mix-blend-mode: overlay;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+          background-size: 140px 140px;
+        }
+        @media (prefers-reduced-motion: reduce) { .ph-hero-media video { animation: none; } }
+
         .ph-hero-btns {
           display: flex;
           gap: 12px;
@@ -190,9 +235,12 @@ export default function PhotographyClient() {
           flex-wrap: wrap;
           justify-content: center;
         }
+
+        /* ── My Tools: richer cards ── */
         .ph-tools-grid {
           grid-template-columns: repeat(3, 1fr);
           margin-top: 0;
+          gap: 16px;
         }
         @media only screen and (max-width: 900px) {
           .ph-tools-grid { grid-template-columns: repeat(2, 1fr); }
@@ -201,27 +249,43 @@ export default function PhotographyClient() {
           .ph-tools-grid { grid-template-columns: 1fr; }
         }
         .ph-tool-card {
-          padding: clamp(18px, 2.4vw, 28px);
+          position: relative;
+          overflow: hidden;
+          padding: clamp(20px, 2.6vw, 30px);
+          background: var(--hp-glass);
+          border: 1px solid var(--hp-line);
+          border-radius: 20px;
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+          transition: transform 0.45s cubic-bezier(0.16,1,0.3,1), border-color 0.4s ease, box-shadow 0.4s ease;
         }
-        .ph-tool-card-inner {
-          display: flex;
-          align-items: flex-start;
-          gap: 16px;
+        .ph-tool-card::before {
+          content: ''; position: absolute; top: 0; left: 20px; right: 20px; height: 1px;
+          background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--hp-sky) 55%, transparent), transparent);
+          opacity: 0; transition: opacity 0.4s ease;
         }
+        .ph-tool-card:hover {
+          transform: translateY(-4px);
+          border-color: color-mix(in srgb, var(--hp-indigo) 40%, transparent);
+          box-shadow: 0 24px 54px -28px color-mix(in srgb, var(--hp-blue) 65%, transparent), inset 0 1px 0 rgba(255,255,255,0.07);
+        }
+        .ph-tool-card:hover::before { opacity: 1; }
+        .ph-tool-card-inner { display: flex; align-items: flex-start; gap: 16px; }
         .ph-tool-icon {
-          width: 44px;
-          height: 44px;
-          object-fit: contain;
-          flex-shrink: 0;
-          border-radius: 10px;
+          width: 54px; height: 54px; object-fit: contain; flex-shrink: 0;
+          padding: 11px; border-radius: 15px;
+          background: linear-gradient(158deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+          border: 1px solid rgba(255,255,255,0.10);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+          transition: transform 0.45s cubic-bezier(0.16,1,0.3,1);
         }
+        .ph-tool-card:hover .ph-tool-icon { transform: scale(1.06) rotate(-2deg); }
         .ph-tool-name {
           font-family: 'inter';
           font-size: 0.82rem;
           font-weight: 700;
           letter-spacing: 0.06em;
           text-transform: uppercase;
-          color: #7fa8ff;
+          color: var(--hp-sky);
           margin: 0 0 6px;
         }
         .ph-tool-desc {
@@ -231,14 +295,90 @@ export default function PhotographyClient() {
           color: rgba(232,232,232,0.65);
           margin: 0;
         }
+
+        /* ── Galleries: editorial header + glass frame ── */
         .photography-box-wrapper {
           max-width: 1240px;
           margin: 0 auto;
           padding: 0 clamp(20px, 5vw, 56px);
         }
-        .photography-box {
+        .ph-gallery {
           width: 100%;
-          margin: 0 0 3rem;
+          margin: 0 0 clamp(2.4rem, 4vw, 3.4rem);
+          border-top: none;
+          border-radius: 0;
+          text-align: left;
+          display: block;
+        }
+        .ph-gallery-head {
+          display: flex; align-items: flex-end; justify-content: space-between;
+          gap: 16px; padding-bottom: 14px; margin-bottom: 18px;
+          position: relative;
+        }
+        .ph-gallery-head::after {
+          content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px;
+          background: linear-gradient(90deg, color-mix(in srgb, var(--hp-sky) 30%, transparent), rgba(255,255,255,0.06) 45%, transparent);
+        }
+        .ph-gallery-head-l { display: flex; align-items: baseline; gap: 14px; min-width: 0; }
+        .ph-gallery-num {
+          font-family: 'oswaldbold'; font-size: clamp(1.4rem, 3vw, 2rem); line-height: 1;
+          color: transparent;
+          background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02));
+          -webkit-background-clip: text; background-clip: text;
+          -webkit-text-stroke: 1px var(--orb-edge);
+          flex-shrink: 0;
+        }
+        .ph-gallery-title {
+          font-family: 'oswaldbold'; font-size: clamp(1.3rem, 3vw, 2rem); line-height: 1.1;
+          letter-spacing: -0.01em; margin: 0; padding: 0;
+          background: linear-gradient(91deg, #fff 0%, #9a9a9a 100%);
+          -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+          color: transparent;
+        }
+        .ph-gallery-open {
+          display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0;
+          font-family: 'inter'; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.02em;
+          color: var(--hp-sky);
+          padding: 8px 14px; border-radius: 999px;
+          background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.10);
+          transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+        }
+        .ph-gallery-open svg { transition: transform 0.3s ease; }
+        .ph-gallery-open:hover {
+          color: #fff; transform: translateY(-2px);
+          background: color-mix(in srgb, var(--hp-blue) 24%, transparent);
+          border-color: color-mix(in srgb, var(--hp-indigo) 50%, transparent);
+        }
+        .ph-gallery-open:hover svg { transform: translate(2px, -2px); }
+        .ph-gallery-frame {
+          position: relative;
+          border-radius: 18px;
+          overflow: hidden;
+          border: 1px solid var(--hp-line);
+          background: rgba(255,255,255,0.018);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 30px 60px -40px rgba(0,0,0,0.85);
+          padding: 8px;
+        }
+        .ph-gallery .photography-restrict { height: 26vh; border-radius: 12px; }
+        .ph-gallery .expand-photography {
+          left: 8px; right: 8px; bottom: 8px; width: auto;
+          border-radius: 0 0 12px 12px;
+          background: linear-gradient(180deg, rgba(8,8,10,0) 0%, rgba(8,8,10,0.82) 70%);
+          height: 38% !important;
+        }
+        .ph-gallery .expand-photography button {
+          font-family: 'inter'; font-size: 0.8rem; font-weight: 600;
+          color: var(--hp-ink);
+          background: rgba(255,255,255,0.07);
+          border: 1px solid rgba(255,255,255,0.16);
+          -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+          padding: 8px 18px; border-radius: 999px;
+        }
+        .ph-gallery .expand-photography button:hover {
+          color: #fff;
+          background: color-mix(in srgb, var(--hp-blue) 28%, transparent);
+          border-color: color-mix(in srgb, var(--hp-indigo) 50%, transparent);
+          transform: translateY(-2px);
         }
       `}</style>
     </main>

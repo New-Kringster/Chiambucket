@@ -260,6 +260,13 @@ export default function CsdpPage() {
               <img src="/images/csdp9.webp" alt="A chart of how each system connects with each other" loading="lazy" />
               <figcaption>A chart of how each system connects with each other</figcaption>
             </figure>
+            <div className="art-repo">
+              <div className="art-repo-text">
+                <strong>EMA Smart Home on GitHub</strong>
+                <span>The full source for the node firmware and SocketIO dashboard server.</span>
+              </div>
+              <a className="hp-btn" href="https://github.com/New-Kringster/EMA-Smart-home-System" target="_blank" rel="noopener">View GitHub Repo <Circle /></a>
+            </div>
           </section>
 
           {/* Slide Deck */}
