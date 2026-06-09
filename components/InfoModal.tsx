@@ -9,9 +9,11 @@ export type InfoItem = {
   title: string;
   blurb: string;
   add?: string;
+  media?: string;
   points?: string[];
   chips?: string[];
   link?: { label: string; url: string };
+  links?: { label: string; url: string }[];
 };
 
 /* Lightweight, theme-aware detail modal shared by the homepage capability cards
@@ -60,6 +62,7 @@ export default function InfoModal({ item, onClose }: { item: InfoItem | null; on
         <h3 className="im-title">{data.title}</h3>
         <p className="im-blurb">{data.blurb}</p>
         {data.add && <p className="im-add">{data.add}</p>}
+        {data.media && <img className="im-media" src={data.media} alt="" loading="lazy" />}
         {data.points && (
           <ul className="im-points">
             {data.points.map((pt) => (
@@ -71,7 +74,23 @@ export default function InfoModal({ item, onClose }: { item: InfoItem | null; on
           </ul>
         )}
         {data.chips && <div className="im-chips">{data.chips.map((c) => <span key={c}>{c}</span>)}</div>}
-        {data.link && <a className="hp-btn im-link" href={data.link.url}>{data.link.label}</a>}
+        {(() => {
+          const links = data.links ?? (data.link ? [data.link] : []);
+          if (!links.length) return null;
+          return (
+            <div className="im-links">
+              {links.map((l, idx) => {
+                const ext = /^https?:/i.test(l.url);
+                return (
+                  <a key={l.url} className={`hp-btn${idx === 0 ? '' : ' hp-btn-ghost'} im-link`} href={l.url}
+                    {...(ext ? { target: '_blank', rel: 'noopener' } : {})}>
+                    {l.label}
+                  </a>
+                );
+              })}
+            </div>
+          );
+        })()}
       </div>
     </div>,
     document.body,

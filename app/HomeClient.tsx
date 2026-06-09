@@ -32,6 +32,63 @@ const CAPABILITIES: InfoItem[] = [
     link: { label: 'Explore the HomeLab', url: '/homelab' } },
 ];
 
+/* About-bento tiles → detail pop-ups (intro / engineering / microcontrollers / powerpoint). */
+const TILE_INTRO: InfoItem = {
+  eyebrow: 'Hello',
+  title: "Hi, I'm Braven",
+  blurb: "I'm a 19-year-old engineering student in Singapore. It all started when I was young, taking apart a broken radio just to see how it worked. That same curiosity never left me, it just grew into rovers, custom PCBs, a solar-powered homelab and this very site.",
+  add: "Today I split my time across hardware, software and design, an engineer who designs, chasing the same feeling that broken radio first gave me: working out how something ticks, then making it better.",
+  links: [
+    { label: 'Get in touch', url: '/contact' },
+    { label: 'Sukuna art credit', url: 'https://www.pinterest.com/pin/665547651180427494/' },
+  ],
+};
+
+const TILE_ENGINEERING: InfoItem = {
+  eyebrow: 'Design-first engineering',
+  title: 'Every engineer should be a designer',
+  blurb: "I don't treat function and form as a trade-off. I approach a circuit or a chassis the way I'd approach an interface: grounded in what it has to do, then shaped by how it actually feels to use. It should work well and look like it was meant to.",
+  add: "The render on the card is a Blender scene from my Kauli concept, a product I designed and pitched for a communication-skills brief. That same instinct carries into my interface work, like the live dashboard I designed for the EMA smart-home system shown below.",
+  media: '/images/Cdyspstart.webp',
+  links: [
+    { label: 'See the Kauli concept', url: '/comingsoon' },
+    { label: 'EMA smart-home UI', url: '/csdp' },
+  ],
+};
+
+const TILE_MICRO: InfoItem = {
+  eyebrow: 'The brains of the build',
+  title: 'Microcontrollers I build with',
+  blurb: "Almost everything I make has a microcontroller at its core. I write bare-metal firmware in C and C++, flashing and debugging over PlatformIO, and I choose the chip to fit the job rather than forcing the job onto one chip.",
+  points: [
+    'ESP32, my default for anything wireless, with WiFi, ESP-NOW and plenty of headroom',
+    'Arduino Uno and the ATmega328 for simpler, well-supported builds',
+    'M5Stack Fire when I need a screen, buttons and modules in a hurry',
+    'BeagleBone Black as a Linux brain coordinating a larger system',
+  ],
+  chips: ['ESP32', 'Arduino', 'ATmega328', 'M5Stack', 'BeagleBone', 'PlatformIO', 'C / C++'],
+  links: [
+    { label: 'Project June (ESP32)', url: '/project-june' },
+    { label: 'LoRA Messenger (ESP32)', url: '/brolocator' },
+    { label: 'ELEC-F (M5Stack)', url: '/elecf' },
+  ],
+};
+
+const TILE_PPT: InfoItem = {
+  eyebrow: 'Presenting & slide design',
+  title: 'Slides that hold a room',
+  blurb: "A deck should carry the talk, not compete with it. I design slides to land one idea at a time and keep only the key points on screen, large and readable, so the audience can take them in at a glance and keep listening to me rather than reading the wall.",
+  add: "Strong typography, real imagery and a clear visual rhythm do the heavy lifting, while the detail lives in what I say. That keeps the slides clean and the delivery engaging.",
+  points: [
+    'One key idea per slide, never a wall of text',
+    'Only the most important points make the cut',
+    'Visual hierarchy and motion that guide the eye',
+  ],
+  links: [
+    { label: 'Download the slides (.pptx)', url: 'https://content.chiambucket.com/downloadable/CPB1v4.pptx' },
+  ],
+};
+
 /* ── Shared icon helpers ── */
 const AC = () => <svg aria-hidden="true"><use href="#icon-arrow-circle" /></svg>;
 const CR = () => <svg aria-hidden="true"><use href="#icon-chevron-right" /></svg>;
@@ -39,6 +96,88 @@ const AU = () => <svg aria-hidden="true"><use href="#icon-arrow-ur" /></svg>;
 const SR = () => <svg aria-hidden="true"><use href="#icon-search" /></svg>;
 const ST = () => <svg aria-hidden="true"><use href="#icon-star" /></svg>;
 const SB = () => <svg aria-hidden="true"><use href="#icon-sparkle-btn" /></svg>;
+
+/* ── Design Tools 3D coverflow carousel ── */
+const TOOL_RING = [
+  { src: '/images/photoshop-icon-dark.webp', name: 'Photoshop' },
+  { src: '/images/figma-icon-dark.webp', name: 'Figma' },
+  { src: '/images/davinci-icon-dark.webp', name: 'DaVinci Resolve' },
+  { src: '/images/premier-icon-dark.webp', name: 'Premiere Pro' },
+  { src: '/images/spline-icon-dark.webp', name: 'Spline' },
+  { src: '/images/powerpoint-icon-dark.webp', name: 'PowerPoint' },
+];
+
+function ToolCarousel() {
+  const [active, setActive] = useState(0);
+  const [reduced, setReduced] = useState(false);
+  const n = TOOL_RING.length;
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setReduced(mq.matches);
+    const onChange = () => setReduced(mq.matches);
+    mq.addEventListener?.('change', onChange);
+    return () => mq.removeEventListener?.('change', onChange);
+  }, []);
+
+  useEffect(() => {
+    if (reduced) return;
+    const id = setInterval(() => setActive((a) => (a + 1) % n), 2200);
+    return () => clearInterval(id);
+  }, [reduced, n]);
+
+  // Shortest signed offset of slot i from the active slot, e.g. for n=6: -2..3 → wrapped to -3..2
+  const offsetOf = (i: number) => {
+    let d = i - active;
+    if (d > n / 2) d -= n;
+    if (d < -n / 2) d += n;
+    return d;
+  };
+
+  if (reduced) {
+    // Static fanned/tilted arrangement, no motion.
+    return (
+      <div className="hp-tcar hp-tcar-static" aria-label="Design tools: Photoshop, Figma, DaVinci Resolve, Premiere Pro, Spline, PowerPoint">
+        <div className="hp-tcar-stage">
+          {TOOL_RING.map((tool, i) => {
+            const d = offsetOf(i);
+            return (
+              <div className="hp-tcar-chip" key={tool.name}
+                style={{ transform: `translateX(${d * 38}px) rotate(${d * 6}deg)`, zIndex: 10 - Math.abs(d), opacity: Math.abs(d) > 2 ? 0 : 1 }}>
+                <img src={tool.src} alt={tool.name} loading="lazy" />
+              </div>
+            );
+          })}
+        </div>
+        <span className="hp-tcar-label">{TOOL_RING[active].name}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="hp-tcar" aria-label={`Design tools carousel, currently showing ${TOOL_RING[active].name}`}>
+      <div className="hp-tcar-stage">
+        <div className="hp-tcar-ring">
+          {TOOL_RING.map((tool, i) => {
+            const d = offsetOf(i);
+            const ad = Math.abs(d);
+            const style: React.CSSProperties = {
+              transform: `translateX(${d * 64}px) translateZ(${-ad * 78}px) rotateY(${d * -34}deg) scale(${1 - ad * 0.16})`,
+              opacity: ad > 2 ? 0 : 1 - ad * 0.32,
+              zIndex: 10 - ad,
+            };
+            return (
+              <div className={`hp-tcar-chip${d === 0 ? ' is-active' : ''}`} key={tool.name} style={style} aria-hidden={d !== 0}>
+                <img src={tool.src} alt={tool.name} loading="lazy" />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      <span className="hp-tcar-label" aria-live="polite">{TOOL_RING[active].name}</span>
+    </div>
+  );
+}
 
 /* ── Modal content by project ID ── */
 function ModalContent({ id, close }: { id: string; close: () => void }) {
@@ -213,6 +352,7 @@ export default function HomeClient() {
   const [activeProject, setActiveProject] = useState<string | null>(null);
   const [projectsExpanded, setProjectsExpanded] = useState(false); // mobile-only collapse
   const [openCap, setOpenCap] = useState<InfoItem | null>(null); // capability detail modal
+  const [openTile, setOpenTile] = useState<InfoItem | null>(null); // about-bento tile detail modal
 
   /* ── Modal ── */
   const openProject = (cardEl: Element | string) => {
@@ -466,7 +606,7 @@ export default function HomeClient() {
             </div>
             <div className="hp-bento">
               {/* Intro */}
-              <div className="hp-tile hp-tile-intro hp-clickable" data-reveal role="link" tabIndex={0} onClick={() => { window.location.href = '/contact'; }} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}>
+              <div className="hp-tile hp-tile-intro hp-clickable" data-reveal role="button" tabIndex={0} onClick={() => setOpenTile(TILE_INTRO)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(TILE_INTRO); } }}>
                 <span className="hp-tile-go"><AU /></span>
                 <img className="hp-wave" src="/images/wave.webp" alt="Waving hand" />
                 <a className="hp-blink" id="sukuna-blink" href="https://www.pinterest.com/pin/665547651180427494/" onClick={(e) => e.stopPropagation()} aria-label="A little friend"></a>
@@ -474,7 +614,7 @@ export default function HomeClient() {
                 <p className="hp-tile-p">Grounded in function, guided by human experience, and driven to make things that feel like art.</p>
               </div>
               {/* Engineering */}
-              <div className="hp-tile hp-tile-eng hp-clickable" data-reveal data-delay="1" role="link" tabIndex={0} onClick={() => { window.location.href = '/brolocator'; }} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}>
+              <div className="hp-tile hp-tile-eng hp-clickable" data-reveal data-delay="1" role="button" tabIndex={0} onClick={() => setOpenTile(TILE_ENGINEERING)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(TILE_ENGINEERING); } }}>
                 <span className="hp-tile-go"><AU /></span>
                 <div className="hp-tile-media"><img src="/images/abm-engineering.webp" alt="" /></div>
                 <span className="hp-key">Engineering</span>
@@ -482,7 +622,7 @@ export default function HomeClient() {
                 <p className="hp-tile-p">I believe every engineer should be a designer, grounded in function, guided by experience.</p>
               </div>
               {/* Microcontrollers */}
-              <div className="hp-tile hp-tile-micro hp-clickable" data-reveal data-delay="2" role="link" tabIndex={0} onClick={() => { window.location.href = '/project-june'; }} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}>
+              <div className="hp-tile hp-tile-micro hp-clickable" data-reveal data-delay="2" role="button" tabIndex={0} onClick={() => setOpenTile(TILE_MICRO)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(TILE_MICRO); } }}>
                 <span className="hp-tile-go"><AU /></span>
                 <span className="hp-key">Microcontrollers</span>
                 <div className="hp-iconrow">
@@ -508,9 +648,7 @@ export default function HomeClient() {
               <div className="hp-tile hp-tile-tools hp-clickable" data-reveal data-delay="2" role="link" tabIndex={0} onClick={() => { window.location.href = '#capabilities'; }} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}>
                 <span className="hp-tile-go"><AU /></span>
                 <span className="hp-key">Design Tools</span>
-                <div className="hp-iconrow">
-                  <img src="/images/photoshop-icon-dark.webp" alt="Photoshop" /><img src="/images/figma-icon-dark.webp" alt="Figma" /><img src="/images/davinci-icon-dark.webp" alt="DaVinci Resolve" /><img src="/images/premier-icon-dark.webp" alt="Premiere Pro" /><img src="/images/spline-icon-dark.webp" alt="Spline" /><img src="/images/powerpoint-icon-dark.webp" alt="PowerPoint" />
-                </div>
+                <ToolCarousel />
                 <p className="hp-tile-p">A toolkit I reach for daily, from raster and vector to 3D and motion.</p>
               </div>
               {/* Photography */}
@@ -521,7 +659,7 @@ export default function HomeClient() {
                 <div className="hp-media-body"><span className="hp-key">Photography</span><h3 className="hp-tile-h">Through a different lens.</h3><p className="hp-tile-p">Photography sharpens my perspective, attention to detail, and approach to design.</p></div>
               </div>
               {/* PowerPoint */}
-              <div className="hp-tile hp-tile-ppt hp-clickable" data-reveal data-delay="1" role="link" tabIndex={0} onClick={() => { window.location.href = 'https://content.chiambucket.com/downloadable/CPB1v4.pptx'; }} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}>
+              <div className="hp-tile hp-tile-ppt hp-clickable" data-reveal data-delay="1" role="button" tabIndex={0} onClick={() => setOpenTile(TILE_PPT)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(TILE_PPT); } }}>
                 <span className="hp-tile-go"><AU /></span>
                 <span className="hp-key">PowerPoint</span>
                 <div className="hp-ppt-media"><video autoPlay loop muted playsInline><source src="/images/CPB1v4.webm" type="video/webm" /><source src="/images/CPB1v4.mp4" type="video/mp4" /></video></div>
@@ -570,7 +708,7 @@ export default function HomeClient() {
                 <div className="hp-spot-cta">
                   <button className="hp-btn" onClick={() => openProject('proj-june')}>Read the summary <SB /></button>
                   <button className="hp-btn hp-btn-ghost" onClick={() => { window.location.href = '/project-june'; }}>Full article</button>
-                  <button className="hp-btn hp-btn-ghost" onClick={() => window.open('https://www.youtube.com/@newkringster2564', '_blank')}>Watch the build</button>
+                  <button className="hp-btn hp-btn-ghost" onClick={() => window.open('https://youtu.be/MnkJsx-nwoE?si=kd1n5bYct6dWTcQC', '_blank')}>Watch the build</button>
                 </div>
               </div>
             </article>
@@ -882,6 +1020,83 @@ export default function HomeClient() {
       </div>
 
       <InfoModal item={openCap} onClose={() => setOpenCap(null)} />
+      <InfoModal item={openTile} onClose={() => setOpenTile(null)} />
+
+      {/* Scoped styles: Design Tools 3D coverflow carousel */}
+      <style>{`
+        .hp-tcar { position: relative; display: flex; flex-direction: column; align-items: center; gap: 0.6rem; margin: 0.2rem 0; }
+        .hp-tcar-stage {
+          position: relative;
+          width: 100%;
+          height: 132px;
+          display: grid;
+          place-items: center;
+          perspective: 900px;
+          perspective-origin: 50% 45%;
+        }
+        .hp-tcar-ring {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          transform-style: preserve-3d;
+          transform: rotateX(7deg) rotate(-3deg);
+          display: grid;
+          place-items: center;
+        }
+        .hp-tcar-chip {
+          position: absolute;
+          width: 60px; height: 60px;
+          display: grid; place-items: center;
+          box-sizing: border-box;
+          border-radius: 15px;
+          background: linear-gradient(158deg, rgba(255,255,255,0.085), rgba(255,255,255,0.02));
+          border: 1px solid rgba(255,255,255,0.10);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.09), 0 8px 18px -10px rgba(0,0,0,0.75);
+          transition: transform 0.7s cubic-bezier(0.16,1,0.3,1), opacity 0.7s cubic-bezier(0.16,1,0.3,1), border-color 0.5s ease, box-shadow 0.5s ease;
+          will-change: transform, opacity;
+        }
+        .hp-tcar-chip img { width: 30px; height: 30px; object-fit: contain; display: block; }
+        .hp-tcar-chip.is-active {
+          border-color: color-mix(in srgb, var(--hp-indigo) 55%, transparent);
+          background: linear-gradient(158deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04));
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 16px 34px -12px color-mix(in srgb, var(--hp-blue) 65%, transparent);
+        }
+        .hp-tcar-label {
+          font-family: 'inter';
+          font-size: 0.66rem;
+          font-weight: 600;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+          color: var(--hp-sky);
+          opacity: 0.85;
+          transition: opacity 0.4s ease;
+        }
+        /* Static fallback for prefers-reduced-motion: a fanned, tilted arrangement, no auto-advance */
+        .hp-tcar-static .hp-tcar-stage { perspective: none; }
+        .hp-tcar-static .hp-tcar-chip {
+          width: 52px; height: 52px;
+          transition: none;
+        }
+        .hp-tcar-static .hp-tcar-chip img { width: 26px; height: 26px; }
+        .hp-tcar-static .hp-tcar-chip.is-active {
+          border-color: color-mix(in srgb, var(--hp-indigo) 50%, transparent);
+        }
+
+        @media (max-width: 1000px) {
+          .hp-tcar-stage { height: 116px; }
+          .hp-tcar-chip { width: 54px; height: 54px; }
+          .hp-tcar-chip img { width: 27px; height: 27px; }
+        }
+        @media (max-width: 480px) {
+          .hp-tcar-stage { height: 104px; perspective: 700px; }
+          .hp-tcar-chip { width: 48px; height: 48px; border-radius: 13px; }
+          .hp-tcar-chip img { width: 24px; height: 24px; }
+          .hp-tcar-label { font-size: 0.6rem; letter-spacing: 0.13em; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .hp-tcar-chip { transition: none; }
+        }
+      `}</style>
     </>
   );
 }

@@ -361,9 +361,9 @@
 .hl2-mv-wake { position: relative; overflow: hidden; border-radius: 10px; }
 .hl2-mv-cores { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; }
 .hl2-mv-core { height: 22px; border-radius: 5px; background: var(--dc-cyan); }
-.hl2-mv-packet { position: absolute; top: 0; bottom: 0; left: 0; width: 64px; pointer-events: none; z-index: 2;
+.hl2-mv-packet { position: absolute; top: 0; bottom: 0; left: 0; width: 100%; pointer-events: none; z-index: 2;
   background: linear-gradient(90deg, transparent, rgba(74,150,232,0.55), transparent); animation: hl2wake 1.1s ease-out 0.2s 1 both; }
-@keyframes hl2wake { from { transform: translateX(-64px); } to { transform: translateX(calc(100% + 64px)); } }
+@keyframes hl2wake { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
 /* service modal (single column) */
 .hl2-smodal { padding: clamp(28px, 3.4vw, 44px); }
 .hl2-smodal-top { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; padding-right: 42px; }

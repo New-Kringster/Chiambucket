@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import ArticleScrollSpy from '../../components/ArticleScrollSpy';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
+import CommandLink from './CommandLink';
 
 export const metadata: Metadata = {
   title: 'Project June — Chiambucket',
@@ -167,6 +168,8 @@ export default function ProjectJunePage() {
           <section id="Livestr" className="art-section" data-reveal>
             <h2>Live Stream System</h2>
             <p>This diagram shows how the whole live streaming system works. It is 3 different WebRTC streams that send the live video to the client.</p>
+            <p>Here is roughly what the operator&apos;s console looked like while driving: the same signal path, telemetry and camera feeds laid out for a glance.</p>
+            <CommandLink />
             <img src="/images/ProjJune13.webp" alt="Live stream system diagram" loading="lazy" />
             <img src="/images/ProjJune16.webp" alt="WebRTC stream routing" loading="lazy" />
           </section>

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
 import ArticleScrollSpy from '../../components/ArticleScrollSpy';
+import NodeMap from './NodeMap';
 
 export const metadata: Metadata = {
   title: 'EMA Smart Home System — Chiambucket',
@@ -256,6 +257,8 @@ export default function CsdpPage() {
           <section id="Connectivity" className="art-section" data-reveal>
             <h2>Connectivity</h2>
             <p>Each board connects to a SocketIO web server which hosts the dashboard and coordinates events and alarms too.</p>
+            <p>Here is that mesh laid out as a hub and spokes, the BeagleBone controller in the middle with a live link out to each of the five nodes. Click a node to inspect it, or trigger the flame alarm to watch an alert race down the line.</p>
+            <NodeMap />
             <figure className="art-fig">
               <img src="/images/csdp9.webp" alt="A chart of how each system connects with each other" loading="lazy" />
               <figcaption>A chart of how each system connects with each other</figcaption>

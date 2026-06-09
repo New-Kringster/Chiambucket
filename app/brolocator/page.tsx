@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
 import ArticleScrollSpy from '../../components/ArticleScrollSpy';
+import LinkDemo from './LinkDemo';
 
 export const metadata: Metadata = {
   title: 'LoRA Messenger (Brolocator) — Chiambucket',
@@ -105,6 +106,10 @@ export default function BrolocatorPage() {
               <li>A mode for range testing</li>
               <li>Decent and simple to use UI</li>
             </ul>
+            <p>The two radios trade off against each other: LoRa reaches kilometres but only carries text a packet at a time, while ESP-NOW is a short hop that is fast enough for live voice. Try the link below to feel the difference.</p>
+
+            <LinkDemo />
+
             <div className="art-grid">
               <img src="/images/Brolocator1.webp" alt="Brolocator device front view" loading="lazy" />
               <img src="/images/Brolocator2.webp" alt="Brolocator device side view" loading="lazy" />

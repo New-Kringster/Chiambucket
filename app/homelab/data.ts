@@ -84,6 +84,7 @@ export const SERVERS: Server[] = [
       { k: 'OS', v: 'Proxmox VE' },
       { k: 'CPU', v: 'Core i7-6700T' },
       { k: 'Memory', v: '32 GB DDR4' },
+      { k: 'Storage', v: '1TB local NVMe · VM storage' },
       { k: 'Boot', v: 'PXE network boot' },
       { k: 'Hosts', v: 'CasaOS + Debian VMs' },
     ],
@@ -93,7 +94,7 @@ export const SERVERS: Server[] = [
       tagline: 'Small, silent, always on.',
       story: [
         'CaCa is a tiny ThinkCentre that used to be my main server. Instead of retiring it, I turned it into the always-on half of a Proxmox PXE cluster.',
-        'It carries no operating system of its own. It network-boots over PXE, pulling its disk over the wire instead of off a local drive, then runs the CasaOS and Debian virtual machines that used to live on bare metal.',
+        'It carries no operating system of its own, network-booting over PXE instead of off a local drive. What it does carry is a 1TB NVMe drive dedicated to VM storage, so the CasaOS and Debian virtual machines that used to live on bare metal now run with fast local disks of their own.',
         'Because it sips power, this is the node that stays awake around the clock, so something is always listening even when the heavy iron is asleep.',
       ],
       highlights: [

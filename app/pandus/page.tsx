@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
 import ArticleScrollSpy from '../../components/ArticleScrollSpy';
+import DispenseDemo from './DispenseDemo';
 
 export const metadata: Metadata = {
   title: 'Pandus Dispenser — Chiambucket',
@@ -118,6 +119,10 @@ export default function PandusPage() {
           <section id="ControlnFunction" className="art-section" data-reveal>
             <h2>Control and Function</h2>
             <p>We were taught to code using Python and utilised the Firmata library to enable communication with the Arduino. Below are examples of the components and flowcharts illustrating how the system functioned. In addition to the components provided, I purchased high-powered LEDs, a DC pump, a relay board, and used a separate power bank to power the high-current components.</p>
+            <p>Here is roughly how a single dispense plays out, from the moment a cup approaches to the door swinging shut again. Pick a level to run it yourself, or let the demo cycle through all three on its own.</p>
+
+            <DispenseDemo />
+
             <img src="/images/pandus4.webp" alt="Component diagram" loading="lazy" />
             <img src="/images/pandus5.webp" alt="System flowchart part 1" loading="lazy" />
             <img src="/images/pandus6.webp" alt="System flowchart part 2" loading="lazy" />

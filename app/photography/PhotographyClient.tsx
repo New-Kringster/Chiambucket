@@ -6,6 +6,7 @@ const tools = [
   {
     img: '/images/pr-icon.webp',
     name: 'Premiere Pro',
+    maker: 'Adobe',
     desc: 'I learned Premiere Pro with Photoshop, but frequent crashes led me to switch to DaVinci Resolve with no regrets.',
     add: 'It taught me the fundamentals of a timeline, but it mostly lives in my history now.',
     chips: ['Video editing', 'Timelines', 'Where I started'],
@@ -13,6 +14,7 @@ const tools = [
   {
     img: '/images/il-icon.webp',
     name: 'Illustrator',
+    maker: 'Adobe',
     desc: "Illustrator is a fairly simple tool I use for creating logos or SVGs, but I don't use it as much as Photoshop.",
     add: 'When something needs to scale cleanly or live as an SVG, this is where it gets drawn.',
     chips: ['Logos', 'Vector / SVG', 'Icons'],
@@ -20,6 +22,7 @@ const tools = [
   {
     img: '/images/fm-icon.webp',
     name: 'Figma',
+    maker: 'Figma',
     desc: 'A highly powerful tool I use to prototype and create designs focused on shapes rather than images.',
     add: 'Most of my interfaces and posters start as Figma frames before they become code or print.',
     chips: ['UI design', 'Prototyping', 'Layout'],
@@ -27,6 +30,7 @@ const tools = [
   {
     img: '/images/ps-logo.webp',
     name: 'Photoshop',
+    maker: 'Adobe',
     desc: "I've used Photoshop since 2019, received professional training through my school's media club, and it remains my favorite tool.",
     add: 'From retouching photos to laying out posters, it is the tool I reach for first.',
     chips: ['Photo editing', 'Posters', 'Compositing'],
@@ -34,6 +38,7 @@ const tools = [
   {
     img: '/images/resolve-logo.webp',
     name: 'DaVinci Resolve',
+    maker: 'Blackmagic Design',
     desc: 'I regularly edit my videos using DaVinci, but I rarely post them. However, I have more content planned for the future.',
     add: 'Editing, colour and export all live in one place, which is exactly why it replaced Premiere for me.',
     chips: ['Video editing', 'Colour grading', 'Project films'],
@@ -41,6 +46,7 @@ const tools = [
   {
     img: '/images/lrc-logo.webp',
     name: 'Lightroom',
+    maker: 'Adobe',
     desc: 'Lightroom provides me with powerful tools to enhance images and recover details from unusable shots.',
     add: 'It is the last stop for most of my photos, pulling back highlights and shadows a JPEG would have lost.',
     chips: ['Photo editing', 'Colour', 'RAW workflow'],
@@ -146,7 +152,7 @@ export default function PhotographyClient() {
           </div>
           <div className="hp-cap-grid ph-tools-grid" data-reveal>
             {tools.map((t) => {
-              const item: InfoItem = { icon: t.img, eyebrow: 'Tool', title: t.name, blurb: t.desc, add: t.add, chips: t.chips };
+              const item: InfoItem = { icon: t.img, eyebrow: t.maker, title: t.name, blurb: t.desc, add: t.add, chips: t.chips };
               return (
                 <div key={t.name} className="cr-card ph-tool-card" role="button" tabIndex={0}
                   aria-label={`${t.name} details`}
@@ -240,13 +246,32 @@ export default function PhotographyClient() {
         }
         .ph-hero-scrim {
           background:
-            linear-gradient(180deg, rgba(6,6,9,0.58) 0%, rgba(6,6,9,0.30) 40%, rgba(6,6,9,0.72) 100%),
-            radial-gradient(ellipse 70% 62% at 50% 44%, transparent 38%, rgba(6,6,9,0.6) 100%);
+            linear-gradient(180deg, rgba(6,6,9,0.62) 0%, rgba(6,6,9,0.38) 40%, rgba(6,6,9,0.76) 100%),
+            radial-gradient(ellipse 70% 62% at 50% 44%, transparent 34%, rgba(6,6,9,0.66) 100%);
         }
         .ph-hero-grain {
-          opacity: 0.4; mix-blend-mode: overlay;
+          opacity: 0.55; mix-blend-mode: overlay;
           background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
           background-size: 140px 140px;
+        }
+        /* Second, coarser grain pass multiplied underneath: deepens shadows
+           (mix-blend-mode:multiply) without overlay's tendency to blow out
+           the highlights, so the montage stays visible but the mood reads darker. */
+        .ph-hero-grain::after {
+          content: ''; position: absolute; inset: 0;
+          opacity: 0.22; mix-blend-mode: multiply;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n2'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n2)'/%3E%3C/svg%3E");
+          background-size: 220px 220px;
+        }
+        /* ── Diffuse the violet aura into a broad, gentle wash rather than a
+           tight glow: scale the box up, push the blur much further, and back
+           the overall intensity off so it reads as ambient colour, not a blob. */
+        .ph-hero > .ct-aura {
+          position: absolute;
+          top: -32%; left: 50%; transform: translateX(-50%);
+          width: min(1900px, 230vw); height: 1280px;
+          filter: blur(180px);
+          opacity: 0.5;
         }
         @media (prefers-reduced-motion: reduce) { .ph-hero-media video { animation: none; } }
 
