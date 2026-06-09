@@ -107,7 +107,7 @@ function NodeGlyph({ kind }: { kind: SpokeNode['icon'] | 'controller' }) {
     case 'flame':
       return (
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">
-          <path d="M12 3.4c.4 2.2-2.7 3.7-2.7 6.6a2.7 2.7 0 005.4 0c1 .8 1.6 2 1.6 3.4a4.3 4.3 0 01-8.6 0c0-3.6 3.4-5 4.3-10z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+          <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
         </svg>
       );
     case 'intrusion':

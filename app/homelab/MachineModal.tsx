@@ -31,9 +31,9 @@ function MachineVisual({ kind }: { kind: 'runs' | 'pxe' | 'wake' }) {
 
   if (kind === 'pxe') {
     const steps = [
-      { t: 'No local disk', s: 'CaCa keeps no OS drive of its own' },
-      { t: 'PXE boot', s: 'It pulls its disk over the network, not a local drive' },
-      { t: 'Run the VMs', s: 'CasaOS and Debian come up in the cluster' },
+      { t: 'Local SSD', s: 'CaCa keeps a 1TB NVMe SSD of its own' },
+      { t: 'Boots itself', s: 'Proxmox comes up straight off that local disk' },
+      { t: 'Runs the VMs', s: 'CasaOS and Debian run from the same SSD' },
     ];
     return (
       <div className="hl2-mv">

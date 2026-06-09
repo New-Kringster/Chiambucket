@@ -89,6 +89,24 @@ const TILE_PPT: InfoItem = {
   ],
 };
 
+/* People I've built school projects with, drawn from the ELEC-F and EMA team rolls. */
+type Collab = {
+  name: string;
+  role: string;
+  img: string | null;
+  fit: 'cover' | 'contain';
+  initials?: string;
+  profile: string | null;
+  projects: { label: string; url: string }[];
+};
+const COLLABORATORS: Collab[] = [
+  { name: 'Tan Yong Rui', role: 'Lead · Docs · Code', img: 'https://framerusercontent.com/images/Z3GPice7XE0ttZhHBYRI737GQtA.png?scale-down-to=512&width=854&height=486', fit: 'contain', profile: 'https://tanyongrui11.framer.website/project/www-pentaclay-com', projects: [{ label: 'ELEC-F', url: '/elecf' }, { label: 'EMA Smart Home', url: '/csdp' }] },
+  { name: 'Md Sadiq', role: 'Team Lead on ELEC-F', img: '/images/elecf-sadiq.jpeg', fit: 'cover', profile: 'https://www.mdsadiq.cc', projects: [{ label: 'ELEC-F', url: '/elecf' }] },
+  { name: 'Ong Zheng Xian', role: 'Docs · Code', img: 'https://www.ongkian.com/css/images/Passport_Photo.jpg', fit: 'cover', profile: 'https://www.ongkian.com', projects: [{ label: 'EMA Smart Home', url: '/csdp' }] },
+  { name: 'Joycelyn Wong', role: 'Docs · Code', img: 'https://framerusercontent.com/images/asafLs7NWVzXO9AolaQ8XVF5F4.jpg?scale-down-to=512&width=1280&height=807', fit: 'cover', profile: 'https://joycelynwong.framer.website/projects/ema', projects: [{ label: 'EMA Smart Home', url: '/csdp' }] },
+  { name: 'Abel Goh', role: 'Team member on ELEC-F', img: '/images/elecf-abel.png', fit: 'cover', profile: 'https://frequent-location-124634.framer.app', projects: [{ label: 'ELEC-F', url: '/elecf' }] },
+];
+
 /* ── Shared icon helpers ── */
 const AC = () => <svg aria-hidden="true"><use href="#icon-arrow-circle" /></svg>;
 const CR = () => <svg aria-hidden="true"><use href="#icon-chevron-right" /></svg>;
@@ -934,6 +952,63 @@ export default function HomeClient() {
             )}
             <p className="hp-pf-empty" id="hp-pf-empty" hidden>No projects match that search. Try another keyword.</p>
           </div>
+        </section>
+
+        {/* ── COLLABORATORS ── */}
+        <section className="hp-band hp-collab-band" data-reveal>
+          <div className="hp-section">
+            <div className="hp-collab-intro">
+              <span className="hp-eyebrow">Collaborators</span>
+              <h2 className="hp-collab-h">People I build with</h2>
+              <p className="hp-collab-p">A few of the school projects above were team efforts. Here are the people I built them with, and what we made together.</p>
+            </div>
+            <div className="hp-collab-grid">
+              {COLLABORATORS.map((c, i) => (
+                <div key={c.name} className="hp-collab-card" data-reveal data-delay={(i % 3) + 1}>
+                  <div className="hp-collab-top">
+                    <span className="hp-collab-av" style={c.img ? { backgroundImage: `url("${c.img}")`, backgroundSize: c.fit } : undefined}>
+                      {!c.img && <span className="hp-collab-initials">{c.initials}</span>}
+                    </span>
+                    <div className="hp-collab-meta">
+                      <b className="hp-collab-name">{c.name}</b>
+                      <span className="hp-collab-role">{c.role}</span>
+                    </div>
+                  </div>
+                  <div className="hp-collab-projects">
+                    {c.projects.map((p) => (
+                      <a key={p.url} className="hp-collab-proj" href={p.url}>{p.label}</a>
+                    ))}
+                  </div>
+                  {c.profile
+                    ? <a className="hp-collab-link" href={c.profile} target="_blank" rel="noopener">View profile <AU /></a>
+                    : <span className="hp-collab-link is-off">Profile coming soon</span>}
+                </div>
+              ))}
+            </div>
+          </div>
+          <style>{`
+            .hp-collab-intro { max-width: 760px; margin: 0 auto 2.4rem; text-align: center; }
+            .hp-collab-h { font-family: 'oswaldbold'; font-size: clamp(1.6rem, 4vw, 2.4rem); letter-spacing: -0.01em; margin: 0.5rem 0 0.6rem; color: #f0f0f0; }
+            .hp-collab-p { font-family: 'dmsans'; font-size: 1rem; line-height: 1.7; color: rgba(232,232,232,0.6); margin: 0; }
+            .hp-collab-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 1080px; margin: 0 auto; }
+            .hp-collab-card { display: flex; flex-direction: column; gap: 14px; padding: 22px; border-radius: 18px; background: var(--hp-glass); border: 1px solid var(--hp-line); box-shadow: inset 0 1px 0 rgba(255,255,255,0.04); transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), border-color 0.35s ease, box-shadow 0.35s ease; }
+            .hp-collab-card:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--hp-indigo) 40%, transparent); box-shadow: 0 24px 54px -30px color-mix(in srgb, var(--hp-blue) 60%, transparent), inset 0 1px 0 rgba(255,255,255,0.06); }
+            .hp-collab-top { display: flex; align-items: center; gap: 14px; }
+            .hp-collab-av { width: 56px; height: 56px; flex-shrink: 0; border-radius: 999px; background-color: #0b0b0f; background-position: center; background-repeat: no-repeat; border: 1px solid var(--hp-line); display: grid; place-items: center; overflow: hidden; }
+            .hp-collab-initials { font-family: 'oswaldbold'; font-size: 1.1rem; color: var(--hp-sky); letter-spacing: 0.04em; }
+            .hp-collab-meta { min-width: 0; }
+            .hp-collab-name { display: block; font-family: 'inter'; font-weight: 700; font-size: 1rem; color: #ededed; }
+            .hp-collab-role { display: block; font-family: 'dmsans'; font-size: 0.82rem; color: rgba(232,232,232,0.55); margin-top: 2px; }
+            .hp-collab-projects { display: flex; flex-wrap: wrap; gap: 7px; }
+            .hp-collab-proj { font-family: 'inter'; font-size: 0.74rem; font-weight: 600; padding: 5px 11px; border-radius: 999px; background: rgba(127,168,255,0.1); border: 1px solid rgba(127,168,255,0.22); color: #cdd9ff; transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease; }
+            .hp-collab-proj:hover { background: color-mix(in srgb, var(--hp-blue) 26%, transparent); border-color: color-mix(in srgb, var(--hp-indigo) 50%, transparent); color: #fff; transform: translateY(-1px); }
+            .hp-collab-link { margin-top: auto; display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; font-family: 'inter'; font-size: 0.82rem; font-weight: 600; color: var(--hp-sky); transition: gap 0.25s ease, color 0.25s ease; }
+            .hp-collab-link svg { width: 14px; height: 14px; }
+            .hp-collab-link:hover { gap: 9px; color: #fff; }
+            .hp-collab-link.is-off { color: rgba(232,232,232,0.32); cursor: default; }
+            @media (max-width: 900px) { .hp-collab-grid { grid-template-columns: repeat(2, 1fr); } }
+            @media (max-width: 560px) { .hp-collab-grid { grid-template-columns: 1fr; } .hp-collab-intro { text-align: left; } }
+          `}</style>
         </section>
 
         {/* ── HOMELAB BAND ── */}

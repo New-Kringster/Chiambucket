@@ -257,8 +257,8 @@ export default function HomelabClient() {
               </div>
             </Reveal>
             <Reveal delay={0.08} className="hl2-storage-col">
-              <h3 className="hl2-sub">The PXE cluster</h3>
-              <p className="hl2-pxe-lead">CaCa and Adell network-boot into one Proxmox cluster. No local OS drives, just disks streamed over the wire. CaCa stays on; Adell wakes only when something needs its cores.</p>
+              <h3 className="hl2-sub">The Proxmox cluster</h3>
+              <p className="hl2-pxe-lead">CaCa and Adell form one Proxmox cluster. CaCa boots from its own 1TB SSD and stays on around the clock, while Adell network-boots with no local OS drive and wakes only when something needs its cores.</p>
               <ul className="hl2-pxe-list">
                 <li><b>claudeplayground</b><span>An Ubuntu VM where I deploy my vibe-coded apps. I let Claude SSH straight in to ship them.</span></li>
                 <li><b>CasaOS + Debian</b><span>The VMs that used to run on bare metal, now virtualized in the cluster.</span></li>

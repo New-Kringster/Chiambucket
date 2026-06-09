@@ -18,7 +18,7 @@ Routes are file-based under `app/<route>/page.tsx`. There is no `links.js` route
 
 | Route | File | Purpose |
 |-------|------|---------|
-| `/` | `app/page.tsx` → `app/HomeClient.tsx` | Homepage (`hp-*` classes): hero, disciplines, About bento (intro/engineering/microcontrollers/PowerPoint tiles open `InfoModal` detail popups; the Design Tools tile is a 3D auto-rotating icon carousel, `.hp-tcar-*`), Projects (spotlight + capabilities + filterable gallery + chaptered reader modal), HomeLab band, switchable photography gallery, CTA |
+| `/` | `app/page.tsx` → `app/HomeClient.tsx` | Homepage (`hp-*` classes): hero, disciplines, About bento (intro/engineering/microcontrollers/PowerPoint tiles open `InfoModal` detail popups; the Design Tools tile is a 3D auto-rotating icon carousel, `.hp-tcar-*`), Projects (spotlight + capabilities + filterable gallery + chaptered reader modal), Collaborators band (`.hp-collab-*`: school teammates pulled from the ELEC-F + EMA team rolls, with the projects we built together), HomeLab band, switchable photography gallery, CTA |
 | `/photography` | `app/photography/page.tsx` → `PhotographyClient.tsx` | Editorial hero + "My Tools" cards + six Lychee galleries |
 | `/contact` | `app/contact/page.tsx` → `ContactClient.tsx` | Email + socials (`ct-*`) |
 | `/credits` | `app/credits/page.tsx` | Colophon (`cr-*` + shared `ct-*` hero): built with Claude, hosted on Vercel, open-source tools |

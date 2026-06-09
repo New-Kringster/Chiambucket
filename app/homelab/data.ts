@@ -75,30 +75,30 @@ export const SERVERS: Server[] = [
   {
     id: 'caca',
     name: 'CaCa',
-    tag: 'PXE node · always on',
+    tag: 'Cluster node · always on',
     photo: '/images/hl-caca.png',
-    role: 'Proxmox PXE cluster',
+    role: 'Proxmox cluster',
     status: 'always-on',
     statusLabel: 'Online 24/7',
     specs: [
       { k: 'OS', v: 'Proxmox VE' },
       { k: 'CPU', v: 'Core i7-6700T' },
       { k: 'Memory', v: '32 GB DDR4' },
-      { k: 'Storage', v: '1TB local NVMe · VM storage' },
-      { k: 'Boot', v: 'PXE network boot' },
+      { k: 'Storage', v: '1TB NVMe SSD · boot + VMs' },
+      { k: 'Boot', v: 'Local NVMe SSD' },
       { k: 'Hosts', v: 'CasaOS + Debian VMs' },
     ],
     blurb:
-      'A tiny ThinkCentre that used to be my main server. It now runs the always on half of a Proxmox PXE cluster, hosting the CasaOS and Debian virtual machines that used to live on bare metal.',
+      'A tiny ThinkCentre that used to be my main server. It now runs the always on half of a Proxmox cluster, booting from its own 1TB SSD and hosting the CasaOS and Debian virtual machines that used to live on bare metal.',
     detail: {
       tagline: 'Small, silent, always on.',
       story: [
-        'CaCa is a tiny ThinkCentre that used to be my main server. Instead of retiring it, I turned it into the always-on half of a Proxmox PXE cluster.',
-        'It carries no operating system of its own, network-booting over PXE instead of off a local drive. What it does carry is a 1TB NVMe drive dedicated to VM storage, so the CasaOS and Debian virtual machines that used to live on bare metal now run with fast local disks of their own.',
+        'CaCa is a tiny ThinkCentre that used to be my main server. Instead of retiring it, I turned it into the always-on half of a Proxmox cluster.',
+        'It boots Proxmox straight off a 1TB NVMe SSD installed inside it, and the CasaOS and Debian virtual machines that used to live on bare metal now run from that same fast local disk.',
         'Because it sips power, this is the node that stays awake around the clock, so something is always listening even when the heavy iron is asleep.',
       ],
       highlights: [
-        'No local OS drive, pure PXE network boot',
+        'Boots and runs its VMs from a local 1TB NVMe SSD',
         'Hosts the CasaOS and Debian VMs',
         'Low power draw, online 24/7',
         'Clusters with Adell for live migration',
