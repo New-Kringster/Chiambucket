@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
 import ArticleScrollSpy from '../../components/ArticleScrollSpy';
+import ArticleLinks from '../../components/ArticleLinks';
 import DispenseDemo from './DispenseDemo';
 
 export const metadata: Metadata = {
@@ -61,6 +62,12 @@ export default function PandusPage() {
               <img src="/images/onshape-icon.webp" alt="Onshape" />
             </div>
           </div>
+          <ArticleLinks
+            links={[
+              { type: 'video', label: 'Demo video', url: 'https://youtu.be/fIJQzOhCKQU' },
+              { type: 'cad', label: '3D model', url: 'https://cad.onshape.com/documents/5010f3da2be8b0cad10575b0/w/c1baff5b3751dfe2426baad4/e/d042961855d215532e28db65' },
+            ]}
+          />
         </div>
       </header>
 

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
 import ArticleScrollSpy from '../../components/ArticleScrollSpy';
+import ArticleLinks from '../../components/ArticleLinks';
 import NodeMap from './NodeMap';
 
 export const metadata: Metadata = {
@@ -62,6 +63,13 @@ export default function CsdpPage() {
               <img src="/images/figma-icon.webp" alt="Figma" />
             </div>
           </div>
+          <ArticleLinks
+            links={[
+              { type: 'demo', label: 'Live demo', url: 'https://csdpdemo.chiambucket.com' },
+              { type: 'github', label: 'GitHub', url: 'https://github.com/New-Kringster/EMA-Smart-home-System' },
+              { type: 'video', label: 'Demo video', url: 'https://youtu.be/PFhsRaakJAs' },
+            ]}
+          />
         </div>
       </header>
 

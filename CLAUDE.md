@@ -7,8 +7,7 @@ Personal portfolio/personal website for Braven Chiam. Dark-themed, design-forwar
 - **Next.js 15 (App Router) + React 19 + TypeScript** — `app/` directory, server components by default
 - **Vercel Analytics + Speed Insights** — loaded in `app/layout.tsx`
 - **framer-motion** — installed (`framer-motion`); available for React animations when CSS isn't enough. Prefer CSS for simple transitions; reach for it for orchestrated/gesture/layout animations.
-- **animate.css** — loaded from CDN (a few entrance animations)
-- **Lychee** — self-hosted photo gallery embedded via a remote script (homepage + photography)
+- **Lychee** — self-hosted photo gallery embedded via a remote script (homepage + photography). The remote script *and* its cross-origin stylesheet are injected client-side after paint (a `useEffect` appends a `<link data-lychee-css>`), so the homelab server never render-blocks first paint.
 - **No Tailwind, no CSS-in-JS.** One global stylesheet: `public/mainstyle.css` (~5900 lines)
 - jQuery is **gone** — the old jQuery `.load()` includes were replaced by React components. `links.js`/`nav.html`/`footer.html`/`projects.js` etc. are legacy and no longer used by the app.
 
@@ -32,16 +31,18 @@ Routes are file-based under `app/<route>/page.tsx`. There is no `links.js` route
 | 404 | `app/not-found.tsx` | Custom 404 |
 
 - **`next.config.mjs`** keeps permanent redirects from the old `.html` URLs to the clean routes (`/ProjectJune.html` → `/project-june`, etc.). `/portfolio` and `/portfolio.html` both redirect to `/#portfolio-items-holder` (the portfolio page was removed; its content lives in the homepage Projects section).
-- **`app/layout.tsx`** is the root layout: links `mainstyle.css` + animate.css, renders the `#loader`, `<ClientEffects/>`, `<Nav/>`, `{children}`, `<Footer/>`, plus Analytics/Speed Insights. It also holds site-wide `metadata` (metadataBase, OG defaults).
+- **`app/layout.tsx`** is the root layout: links `mainstyle.css`, renders `<ClientEffects/>`, `<Nav/>`, `{children}`, `<Footer/>`, plus Analytics/Speed Insights. It also holds site-wide `metadata` (metadataBase, OG defaults). There is **no page loader and no external CSS CDN** — both were removed for performance (the old `#loader` splash and the animate.css CDN link are gone).
 - Legacy root `*.html` files (`index.html`, `ProjectJune.html`, …) are **dead** — Next does not serve them; they remain only as historical reference.
 - **`app/api/homelab-status/route.ts`** is the one dynamic endpoint (a serverless function): it pings the public `*.chiambucket.com` services server-side and returns up/down JSON for the homelab page's live status dots. Everything else still prerenders as static.
 
 ## Shared components (`components/`)
 
 - **`ArticleRecommendations.tsx`** (`'use client'`) — renders a "More to explore" project card grid at the end of every article page. Self-contained: includes all project data, the peek-modal system (same chapter content as homepage), and a "Load more" button (shows 3 cards initially, all on click). Takes an `exclude` prop (the current article's project ID, e.g. `"proj-june"`). Import it at the bottom of any article `main` element.
+- **`ArticleLinks.tsx`** (server component) — a row of key-link pills (`ArtLink[]` with `type: 'github' | 'video' | 'demo' | 'cad' | 'download'`, each with `label` + `url`) surfaced in the article hero, just after `.art-toolrow`. First link renders as the primary (filled) pill; all open in a new tab. Each article page passes its own GitHub / demo / video / CAD links. Styles are `.art-links` / `.art-link` in the ARTICLE section of `mainstyle.css`.
 - **`Nav.tsx`** (`'use client'`) — the nav with hamburger toggle; uses Next `<Link>`.
 - **`Footer.tsx`** (`'use client'`) — shared footer (logo, socials, credits link).
-- **`ClientEffects.tsx`** (`'use client'`) — global effects: page-loader fade, cursor spotlight, nav scroll glow, and the `[data-reveal]` scroll-reveal IntersectionObserver (re-runs on every route change via `usePathname`, so new pages animate in).
+- **`LazyVideo.tsx`** (`'use client'`) — drop-in replacement for a decorative autoplaying `<video>` loop that defers its own weight. Props: `webm`, `mp4`, `poster`, optional `className` / `rootMargin`. The poster paints immediately; the `<source>`s are only injected once the element scrolls near the viewport (IntersectionObserver), and on **Save-Data** connections or **`prefers-reduced-motion`** the clip is never fetched at all (poster stands in). Used by the homepage About-bento media tiles (DaVinci, PowerPoint) and the photography hero montage. Renders a plain `<video>`, so existing CSS targeting those tiles still applies.
+- **`ClientEffects.tsx`** (`'use client'`) — global effects: cursor spotlight, nav scroll glow, and the `[data-reveal]` scroll-reveal IntersectionObserver (re-runs on every route change via `usePathname`, so new pages animate in).
 - **`ArticleScrollSpy.tsx`** (`'use client'`) — highlights the active chapter in article rails. It observes `<section>` elements and toggles `.article-chapter-selected` on `.article-chapter-wrapper a[href="#id"]`. Article rails therefore carry BOTH classes: `class="art-chapters article-chapter-wrapper"`.
 - **`ArticleLightbox.tsx`** (`'use client'`, mounted once in `app/layout.tsx`) — global click-to-zoom for article images. A delegated listener opens any `<img>` inside `.art-body` in a full-screen viewer (click image to toggle a 2.4x loupe that follows the cursor; Esc/scrim/× to close). A floating magnifier cue tracks hovered images as the affordance. CSS (`.art-lb*`, `.art-zoom-cue`, the `cursor:zoom-in` hover-lift) lives in the ARTICLE section of `mainstyle.css`. Opt a subtree out with `data-no-zoom` (used by interactive widgets and tiny icon grids); linked images (`<a><img></a>`) are skipped automatically. Diagrams with transparent backgrounds get a light plate via class `art-diagram` (the lightbox carries it through with `.art-lb-img.lit`).
 - **`InfoModal.tsx`** (`'use client'`) — a small, theme-aware detail pop-up (`InfoItem`: eyebrow, title, blurb, optional add / `media` (a wide image) / points / chips / icon, plus either a single `link` or a `links[]` button row, first primary then ghost, that auto-opens http(s) targets in a new tab). CSS-only enter/exit, portaled to `body`, ESC/scrim/× to close. Accents follow the page's `data-theme` via `--hp-*` tokens (blue on home, violet on photography). Used by the homepage **capability cards**, the homepage **About-bento tiles** (intro/engineering/microcontrollers/PowerPoint), and the photography **"My Tools" cards** (each card is `role="button"` with a hover-rotating `+` affordance). Styles are `.im-*` in `mainstyle.css`.
@@ -82,10 +83,12 @@ Pages are recoloured by a single `data-theme` attribute on `<html>` so each rout
 
 ## Assets (`public/`)
 
-- `public/images/` — all images, icons, GIFs, videos (webm/mp4)
+- `public/images/` — all images, icons, videos (webm/mp4) and their poster stills
 - `public/fonts/` — local fonts
 - `public/downloadable/` — PPTX/PDF downloads
 - `public/mainstyle.css` — the global stylesheet
+
+**Media perf rules:** animated content is **always `.webm` + `.mp4`, never `.gif`** (GIFs are an order of magnitude heavier; the old redundant GIF twins were deleted and `*.gif` is `.vercelignore`d as a backstop). Decorative autoplay loops use `<LazyVideo>` (in-view loading + Save-Data/reduced-motion fallback to a poster) rather than a raw `<video autoPlay>`. When adding a clip, generate a small poster still (`ffmpeg -i clip.webm -vframes 1 ... → cwebp`) and pass it to `LazyVideo`.
 
 ## Local development
 
@@ -102,7 +105,7 @@ Pages are recoloured by a single `data-theme` attribute on `<html>` so each rout
 ## Deployment
 
 - Static-friendly Next.js app on **Vercel** (every route prerenders as static). `npm run build` must pass.
-- `vercel.json` sets security headers. `.vercelignore` keeps dev tooling (`serve.mjs`, `screenshot*.mjs`, `shot.mjs`, `temporary screenshots/`, scratch HTML, PDFs) out of the deploy.
+- `vercel.json` sets security headers. `.vercelignore` keeps dev tooling (`serve.mjs`, `screenshot*.mjs`, `shot.mjs`, `temporary screenshots/`, scratch HTML, PDFs, `*.gif`) out of the deploy.
 
 ## Pages still incomplete / placeholders
 

@@ -11,21 +11,8 @@ export default function ClientEffects() {
     document.documentElement.setAttribute('data-theme', themeForPath(pathname));
   }, [pathname]);
 
-  // One-time effects: page loader, cursor spotlight, nav scroll glow
+  // One-time effects: cursor spotlight, nav scroll glow
   useEffect(() => {
-    const fadeLoader = () => {
-      const loader = document.getElementById('loader');
-      if (!loader) return;
-      loader.style.transition = 'opacity 0.5s';
-      loader.style.opacity = '0';
-      setTimeout(() => { loader.style.display = 'none'; }, 500);
-    };
-    if (document.readyState === 'complete') {
-      fadeLoader();
-    } else {
-      window.addEventListener('load', fadeLoader, { once: true });
-    }
-
     const onMouseMove = (e: MouseEvent) => {
       document.documentElement.style.setProperty('--cursor-x', e.clientX + 'px');
       document.documentElement.style.setProperty('--cursor-y', e.clientY + 'px');

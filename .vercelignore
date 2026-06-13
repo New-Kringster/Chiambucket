@@ -9,3 +9,7 @@ testing2.html
 banner-making.html
 reference1.png
 *.pdf
+
+# GIFs are never served — the site uses .webm/.mp4 twins instead (see CLAUDE.md).
+# Backstop so a stray GIF can't re-bloat the deploy.
+*.gif

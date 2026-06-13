@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, LazyMotion, domAnimation, m, useReducedMotion } from 'framer-motion';
 
 /* ────────────────────────────────────────────────────────────────────────
  * EMA Home Map: a hub-and-spoke explorer for the five-node SocketIO mesh.
@@ -208,6 +208,7 @@ export default function NodeMap() {
   const alertDuration = reduceMotion ? 0.05 : 1.35;
 
   return (
+    <LazyMotion features={domAnimation}>
     <div className="cs-nm" data-no-zoom>
       <div className="cs-nm-inner">
         {/* ── Diagram ── */}
@@ -237,7 +238,7 @@ export default function NodeMap() {
               const { nx, ny } = nodeCentre(i);
               const isHot = n.id === active;
               return (
-                <motion.span
+                <m.span
                   key={`pulse-${n.id}-${tick}`}
                   className={`cs-nm-pulse${isHot ? ' is-hot' : ''}`}
                   initial={{ left: `${nx}%`, top: `${ny}%`, opacity: 0 }}
@@ -252,7 +253,7 @@ export default function NodeMap() {
               const tx = alert === 'received' ? 50 : lerp(nx, 50, 0.9);
               const ty = alert === 'received' ? 50 : lerp(ny, 50, 0.9);
               return (
-                <motion.span
+                <m.span
                   className="cs-nm-pulse is-alarm"
                   initial={{ left: `${nx}%`, top: `${ny}%`, opacity: 0 }}
                   animate={{ left: `${tx}%`, top: `${ty}%`, opacity: 1 }}
@@ -271,7 +272,7 @@ export default function NodeMap() {
               <span className="cs-nm-hub-sub-slot">
                 <AnimatePresence mode="wait">
                   {alert === 'received' ? (
-                    <motion.span
+                    <m.span
                       key="alert"
                       className="cs-nm-hub-sub is-alarm"
                       initial={{ opacity: 0, y: 5 }}
@@ -280,9 +281,9 @@ export default function NodeMap() {
                       transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
                     >
                       Alert surfaced to dashboard
-                    </motion.span>
+                    </m.span>
                   ) : (
-                    <motion.span
+                    <m.span
                       key="idle"
                       className="cs-nm-hub-sub"
                       initial={{ opacity: 0, y: 5 }}
@@ -291,7 +292,7 @@ export default function NodeMap() {
                       transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
                     >
                       BeagleBone Black Wireless
-                    </motion.span>
+                    </m.span>
                   )}
                 </AnimatePresence>
               </span>
@@ -345,7 +346,7 @@ export default function NodeMap() {
           </div>
 
           <AnimatePresence mode="wait">
-            <motion.div
+            <m.div
               key={node.id + (isAlerting && node.id === 'flame' ? '-alarm' : '')}
               className="cs-nm-card"
               initial={{ opacity: 0, y: 10 }}
@@ -384,7 +385,7 @@ export default function NodeMap() {
                       : 'Controller has surfaced the alert to the dashboard')
                   : 'Link nominal · streaming over SocketIO'}
               </div>
-            </motion.div>
+            </m.div>
           </AnimatePresence>
 
           <div className="cs-nm-actions">
@@ -655,5 +656,6 @@ export default function NodeMap() {
         }
       `}</style>
     </div>
+    </LazyMotion>
   );
 }

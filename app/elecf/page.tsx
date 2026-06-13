@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
 import ArticleScrollSpy from '../../components/ArticleScrollSpy';
+import ArticleLinks from '../../components/ArticleLinks';
 import SafetySequence from './SafetySequence';
 
 export const metadata: Metadata = {
@@ -72,6 +73,12 @@ export default function ElecfPage() {
               <img src="/images/powerpoint-icon.webp" alt="PowerPoint" />
             </div>
           </div>
+          <ArticleLinks
+            links={[
+              { type: 'github', label: 'GitHub', url: 'https://github.com/New-Kringster/ELEC-F-Safe-Fridge-Concept' },
+              { type: 'video', label: 'Demo video', url: 'https://youtu.be/8De2ahk-GPo' },
+            ]}
+          />
         </div>
       </header>
 

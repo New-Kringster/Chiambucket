@@ -1,6 +1,6 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, LazyMotion, domAnimation, m, useReducedMotion } from 'framer-motion';
 
 type Radio = 'lora' | 'espnow';
 type Phase = 'idle' | 'sending' | 'arrived';
@@ -165,6 +165,7 @@ export default function LinkDemo() {
   const linkActive = phase === 'sending' || (radio === 'espnow' && talking);
 
   return (
+    <LazyMotion features={domAnimation}>
     <div className={`bl-ld bl-ld-${radio}`} data-no-zoom>
       <div className="bl-ld-head">
         <div className="bl-ld-modes" role="tablist" aria-label="Choose a radio link">
@@ -209,7 +210,7 @@ export default function LinkDemo() {
             <path d={path} className="bl-ld-link-track" />
             <AnimatePresence>
               {linkActive && radio === 'lora' && (
-                <motion.path
+                <m.path
                   key="lora-draw"
                   d={path}
                   className="bl-ld-link-draw"
@@ -222,11 +223,11 @@ export default function LinkDemo() {
             </AnimatePresence>
             {linkActive && radio === 'espnow' && !reduceMotion && (
               <>
-                <motion.path d={path} className="bl-ld-link-draw fast" initial={{ opacity: 0.55 }} animate={{ opacity: [0.25, 0.85, 0.25] }} transition={{ duration: 0.6, repeat: Infinity, ease: 'easeInOut' }} />
+                <m.path d={path} className="bl-ld-link-draw fast" initial={{ opacity: 0.55 }} animate={{ opacity: [0.25, 0.85, 0.25] }} transition={{ duration: 0.6, repeat: Infinity, ease: 'easeInOut' }} />
               </>
             )}
             {linkActive && radio === 'lora' && !reduceMotion && (
-              <motion.circle
+              <m.circle
                 key={`packet-${textIdx}`}
                 r={5.5}
                 className="bl-ld-packet"
@@ -484,6 +485,7 @@ export default function LinkDemo() {
         }
       `}</style>
     </div>
+    </LazyMotion>
   );
 }
 

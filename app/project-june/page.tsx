@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import ArticleScrollSpy from '../../components/ArticleScrollSpy';
+import ArticleLinks from '../../components/ArticleLinks';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
 import CommandLink from './CommandLink';
 
@@ -63,6 +64,12 @@ export default function ProjectJunePage() {
               <img src="/images/PlatformIO-icon.webp" alt="PlatformIO" />
             </div>
           </div>
+          <ArticleLinks
+            links={[
+              { type: 'github', label: 'GitHub', url: 'https://github.com/New-Kringster/ProjectJune' },
+              { type: 'video', label: 'Watch the build', url: 'https://youtu.be/MnkJsx-nwoE' },
+            ]}
+          />
         </div>
       </header>
 

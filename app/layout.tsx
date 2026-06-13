@@ -35,15 +35,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
         <link rel="stylesheet" href="/mainstyle.css" />
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-        />
       </head>
       <body>
-        <div id="loader">
-          <img src="/images/logo.webp" alt="" />
-        </div>
         <div className="irregular-screen">
           Irregular screen size detected, Content may not be displayed correctly.
         </div>

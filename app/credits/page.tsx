@@ -75,7 +75,6 @@ export default function CreditsPage() {
             <p>A few open-source projects and assets do quiet work behind the scenes:</p>
             <ul className="cr-list">
               <li><b>Next.js</b>, the React framework powering the site</li>
-              <li><b>animate.css</b>, a couple of entrance animations</li>
               <li><b>Lychee</b>, the self-hosted photography gallery embed</li>
               <li><b>Oswald, Inter &amp; DM Sans</b>, the core typefaces</li>
               <li><b>Display faces</b> for the accent headings</li>

@@ -11,8 +11,7 @@ Personal portfolio and website for Braven Chiam. Dark-themed, design-forward ("R
 - **Next.js 15 (App Router) + React 19 + TypeScript** — `app/` directory, server components by default
 - **framer-motion** — available for React animations (CSS handles most transitions)
 - **Vercel Analytics + Speed Insights** — loaded in `app/layout.tsx`
-- **animate.css** (CDN) — a few entrance animations
-- **Lychee** — self-hosted photo galleries embedded via a remote script
+- **Lychee** — self-hosted photo galleries embedded via a remote script (loaded after paint, non-blocking)
 - **No Tailwind, no CSS-in-JS** — one global stylesheet, `public/mainstyle.css`
 - **Vercel** — every route prerenders as static
 

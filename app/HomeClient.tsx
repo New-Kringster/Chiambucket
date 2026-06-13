@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Script from 'next/script';
 import InfoModal, { type InfoItem } from '../components/InfoModal';
+import LazyVideo from '../components/LazyVideo';
 
 /* Capability cards (Projects section) → detail pop-ups. Content drawn from the real builds. */
 const CAPABILITIES: InfoItem[] = [
@@ -409,6 +410,16 @@ export default function HomeClient() {
     return () => clearInterval(id);
   }, []);
 
+  /* ── Lychee stylesheet: inject after paint so the cross-origin homelab CSS never render-blocks first paint ── */
+  useEffect(() => {
+    if (document.querySelector('link[data-lychee-css]')) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://photos.chiambucket.com/embed/lychee-embed.css?v=1.0.0';
+    link.setAttribute('data-lychee-css', '');
+    document.head.appendChild(link);
+  }, []);
+
   /* ── Projects gallery filter/search ── */
   useEffect(() => {
     let activeFilter = 'all';
@@ -557,7 +568,6 @@ export default function HomeClient() {
 
   return (
     <>
-      <link rel="stylesheet" href="https://photos.chiambucket.com/embed/lychee-embed.css?v=1.0.0" />
       <Script src="https://photos.chiambucket.com/embed/lychee-embed.js?v=1.0.0" strategy="afterInteractive" onLoad={initLychee} />
 
       {/* SVG symbol definitions */}
@@ -651,7 +661,7 @@ export default function HomeClient() {
               {/* DaVinci */}
               <div className="hp-tile hp-media-tile hp-tile-davinci hp-clickable" data-reveal role="link" tabIndex={0} onClick={() => window.open('https://www.youtube.com/@newkringster2564', '_blank')} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}>
                 <span className="hp-tile-go"><AU /></span>
-                <video autoPlay loop muted playsInline><source src="/images/Davinci-showcase.webm" type="video/webm" /><source src="/images/Davinci-showcase.mp4" type="video/mp4" /></video>
+                <LazyVideo webm="/images/Davinci-showcase.webm" mp4="/images/Davinci-showcase.mp4" poster="/images/Davinci-showcase-poster.webp" />
                 <div className="hp-media-scrim"></div>
                 <div className="hp-media-body"><span className="hp-key">DaVinci Resolve</span><h3 className="hp-tile-h">Clear, creative, experimental.</h3><p className="hp-tile-p">Videos that add meaning and communicate a project&apos;s vision.</p></div>
               </div>
@@ -680,7 +690,7 @@ export default function HomeClient() {
               <div className="hp-tile hp-tile-ppt hp-clickable" data-reveal data-delay="1" role="button" tabIndex={0} onClick={() => setOpenTile(TILE_PPT)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(TILE_PPT); } }}>
                 <span className="hp-tile-go"><AU /></span>
                 <span className="hp-key">PowerPoint</span>
-                <div className="hp-ppt-media"><video autoPlay loop muted playsInline><source src="/images/CPB1v4.webm" type="video/webm" /><source src="/images/CPB1v4.mp4" type="video/mp4" /></video></div>
+                <div className="hp-ppt-media"><LazyVideo webm="/images/CPB1v4.webm" mp4="/images/CPB1v4.mp4" poster="/images/CPB1v4-poster.webp" /></div>
                 <h3 className="hp-tile-h" style={{ fontSize: '1.25rem' }}>Fun, engaging, never overwhelming.</h3>
               </div>
             </div>

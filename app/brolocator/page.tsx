@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
 import ArticleScrollSpy from '../../components/ArticleScrollSpy';
+import ArticleLinks from '../../components/ArticleLinks';
 import LinkDemo from './LinkDemo';
 
 export const metadata: Metadata = {
@@ -62,6 +63,13 @@ export default function BrolocatorPage() {
               <img src="/images/PlatformIO-icon.webp" alt="PlatformIO" />
             </div>
           </div>
+          <ArticleLinks
+            links={[
+              { type: 'github', label: 'GitHub', url: 'https://github.com/New-Kringster/Bro_Locator' },
+              { type: 'video', label: 'Demo video', url: 'https://youtu.be/1nbiYCAtGPA' },
+              { type: 'cad', label: '3D model', url: 'https://cad.onshape.com/documents/06f42027d48061220c14a0ca/w/a8ae7436030816f045f9e912/e/ee2cc98ca48e0de54fb6f19a?renderMode=0&uiState=69242b3fb36228e1cf876de1' },
+            ]}
+          />
         </div>
       </header>
 

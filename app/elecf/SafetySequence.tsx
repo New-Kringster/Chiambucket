@@ -1,6 +1,6 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, LazyMotion, domAnimation, m } from 'framer-motion';
 
 type Step = {
   key: string;
@@ -72,12 +72,13 @@ export default function SafetySequence() {
   }, [auto]);
 
   return (
+    <LazyMotion features={domAnimation}>
     <div className={`ef-seq tone-${step.tone}`} data-no-zoom>
       <div className="ef-seq-media">
         <div className="ef-seq-glow" aria-hidden="true" />
         <div className="ef-seq-screen">
           <AnimatePresence mode="wait">
-            <motion.img
+            <m.img
               key={step.key}
               src={step.img}
               alt={`M5Stack screen: ${step.title}`}
@@ -217,5 +218,6 @@ export default function SafetySequence() {
         }
       `}</style>
     </div>
+    </LazyMotion>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import InfoModal, { type InfoItem } from '../../components/InfoModal';
+import LazyVideo from '../../components/LazyVideo';
 
 const tools = [
   {
@@ -76,6 +77,14 @@ export default function PhotographyClient() {
      after client-side navigation (Next.js Script only runs once globally) */
   useEffect(() => {
     const LYCHEE_JS = 'https://photos.chiambucket.com/embed/lychee-embed.js?v=1.0.0';
+    // Load Lychee's cross-origin stylesheet after paint so it never render-blocks on the homelab server
+    if (!document.querySelector('link[data-lychee-css]')) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'https://photos.chiambucket.com/embed/lychee-embed.css?v=1.0.0';
+      link.setAttribute('data-lychee-css', '');
+      document.head.appendChild(link);
+    }
     // Remove any previously injected copy so it executes fresh
     document.querySelectorAll(`script[data-lychee-script]`).forEach(s => s.remove());
     const script = document.createElement('script');
@@ -101,15 +110,10 @@ export default function PhotographyClient() {
 
   return (
     <main>
-      <link rel="stylesheet" href="https://photos.chiambucket.com/embed/lychee-embed.css?v=1.0.0" />
-
       {/* ── HERO ── */}
       <section className="ct-wrap ph-hero">
         <div className="ph-hero-media" aria-hidden="true">
-          <video autoPlay loop muted playsInline poster="/images/abm-lr.webp">
-            <source src="/images/index-photos-gif.webm" type="video/webm" />
-            <source src="/images/index-photos-gif.mp4" type="video/mp4" />
-          </video>
+          <LazyVideo webm="/images/index-photos-gif.webm" mp4="/images/index-photos-gif.mp4" poster="/images/abm-lr.webp" />
         </div>
         <div className="ph-hero-scrim" aria-hidden="true"></div>
         <div className="ct-aura"></div>

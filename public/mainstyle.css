@@ -336,16 +336,6 @@ a {
   }
 }
 
-@keyframes loading {
-  0%{
-    opacity: 100%;
-    scale: 1;
-  }
-  100%{
-    opacity: 20%;
-    scale: 0.8;
-  }
-}
 .FloatUp {
   animation: 500ms ease FloatUp;
 }
@@ -356,22 +346,9 @@ a {
   text-align: center;
 }
 
-#loader {
-  position: fixed;
-  width: 100vw;
-  height: 100dvh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #000;
-  z-index: 1000;
-}
-#loader img{
-  width: 16rem;
-  animation: ease 1.5s alternate-reverse infinite loading;
-}
+/* Generic hide utility (used by the Lychee gallery expanders) */
 .loader-hide {
- display: none !important;
+  display: none !important;
 }
 
 :root {
@@ -5852,6 +5829,22 @@ html[data-theme="datacenter"] {
 }
 .art-toolrow { display: flex; align-items: center; gap: 12px; margin-top: 1.6rem; flex-wrap: wrap; }
 .art-toolrow .hp-key { white-space: nowrap; }
+
+/* Key links (GitHub, demo, video, CAD) surfaced in the article hero */
+.art-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 1.5rem; }
+.art-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'inter'; font-size: 0.82rem; font-weight: 600; letter-spacing: 0.01em;
+  padding: 9px 16px; border-radius: 999px; color: #e8e8e8;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+.art-link svg { width: 16px; height: 16px; flex-shrink: 0; }
+.art-link:hover { transform: translateY(-2px); color: #fff; background: color-mix(in srgb, var(--hp-blue) 22%, rgba(255,255,255,0.06)); border-color: color-mix(in srgb, var(--hp-indigo) 50%, transparent); }
+.art-link:focus-visible { outline: 2px solid var(--hp-sky); outline-offset: 3px; }
+.art-link.primary { background: color-mix(in srgb, var(--hp-blue) 26%, transparent); border-color: color-mix(in srgb, var(--hp-indigo) 55%, transparent); color: #fff; }
+.art-link.primary:hover { background: color-mix(in srgb, var(--hp-blue) 40%, transparent); }
 
 /* ---- Body two-column layout ---- */
 .art-body {

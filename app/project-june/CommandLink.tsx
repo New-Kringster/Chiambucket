@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, LazyMotion, domAnimation, m, useReducedMotion } from 'framer-motion';
 
 /* ────────────────────────────────────────────────────────────────────────
  * Signal path: the chain a command travels down, and telemetry travels back up
@@ -47,60 +47,74 @@ const RoverIcon = () => (
 );
 
 const LINK: LinkNode[] = [
-  { key: 'pad', label: 'Xbox controller', sub: 'Operator input', icon: <PadIcon />, blurb: 'Stick and trigger movements are read at the operator end and packaged into small command messages, dozens of times a second.' },
+  { key: 'pad', label: 'Xbox controller', sub: 'Operator input', icon: <PadIcon />, blurb: 'Stick and trigger movements are read at the operator end and packaged into small command messages, a few times a second.' },
   { key: 'cell', label: '5G cellular', sub: 'Carrier network', icon: <CellIcon />, blurb: 'Both ends ride the public 5G network. It is fast enough for live video, but it sits behind carrier-grade NAT, so neither side has a direct address to dial.' },
   { key: 'turn', label: 'TURN relay', sub: 'NAT traversal', icon: <TurnIcon />, blurb: 'Relays the WebRTC streams and MQTT messages so they punch through cellular NAT, giving the controller and rover a meeting point with low added latency.' },
-  { key: 'rover', label: 'Rover · ESP32', sub: 'Onboard brain', icon: <RoverIcon />, blurb: 'The ESP32 decodes each command into PWM motor and servo output, then answers with three camera feeds and a stream of sensor telemetry.' },
+  { key: 'rover', label: 'Rover · ESP32', sub: 'Onboard brain', icon: <RoverIcon />, blurb: 'The ESP32 decodes each command into PWM motor and servo output, then answers with three camera feeds and a fast stream of sensor telemetry, about three packets back for every command in.' },
 ];
 
 /* ────────────────────────────────────────────────────────────────────────
- * Telemetry HUD: compact live readouts with a believable random-walk
+ * Day / night mode: two captured runs, each with its own footage + telemetry
  * ──────────────────────────────────────────────────────────────────────── */
-type Reading = {
-  key: string;
-  label: string;
-  unit: string;
-  value: number;
-  decimals: number;
-  step: number;
-  min: number;
-  max: number;
-  format?: (v: number) => string;
+type Mode = 'day' | 'night';
+
+type BrightLevel = 'Dark' | 'Ambient' | 'Bright' | 'vBright';
+const BRIGHT_SCALE: BrightLevel[] = ['Dark', 'Ambient', 'Bright', 'vBright'];
+
+type TeleBase = { lat: number; lon: number; speed: number; alt: number; temp: number; hum: number; sats: number; bright: BrightLevel; loc: string };
+const TELE: Record<Mode, TeleBase> = {
+  day:   { lat: 1.4614, lon: 103.8405, speed: 2, alt: -12, temp: 30.2, hum: 65, sats: 21, bright: 'vBright', loc: 'Irau Dr' },
+  night: { lat: 1.4602, lon: 103.8359, speed: 3, alt: 4,   temp: 29.2, hum: 67, sats: 26, bright: 'Dark',    loc: 'Sembawang Park' },
 };
 
-const SEED_READINGS: Reading[] = [
-  { key: 'lat', label: 'Latitude', unit: '°N', value: 1.3521, decimals: 4, step: 0.0006, min: 1.346, max: 1.358 },
-  { key: 'lon', label: 'Longitude', unit: '°E', value: 103.8198, decimals: 4, step: 0.0006, min: 103.812, max: 103.828 },
-  { key: 'speed', label: 'Speed', unit: 'km/h', value: 8.4, decimals: 1, step: 0.6, min: 0, max: 18 },
-  { key: 'alt', label: 'Altitude', unit: 'm', value: 24, decimals: 0, step: 0.8, min: 14, max: 36 },
-  { key: 'dist', label: 'Clearance', unit: 'cm', value: 86, decimals: 0, step: 6, min: 12, max: 220 },
-  { key: 'temp', label: 'Temp', unit: '°C', value: 29.4, decimals: 1, step: 0.25, min: 24, max: 34 },
-  { key: 'hum', label: 'Humidity', unit: '%', value: 64, decimals: 0, step: 1.4, min: 48, max: 78 },
-  { key: 'light', label: 'Light', unit: 'lux', value: 540, decimals: 0, step: 30, min: 60, max: 1100 },
+type Metric = { key: keyof TeleBase; label: string; unit: string; dp: number; jit: number; min?: number; signed?: boolean };
+const METRICS: Metric[] = [
+  { key: 'lat', label: 'Latitude', unit: '°N', dp: 4, jit: 0.0004 },
+  { key: 'lon', label: 'Longitude', unit: '°E', dp: 4, jit: 0.0004 },
+  { key: 'speed', label: 'Speed', unit: 'km/h', dp: 1, jit: 0.7, min: 0 },
+  { key: 'alt', label: 'Altitude', unit: 'm', dp: 0, jit: 1.4, signed: true },
+  { key: 'temp', label: 'Temp', unit: '°C', dp: 1, jit: 0.2 },
+  { key: 'hum', label: 'Humidity', unit: '%', dp: 0, jit: 1.2 },
+  { key: 'sats', label: 'Satellites', unit: '', dp: 0, jit: 1.6, min: 0 },
 ];
 
-const fmt = (r: Reading) => r.format ? r.format(r.value) : r.value.toFixed(r.decimals);
-
-function walk(r: Reading): Reading {
-  const drift = (Math.random() - 0.5) * 2 * r.step;
-  let next = r.value + drift;
-  if (next < r.min) next = r.min + Math.abs(drift);
-  if (next > r.max) next = r.max - Math.abs(drift);
-  return { ...r, value: next };
-}
+const jitterStr = (m: Metric, base: number) => {
+  let v = base + (Math.random() - 0.5) * 2 * m.jit;
+  if (m.min !== undefined && v < m.min) v = m.min;
+  const s = v.toFixed(m.dp);
+  return m.signed && v >= 0 ? `+${s}` : s;
+};
+const snapVals = (b: TeleBase): Record<string, string> =>
+  Object.fromEntries(METRICS.map((m) => [m.key, jitterStr(m, b[m.key] as number)]));
 
 /* ────────────────────────────────────────────────────────────────────────
- * Camera strip
+ * Camera feeds: left and right sit about 90 degrees off the centre camera
  * ──────────────────────────────────────────────────────────────────────── */
-type Feed = { key: string; label: string; angle: string; note: string };
+type FeedKey = 'left' | 'center' | 'right';
+type Feed = { key: FeedKey; label: string; angle: string; note: string };
 const FEEDS: Feed[] = [
-  { key: 'front', label: 'Front', angle: '0°', note: 'Forward driving view, the operator’s primary feed.' },
-  { key: 'rear', label: 'Rear', angle: '180°', note: 'Reverse view for backing out of tight spots.' },
-  { key: 'pan', label: 'Pan', angle: '±120°', note: 'Steerable head for scouting the terrain off to the side.' },
+  { key: 'left', label: 'Left', angle: '-90°', note: 'Side camera, turned roughly 90 degrees left of centre to cover the blind spot.' },
+  { key: 'center', label: 'Center', angle: '0°', note: 'Forward driving view, the operator’s primary feed straight down the line of travel.' },
+  { key: 'right', label: 'Right', angle: '+90°', note: 'Side camera, roughly 90 degrees right of centre, mirroring the left.' },
 ];
+const camSrc = (k: FeedKey, m: Mode) => `/videos/rover-${k}-${m}.mp4`;
+
+const SunIcon = () => (
+  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" aria-hidden="true">
+    <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.7" />
+    <path d="M12 2.6v2.4M12 19v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.6 12h2.4M19 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+  </svg>
+);
+const MoonIcon = () => (
+  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" aria-hidden="true">
+    <path d="M20 14.4A8 8 0 019.6 4 7 7 0 1020 14.4z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+  </svg>
+);
 
 export default function CommandLink() {
   const reduceMotion = useReducedMotion();
+  const [mode, setMode] = useState<Mode>('day');
+  const base = TELE[mode];
 
   /* ── Signal path state ── */
   const [active, setActive] = useState<NodeKey>('pad');
@@ -121,30 +135,34 @@ export default function CommandLink() {
 
   const selectNode = (k: NodeKey) => { setPinned(true); setActive(k); };
 
-  /* ── Telemetry state ── */
-  const [readings, setReadings] = useState<Reading[]>(SEED_READINGS);
+  /* ── Telemetry state: jitter around the active mode's base each tick ── */
+  const [vals, setVals] = useState<Record<string, string>>(() => snapVals(TELE.day));
   const [changed, setChanged] = useState<Record<string, boolean>>({});
   const [heading, setHeading] = useState(214);
 
   useEffect(() => {
-    if (reduceMotion) return;
-    const t = setInterval(() => {
-      setReadings((prev) => {
-        const next = prev.map(walk);
-        const flags: Record<string, boolean> = {};
-        next.forEach((r, i) => { if (Math.abs(r.value - prev[i].value) > prev[i].step * 0.18) flags[r.key] = true; });
-        setChanged(flags);
+    const apply = () => {
+      setVals((prev) => {
+        const next = snapVals(base);
+        const ch: Record<string, boolean> = {};
+        for (const k in next) if (next[k] !== prev[k]) ch[k] = true;
+        setChanged(ch);
         return next;
       });
+    };
+    apply();
+    if (reduceMotion) return;
+    const t = setInterval(() => {
+      apply();
       setHeading((h) => {
         let n = h + (Math.random() - 0.5) * 26;
         if (n < 0) n += 360;
         if (n >= 360) n -= 360;
         return n;
       });
-    }, 1900);
+    }, 1700);
     return () => clearInterval(t);
-  }, [reduceMotion]);
+  }, [base, reduceMotion]);
 
   useEffect(() => {
     if (!Object.keys(changed).length) return;
@@ -157,15 +175,29 @@ export default function CommandLink() {
     return dirs[Math.round(heading / 45) % 8];
   }, [heading]);
 
+  const brightIdx = BRIGHT_SCALE.indexOf(base.bright);
+
   /* ── Camera state ── */
-  const [primary, setPrimary] = useState<string>('front');
-  const primaryFeed = FEEDS.find((f) => f.key === primary) ?? FEEDS[0];
+  const [primary, setPrimary] = useState<FeedKey>('center');
+  const primaryFeed = FEEDS.find((f) => f.key === primary) ?? FEEDS[1];
 
   return (
-    <div className="pj-cl" data-no-zoom>
+    <LazyMotion features={domAnimation}>
+    <div className="pj-cl" data-no-zoom data-mode={mode}>
       <div className="pj-cl-head">
-        <span className="pj-cl-tag"><i className="pj-cl-tag-dot" />Command Link</span>
-        <span className="pj-cl-head-sub">Live console layout, reconstructed from the mission build</span>
+        <div className="pj-cl-head-l">
+          <span className="pj-cl-tag"><i className="pj-cl-tag-dot" />Command Link</span>
+          <span className="pj-cl-head-sub">Live console, reconstructed from the {mode} run</span>
+        </div>
+        <div className="pj-cl-toggle" role="group" aria-label="Run: day or night">
+          <span className="pj-cl-toggle-slider" data-mode={mode} aria-hidden="true" />
+          <button type="button" className={`pj-cl-toggle-btn${mode === 'day' ? ' is-on' : ''}`} onClick={() => setMode('day')} aria-pressed={mode === 'day'}>
+            <SunIcon /> Day
+          </button>
+          <button type="button" className={`pj-cl-toggle-btn${mode === 'night' ? ' is-on' : ''}`} onClick={() => setMode('night')} aria-pressed={mode === 'night'}>
+            <MoonIcon /> Night
+          </button>
+        </div>
       </div>
 
       {/* ── 1. Signal path ── */}
@@ -176,9 +208,10 @@ export default function CommandLink() {
             <span className="pj-cl-rail-fill" style={{ width: `${(idx / (LINK.length - 1)) * 100}%` }} />
             {!reduceMotion && (
               <>
-                <span className="pj-cl-pkt out p1" />
-                <span className="pj-cl-pkt out p2" />
-                <span className="pj-cl-pkt back p3" />
+                <span className="pj-cl-pkt out o1" />
+                <span className="pj-cl-pkt back b1" />
+                <span className="pj-cl-pkt back b2" />
+                <span className="pj-cl-pkt back b3" />
               </>
             )}
           </div>
@@ -201,10 +234,10 @@ export default function CommandLink() {
         </div>
         <div className="pj-cl-flow-key" aria-hidden="true">
           <span><i className="dir out" />Commands</span>
-          <span><i className="dir back" />Video &amp; telemetry</span>
+          <span><i className="dir back" />Video &amp; telemetry · 3&times; the rate</span>
         </div>
         <AnimatePresence mode="wait">
-          <motion.p
+          <m.p
             key={node.key}
             className="pj-cl-blurb"
             initial={{ opacity: 0, y: 6 }}
@@ -213,7 +246,7 @@ export default function CommandLink() {
             transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
           >
             <b>{node.label}.</b> {node.blurb}
-          </motion.p>
+          </m.p>
         </AnimatePresence>
       </div>
 
@@ -228,7 +261,7 @@ export default function CommandLink() {
                 <span className="pj-cl-compass-tick e" />
                 <span className="pj-cl-compass-tick s" />
                 <span className="pj-cl-compass-tick w" />
-                <motion.span
+                <m.span
                   className="pj-cl-needle"
                   animate={{ rotate: heading }}
                   transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
@@ -237,20 +270,33 @@ export default function CommandLink() {
                     <path d="M12 3l3.6 8L12 21 8.4 11z" fill="currentColor" />
                     <path d="M12 3l3.6 8L12 11z" fill="rgba(255,255,255,0.92)" />
                   </svg>
-                </motion.span>
+                </m.span>
               </div>
               <span className="pj-cl-compass-read"><b>{Math.round(heading)}°</b> {compassLabel}</span>
               <span className="pj-cl-compass-cap">Heading · magnetometer</span>
             </div>
             <ul className="pj-cl-readouts">
-              {readings.map((r) => (
-                <li key={r.key} className={changed[r.key] ? 'is-tick' : ''}>
-                  <span className="pj-cl-ro-label">{r.label}</span>
+              {METRICS.map((m) => (
+                <li key={m.key} className={changed[m.key] ? 'is-tick' : ''}>
+                  <span className="pj-cl-ro-label">{m.label}</span>
                   <span className="pj-cl-ro-val">
-                    {fmt(r)}<i>{r.unit}</i>
+                    {vals[m.key]}{m.unit && <i>{m.unit}</i>}
                   </span>
                 </li>
               ))}
+              <li className="pj-cl-ro-bright">
+                <span className="pj-cl-ro-label">Brightness</span>
+                <span className="pj-cl-bright">
+                  <span className="pj-cl-bright-segs" aria-hidden="true">
+                    {BRIGHT_SCALE.map((b, i) => <i key={b} className={i <= brightIdx ? 'on' : ''} />)}
+                  </span>
+                  <b>{base.bright}</b>
+                </span>
+              </li>
+              <li className="pj-cl-ro-wide">
+                <span className="pj-cl-ro-label">Location · GPS fix</span>
+                <span className="pj-cl-ro-val loc">{base.loc}</span>
+              </li>
             </ul>
           </div>
         </div>
@@ -260,17 +306,20 @@ export default function CommandLink() {
           <span className="pj-cl-label">Camera feeds</span>
           <div className="pj-cl-cams">
             <div className="pj-cl-cam-main">
-              <div className="pj-cl-scan" aria-hidden="true" />
+              <video
+                key={`main-${primary}-${mode}`}
+                className="pj-cl-cam-vid"
+                autoPlay muted loop playsInline preload="metadata"
+                aria-label={`${primaryFeed.label} camera, ${mode} run`}
+              >
+                <source src={camSrc(primary, mode)} type="video/mp4" />
+              </video>
+              <span className="pj-cl-scan" aria-hidden="true" />
+              <span className="pj-cl-cam-grad" aria-hidden="true" />
               <span className="pj-cl-live"><i className="pj-cl-live-dot" />LIVE</span>
               <span className="pj-cl-cam-tag">{primaryFeed.label} · {primaryFeed.angle}</span>
-              <span className="pj-cl-cam-glyph" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="30" height="30" fill="none">
-                  <rect x="2.5" y="6.5" width="13" height="11" rx="2.4" stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M15.5 10l5.2-2.8a.9.9 0 011.3.8v8a.9.9 0 01-1.3.8L15.5 14z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-                </svg>
-              </span>
               <AnimatePresence mode="wait">
-                <motion.span
+                <m.span
                   key={primaryFeed.key}
                   className="pj-cl-cam-note"
                   initial={{ opacity: 0 }}
@@ -279,7 +328,7 @@ export default function CommandLink() {
                   transition={{ duration: 0.25 }}
                 >
                   {primaryFeed.note}
-                </motion.span>
+                </m.span>
               </AnimatePresence>
             </div>
             <div className="pj-cl-cam-thumbs" role="list" aria-label="Camera feeds, select to promote">
@@ -290,11 +339,19 @@ export default function CommandLink() {
                   className={`pj-cl-cam-thumb${f.key === primary ? ' is-primary' : ''}`}
                   onClick={() => setPrimary(f.key)}
                   aria-pressed={f.key === primary}
-                  aria-label={`Promote ${f.label} camera to primary view`}
+                  aria-label={`Promote ${f.label} camera (${f.angle}) to the main view`}
                 >
+                  <video
+                    key={`thumb-${f.key}-${mode}`}
+                    className="pj-cl-thumb-vid"
+                    autoPlay muted loop playsInline preload="metadata"
+                  >
+                    <source src={camSrc(f.key, mode)} type="video/mp4" />
+                  </video>
                   <span className="pj-cl-scan sm" aria-hidden="true" />
+                  <span className="pj-cl-thumb-grad" aria-hidden="true" />
                   <span className="pj-cl-live sm"><i className="pj-cl-live-dot" />LIVE</span>
-                  <span className="pj-cl-thumb-label">{f.label}</span>
+                  <span className="pj-cl-thumb-label">{f.label} · {f.angle}</span>
                 </button>
               ))}
             </div>
@@ -315,23 +372,53 @@ export default function CommandLink() {
           box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 30px 80px -40px rgba(0,0,0,0.7);
           position: relative;
           overflow: hidden;
+          transition: background 0.6s ease, border-color 0.6s ease;
+        }
+        .pj-cl[data-mode="night"] {
+          --acc: #8ea2ff;
+          --acc-deep: #5e79db;
+          background: linear-gradient(168deg, rgba(11,14,26,0.92), rgba(6,8,16,0.96));
         }
         .pj-cl::before {
           content: ''; position: absolute; inset: -40% -10% auto auto; width: 60%; aspect-ratio: 1;
           background: radial-gradient(circle, color-mix(in srgb, var(--acc) 16%, transparent), transparent 70%);
-          filter: blur(50px); pointer-events: none;
+          filter: blur(50px); pointer-events: none; transition: background 0.6s ease;
         }
-        .pj-cl-head { position: relative; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; margin-bottom: clamp(16px, 2.4vw, 22px); }
+        .pj-cl-head { position: relative; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 16px; margin-bottom: clamp(16px, 2.4vw, 22px); }
+        .pj-cl-head-l { display: flex; flex-direction: column; gap: 4px; }
         .pj-cl-tag { display: inline-flex; align-items: center; gap: 8px; font-family: 'inter'; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--acc); }
         .pj-cl-tag-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--acc); box-shadow: 0 0 0 4px color-mix(in srgb, var(--acc) 22%, transparent); }
         .pj-cl-head-sub { font-family: 'dmsans'; font-size: 0.78rem; color: rgba(232,232,232,0.4); letter-spacing: 0.01em; }
+
+        /* ── Day / night toggle ── */
+        .pj-cl-toggle {
+          position: relative; display: inline-flex; padding: 4px; border-radius: 999px;
+          background: rgba(255,255,255,0.045); border: 1px solid rgba(255,255,255,0.1);
+        }
+        .pj-cl-toggle-slider {
+          position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 999px;
+          background: color-mix(in srgb, var(--acc) 24%, transparent);
+          border: 1px solid color-mix(in srgb, var(--acc) 55%, transparent);
+          box-shadow: 0 4px 14px -6px color-mix(in srgb, var(--acc) 70%, transparent);
+          transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), background 0.4s ease, border-color 0.4s ease;
+        }
+        .pj-cl-toggle-slider[data-mode="night"] { transform: translateX(100%); }
+        .pj-cl-toggle-btn {
+          position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+          background: none; border: 0; padding: 7px 15px; border-radius: 999px;
+          font-family: 'inter'; font-size: 0.74rem; font-weight: 600; letter-spacing: 0.04em;
+          color: rgba(232,232,232,0.5); transition: color 0.3s ease;
+        }
+        .pj-cl-toggle-btn svg { opacity: 0.85; }
+        .pj-cl-toggle-btn.is-on { color: #f4f8ff; }
+        .pj-cl-toggle-btn:focus-visible { outline: 2px solid var(--acc); outline-offset: 3px; }
 
         .pj-cl-block { position: relative; }
         .pj-cl-label {
           display: inline-block; font-family: 'inter'; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.16em;
           text-transform: uppercase; color: rgba(232,232,232,0.42); margin-bottom: 12px;
         }
-        .pj-cl-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 3vw, 30px); margin-top: clamp(22px, 3vw, 30px); padding-top: clamp(22px, 3vw, 30px); border-top: 1px solid rgba(255,255,255,0.07); }
+        .pj-cl-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 3vw, 30px); margin-top: clamp(22px, 3vw, 30px); padding-top: clamp(22px, 3vw, 30px); border-top: 1px solid rgba(255,255,255,0.07); align-items: start; }
 
         /* ── Signal path ── */
         .pj-cl-track { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
@@ -348,11 +435,14 @@ export default function CommandLink() {
           position: absolute; top: 50%; width: 6px; height: 6px; border-radius: 50%;
           transform: translate(-50%, -50%);
         }
-        .pj-cl-pkt.out { background: var(--acc); box-shadow: 0 0 8px color-mix(in srgb, var(--acc) 80%, transparent); animation: pjFlowOut 4.4s linear infinite; }
-        .pj-cl-pkt.back { background: rgba(232,232,232,0.55); box-shadow: 0 0 7px rgba(232,232,232,0.35); animation: pjFlowBack 5.6s linear infinite; }
-        .pj-cl-pkt.p1 { animation-delay: 0s; }
-        .pj-cl-pkt.p2 { animation-delay: 2.2s; }
-        .pj-cl-pkt.p3 { animation-delay: 1.1s; }
+        /* 1 command packet out for every 3 telemetry packets back: same 4.5s crossing,
+           but the rover (back) stream fires three times as often. */
+        .pj-cl-pkt.out { background: var(--acc); box-shadow: 0 0 8px color-mix(in srgb, var(--acc) 80%, transparent); animation: pjFlowOut 4.5s linear infinite; }
+        .pj-cl-pkt.back { width: 5px; height: 5px; background: rgba(232,232,232,0.6); box-shadow: 0 0 7px rgba(232,232,232,0.4); animation: pjFlowBack 4.5s linear infinite; }
+        .pj-cl-pkt.o1 { animation-delay: 0s; }
+        .pj-cl-pkt.b1 { animation-delay: 0s; }
+        .pj-cl-pkt.b2 { animation-delay: 1.5s; }
+        .pj-cl-pkt.b3 { animation-delay: 3s; }
         @keyframes pjFlowOut { 0% { left: 0%; opacity: 0; } 6% { opacity: 1; } 94% { opacity: 1; } 100% { left: 100%; opacity: 0; } }
         @keyframes pjFlowBack { 0% { left: 100%; opacity: 0; top: calc(50% + 9px); } 6% { opacity: 0.85; } 94% { opacity: 0.85; } 100% { left: 0%; opacity: 0; top: calc(50% + 9px); } }
 
@@ -386,11 +476,11 @@ export default function CommandLink() {
         .pj-cl-flow-key i.dir.back { background: rgba(232,232,232,0.45); }
         .pj-cl-flow-key i.dir.back::before { content: ''; position: absolute; left: -1px; top: 50%; width: 0; height: 0; border: 3px solid transparent; border-right-color: rgba(232,232,232,0.45); transform: translateY(-50%); }
 
-        .pj-cl-blurb { font-family: 'dmsans'; font-size: 0.92rem; line-height: 1.62; color: rgba(232,232,232,0.66); margin: 10px 0 0; max-width: 64ch; min-height: 2.9em; }
+        .pj-cl-blurb { font-family: 'dmsans'; font-size: 0.92rem; line-height: 1.62; color: rgba(232,232,232,0.66); margin: 10px 0 0; max-width: 64ch; min-height: 3.4em; }
         .pj-cl-blurb b { color: #e8e8e8; font-weight: 700; }
 
         /* ── Telemetry HUD ── */
-        .pj-cl-hud { display: grid; grid-template-columns: auto 1fr; gap: clamp(16px, 2.4vw, 24px); align-items: stretch; }
+        .pj-cl-hud { display: grid; grid-template-columns: auto 1fr; gap: clamp(16px, 2.4vw, 24px); align-items: start; }
         .pj-cl-compass { display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 6px 4px 0; }
         .pj-cl-compass-dial {
           position: relative; width: 78px; height: 78px; border-radius: 50%; display: grid; place-items: center;
@@ -416,54 +506,63 @@ export default function CommandLink() {
           transition: border-color 0.5s ease, background 0.5s ease;
         }
         .pj-cl-readouts li.is-tick { border-color: color-mix(in srgb, var(--acc) 50%, transparent); background: color-mix(in srgb, var(--acc) 7%, rgba(255,255,255,0.035)); }
+        .pj-cl-ro-wide { grid-column: 1 / -1; }
         .pj-cl-ro-label { font-family: 'inter'; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(232,232,232,0.4); }
         .pj-cl-ro-val { font-family: 'oswaldreg'; font-size: 1.05rem; color: #eef2fa; letter-spacing: 0.01em; font-variant-numeric: tabular-nums; }
+        .pj-cl-ro-val.loc { font-family: 'dmsans'; font-weight: 600; font-size: 0.96rem; }
         .pj-cl-ro-val i { font-style: normal; font-family: 'inter'; font-size: 0.66rem; color: rgba(232,232,232,0.4); margin-left: 3px; letter-spacing: 0.02em; }
+        .pj-cl-bright { display: flex; align-items: center; gap: 8px; }
+        .pj-cl-bright b { font-family: 'oswaldreg'; font-size: 0.98rem; color: #eef2fa; font-weight: 400; }
+        .pj-cl-bright-segs { display: inline-flex; gap: 3px; }
+        .pj-cl-bright-segs i { width: 7px; height: 13px; border-radius: 2px; background: rgba(255,255,255,0.12); transition: background 0.4s ease, box-shadow 0.4s ease; }
+        .pj-cl-bright-segs i.on { background: var(--acc); box-shadow: 0 0 6px color-mix(in srgb, var(--acc) 65%, transparent); }
 
         /* ── Camera strip ── */
-        .pj-cl-cams { display: flex; flex-direction: column; gap: 10px; height: 100%; }
+        .pj-cl-cams { display: flex; flex-direction: column; gap: 10px; }
         .pj-cl-cam-main {
-          position: relative; flex: 1; min-height: 132px; border-radius: 14px; overflow: hidden;
-          background: linear-gradient(150deg, rgba(127,168,255,0.1), rgba(8,11,18,0.94) 62%);
-          border: 1px solid rgba(255,255,255,0.1);
-          padding: 12px 14px; display: flex; flex-direction: column; justify-content: space-between;
+          position: relative; aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden;
+          background: #06080e; border: 1px solid rgba(255,255,255,0.1);
         }
-        .pj-cl-cam-glyph { position: absolute; right: 14px; bottom: 12px; color: rgba(255,255,255,0.14); }
-        .pj-cl-cam-tag { font-family: 'inter'; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(232,232,232,0.5); }
-        .pj-cl-cam-note { display: block; font-family: 'dmsans'; font-size: 0.82rem; line-height: 1.5; color: rgba(232,232,232,0.62); max-width: 30ch; margin-top: auto; padding-top: 10px; }
+        /* override the global .art-section video rule (margin/border) which otherwise pushes these down and leaves a top gap */
+        .pj-cl-cams .pj-cl-cam-vid, .pj-cl-cams .pj-cl-thumb-vid { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; border: 0; border-radius: 0; object-fit: cover; display: block; }
+        .pj-cl-cam-grad { position: absolute; inset: 0; pointer-events: none;
+          background: linear-gradient(to top, rgba(5,7,12,0.82) 0%, rgba(5,7,12,0.18) 34%, transparent 56%); }
+        .pj-cl-thumb-grad { position: absolute; inset: 0; pointer-events: none;
+          background: linear-gradient(to top, rgba(5,7,12,0.78), transparent 62%); }
+        .pj-cl-cam-tag { position: absolute; top: 11px; right: 12px; z-index: 2; font-family: 'inter'; font-size: 0.64rem; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.82); padding: 4px 8px; border-radius: 999px; background: rgba(0,0,0,0.42); border: 1px solid rgba(255,255,255,0.14); }
+        .pj-cl-cam-note { position: absolute; left: 14px; right: 14px; bottom: 12px; z-index: 2; display: block; font-family: 'dmsans'; font-size: 0.82rem; line-height: 1.45; color: rgba(255,255,255,0.82); }
 
-        .pj-cl-scan { position: absolute; inset: 0; pointer-events: none; opacity: 0.5;
+        .pj-cl-scan { position: absolute; inset: 0; pointer-events: none; opacity: 0.4; z-index: 1;
           background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.05) 0 1px, transparent 1px 3px);
           -webkit-mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
                   mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
         }
         .pj-cl-scan::after {
           content: ''; position: absolute; left: 0; right: 0; height: 32%;
-          background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--acc) 14%, transparent), transparent);
+          background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--acc) 16%, transparent), transparent);
           animation: pjScan 5.5s ease-in-out infinite;
         }
         @keyframes pjScan { 0% { top: -34%; } 50% { top: 102%; } 100% { top: -34%; } }
 
-        .pj-cl-live { position: relative; align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px 4px 7px; border-radius: 999px;
-          background: rgba(0,0,0,0.4); border: 1px solid rgba(255,90,90,0.32);
+        .pj-cl-live { position: absolute; top: 11px; left: 12px; z-index: 2; display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px 4px 7px; border-radius: 999px;
+          background: rgba(0,0,0,0.5); border: 1px solid rgba(255,90,90,0.4);
           font-family: 'inter'; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.14em; color: #ffb3ad;
         }
-        .pj-cl-live.sm { font-size: 0.56rem; padding: 3px 7px 3px 6px; }
+        .pj-cl-live.sm { font-size: 0.5rem; padding: 3px 6px 3px 5px; top: 7px; left: 7px; gap: 4px; }
         .pj-cl-live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--live); box-shadow: 0 0 0 0 rgba(255,90,90,0.5); animation: pjLivePulse 1.8s ease-out infinite; }
         @keyframes pjLivePulse { 0% { box-shadow: 0 0 0 0 rgba(255,90,90,0.55); } 70% { box-shadow: 0 0 0 7px rgba(255,90,90,0); } 100% { box-shadow: 0 0 0 0 rgba(255,90,90,0); } }
 
         .pj-cl-cam-thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
         .pj-cl-cam-thumb {
           position: relative; overflow: hidden; cursor: pointer; font: inherit; color: inherit; text-align: left;
-          display: flex; align-items: flex-end; min-height: 56px; padding: 8px 10px;
-          border-radius: 11px; background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.09);
-          transition: border-color 0.28s ease, background 0.28s ease, transform 0.28s cubic-bezier(0.16,1,0.3,1);
+          aspect-ratio: 16 / 10; padding: 0;
+          border-radius: 11px; background: #06080e; border: 1px solid rgba(255,255,255,0.09);
+          transition: border-color 0.28s ease, transform 0.28s cubic-bezier(0.16,1,0.3,1);
         }
-        .pj-cl-cam-thumb .pj-cl-live { position: absolute; top: 7px; left: 8px; }
         .pj-cl-cam-thumb:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--acc) 38%, transparent); }
         .pj-cl-cam-thumb:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
-        .pj-cl-cam-thumb.is-primary { border-color: color-mix(in srgb, var(--acc) 60%, transparent); background: color-mix(in srgb, var(--acc) 10%, rgba(255,255,255,0.035)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--acc) 30%, transparent); }
-        .pj-cl-thumb-label { font-family: 'dmsans'; font-weight: 700; font-size: 0.78rem; color: #dfe6f2; letter-spacing: 0.01em; }
+        .pj-cl-cam-thumb.is-primary { border-color: color-mix(in srgb, var(--acc) 65%, transparent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--acc) 45%, transparent), 0 8px 22px -12px color-mix(in srgb, var(--acc) 70%, transparent); }
+        .pj-cl-thumb-label { position: absolute; left: 8px; bottom: 7px; z-index: 2; font-family: 'dmsans'; font-weight: 700; font-size: 0.72rem; color: #fff; letter-spacing: 0.01em; text-shadow: 0 1px 4px rgba(0,0,0,0.6); }
         .pj-cl-cam-thumb.is-primary .pj-cl-thumb-label { color: var(--acc); }
 
         @media (max-width: 760px) {
@@ -475,11 +574,12 @@ export default function CommandLink() {
         @media (max-width: 600px) {
           .pj-cl-track { grid-template-columns: repeat(2, 1fr); row-gap: 22px; }
           .pj-cl-rail { display: none; }
-          .pj-cl-readouts { grid-template-columns: repeat(2, 1fr); }
-          .pj-cl-cam-thumbs { grid-template-columns: 1fr; }
+          .pj-cl-head { gap: 12px; }
         }
         @media (max-width: 420px) {
           .pj-cl-node-text i { display: none; }
+          .pj-cl-cam-thumbs { grid-template-columns: 1fr 1fr 1fr; }
+          .pj-cl-thumb-label { font-size: 0.58rem; }
         }
         @media (prefers-reduced-motion: reduce) {
           .pj-cl-pkt, .pj-cl-scan::after, .pj-cl-live-dot { animation: none !important; }
@@ -487,5 +587,6 @@ export default function CommandLink() {
         }
       `}</style>
     </div>
+    </LazyMotion>
   );
 }

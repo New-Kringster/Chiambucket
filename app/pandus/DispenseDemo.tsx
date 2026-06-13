@@ -1,6 +1,6 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, LazyMotion, domAnimation, m, useReducedMotion } from 'framer-motion';
 
 type Level = 'small' | 'medium' | 'large';
 type Phase = 'idle' | 'wake' | 'light' | 'pour' | 'done';
@@ -16,10 +16,10 @@ const LEVEL_ORDER: Level[] = ['small', 'medium', 'large'];
 
 const PHASES: { key: Phase; label: string; blurb: string }[] = [
   { key: 'idle', label: 'Idle', blurb: 'Resting. The IR distance sensor watches the space in front of the spout for an approaching cup.' },
-  { key: 'wake', label: 'Wake', blurb: 'A cup breaks the beam. The Arduino wakes the relay and servo from standby and arms the cycle.' },
+  { key: 'wake', label: 'Wake', blurb: 'A cup breaks the beam. The Arduino wakes the relay and servo, and the door slides back to uncover the level buttons.' },
   { key: 'light', label: 'Light', blurb: 'The high-brightness LED switches on, casting a warm pool of light over the cup so you can see it fill.' },
   { key: 'pour', label: 'Pour', blurb: 'The relay drives the peristaltic pump. Water rises toward the level you picked, with a gentle surface wobble.' },
-  { key: 'done', label: 'Done', blurb: 'Pump stops, the self-closing door swings shut over the spout, and the dispenser settles back to idle.' },
+  { key: 'done', label: 'Done', blurb: 'Pump stops, the self-closing door swings shut over the buttons, and the dispenser settles back to idle.' },
 ];
 const PHASE_DURATIONS: Record<Phase, number> = { idle: 1700, wake: 1100, light: 1000, pour: 0, done: 1900 };
 
@@ -27,7 +27,7 @@ type CompKey = 'ir' | 'pump' | 'door' | 'led';
 const COMPONENTS: { key: CompKey; label: string; full: string }[] = [
   { key: 'ir', label: 'IR sensor', full: 'Infrared distance sensor' },
   { key: 'pump', label: 'Pump', full: 'Peristaltic pump + relay' },
-  { key: 'door', label: 'Door', full: 'Servo-driven self-close door' },
+  { key: 'door', label: 'Door', full: 'Servo-driven door over the buttons' },
   { key: 'led', label: 'LED', full: 'High-brightness cup light' },
 ];
 /* Which components are "live" (lit) during each phase, and in what state */
@@ -37,7 +37,7 @@ const COMP_STATE: Record<Phase, Record<CompKey, CompState>> = {
   wake: { ir: 'active', pump: 'standby', door: 'standby', led: 'off' },
   light: { ir: 'standby', pump: 'standby', door: 'standby', led: 'active' },
   pour: { ir: 'standby', pump: 'active', door: 'standby', led: 'active' },
-  done: { ir: 'standby', pump: 'off', door: 'active', led: 'off' },
+  done: { ir: 'standby', pump: 'off', door: 'done', led: 'off' },
 };
 
 function useAutoCycle(running: boolean, level: Level, onAdvance: () => void, phase: Phase) {
@@ -69,6 +69,7 @@ export default function DispenseDemo() {
   const comp = COMP_STATE[phase];
   const filling = phase === 'pour' || phase === 'done';
   const fillTarget = filling ? lv.fill : 0;
+  const doorOpen = phase === 'wake' || phase === 'light' || phase === 'pour'; // door slides off the buttons mid-cycle
   const instant = reduceMotion ? 0 : undefined; // framer-motion treats `duration: 0` as a snap, no tween
 
   const advance = useCallback(() => {
@@ -103,6 +104,7 @@ export default function DispenseDemo() {
   const restart = phase === 'done';
 
   return (
+    <LazyMotion features={domAnimation}>
     <div className={`pd-dd pd-dd-${phase}`} data-no-zoom>
       <div className="pd-dd-glass">
         <div className="pd-dd-glow" aria-hidden="true" />
@@ -111,7 +113,7 @@ export default function DispenseDemo() {
         <div className="pd-dd-beam-track" aria-hidden="true">
           <AnimatePresence>
             {phase === 'wake' && (
-              <motion.span
+              <m.span
                 className="pd-dd-beam"
                 initial={{ opacity: 0, scaleX: 0.2 }}
                 animate={{ opacity: [0, 1, 1, 0], scaleX: 1 }}
@@ -123,22 +125,29 @@ export default function DispenseDemo() {
         </div>
 
         <div className="pd-dd-machine">
-          {/* Dispenser head: body, LED, self-closing door over the spout */}
+          {/* Dispenser head: body, status LED, the self-closing door over the control buttons, open spout below */}
           <div className="pd-dd-head">
             <span className="pd-dd-head-vent" aria-hidden="true" />
-            <motion.span
+            <m.span
               className="pd-dd-head-led"
               aria-hidden="true"
               animate={{ opacity: comp.led === 'active' ? 1 : 0.16, boxShadow: comp.led === 'active' ? '0 0 14px 3px rgba(255,207,138,0.7)' : '0 0 0 0 rgba(255,207,138,0)' }}
               transition={{ duration: instant ?? 0.4, ease: SPRING }}
             />
-            <div className="pd-dd-spout-housing">
-              <motion.span
+            <div className="pd-dd-panel">
+              <span className="pd-dd-btns" aria-hidden="true">
+                {LEVEL_ORDER.map((l) => (
+                  <span key={l} className={`pd-dd-pbtn${doorOpen && l === level ? ' is-pressed' : ''}`} />
+                ))}
+              </span>
+              <m.span
                 className="pd-dd-door"
                 aria-hidden="true"
-                animate={{ rotateX: phase === 'done' || (phase === 'idle' && cycle > 0) ? 0 : -108 }}
-                transition={{ duration: instant ?? 0.8, ease: SPRING, delay: reduceMotion ? 0 : phase === 'done' ? 0.2 : 0 }}
+                animate={{ y: doorOpen ? '-104%' : '0%' }}
+                transition={{ duration: instant ?? 0.55, ease: SPRING, delay: reduceMotion ? 0 : phase === 'done' ? 0.15 : phase === 'wake' ? 0.1 : 0 }}
               />
+            </div>
+            <div className="pd-dd-spout">
               <span className="pd-dd-spout-mouth" aria-hidden="true" />
             </div>
           </div>
@@ -147,7 +156,7 @@ export default function DispenseDemo() {
           <div className="pd-dd-stream-track" aria-hidden="true">
             <AnimatePresence>
               {phase === 'pour' && (
-                <motion.span
+                <m.span
                   className="pd-dd-stream"
                   initial={{ opacity: 0, scaleY: 0.3 }}
                   animate={{ opacity: 1, scaleY: 1 }}
@@ -159,7 +168,7 @@ export default function DispenseDemo() {
           </div>
 
           {/* LED glow pool over the dispensing area */}
-          <motion.div
+          <m.div
             className="pd-dd-led-pool"
             aria-hidden="true"
             animate={{ opacity: comp.led === 'active' ? 1 : 0, scale: comp.led === 'active' ? 1 : 0.8 }}
@@ -169,19 +178,19 @@ export default function DispenseDemo() {
           {/* The cup, sitting in the dispensing area */}
           <div className="pd-dd-cup" role="img" aria-label={`Cup in the dispensing area, ${phase === 'idle' ? 'empty, waiting' : phase === 'done' ? `filled to the ${lv.label.toLowerCase()} level, door closing` : `filling toward the ${lv.label.toLowerCase()} level`}`}>
             <span className="pd-dd-cup-rim" aria-hidden="true" />
-            <motion.div
+            <m.div
               className="pd-dd-water"
               animate={{ height: `${fillTarget * 100}%` }}
               transition={{ duration: instant ?? (filling && phase === 'pour' ? lv.pourMs / 1000 : 0.5), ease: filling && phase === 'pour' ? 'easeInOut' : SPRING }}
             >
-              <motion.span
+              <m.span
                 className="pd-dd-wobble"
                 aria-hidden="true"
                 animate={!reduceMotion && phase === 'pour' ? { scaleY: [1, 1.35, 0.85, 1.18, 1], scaleX: [1, 0.97, 1.02, 0.99, 1] } : { scaleY: 1, scaleX: 1 }}
                 transition={!reduceMotion && phase === 'pour' ? { duration: 1.6, repeat: Infinity, ease: 'easeInOut' } : { duration: instant ?? 0.4 }}
               />
               <span className="pd-dd-shine" aria-hidden="true" />
-            </motion.div>
+            </m.div>
             <span className="pd-dd-cup-base" aria-hidden="true" />
           </div>
           <span className="pd-dd-shelf" aria-hidden="true" />
@@ -217,7 +226,7 @@ export default function DispenseDemo() {
         {/* Phase rail: a horizontal thread the cycle travels along */}
         <div className="pd-dd-rail" role="status" aria-live="polite">
           <div className="pd-dd-rail-track" aria-hidden="true">
-            <motion.div
+            <m.div
               className="pd-dd-rail-fill"
               animate={{ width: `${(phaseIndex / (PHASES.length - 1)) * 100}%` }}
               transition={{ duration: instant ?? 0.5, ease: SPRING }}
@@ -234,7 +243,7 @@ export default function DispenseDemo() {
         </div>
 
         <AnimatePresence mode="wait">
-          <motion.p
+          <m.p
             key={phase}
             className="pd-dd-desc"
             initial={reduceMotion ? false : { opacity: 0, y: 6 }}
@@ -243,7 +252,7 @@ export default function DispenseDemo() {
             transition={{ duration: instant ?? 0.32, ease: SPRING }}
           >
             {meta.blurb}
-          </motion.p>
+          </m.p>
         </AnimatePresence>
 
         {restart && (
@@ -255,7 +264,7 @@ export default function DispenseDemo() {
         {/* Mini schematic: signal line through the four components */}
         <div className="pd-dd-schema" aria-label="Component status">
           <span className="pd-dd-schema-line" aria-hidden="true">
-            <motion.span
+            <m.span
               className="pd-dd-schema-pulse"
               animate={!reduceMotion && phase !== 'idle' ? { left: ['0%', '100%'] } : { left: '0%', opacity: reduceMotion && phase !== 'idle' ? 1 : undefined }}
               transition={!reduceMotion && phase !== 'idle' ? { duration: 1.4, repeat: Infinity, ease: 'linear' } : { duration: instant ?? 0.3 }}
@@ -275,6 +284,7 @@ export default function DispenseDemo() {
 
       <PdStyles />
     </div>
+    </LazyMotion>
   );
 }
 
@@ -332,13 +342,13 @@ function PdStyles() {
       /* The whole machine: head unit above, cup below, on a shelf */
       .pd-dd-machine { position: relative; display: flex; flex-direction: column; align-items: center; z-index: 1; }
 
-      /* Dispenser head: body + status LED + spout / door housing */
+      /* Dispenser head: body + status LED + control panel (door over buttons) + open spout */
       .pd-dd-head {
-        position: relative; width: 138px; height: 64px; border-radius: 14px 14px 8px 8px;
+        position: relative; width: 142px; min-height: 100px; border-radius: 14px 14px 8px 8px;
         background: linear-gradient(160deg, rgba(255,255,255,0.07), rgba(255,255,255,0.015) 60%);
         border: 1px solid rgba(255,255,255,0.14); border-bottom: none;
         box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 14px 30px -18px rgba(0,0,0,0.7);
-        display: flex; align-items: flex-start; justify-content: center;
+        display: flex; flex-direction: column; align-items: center; padding: 26px 0 0;
       }
       .pd-dd-head-vent {
         position: absolute; top: 12px; left: 16px; width: 26px; height: 4px; border-radius: 999px;
@@ -348,26 +358,46 @@ function PdStyles() {
         position: absolute; top: 13px; right: 18px; width: 8px; height: 8px; border-radius: 50%;
         background: var(--warm); transition: opacity 0.4s ease, box-shadow 0.4s ease;
       }
-      .pd-dd-spout-housing {
-        position: relative; margin-top: 30px; width: 46px; height: 30px; perspective: 220px;
-        border-radius: 0 0 10px 10px; overflow: visible;
-        background: linear-gradient(180deg, rgba(0,0,0,0.32), rgba(0,0,0,0.5));
+      /* Control panel: the level buttons sit here; the self-closing door slides over them */
+      .pd-dd-panel {
+        position: relative; width: 86px; height: 30px; border-radius: 8px; overflow: hidden;
+        background: linear-gradient(180deg, rgba(0,0,0,0.34), rgba(0,0,0,0.52));
+        border: 1px solid rgba(255,255,255,0.12);
+        display: grid; place-items: center;
+      }
+      .pd-dd-btns { display: inline-flex; gap: 9px; }
+      .pd-dd-pbtn {
+        width: 13px; height: 13px; border-radius: 50%;
+        background: radial-gradient(circle at 50% 35%, rgba(255,255,255,0.3), rgba(255,255,255,0.08));
+        border: 1px solid rgba(255,255,255,0.22);
+        transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+      }
+      .pd-dd-pbtn.is-pressed {
+        background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--hp-sky) 92%, #fff), var(--hp-sky));
+        box-shadow: 0 0 10px 1px color-mix(in srgb, var(--hp-sky) 60%, transparent);
+        transform: scale(0.84);
+      }
+      /* Self-closing door: covers the buttons at rest, slides up to uncover them mid-cycle */
+      .pd-dd-door {
+        position: absolute; inset: 0; z-index: 3; border-radius: 7px;
+        background: linear-gradient(180deg, #d7e0ea, #9aabbf);
+        border: 1px solid rgba(255,255,255,0.4);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 4px 12px -6px rgba(0,0,0,0.5);
+      }
+      .pd-dd-door::after {
+        content: ''; position: absolute; left: 50%; bottom: 5px; width: 28px; height: 3px; margin-left: -14px;
+        border-radius: 999px; background: rgba(0,0,0,0.18);
+      }
+      .pd-dd-spout {
+        margin-top: 9px; width: 44px; height: 16px; border-radius: 0 0 10px 10px;
+        background: linear-gradient(180deg, rgba(0,0,0,0.3), rgba(0,0,0,0.5));
         border: 1px solid rgba(255,255,255,0.1); border-top: none;
         display: flex; align-items: flex-end; justify-content: center;
       }
       .pd-dd-spout-mouth {
-        position: relative; bottom: -1px; width: 22px; height: 9px; border-radius: 0 0 7px 7px;
+        position: relative; bottom: -1px; width: 22px; height: 8px; border-radius: 0 0 7px 7px;
         background: linear-gradient(180deg, rgba(167,198,232,0.28), rgba(167,198,232,0.08));
         border: 1px solid rgba(255,255,255,0.14); border-top: none;
-      }
-      /* Self-closing door: hinges down from the housing top, flat = open (tucked away), 0deg = sealing the mouth */
-      .pd-dd-door {
-        position: absolute; top: 0; left: 50%; width: 38px; height: 26px; margin-left: -19px;
-        transform-style: preserve-3d; transform-origin: top center;
-        border-radius: 0 0 6px 6px; z-index: 4;
-        background: linear-gradient(180deg, #d7e0ea, #9aabbf);
-        border: 1px solid rgba(255,255,255,0.4); border-top: none;
-        box-shadow: 0 6px 14px -6px rgba(0,0,0,0.55);
       }
 
       .pd-dd-stream-track { position: relative; height: 30px; width: 8px; display: flex; justify-content: center; z-index: 2; }
