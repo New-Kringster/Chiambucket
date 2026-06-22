@@ -5373,9 +5373,11 @@ html[data-theme="datacenter"] {
 .hp-modal[hidden] { display: none; }
 .hp-modal.is-open { opacity: 1; }
 .hp-modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.72); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+/* Panel clips (overflow:hidden) and the inner .hp-modal-content scrolls, so the
+   absolutely-positioned .hp-modal-close stays pinned instead of scrolling away. */
 .hp-modal-panel {
   position: relative; z-index: 2;
-  width: min(880px, 100%); max-height: 86vh; overflow-y: auto;
+  width: min(880px, 100%); max-height: 86vh; overflow: hidden;
   background: linear-gradient(160deg, rgba(24,24,26,0.98), rgba(13,13,14,0.99));
   border: 1px solid rgba(255,255,255,0.12); border-radius: 24px;
   box-shadow: 0 40px 100px -30px rgba(0,0,0,0.9);
@@ -5390,7 +5392,7 @@ html[data-theme="datacenter"] {
   color: #e8e8e8; font-size: 1.3rem; line-height: 1; transition: background 0.3s ease, transform 0.2s ease;
 }
 .hp-modal-close:hover { background: rgba(255,255,255,0.16); transform: rotate(90deg); }
-.hp-modal-content { padding: 30px clamp(22px, 4vw, 38px) 34px; }
+.hp-modal-content { padding: 30px clamp(22px, 4vw, 38px) 34px; max-height: inherit; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .hp-md-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 6px; }
 .hp-md-tag { font-family: 'inter'; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.3rem 0.7rem; border-radius: 999px; }
 .hp-md-tag.personal { background: rgba(239,122,5,0.18); color: #f0a868; border: 1px solid rgba(239,122,5,0.38); }

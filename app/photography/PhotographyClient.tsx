@@ -60,6 +60,7 @@ const galleries = [
   { id: '21by9',     title: '21:9',          albumId: 'cZ6uVEzxH72ygIJLPbnxZAiN', galleryUrl: 'https://photos.chiambucket.com/gallery/cZ6uVEzxH72ygIJLPbnxZAiN' },
   { id: 'china',     title: 'China',         albumId: 'LscJWL46nCkW76KiKEY4csiI', galleryUrl: 'https://photos.chiambucket.com/gallery/LscJWL46nCkW76KiKEY4csiI' },
   { id: 'zealand',   title: 'New Zealand',   albumId: 'RgKkSumOaHmpoMKbNxPU-o-0', galleryUrl: 'https://photos.chiambucket.com/gallery/RgKkSumOaHmpoMKbNxPU-o-0' },
+  { id: 'hongkong',  title: 'Hong Kong',     albumId: '9cDZmd5tSazcQToprQAzbKKu', galleryUrl: 'https://photos.chiambucket.com/gallery/9cDZmd5tSazcQToprQAzbKKu' },
   { id: 'general',   title: 'General',       albumId: 'X1sod6pbc0khZPykFISHCjzg', galleryUrl: 'https://photos.chiambucket.com/gallery/RgKkSumOaHmpoMKbNxPU-o-0' },
 ];
 

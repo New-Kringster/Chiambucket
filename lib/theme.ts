@@ -19,6 +19,7 @@ export const THEME_MAP: Record<string, string> = {
   '/csdp': 'mauve',
   '/pandus': 'steel',
   '/elecf': 'violet',
+  '/lumen': 'violet',
   '/homelab': 'datacenter',
 };
 
