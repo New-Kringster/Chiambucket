@@ -265,7 +265,7 @@ function ModalContent({ id, close }: { id: string; close: () => void }) {
           <p className="hp-md-meta">NYP IoT Programming · ESP32 · MicroPython · Whisper · DeepSeek · MQTT</p>
           <p className="hp-rd-lead">A voice-controlled smart-room assistant. Say &ldquo;Hello Robot,&rdquo; speak, and the room answers: an ESP32 captures your voice, a FastAPI relay transcribes it and asks an LLM for one strict JSON command, and that fans back out over MQTT.</p>
           <div className="hp-md-video"><video controls preload="metadata" poster="/images/lumen-demo-poster.webp" playsInline><source src="/videos/lumen-demo.webm" type="video/webm" /><source src="/videos/lumen-demo.mp4" type="video/mp4" /></video></div>
-          {chapter('01', 'Speech to one JSON command', <p>The ESP32 streams 16&nbsp;kHz audio to the server; Whisper transcribes it and a DeepSeek LLM parses it into exactly one validated command (action, sequence or timer), checked against a schema before it ever reaches the board.</p>)}
+          {chapter('01', 'Speech to one JSON command', <p>The ESP32 streams 16&nbsp;kHz audio to the server; through OpenRouter, Whisper transcribes it and a DeepSeek LLM parses it into exactly one validated command (action, sequence or timer), checked against a schema before it ever reaches the board.</p>)}
           {chapter('02', 'Fitting it on a no-PSRAM board', <><p>The WROOM left about 33&nbsp;KB of free RAM with WiFi up, and a voice clip is roughly 96&nbsp;KB, so the audio is streamed over a raw socket as it records, never held whole. Peak memory during an upload is around 10&nbsp;KB.</p><img className="hp-rd-fig" src="/images/lumen-mic.webp" alt="The INMP441 microphone wired to the ESP32" loading="lazy" /></>)}
           {chapter('03', 'A room you can talk to', <><p>Lights, a NeoPixel, a fan, a servo and a buzzer respond, with a local auto-mode and a web dashboard. Ask it to &ldquo;set the brightness to the humidity&rdquo; and it reads the live sensor and does exactly that.</p><img className="hp-rd-fig" src="/images/lumen-dashboard.webp" alt="The LUMEN web dashboard" loading="lazy" /></>)}
           {cta('See the full build', 'The memory wall, the wiring and the interactive demo.', 'Read the full article', '/lumen')}
@@ -842,7 +842,7 @@ export default function HomeClient() {
                 </div>
                 <div className="hp-pf-info">
                   <h3 className="hp-pf-name">LUMEN</h3>
-                  <p className="hp-pf-blurb">A voice-controlled smart-room assistant on an ESP32, with Whisper and a DeepSeek LLM on a FastAPI relay turning speech into one JSON command over MQTT.</p>
+                  <p className="hp-pf-blurb">A voice-controlled smart-room assistant on an ESP32, with Whisper and a DeepSeek LLM via OpenRouter turning speech into one JSON command over MQTT.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/esp-icon.webp" alt="" /><img src="/images/python-icon.webp" alt="" /><img src="/images/docker-icon.webp" alt="" /><img src="/images/vscode-icon.webp" alt="" /></div>
                     <button className="hp-pf-view" onClick={() => { window.location.href = '/lumen'; }}>Read article <AU /></button>

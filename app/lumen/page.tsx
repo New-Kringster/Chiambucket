@@ -6,11 +6,11 @@ import PromptReveal from './PromptReveal';
 
 export const metadata: Metadata = {
   title: 'LUMEN — Chiambucket',
-  description: 'An AI voice-controlled smart-room assistant: an ESP32 with a wake word, an INMP441 mic and sensors, paired with a FastAPI relay that runs Whisper speech-to-text and a DeepSeek command parser, all squeezed onto a no-PSRAM board.',
+  description: 'An AI voice-controlled smart-room assistant: an ESP32 with a wake word, an INMP441 mic and sensors, paired with a FastAPI relay that calls OpenRouter for Whisper speech-to-text and a DeepSeek command parser, all squeezed onto a no-PSRAM board.',
   alternates: { canonical: 'https://www.chiambucket.com/lumen' },
   openGraph: {
     title: 'LUMEN — Chiambucket',
-    description: 'An ESP32 voice assistant: wake word + mic on-device, Whisper + an LLM command parser on a FastAPI relay, talking to the room over MQTT.',
+    description: 'An ESP32 voice assistant: wake word + mic on-device, Whisper + a DeepSeek command parser via OpenRouter on a FastAPI relay, talking to the room over MQTT.',
     url: 'https://www.chiambucket.com/lumen',
     type: 'article',
     images: [{ url: '/images/logo.png' }],
@@ -21,7 +21,7 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Article',
   headline: 'LUMEN — ESP32 Voice Assistant',
-  description: 'An AI voice-controlled smart-room assistant on an ESP32 (MicroPython) paired with a FastAPI relay running Whisper speech-to-text and a DeepSeek LLM command parser, fanning out to the room over MQTT. Built for NYP IoT Programming.',
+  description: 'An AI voice-controlled smart-room assistant on an ESP32 (MicroPython) paired with a FastAPI relay that calls OpenRouter for Whisper speech-to-text and a DeepSeek LLM command parser, fanning out to the room over MQTT. Built for NYP IoT Programming.',
   image: 'https://www.chiambucket.com/images/logo.png',
   author: { '@type': 'Person', name: 'Braven Chiam', url: 'https://www.chiambucket.com/' },
   publisher: { '@type': 'Person', name: 'Braven Chiam' },
@@ -214,7 +214,7 @@ export default function LumenPage() {
 
           <section id="try" className="art-section" data-reveal>
             <h2>Try it</h2>
-            <p>Here is the whole loop in miniature. A phrase comes in; it travels the same path the real system uses (trigger, then Whisper for speech-to-text, then a DeepSeek LLM that parses it to one JSON command, then MQTT out to the device); and the room reacts. Pick a phrase, or let it cycle.</p>
+            <p>Here is the whole loop in miniature. A phrase comes in; it travels the same path the real system uses (trigger, then Whisper for speech-to-text and a DeepSeek LLM that parses it to one JSON command, both reached through OpenRouter, then MQTT out to the device); and the room reacts. Pick a phrase, or let it cycle.</p>
             <LumenConsole />
             <p className="art-cap-note">The last two phrases show the guardrails: a question is answered from live sensor data and takes no action, and an impossible request is politely refused. The ESP32 only ever trusts validated JSON.</p>
           </section>
@@ -223,16 +223,16 @@ export default function LumenPage() {
             <h2>How it works</h2>
             <p>The golden rule of the whole design: <strong>the ESP32 does almost no thinking.</strong> It records audio and executes commands. Everything heavy (speech-to-text, the language model, logging) happens on a FastAPI server running in Docker on my homelab; the board just talks to it over the local network.</p>
             <SignalPath />
-            <p>A trigger (the &ldquo;Hello Robot&rdquo; wake word, or a push-to-talk button as the reliable fallback) starts an INMP441 microphone capturing 16&nbsp;kHz mono audio. The board wraps it as a WAV and streams it to the server&apos;s <code>/upload</code> endpoint. The server runs OpenAI Whisper for transcription, hands the text to DeepSeek with a strict system prompt, validates the JSON that comes back, and publishes it to an MQTT topic the ESP32 subscribes to. The same result is appended to a Google Sheet for logging, with an estimated cost per request.</p>
+            <p>A trigger (the &ldquo;Hello Robot&rdquo; wake word, or a push-to-talk button as the reliable fallback) starts an INMP441 microphone capturing 16&nbsp;kHz mono audio. The board wraps it as a WAV and streams it to the server&apos;s <code>/upload</code> endpoint. From there the server calls <strong>OpenRouter</strong> for both steps on a single API key: Whisper transcribes the audio, then a DeepSeek model turns the text into one JSON command under a strict system prompt. The server validates that JSON and publishes it to an MQTT topic the ESP32 subscribes to. The same result is appended to a Google Sheet for logging, with an estimated cost per request.</p>
             <p>One detail that makes the answers feel smart: the server also subscribes to the room&apos;s state and sensor topics and caches the latest values, then feeds them to the LLM as context. That is how &ldquo;what&apos;s the temperature?&rdquo; or &ldquo;is the fan on?&rdquo; get answered from real readings rather than guesses.</p>
             <h3>The voice pipeline, step by step</h3>
             <ol className="lm-steps">
               <li><b>Trigger.</b> You say &ldquo;Hello Robot&rdquo; or hold the push-to-talk button.</li>
               <li><b>Record.</b> The INMP441 captures about three seconds of 16&nbsp;kHz mono audio; the red REC LED stays lit for the whole capture.</li>
               <li><b>Wrap &amp; upload.</b> The raw PCM gets a 44-byte WAV header and streams to <code>/upload</code> as it is recorded.</li>
-              <li><b>Transcribe.</b> The server runs Whisper to turn the audio into text.</li>
-              <li><b>Add context.</b> The transcript plus a live snapshot of device state and sensor readings goes to the LLM.</li>
-              <li><b>Parse.</b> The LLM returns one JSON command, validated against the schema (retry once, else a safe no-op).</li>
+              <li><b>Transcribe.</b> The server sends the clip to OpenRouter, where Whisper turns the audio into text.</li>
+              <li><b>Add context.</b> The transcript plus a live snapshot of device state and sensor readings goes to the model.</li>
+              <li><b>Parse.</b> A DeepSeek model (also via OpenRouter) returns one JSON command, validated against the schema (retry once, else a safe no-op).</li>
               <li><b>Fan out.</b> The server publishes the command to MQTT and appends a row to the Google Sheet.</li>
               <li><b>Execute.</b> The ESP32 receives it, acts on it, and shows the spoken reply on its OLED.</li>
             </ol>
@@ -423,10 +423,10 @@ function SignalPath() {
         </div>
 
         <div className="lm-flow-stage">
-          <span className="lm-flow-tag">FastAPI server · Docker</span>
+          <span className="lm-flow-tag">FastAPI server · OpenRouter</span>
           <div className="lm-flow-card lit">
             <b>Whisper → DeepSeek → validate</b>
-            <span>Speech becomes text, the LLM parses it into one JSON command, and the server checks it against the schema (retry once, else a safe no-op).</span>
+            <span>Through OpenRouter, Whisper turns speech into text and a DeepSeek model parses it into one JSON command; the server checks that against the schema (retry once, else a safe no-op).</span>
           </div>
         </div>
 
