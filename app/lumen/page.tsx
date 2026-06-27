@@ -337,8 +337,9 @@ export default function LumenPage() {
         }
 
         /* ── Lists ── */
-        .lm-list { margin: 0.6rem 0 0.4rem; padding-left: 1.1rem; display: flex; flex-direction: column; gap: 0.5rem; line-height: 1.7; }
-        .lm-list li { padding-left: 0.2rem; }
+        /* Inherit the global .art-section ul gutter (li padding-left:20px) so the blue dot
+           sits in the margin, not on the text. Only tweak the row gap here. */
+        .lm-list { margin: 0.6rem 0 0.4rem; gap: 0.55rem; }
         .art-cap-note { font-size: 0.92rem; color: #aab4c8; }
 
         /* ── System prompt reveal (preview → fade → show more) ── */
