@@ -246,6 +246,7 @@ export default function LumenPage() {
               <li><b>sequence</b> — ordered steps, each with a delay from the moment you spoke. &ldquo;Lights off, then fan off a second later.&rdquo;</li>
               <li><b>timer</b> — one change after a countdown. &ldquo;Light off in ten minutes.&rdquo;</li>
             </ul>
+            <CommandFlowchart />
             <p>A long, deliberately strict system prompt pins down the device vocabulary (white LED, NeoPixel RGB, fan, servo, buzzer, comfort range, auto-mode), forces valid JSON with numbers as numbers, and maps colour names to RGB itself. Every response is checked against a schema on the server; if it fails, the server retries once, then falls back to a harmless no-op rather than sending the board something it cannot trust.</p>
             <PromptReveal text={SYSTEM_PROMPT} />
             <p>My favourite behaviour is the one that ties the language model to the physical room. Ask it to &ldquo;set the brightness to the humidity percentage&rdquo; and it reads the live humidity from the cached sensor state, rounds it, clamps it to the LED&apos;s 0&ndash;100 range, and emits a real <code>set_brightness</code> command. The room&apos;s own readings become inputs to the request.</p>
@@ -445,6 +446,94 @@ function SignalPath() {
         </div>
       </div>
       <figcaption className="lm-flow-foot">The server also caches the room&apos;s live state and sensor readings, feeds them back to the LLM as context, and logs every call to a dashboard. The board only records and executes; all the intelligence lives on the server.</figcaption>
+    </figure>
+  );
+}
+
+function CommandFlowchart() {
+  return (
+    <figure className="lm-dia" data-no-zoom>
+      <svg viewBox="0 0 840 445" role="img" aria-label="Command parsing flowchart: transcribed text and live sensor context enters the DeepSeek LLM. If the output JSON fails schema validation, the server retries once; still invalid becomes a safe no-op. If valid, the command is routed by type — action for a single device change, sequence for ordered steps with delays, or timer for one change after a countdown.">
+        <defs>
+          <marker id="lm-fc-arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="var(--hp-sky, #7fa8ff)" fillOpacity="0.7" />
+          </marker>
+        </defs>
+
+        {/* ─ Input node ─ */}
+        <rect className="d-box" x="180" y="16" width="360" height="52" rx="10" />
+        <text className="d-t" x="360" y="38" textAnchor="middle">Transcribed text + sensor context</text>
+        <text className="d-s" x="360" y="56" textAnchor="middle">Whisper transcript + live room snapshot from MQTT cache</text>
+
+        {/* Arrow: input → DeepSeek */}
+        <line className="d-line" x1="360" y1="68" x2="360" y2="95" markerEnd="url(#lm-fc-arr)" />
+
+        {/* ─ DeepSeek LLM node ─ */}
+        <rect className="d-box accent" x="205" y="97" width="310" height="52" rx="10" />
+        <text className="d-t" x="360" y="119" textAnchor="middle">DeepSeek LLM (via OpenRouter)</text>
+        <text className="d-s" x="360" y="137" textAnchor="middle">Parses request into one JSON command</text>
+
+        {/* Arrow: DeepSeek → diamond, with label */}
+        <line className="d-line" x1="360" y1="149" x2="360" y2="171" markerEnd="url(#lm-fc-arr)" />
+        <text className="d-chip" x="368" y="164">JSON</text>
+
+        {/* ─ Decision diamond: schema valid? ─
+            Center (360, 215); vertices: top (360,173) right (465,215) bottom (360,257) left (255,215) */}
+        <polygon className="d-box" points="255,215 360,173 465,215 360,257" />
+        <text className="d-t" x="360" y="210" textAnchor="middle" style={{fontSize: 12}}>JSON schema</text>
+        <text className="d-t" x="360" y="226" textAnchor="middle" style={{fontSize: 12}}>valid?</text>
+
+        {/* Yes: arrow down from diamond bottom */}
+        <line className="d-line" x1="360" y1="257" x2="360" y2="285" markerEnd="url(#lm-fc-arr)" />
+        <text className="d-chip" x="368" y="275">Yes</text>
+
+        {/* ─ Route by type node ─ */}
+        <rect className="d-box" x="200" y="287" width="320" height="48" rx="10" />
+        <text className="d-t" x="360" y="307" textAnchor="middle">Route by command type</text>
+        <text className="d-s" x="360" y="323" textAnchor="middle">action · sequence · timer</text>
+
+        {/* Three branch lines from route box bottom */}
+        <path className="d-line" d="M 310 335 L 115 370" markerEnd="url(#lm-fc-arr)" />
+        <line className="d-line" x1="360" y1="335" x2="360" y2="370" markerEnd="url(#lm-fc-arr)" />
+        <path className="d-line" d="M 415 335 L 605 370" markerEnd="url(#lm-fc-arr)" />
+
+        {/* Branch type labels */}
+        <text className="d-chip" x="198" y="360" textAnchor="middle">action</text>
+        <text className="d-chip" x="360" y="358" textAnchor="middle">sequence</text>
+        <text className="d-chip" x="519" y="360" textAnchor="middle">timer</text>
+
+        {/* ─ Outcome boxes ─ */}
+        <rect className="d-box" x="20" y="370" width="190" height="52" rx="10" />
+        <text className="d-t" x="115" y="392" textAnchor="middle">action</text>
+        <text className="d-s" x="115" y="408" textAnchor="middle">Single device change</text>
+
+        <rect className="d-box" x="265" y="370" width="190" height="52" rx="10" />
+        <text className="d-t" x="360" y="392" textAnchor="middle">sequence</text>
+        <text className="d-s" x="360" y="408" textAnchor="middle">Steps with delays</text>
+
+        <rect className="d-box" x="510" y="370" width="190" height="52" rx="10" />
+        <text className="d-t" x="605" y="392" textAnchor="middle">timer</text>
+        <text className="d-s" x="605" y="408" textAnchor="middle">One change after a delay</text>
+
+        {/* No: arrow right from diamond to retry */}
+        <line className="d-line" x1="465" y1="215" x2="558" y2="215" markerEnd="url(#lm-fc-arr)" />
+        <text className="d-chip" x="493" y="208">No</text>
+
+        {/* ─ Retry node ─ */}
+        <rect className="d-box" x="560" y="189" width="155" height="52" rx="10" />
+        <text className="d-t" x="637" y="211" textAnchor="middle">Retry once</text>
+        <text className="d-s" x="637" y="227" textAnchor="middle">re-prompt LLM</text>
+
+        {/* Fails arrow: retry → no-op */}
+        <line className="d-line" x1="637" y1="241" x2="637" y2="269" markerEnd="url(#lm-fc-arr)" />
+        <text className="d-chip" x="645" y="259">fails</text>
+
+        {/* ─ Safe no-op node ─ */}
+        <rect className="d-box warm" x="560" y="271" width="155" height="52" rx="10" />
+        <text className="d-t" x="637" y="293" textAnchor="middle">Safe no-op</text>
+        <text className="d-s" x="637" y="309" textAnchor="middle">reply only, no action</text>
+      </svg>
+      <figcaption className="lm-dia-cap">How a voice command moves through the parser. Every path ends in one of four outcomes: action, sequence, timer, or a polite refusal that does nothing to the room.</figcaption>
     </figure>
   );
 }
