@@ -117,6 +117,8 @@ export default function LumenConsole() {
   const [phase, setPhase] = useState<'idle' | 'listen' | 'stt' | 'llm' | 'exec' | 'done'>('idle');
   const [room, setRoom] = useState<Room>(START);
   const [playing, setPlaying] = useState(true);
+  const [inView, setInView] = useState(true);
+  const rootRef = useRef<HTMLDivElement>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const clearTimers = () => { timers.current.forEach(clearTimeout); timers.current = []; };
@@ -135,14 +137,24 @@ export default function LumenConsole() {
     });
   }, [reduce]);
 
-  // auto-advance through the script
+  // Only animate while the widget is on screen (saves work and avoids any off-view churn)
   useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.15 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  // auto-advance through the script (paused while out of view)
+  useEffect(() => {
+    if (!inView) { clearTimers(); return; }
     run(idx);
     if (!playing) return;
     const adv = setTimeout(() => setIdx((n) => (n + 1) % SCRIPT.length), reduce ? 3200 : 5200);
     return () => clearTimeout(adv);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [idx, playing]);
+  }, [idx, playing, inView]);
 
   useEffect(() => () => clearTimers(), []);
 
@@ -157,7 +169,7 @@ export default function LumenConsole() {
 
   return (
     <LazyMotion features={domAnimation}>
-      <div className="lm-cl" data-no-zoom>
+      <div ref={rootRef} className="lm-cl" data-no-zoom>
         {/* ── Console: what was heard → what was parsed ── */}
         <div className="lm-cl-console">
           <div className="lm-cl-bar">
@@ -334,11 +346,14 @@ export default function LumenConsole() {
 
           .lm-cl-line { display: flex; flex-direction: column; gap: 5px; }
           .lm-cl-k { font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: #6d768a; }
-          .lm-cl-said { margin: 0; font-size: 1.02rem; line-height: 1.4; color: #eef1f7; font-style: italic; min-height: 2.8em; }
-          .lm-cl-jsonwrap { min-height: 150px; }
-          .lm-cl-json { margin: 0; font-family: var(--font-ddt, ui-monospace, monospace); font-size: 0.74rem; line-height: 1.5; color: #b7e3c8; white-space: pre-wrap; word-break: break-word;
+          /* Fixed reserves so cycling the demo never reflows the page */
+          .lm-cl-said { margin: 0; font-size: 1.02rem; line-height: 1.4; color: #eef1f7; font-style: italic; min-height: 4.4em; }
+          .lm-cl-jsonwrap { height: 206px; }
+          .lm-cl-json { margin: 0; height: 100%; box-sizing: border-box; overflow: auto; -webkit-overflow-scrolling: touch;
+            font-family: var(--font-ddt, ui-monospace, monospace); font-size: 0.74rem; line-height: 1.5; color: #b7e3c8; white-space: pre-wrap; word-break: break-word;
             background: rgba(0,0,0,0.32); border: 1px solid rgba(255,255,255,0.07); border-radius: 11px; padding: 11px 13px; }
-          .lm-cl-think { display: flex; gap: 6px; align-items: center; padding: 16px 13px; }
+          .lm-cl-think { display: flex; gap: 6px; align-items: center; justify-content: center; height: 100%; box-sizing: border-box;
+            border: 1px solid rgba(255,255,255,0.05); border-radius: 11px; background: rgba(0,0,0,0.18); padding: 16px 13px; }
           .lm-cl-think span { width: 7px; height: 7px; border-radius: 50%; background: var(--lm); opacity: 0.4; animation: lm-think 1s ease-in-out infinite; }
           .lm-cl-think span:nth-child(2) { animation-delay: 0.15s; } .lm-cl-think span:nth-child(3) { animation-delay: 0.3s; }
           @keyframes lm-think { 0%,100% { opacity: 0.25; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-4px); } }
@@ -362,7 +377,7 @@ export default function LumenConsole() {
           .lm-cl-bright span { display: block; height: 100%; background: linear-gradient(90deg, var(--lm-deep), var(--lm)); border-radius: 999px; transition: width 0.6s cubic-bezier(0.16,1,0.3,1); }
           .lm-cl-swatch { grid-row: 1 / 3; width: 26px; height: 26px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.14); transition: background 0.5s, box-shadow 0.5s; }
 
-          .lm-cl-sensors { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 6px; margin-top: auto; min-height: 52px; }
+          .lm-cl-sensors { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 6px; margin-top: auto; min-height: 64px; }
           .lm-cl-chip { font-size: 0.66rem; padding: 4px 8px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.1); color: #aeb8cc; }
           .lm-cl-chip.hot { color: var(--lm); border-color: color-mix(in srgb, var(--lm) 35%, transparent); }
           .lm-cl-chip.timer { color: #f5c97a; border-color: rgba(245,201,122,0.4); background: rgba(245,201,122,0.08); }

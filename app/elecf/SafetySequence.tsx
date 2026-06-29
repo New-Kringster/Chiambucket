@@ -1,5 +1,5 @@
 'use client';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, LazyMotion, domAnimation, m } from 'framer-motion';
 
 type Step = {
@@ -54,9 +54,14 @@ const STEPS: Step[] = [
   },
 ];
 
+/* The longest description sets a stable reserve so swapping steps never reflows the page. */
+const LONGEST_DESC = STEPS.reduce((a, s) => (s.desc.length > a.length ? s.desc : a), '');
+
 export default function SafetySequence() {
   const [i, setI] = useState(0);
   const [auto, setAuto] = useState(true);
+  const [inView, setInView] = useState(true);
+  const rootRef = useRef<HTMLDivElement>(null);
   const step = STEPS[i];
 
   const goto = useCallback((n: number, manual = true) => {
@@ -64,16 +69,25 @@ export default function SafetySequence() {
     setI(((n % STEPS.length) + STEPS.length) % STEPS.length);
   }, []);
 
-  // Auto-advance the demo until the visitor takes over
+  // Only run the demo while it is on screen, so it never reflows the page out of view
   useEffect(() => {
-    if (!auto) return;
+    const el = rootRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.15 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  // Auto-advance the demo until the visitor takes over (and only while in view)
+  useEffect(() => {
+    if (!auto || !inView) return;
     const t = setInterval(() => setI((p) => (p + 1) % STEPS.length), 3000);
     return () => clearInterval(t);
-  }, [auto]);
+  }, [auto, inView]);
 
   return (
     <LazyMotion features={domAnimation}>
-    <div className={`ef-seq tone-${step.tone}`} data-no-zoom>
+    <div ref={rootRef} className={`ef-seq tone-${step.tone}`} data-no-zoom>
       <div className="ef-seq-media">
         <div className="ef-seq-glow" aria-hidden="true" />
         <div className="ef-seq-screen">
@@ -95,20 +109,32 @@ export default function SafetySequence() {
       <div className="ef-seq-info">
         <span className="ef-seq-eyebrow">Step {i + 1} of 3 · {step.label}</span>
         <h3 className="ef-seq-title">{step.title}</h3>
-        <p className="ef-seq-desc">{step.desc}</p>
+        <div className="ef-seq-desc-wrap">
+          <p className="ef-seq-desc ef-seq-desc-sizer" aria-hidden="true">{LONGEST_DESC}</p>
+          <p className="ef-seq-desc">{step.desc}</p>
+        </div>
 
-        <div className="ef-seq-sensors">
-          <div className="ef-chip on">
-            <span className="ef-chip-dot" />
-            <span className="ef-chip-txt"><b>PIR</b>{step.pir}</span>
+        <div className="ef-seq-sensors-wrap">
+          {/* Hidden sizer: the widest possible chip values reserve a stable row height,
+              so the chips wrapping differently per step never reflows the widget. */}
+          <div className="ef-seq-sensors ef-seq-sensors-sizer" aria-hidden="true">
+            <div className="ef-chip"><span className="ef-chip-dot" /><span className="ef-chip-txt"><b>PIR</b>Presence detected</span></div>
+            <div className="ef-chip"><span className="ef-chip-dot" /><span className="ef-chip-txt"><b>ToF</b>Door closed</span></div>
+            <div className="ef-chip"><span className="ef-chip-dot" /><span className="ef-chip-txt"><b>Alert</b>RGB + buzzer</span></div>
           </div>
-          <div className={`ef-chip ${step.tofClosed ? 'closed' : 'open'}`}>
-            <span className="ef-chip-dot" />
-            <span className="ef-chip-txt"><b>ToF</b>{step.tof}</span>
-          </div>
-          <div className={`ef-chip alarm-${step.alarm}`}>
-            <span className="ef-chip-dot" />
-            <span className="ef-chip-txt"><b>Alert</b>{step.alarm === 'sounding' ? 'RGB + buzzer' : step.alarm === 'armed' ? 'Armed' : 'Standby'}</span>
+          <div className="ef-seq-sensors">
+            <div className="ef-chip on">
+              <span className="ef-chip-dot" />
+              <span className="ef-chip-txt"><b>PIR</b>{step.pir}</span>
+            </div>
+            <div className={`ef-chip ${step.tofClosed ? 'closed' : 'open'}`}>
+              <span className="ef-chip-dot" />
+              <span className="ef-chip-txt"><b>ToF</b>{step.tof}</span>
+            </div>
+            <div className={`ef-chip alarm-${step.alarm}`}>
+              <span className="ef-chip-dot" />
+              <span className="ef-chip-txt"><b>Alert</b>{step.alarm === 'sounding' ? 'RGB + buzzer' : step.alarm === 'armed' ? 'Armed' : 'Standby'}</span>
+            </div>
           </div>
         </div>
 
@@ -169,7 +195,15 @@ export default function SafetySequence() {
           color: var(--accent); font-weight: 600; transition: color 0.4s ease;
         }
         .ef-seq-title { font-family: 'oswaldbold'; font-size: clamp(1.3rem, 2.4vw, 1.7rem); color: #f1f1f1; margin: 0.45rem 0 0.5rem; letter-spacing: -0.01em; }
-        .ef-seq-desc { font-family: 'dmsans'; font-size: 0.98rem; line-height: 1.66; color: rgba(232,232,232,0.7); margin: 0 0 1.1rem; max-width: 52ch; }
+        /* The sizer (longest desc, hidden) and the live desc share one grid cell, so the
+           block is always as tall as the longest step at any width: no reflow on step change. */
+        .ef-seq-desc-wrap { display: grid; margin: 0 0 1.1rem; }
+        .ef-seq-desc-wrap > .ef-seq-desc { grid-area: 1 / 1; }
+        .ef-seq-desc-sizer { visibility: hidden; pointer-events: none; }
+        .ef-seq-desc { font-family: 'dmsans'; font-size: 0.98rem; line-height: 1.66; color: rgba(232,232,232,0.7); margin: 0; max-width: 52ch; }
+        .ef-seq-sensors-wrap { display: grid; margin-bottom: 1.2rem; }
+        .ef-seq-sensors-wrap > .ef-seq-sensors { grid-area: 1 / 1; margin-bottom: 0; }
+        .ef-seq-sensors-sizer { visibility: hidden; pointer-events: none; }
         .ef-seq-sensors { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 1.2rem; }
         .ef-chip {
           display: inline-flex; align-items: center; gap: 9px;

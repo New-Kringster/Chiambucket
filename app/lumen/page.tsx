@@ -346,12 +346,37 @@ export default function LumenPage() {
 
         /* ── System prompt reveal (preview → fade → show more) ── */
         .lm-pr { margin: 1.1rem 0 1.3rem; }
-        .lm-pr-eyebrow { font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: #7a8398; margin-bottom: 8px; font-family: var(--font-ddt, monospace); }
+        .lm-pr-head { display: flex; align-items: center; justify-content: space-between; gap: 9px 14px; flex-wrap: wrap; margin-bottom: 9px; }
+        .lm-pr-eyebrow { font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: #7a8398; font-family: var(--font-ddt, monospace); }
+        .lm-pr-toggle { display: inline-flex; gap: 2px; padding: 3px; border-radius: 999px; border: 1px solid var(--hp-line, rgba(255,255,255,0.1)); background: rgba(255,255,255,0.03); }
+        .lm-pr-tab { font-family: inherit; font-size: 0.72rem; font-weight: 600; padding: 4px 13px; border: none; border-radius: 999px; background: transparent; color: #aab4c8; cursor: pointer; transition: color 0.2s, background 0.2s, transform 0.15s; }
+        .lm-pr-tab:hover { color: #eef1f7; }
+        .lm-pr-tab:active { transform: scale(0.96); }
+        .lm-pr-tab.on { color: #08101e; background: var(--hp-sky, #7fa8ff); }
+        .lm-pr-tab:focus-visible { outline: 2px solid var(--hp-sky, #7fa8ff); outline-offset: 2px; }
         .lm-pr-box { position: relative; border: 1px solid var(--hp-line, rgba(255,255,255,0.1)); border-radius: 14px; background: rgba(0,0,0,0.3); overflow: hidden; }
-        .lm-pr-pre { margin: 0; padding: 16px; max-height: 224px; overflow: hidden;
-          font-family: var(--font-ddt, ui-monospace, monospace); font-size: 0.78rem; line-height: 1.55; color: #c7d0e0; white-space: pre-wrap; word-break: break-word;
-          transition: max-height 0.5s cubic-bezier(0.16,1,0.3,1); }
-        .lm-pr.open .lm-pr-pre { max-height: 2200px; overflow: auto; }
+        .lm-pr-content { max-height: 230px; overflow: hidden; transition: max-height 0.55s cubic-bezier(0.16,1,0.3,1); }
+        .lm-pr.open .lm-pr-content { max-height: 9000px; overflow: visible; }
+        .lm-pr-pre { margin: 0; padding: 16px;
+          font-family: var(--font-ddt, ui-monospace, monospace); font-size: 0.78rem; line-height: 1.55; color: #c7d0e0; white-space: pre-wrap; word-break: break-word; }
+        /* Formatted (rendered-markdown) view */
+        .lm-pr-fmt { padding: 15px 17px; font-size: 0.84rem; line-height: 1.62; color: #c7d0e0; font-family: var(--font-dmsans, inherit); }
+        .lm-pr-fmt > :first-child { margin-top: 0; }
+        .lm-pr-h { margin: 18px 0 7px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; color: var(--hp-sky, #7fa8ff); }
+        .lm-pr-p { margin: 7px 0; }
+        .lm-pr-ol { margin: 7px 0; padding-left: 21px; }
+        .lm-pr-ol > li { margin: 4px 0; }
+        .lm-pr-ul { margin: 7px 0; padding-left: 4px; list-style: none; }
+        .lm-pr-ul > li { position: relative; padding-left: 17px; margin: 5px 0; }
+        .lm-pr-ul > li::before { content: ''; position: absolute; left: 2px; top: 0.62em; width: 5px; height: 5px; border-radius: 1px; background: var(--hp-sky, #7fa8ff); }
+        .lm-pr-sub { margin: 5px 0; padding-left: 4px; list-style: none; }
+        .lm-pr-sub > li { position: relative; padding-left: 15px; margin: 3px 0; color: #aab4c8; }
+        .lm-pr-sub > li::before { content: ''; position: absolute; left: 1px; top: 0.66em; width: 6px; height: 1px; background: #6d768a; }
+        .lm-pr-q { color: #e7ecf6; font-style: italic; }
+        .lm-pr-arrow { color: var(--hp-sky, #7fa8ff); font-weight: 600; padding: 0 2px; }
+        .lm-pr-ex { margin: 9px 0; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; overflow: hidden; background: rgba(255,255,255,0.015); }
+        .lm-pr-ex-q { padding: 8px 12px; font-style: italic; color: #e7ecf6; background: color-mix(in srgb, var(--hp-sky, #7fa8ff) 7%, transparent); border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .lm-pr-ex-code { margin: 0; padding: 10px 12px; font-family: var(--font-ddt, ui-monospace, monospace); font-size: 0.73rem; line-height: 1.5; color: #b7e3c8; white-space: pre-wrap; word-break: break-word; }
         .lm-pr-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 96px; pointer-events: none;
           background: linear-gradient(to bottom, rgba(8,9,16,0), rgba(8,9,16,0.97)); }
         .lm-pr-btn { display: inline-flex; align-items: center; gap: 7px; margin-top: 11px; padding: 8px 15px; cursor: pointer;
@@ -382,7 +407,7 @@ export default function LumenPage() {
         .lm-dash img { display: block; margin: 0 auto; max-height: 80vh; width: auto; border-radius: 12px; }
 
         /* ── Inline SVG diagrams ── */
-        .lm-dia { width: 100%; margin: 1.2rem 0 0.6rem; padding: clamp(16px, 2.4vw, 26px); border-radius: 18px;
+        .lm-dia { width: 100%; box-sizing: border-box; margin: 1.2rem 0 0.6rem; padding: clamp(16px, 2.4vw, 26px); border-radius: 18px;
           background: linear-gradient(165deg, rgba(20,22,38,0.7), rgba(10,11,20,0.85));
           border: 1px solid var(--hp-line, rgba(255,255,255,0.1)); overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .lm-dia svg { width: 100%; height: auto; display: block; }
@@ -407,7 +432,6 @@ export default function LumenPage() {
         .lm-fc-m { display: none; }
         .lm-hw-m { display: none; }
         @media (max-width: 640px) {
-          .lm-fc, .lm-hw { overflow: visible; }
           .lm-fc-m { display: flex; flex-direction: column; align-items: stretch; }
           .lm-hw-m { display: flex; flex-direction: column; gap: 14px; }
         }
