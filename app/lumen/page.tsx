@@ -247,6 +247,7 @@ export default function LumenPage() {
               <li><b>timer</b> — one change after a countdown. &ldquo;Light off in ten minutes.&rdquo;</li>
             </ul>
             <CommandFlowchart />
+            <p>The request does not even have to be in English. Because the audio passes through Whisper first, LUMEN transcribes and understands many languages, then resolves each one to the same JSON vocabulary, so a command spoken in Malay or Mandarin lands on exactly the same action as its English version.</p>
             <p>A long, deliberately strict system prompt pins down the device vocabulary (white LED, NeoPixel RGB, fan, servo, buzzer, comfort range, auto-mode), forces valid JSON with numbers as numbers, and maps colour names to RGB itself. Every response is checked against a schema on the server; if it fails, the server retries once, then falls back to a harmless no-op rather than sending the board something it cannot trust.</p>
             <PromptReveal text={SYSTEM_PROMPT} />
             <p>My favourite behaviour is the one that ties the language model to the physical room. Ask it to &ldquo;set the brightness to the humidity percentage&rdquo; and it reads the live humidity from the cached sensor state, rounds it, clamps it to the LED&apos;s 0&ndash;100 range, and emits a real <code>set_brightness</code> command. The room&apos;s own readings become inputs to the request.</p>
@@ -385,21 +386,98 @@ export default function LumenPage() {
           background: linear-gradient(165deg, rgba(20,22,38,0.7), rgba(10,11,20,0.85));
           border: 1px solid var(--hp-line, rgba(255,255,255,0.1)); overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .lm-dia svg { width: 100%; height: auto; display: block; }
-        /* Dense diagrams: keep a legible minimum width and scroll horizontally on phones */
+        /* On phones, both inline diagrams reflow to native layouts (see .lm-fc-m / .lm-hw-m)
+           instead of shrinking the SVG or scrolling it sideways */
         @media (max-width: 640px) {
           .lm-dia { padding: 14px; }
-          .lm-dia svg { min-width: 600px; }
-          .lm-dia-cap::after { content: " — swipe to see all of it"; opacity: 0.7; }
+          .lm-dia > svg { display: none; }
         }
         .lm-dia .d-box { fill: rgba(255,255,255,0.03); stroke: color-mix(in srgb, var(--hp-sky, #7fa8ff) 30%, rgba(255,255,255,0.12)); }
         .lm-dia .d-box.accent { fill: color-mix(in srgb, var(--hp-sky, #7fa8ff) 12%, transparent); stroke: var(--hp-sky, #7fa8ff); }
         .lm-dia .d-box.warm { fill: rgba(245,201,122,0.08); stroke: rgba(245,201,122,0.55); }
+        .lm-dia .d-box.note { fill: color-mix(in srgb, var(--hp-sky, #7fa8ff) 5%, transparent); stroke: color-mix(in srgb, var(--hp-sky, #7fa8ff) 30%, rgba(255,255,255,0.1)); stroke-dasharray: 5 4; }
         .lm-dia .d-t { fill: #e8edf6; font-size: 13px; font-weight: 600; font-family: var(--font-dmsans, sans-serif); }
         .lm-dia .d-s { fill: #97a1b6; font-size: 10.5px; font-family: var(--font-dmsans, sans-serif); }
         .lm-dia .d-line { stroke: color-mix(in srgb, var(--hp-sky, #7fa8ff) 45%, rgba(255,255,255,0.2)); stroke-width: 1.6; fill: none; }
         .lm-dia .d-line.dash { stroke-dasharray: 4 4; opacity: 0.7; }
         .lm-dia .d-chip { fill: #b7e3c8; font-size: 11px; font-family: var(--font-ddt, monospace); }
         .lm-dia-cap { font-size: 0.86rem; color: #8b94a8; text-align: center; margin-top: 0.7rem; }
+
+        /* ── Command flowchart: native top-to-bottom reflow for phones (replaces the scrolling SVG) ── */
+        .lm-fc-m { display: none; }
+        .lm-hw-m { display: none; }
+        @media (max-width: 640px) {
+          .lm-fc, .lm-hw { overflow: visible; }
+          .lm-fc-m { display: flex; flex-direction: column; align-items: stretch; }
+          .lm-hw-m { display: flex; flex-direction: column; gap: 14px; }
+        }
+        .lm-fc-node { position: relative; border-radius: 14px; padding: 15px 17px; text-align: center;
+          border: 1px solid color-mix(in srgb, var(--hp-sky, #7fa8ff) 26%, rgba(255,255,255,0.12));
+          background: rgba(255,255,255,0.035); }
+        .lm-fc-node b { display: block; font-size: 0.96rem; font-weight: 600; color: #eef1f7; font-family: var(--font-dmsans, sans-serif); line-height: 1.35; }
+        .lm-fc-node span { display: block; margin-top: 5px; font-size: 0.81rem; line-height: 1.5; color: #97a1b6; }
+        .lm-fc-node .lm-fc-badge { display: inline-block; margin-top: 10px; padding: 3px 11px; border-radius: 999px;
+          font-size: 0.64rem; letter-spacing: 0.09em; text-transform: uppercase; font-family: var(--font-ddt, monospace);
+          color: var(--hp-sky, #7fa8ff); background: color-mix(in srgb, var(--hp-sky, #7fa8ff) 13%, transparent);
+          border: 1px solid color-mix(in srgb, var(--hp-sky, #7fa8ff) 34%, transparent); }
+        .lm-fc-node .lm-fc-badge::before { content: '🌐'; margin-right: 5px; font-size: 0.72rem; }
+        .lm-fc-node.accent { background: color-mix(in srgb, var(--hp-sky, #7fa8ff) 12%, transparent); border-color: color-mix(in srgb, var(--hp-sky, #7fa8ff) 70%, transparent); }
+        .lm-fc-node.accent b { color: #dce7ff; }
+        .lm-fc-node.warm { background: rgba(245,201,122,0.08); border-color: rgba(245,201,122,0.5); }
+        .lm-fc-node.warm b { color: #f3d9a6; }
+        .lm-fc-node.dec { border-style: dashed; border-color: color-mix(in srgb, var(--hp-sky, #7fa8ff) 55%, transparent);
+          background: color-mix(in srgb, var(--hp-sky, #7fa8ff) 7%, transparent); }
+        .lm-fc-node.dec b { color: var(--hp-sky, #7fa8ff); }
+
+        /* vertical connector: line + down-arrow, with an optional centered chip label */
+        .lm-fc-conn { position: relative; height: 42px; }
+        .lm-fc-conn.sm { height: 32px; }
+        .lm-fc-conn::before { content: ''; position: absolute; left: 50%; top: -1px; bottom: 6px; width: 2px; transform: translateX(-50%);
+          background: color-mix(in srgb, var(--hp-sky, #7fa8ff) 42%, rgba(255,255,255,0.16)); }
+        .lm-fc-conn::after { content: ''; position: absolute; left: 50%; bottom: 4px; width: 7px; height: 7px;
+          border-right: 2px solid color-mix(in srgb, var(--hp-sky, #7fa8ff) 52%, rgba(255,255,255,0.2));
+          border-bottom: 2px solid color-mix(in srgb, var(--hp-sky, #7fa8ff) 52%, rgba(255,255,255,0.2));
+          transform: translate(-50%, 0) rotate(45deg); }
+        .lm-fc-conn i { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -58%); white-space: nowrap;
+          padding: 2px 11px; border-radius: 999px; font-style: normal; font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase;
+          font-family: var(--font-ddt, monospace); color: #b7e3c8; background: #0d0f1a; border: 1px solid rgba(255,255,255,0.09); }
+
+        /* the failure branch: a clearly self-contained, dimmer side path */
+        .lm-fc-branch { display: flex; flex-direction: column; align-items: stretch; padding: 14px 14px 16px;
+          border-radius: 14px; border: 1px dashed rgba(245,201,122,0.4); background: rgba(245,201,122,0.045); }
+        .lm-fc-blabel { align-self: flex-start; margin-bottom: 13px; padding: 3px 10px; border-radius: 999px;
+          font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; font-family: var(--font-ddt, monospace);
+          color: #f3d9a6; background: rgba(245,201,122,0.12); border: 1px solid rgba(245,201,122,0.32); }
+        .lm-fc-branch .lm-fc-conn::before { background: rgba(245,201,122,0.45); }
+        .lm-fc-branch .lm-fc-conn::after { border-color: rgba(245,201,122,0.5); }
+
+        /* the three command outcomes */
+        .lm-fc-outs { display: flex; flex-direction: column; gap: 9px; }
+        .lm-fc-out { display: flex; align-items: baseline; gap: 11px; padding: 12px 15px; border-radius: 12px;
+          border: 1px solid var(--hp-line, rgba(255,255,255,0.1)); background: rgba(255,255,255,0.025); }
+        .lm-fc-out::before { content: ''; flex: none; align-self: center; width: 7px; height: 7px; border-radius: 2px;
+          background: var(--hp-sky, #7fa8ff); box-shadow: 0 0 8px color-mix(in srgb, var(--hp-sky, #7fa8ff) 55%, transparent); }
+        .lm-fc-out b { flex: none; min-width: 62px; text-align: left; font-size: 0.86rem; color: #eef1f7; font-family: var(--font-dmsans, sans-serif); }
+        .lm-fc-out span { font-size: 0.78rem; line-height: 1.4; color: #97a1b6; }
+
+        /* ── Hardware map: native pin-list reflow for phones (replaces the scrolling wiring SVG) ── */
+        .lm-hw-core { text-align: center; padding: 14px 16px; border-radius: 14px;
+          border: 1px solid var(--hp-sky, #7fa8ff); background: color-mix(in srgb, var(--hp-sky, #7fa8ff) 12%, transparent); }
+        .lm-hw-core b { display: block; font-size: 1rem; letter-spacing: 0.02em; color: #dce7ff; font-family: var(--font-dmsans, sans-serif); }
+        .lm-hw-core span { display: block; margin-top: 3px; font-size: 0.79rem; color: #9fb2dd; }
+        .lm-hw-group { border: 1px solid var(--hp-line, rgba(255,255,255,0.1)); border-radius: 14px; background: rgba(255,255,255,0.02); overflow: hidden; }
+        .lm-hw-glabel { display: flex; align-items: center; gap: 8px; padding: 10px 15px; font-size: 0.64rem; letter-spacing: 0.12em; text-transform: uppercase;
+          font-family: var(--font-ddt, monospace); color: #8b94a8; background: rgba(255,255,255,0.025); border-bottom: 1px solid var(--hp-line, rgba(255,255,255,0.08)); }
+        .lm-hw-glabel::before { content: ''; width: 7px; height: 7px; border-radius: 2px; background: var(--hp-sky, #7fa8ff); flex: none; }
+        .lm-hw-group.out .lm-hw-glabel::before { background: #5ad6a0; }
+        .lm-hw-group.bus .lm-hw-glabel::before { background: #b79bff; }
+        .lm-hw-row { display: flex; align-items: center; gap: 12px; padding: 11px 15px; }
+        .lm-hw-row + .lm-hw-row { border-top: 1px solid rgba(255,255,255,0.05); }
+        .lm-hw-row > div { flex: 1; min-width: 0; }
+        .lm-hw-row b { display: block; font-size: 0.88rem; color: #eef1f7; font-family: var(--font-dmsans, sans-serif); }
+        .lm-hw-row span { display: block; margin-top: 1px; font-size: 0.76rem; line-height: 1.4; color: #97a1b6; }
+        .lm-hw-pin { flex: none; padding: 4px 10px; border-radius: 8px; font-size: 0.72rem; font-family: var(--font-ddt, monospace);
+          color: #b7e3c8; background: color-mix(in srgb, var(--hp-sky, #7fa8ff) 9%, rgba(255,255,255,0.02)); border: 1px solid rgba(255,255,255,0.1); white-space: nowrap; }
       `}</style>
     </main>
   );
@@ -452,8 +530,8 @@ function SignalPath() {
 
 function CommandFlowchart() {
   return (
-    <figure className="lm-dia" data-no-zoom>
-      <svg viewBox="0 0 840 445" role="img" aria-label="Command parsing flowchart: transcribed text and live sensor context enters the DeepSeek LLM. If the output JSON fails schema validation, the server retries once; still invalid becomes a safe no-op. If valid, the command is routed by type — action for a single device change, sequence for ordered steps with delays, or timer for one change after a countdown.">
+    <figure className="lm-dia lm-fc" data-no-zoom>
+      <svg viewBox="0 0 840 445" role="img" aria-label="Command parsing flowchart: speech in any of many languages is transcribed by Whisper, then the text and live sensor context enters the DeepSeek LLM. If the output JSON fails schema validation, the server retries once; still invalid becomes a safe no-op. If valid, the command is routed by type — action for a single device change, sequence for ordered steps with delays, or timer for one change after a countdown.">
         <defs>
           <marker id="lm-fc-arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
             <polygon points="0 0, 8 3, 0 6" fill="var(--hp-sky, #7fa8ff)" fillOpacity="0.7" />
@@ -464,6 +542,12 @@ function CommandFlowchart() {
         <rect className="d-box" x="180" y="16" width="360" height="52" rx="10" />
         <text className="d-t" x="360" y="38" textAnchor="middle">Transcribed text + sensor context</text>
         <text className="d-s" x="360" y="56" textAnchor="middle">Whisper transcript + live room snapshot from MQTT cache</text>
+
+        {/* Multilingual annotation on the input */}
+        <line className="d-line dash" x1="540" y1="42" x2="586" y2="42" />
+        <rect className="d-box note" x="588" y="20" width="232" height="46" rx="10" />
+        <text className="d-t" x="601" y="40" style={{fontSize: 12}}>Multilingual input</text>
+        <text className="d-s" x="601" y="56">Whisper handles many languages</text>
 
         {/* Arrow: input → DeepSeek */}
         <line className="d-line" x1="360" y1="68" x2="360" y2="95" markerEnd="url(#lm-fc-arr)" />
@@ -533,6 +617,59 @@ function CommandFlowchart() {
         <text className="d-t" x="637" y="293" textAnchor="middle">Safe no-op</text>
         <text className="d-s" x="637" y="309" textAnchor="middle">reply only, no action</text>
       </svg>
+
+      {/* Phone layout: the same flow, reflowed top-to-bottom so nothing shrinks, scrolls, or overlaps */}
+      <div className="lm-fc-m">
+        <div className="lm-fc-node">
+          <b>Transcribed text + sensor context</b>
+          <span>Whisper transcript + live room snapshot from MQTT cache</span>
+          <span className="lm-fc-badge">Speaks many languages</span>
+        </div>
+
+        <div className="lm-fc-conn"><i>JSON</i></div>
+
+        <div className="lm-fc-node accent">
+          <b>DeepSeek LLM (via OpenRouter)</b>
+          <span>Parses the request into one JSON command</span>
+        </div>
+
+        <div className="lm-fc-conn" />
+
+        <div className="lm-fc-node dec">
+          <b>JSON schema valid?</b>
+        </div>
+
+        <div className="lm-fc-conn sm"><i>if invalid</i></div>
+
+        <div className="lm-fc-branch">
+          <span className="lm-fc-blabel">Failure path</span>
+          <div className="lm-fc-node">
+            <b>Retry once</b>
+            <span>Re-prompt the LLM</span>
+          </div>
+          <div className="lm-fc-conn sm"><i>still fails</i></div>
+          <div className="lm-fc-node warm">
+            <b>Safe no-op</b>
+            <span>Reply only, no action on the room</span>
+          </div>
+        </div>
+
+        <div className="lm-fc-conn"><i>if valid</i></div>
+
+        <div className="lm-fc-node">
+          <b>Route by command type</b>
+          <span>action · sequence · timer</span>
+        </div>
+
+        <div className="lm-fc-conn"><i>by type</i></div>
+
+        <div className="lm-fc-outs">
+          <div className="lm-fc-out"><b>action</b><span>Single device change</span></div>
+          <div className="lm-fc-out"><b>sequence</b><span>Steps with delays</span></div>
+          <div className="lm-fc-out"><b>timer</b><span>One change after a delay</span></div>
+        </div>
+      </div>
+
       <figcaption className="lm-dia-cap">How a voice command moves through the parser. Every path ends in one of four outcomes: action, sequence, timer, or a polite refusal that does nothing to the room.</figcaption>
     </figure>
   );
@@ -561,7 +698,7 @@ function HardwareHub() {
     ['Nav B', 'page', 'G16'],
   ];
   return (
-    <figure className="lm-dia" data-no-zoom>
+    <figure className="lm-dia lm-hw" data-no-zoom>
       <svg viewBox="0 0 960 600" role="img" aria-label="Wiring map: an ESP32-WROOM at the centre. Left, the sensors and their pins — INMP441 mic on I2S (GPIO 14, 23, 32), DHT22 (GPIO 4), PIR (GPIO 35), LDR (GPIO 34), push-to-talk button (GPIO 19). Right, the outputs — white LED (GPIO 25), NeoPixel (GPIO 27), fan (GPIO 26), servo (GPIO 13), buzzer (GPIO 33), recording LED (GPIO 17). Along the bottom, the shared I2C bus (SDA 21, SCL 22) carries the SSD1306 OLED (0x3C) and the DF2301Q wake-word module (0x64), and two navigation buttons sit on GPIO 18 and 16.">
         <text className="d-s" x="20" y="26">SENSORS / INPUTS</text>
         <text className="d-s" x="772" y="26" textAnchor="end">OUTPUTS</text>
@@ -616,6 +753,42 @@ function HardwareHub() {
           );
         })}
       </svg>
+
+      {/* Phone layout: the same wiring as a grouped pin list, no shrinking or sideways scroll */}
+      <div className="lm-hw-m">
+        <div className="lm-hw-core">
+          <b>ESP32-WROOM</b>
+          <span>MicroPython · one non-blocking loop</span>
+        </div>
+        <div className="lm-hw-group">
+          <span className="lm-hw-glabel">Sensors / inputs</span>
+          {left.map(([n, s, p]) => (
+            <div className="lm-hw-row" key={n}>
+              <div><b>{n}</b><span>{s}</span></div>
+              <span className="lm-hw-pin">{p}</span>
+            </div>
+          ))}
+        </div>
+        <div className="lm-hw-group out">
+          <span className="lm-hw-glabel">Outputs</span>
+          {right.map(([n, s, p]) => (
+            <div className="lm-hw-row" key={n}>
+              <div><b>{n}</b><span>{s}</span></div>
+              <span className="lm-hw-pin">{p}</span>
+            </div>
+          ))}
+        </div>
+        <div className="lm-hw-group bus">
+          <span className="lm-hw-glabel">I2C bus · SDA 21 / SCL 22 · UI buttons</span>
+          {bottom.map(([n, s, p]) => (
+            <div className="lm-hw-row" key={n}>
+              <div><b>{n}</b><span>{s}</span></div>
+              <span className="lm-hw-pin">{p}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <figcaption className="lm-dia-cap">Every component and the GPIO it lands on (mirrors <code>docs/pinmap.md</code>). The OLED and DF2301Q share one I2C bus.</figcaption>
     </figure>
   );
