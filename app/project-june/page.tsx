@@ -40,6 +40,7 @@ export default function ProjectJunePage() {
     <main className="art">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <ArticleScrollSpy />
+      {/* Sub-chapters must not consume the rail's channel index (keeps mains at 01..09) */}
 
       {/* ── Feature hero ── */}
       <header className="art-hero">

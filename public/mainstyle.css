@@ -2103,7 +2103,12 @@ html {
   width: 30px;
   border-radius: 9999px;
   margin-left: -15px;
-  border: #363636 3px solid;
+  /* A dark, field-toned ring cuts the "coin stack" gap between overlapping
+     icons; a faint accent hairline + drop shadow give it the sensory edge
+     (replaces the old flat #363636 grey border). */
+  border: 2px solid rgba(7, 9, 16, 0.92);
+  box-shadow: 0 0 0 1px rgba(var(--sa-accent, 150,178,255), 0.30), 0 3px 9px -3px rgba(0, 0, 0, 0.7);
+  background: rgba(12, 15, 24, 0.9);
   transition: 500ms ease;
 }
 .icon-stack:hover {
@@ -2111,6 +2116,7 @@ html {
 }
 .icon-stack:hover img {
   margin: 0;
+  box-shadow: 0 0 0 1px rgba(var(--sa-accent, 150,178,255), 0.55), 0 4px 12px -4px rgba(0, 0, 0, 0.75);
 }
 .pf-item-content h1 {
   font-size: 3em;
@@ -5641,6 +5647,37 @@ html[data-theme="datacenter"] {
 .hp-rd-cta-text strong { font-family: 'oswaldbold'; font-size: 1.1rem; color: #f2f2f2; letter-spacing: -0.01em; }
 .hp-rd-cta-text span { font-family: 'dmsans'; font-size: 0.82rem; color: rgba(232,232,232,0.6); }
 
+/* ── Peek feed: scroll from one project's reader straight into the next ── */
+.hp-rd-feed-item + .hp-rd-feed-item { margin-top: 6px; }
+.hp-rd-feed-sep { display: flex; align-items: center; gap: 16px; margin: 44px 0 30px; }
+.hp-rd-feed-sep::before, .hp-rd-feed-sep::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--sa-accent, 150,178,255), 0.34), transparent);
+}
+.hp-rd-feed-sep span {
+  font-family: var(--font-ddt, ui-monospace, monospace);
+  font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(var(--sa-accent, 150,178,255), 0.72); white-space: nowrap;
+}
+/* Placeholder that holds scroll height until a slot's reader lazy-mounts */
+.hp-rd-feed-skel {
+  min-height: 72vh; border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.012)),
+    repeating-linear-gradient(115deg, transparent 0 22px, rgba(var(--sa-accent, 150,178,255),0.03) 22px 24px);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.hp-rd-feed-end {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  margin-top: 40px; padding-top: 26px; border-top: 1px solid rgba(255,255,255,0.07);
+}
+.hp-rd-feed-end span {
+  font-family: var(--font-ddt, ui-monospace, monospace);
+  font-size: 0.56rem; letter-spacing: 0.28em; text-transform: uppercase;
+  color: rgba(180,198,238,0.4);
+}
+.hp-rd-feed-end span::before, .hp-rd-feed-end span::after { content: '· '; color: rgba(var(--sa-accent, 150,178,255),0.6); }
+
 /* ── In-place photo gallery switcher ── */
 .hp-gallery-stage { transition: opacity 0.26s ease, transform 0.26s ease; min-height: 220px; }
 .hp-gallery-stage.is-switching { opacity: 0; transform: translateY(10px); }
@@ -6072,3 +6109,276 @@ html[data-theme="datacenter"] {
 .arec-header { margin-bottom: clamp(24px, 4vw, 40px); }
 .arec-header h2 { font-family: 'oswaldbold'; font-size: clamp(1.5rem, 3vw, 2.2rem); letter-spacing: -0.02em; color: #e8e8e8; margin: 0.3rem 0 0; }
 .arec-more { display: flex; justify-content: center; margin-top: clamp(24px, 3vw, 36px); }
+/* ═══════════════════════════════════════════════════════════════
+   DARK SENSORY / SIGNAL ARCHIVE (site-wide reskin, 2026-07)
+   The whole site rides a fixed WebGL shader-gradient field
+   (components/SensoryAtmosphere.tsx). Everything here is keyed on
+   html.sensory-active (set before paint in app/layout.tsx) and the
+   accent follows the route's data-theme. Namespace: .sa-*
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Tokens ── */
+html.sensory-active {
+  --font-ddt: 'ddt', ui-monospace, 'SF Mono', Menlo, monospace;
+  --sa-accent: 150,178,255;             /* cool signal (per-theme below) */
+  --sa-ember: 255,106,61;               /* THE warm accent: live/status only */
+  --sa-panel-hi: rgba(23,27,41,0.5);    /* frosted instrument panel */
+  --sa-panel-lo: rgba(9,11,20,0.6);
+  --sa-hairline: rgba(176,196,252,0.1);
+  --hp-glass: rgba(150,170,220,0.03);
+  --hp-line: rgba(176,196,252,0.08);
+  --hp-ink: #eef1f8;
+  --hp-ink-dim: rgba(224,230,244,0.5);
+  background: #030408;
+}
+html.sensory-active[data-theme="violet"]     { --sa-accent: 172,150,255; }
+html.sensory-active[data-theme="indigo"]     { --sa-accent: 150,164,255; }
+html.sensory-active[data-theme="mauve"]      { --sa-accent: 196,150,236; }
+html.sensory-active[data-theme="steel"]      { --sa-accent: 148,196,235; }
+html.sensory-active[data-theme="datacenter"] { --sa-accent: 116,232,208; }
+
+html.sensory-active body { background: transparent; }
+html.sensory-active main { position: relative; z-index: 1; background: transparent; }
+html.sensory-active ::selection { background: rgba(var(--sa-accent),0.32); color: #fff; }
+
+/* ── Bands ride the field: strip fills, seams become signal hairlines ── */
+html.sensory-active .hp-band { background: transparent !important; border: 0; position: relative; }
+html.sensory-active .hp-band + .hp-band::before { content: ''; position: absolute; top: 0; left: 8%; right: 8%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--sa-accent),0.05) 18%, rgba(var(--sa-accent),0.38) 50%, rgba(var(--sa-accent),0.05) 82%, transparent); }
+
+/* The shader replaces every static aura */
+html.sensory-active .ct-aura, html.sensory-active .hp-hero-aura, html.sensory-active .art-hero-aura { display: none !important; }
+
+/* ── Mono instrument readouts: eyebrows, keys, kickers ── */
+html.sensory-active .hp-eyebrow, html.sensory-active .seh-eyebrow, html.sensory-active .peh-eyebrow {
+  font-family: var(--font-ddt); letter-spacing: 0.26em; color: rgba(var(--sa-accent),0.72); }
+html.sensory-active .hp-eyebrow::before, html.sensory-active .seh-eyebrow::before, html.sensory-active .peh-eyebrow::before {
+  content: ''; display: inline-block; width: 26px; height: 1px; margin-right: 12px; vertical-align: middle;
+  background: linear-gradient(90deg, transparent, rgba(var(--sa-accent),0.85)); }
+html.sensory-active .hp-key {
+  font-family: var(--font-ddt) !important; text-transform: uppercase;
+  letter-spacing: 0.2em !important; font-size: 0.6rem !important; color: rgba(var(--sa-accent),0.74) !important; }
+
+/* Big section numbers: dim body, luminous cool edge */
+html.sensory-active .seh-number, html.sensory-active .peh-number {
+  color: rgba(120,150,255,0.04); -webkit-text-stroke: 1px rgba(var(--sa-accent),0.2); }
+
+/* Editorial headers get a signal rule running out beneath them */
+html.sensory-active .section-editorial-header, html.sensory-active .portfolio-editorial-header {
+  background: linear-gradient(90deg, rgba(var(--sa-accent),0.3), rgba(var(--sa-accent),0.06) 42%, transparent 82%) left bottom / 100% 1px no-repeat;
+  padding-bottom: 20px; }
+
+/* ── Frosted instrument panels (cards everywhere) ── */
+html.sensory-active .hp-disc, html.sensory-active .hp-cap-card, html.sensory-active .hp-collab-card,
+html.sensory-active .hp-pf-card, html.sensory-active .hp-spot-card, html.sensory-active .hp-spotlight,
+html.sensory-active .ph-tool-card, html.sensory-active .cr-card,
+html.sensory-active .art-repo, html.sensory-active .art-team-row {
+  background: linear-gradient(180deg, var(--sa-panel-hi), var(--sa-panel-lo)) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.05); backdrop-filter: blur(16px) saturate(1.05);
+  border: 1px solid var(--sa-hairline) !important;
+  box-shadow: inset 0 1px 0 rgba(196,210,255,0.07), 0 24px 60px -30px rgba(0,0,0,0.85) !important;
+}
+html.sensory-active .hp-disc:hover, html.sensory-active .hp-cap-card:hover, html.sensory-active .hp-collab-card:hover,
+html.sensory-active .hp-pf-card:hover, html.sensory-active .hp-spot-card:hover,
+html.sensory-active .ph-tool-card:hover, html.sensory-active .cr-card:hover, html.sensory-active .art-team-row:hover {
+  border-color: rgba(var(--sa-accent),0.3) !important;
+  box-shadow: inset 0 1px 0 rgba(196,210,255,0.12), 0 30px 72px -28px rgba(0,0,0,0.92), 0 0 44px -10px rgba(var(--sa-accent),0.22) !important;
+}
+/* the capabilities wrapper stays open so its inner cards read individually */
+html.sensory-active .hp-cap { background: transparent !important; border: 0 !important; box-shadow: none !important; }
+
+/* ── Ghost terminal buttons ── */
+html.sensory-active .hp-btn {
+  background: rgba(var(--sa-accent),0.05) !important; border: 1px solid rgba(176,196,252,0.26) !important;
+  color: #dde5ff !important; letter-spacing: 0.05em; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+html.sensory-active .hp-btn:hover { background: rgba(var(--sa-accent),0.12) !important; border-color: rgba(176,196,252,0.5) !important;
+  box-shadow: 0 0 30px -10px rgba(var(--sa-accent),0.4) !important; }
+
+/* ── HUD corner readouts (heroes, article headers) ── */
+html.sensory-active .sa-hud { position: absolute; inset: 112px 22px 20px; z-index: 3; pointer-events: none;
+  font-family: var(--font-ddt); font-size: 0.56rem; letter-spacing: 0.16em; text-transform: uppercase;
+  color: rgba(180,198,238,0.34); line-height: 1.85; }
+html.sensory-active .sa-hud > div { position: absolute; display: flex; flex-direction: column; gap: 3px; }
+html.sensory-active .sa-hud .sa-hud-tl { top: 0; left: 0; }
+html.sensory-active .sa-hud .sa-hud-tr { top: 0; right: 0; text-align: right; }
+html.sensory-active .sa-hud .sa-hud-bl { bottom: 46px; left: 0; }
+html.sensory-active .sa-hud .sa-hud-br { bottom: 46px; right: 0; text-align: right; }
+html.sensory-active .sa-hud .sa-hud-em { color: rgba(206,220,255,0.66); }
+@media (max-width: 760px) { html.sensory-active .sa-hud { display: none; } }
+
+/* A live/status tick in the warm ember (the ONLY warm accent on the site) */
+html.sensory-active .sa-live { color: rgba(var(--sa-ember),0.9) !important; }
+html.sensory-active .sa-live-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(var(--sa-ember),0.95); box-shadow: 0 0 10px rgba(var(--sa-ember),0.7); }
+
+/* ══════════ Nav → console command bar ══════════ */
+html.sensory-active .nav-closed {
+  border-radius: 15px !important; width: 84vw !important; max-width: 1200px;
+  padding: 14px 18px 14px 30px !important;
+  background: linear-gradient(90deg, rgba(9,11,18,0.76), rgba(13,16,26,0.76)) !important;
+  border: 1px solid rgba(var(--sa-accent),0.2) !important;
+  box-shadow: 0 16px 46px -18px rgba(0,0,0,0.78), inset 0 1px 0 rgba(196,210,255,0.06) !important; position: relative; }
+html.sensory-active .nav-open {
+  background: linear-gradient(180deg, rgba(11,13,20,0.82), rgba(9,11,18,0.86)) !important;
+  border: 1px solid rgba(var(--sa-accent),0.16) !important; }
+html.sensory-active .nav-closed .navitem li { padding-left: 36px !important; }
+html.sensory-active .nav-closed .navitem li:hover { transform: none !important; }
+html.sensory-active .nav-closed #navitem { counter-reset: navx; }
+html.sensory-active .nav-closed #navitem li:not(#Nav-Item-5) a {
+  font-family: var(--font-ddt) !important; text-transform: uppercase; letter-spacing: 0.16em;
+  font-size: 0.74rem !important; color: rgba(224,231,248,0.84) !important; position: relative; }
+html.sensory-active .nav-closed #navitem li:not(#Nav-Item-5) a::before {
+  counter-increment: navx; content: '0' counter(navx); margin-right: 8px; font-size: 0.56rem; color: rgba(var(--sa-accent),0.65); }
+html.sensory-active .nav-closed #navitem li:not(#Nav-Item-5) a::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: -7px; height: 1px; background: rgba(var(--sa-accent),0.9);
+  transform: scaleX(0); transform-origin: left; transition: transform .32s cubic-bezier(0.16,1,0.3,1); }
+html.sensory-active .nav-closed #navitem li:not(#Nav-Item-5) a:hover::after { transform: scaleX(1); }
+html.sensory-active .button-hero { --black-700: rgba(17,21,34,0.68) !important; --border_radius: 11px !important; }
+html.sensory-active .button-hero::before { box-shadow: inset 0 0.5px rgba(196,210,255,0.35), 0 6px 16px -6px rgba(0,0,0,0.7), 0 0 0 1px rgba(var(--sa-accent),0.3) !important; }
+html.sensory-active .button-hero::after { background-color: rgba(var(--sa-accent),0.55) !important; }
+html.sensory-active .button-hero .dots_border { display: none !important; }
+html.sensory-active .button-hero .text_button { color: #e2e9ff !important; }
+html.sensory-active .button-hero .sparkle { color: #dfe7ff !important; }
+html.sensory-active .button-hero .sparkle .path { fill: #dfe7ff !important; stroke: #dfe7ff !important; }
+
+/* ══════════ Footer → instrument panel ══════════ */
+html.sensory-active .footer {
+  background: transparent !important; border: 0 !important; border-radius: 0 !important;
+  box-shadow: none !important; position: relative; padding: 48px 80px 42px !important; }
+html.sensory-active .footer::before {
+  content: ''; position: absolute; top: 0; left: 6%; right: 6%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--sa-accent),0.24), transparent); }
+html.sensory-active .footer::after {
+  content: 'CHIAMBUCKET · SYS.ONLINE · 1.3521 N / 103.8198 E'; position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+  font-family: var(--font-ddt); font-size: 0.5rem; letter-spacing: 0.26em; text-transform: uppercase;
+  color: rgba(180,198,238,0.32); white-space: nowrap; }
+html.sensory-active .footer-left-text {
+  font-family: var(--font-ddt); font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(200,214,255,0.55); }
+html.sensory-active .footer-left-img { width: 54px; opacity: 0.9; }
+html.sensory-active .footer-center {
+  background: linear-gradient(180deg, var(--sa-panel-hi), var(--sa-panel-lo)) !important;
+  border: 1px solid rgba(var(--sa-accent),0.12) !important; border-radius: 14px !important;
+  box-shadow: inset 0 1px 0 rgba(196,210,255,0.06) !important; padding: 13px 24px !important; }
+html.sensory-active .footer-center-btn { gap: 24px !important; }
+/* brightness(0) invert(x) flattens every icon to the SAME gray regardless of its brand colour */
+html.sensory-active .footer-center .btn svg { filter: brightness(0) invert(0.6); opacity: 0.85; transition: filter .25s ease, opacity .25s ease, transform .25s ease; }
+html.sensory-active .footer-center .btn:hover svg { filter: none; opacity: 1; transform: translateY(-2px); }
+html.sensory-active .footer-right-text {
+  font-family: var(--font-ddt); font-size: 0.58rem; letter-spacing: 0.14em; line-height: 1.9;
+  text-transform: uppercase; color: rgba(180,198,238,0.48); }
+html.sensory-active .footer-right-text button { color: rgba(var(--sa-accent),0.95); }
+@media (max-width: 760px) {
+  html.sensory-active .footer::after { display: none; }
+  html.sensory-active .footer { padding: 36px 22px 30px !important; }
+}
+
+/* ══════════ ct-* page heroes (contact / credits / photography / 404) ══════════ */
+html.sensory-active .ct-kicker {
+  font-family: var(--font-ddt); font-weight: 400; font-size: 0.62rem; letter-spacing: 0.3em;
+  color: rgba(var(--sa-accent),0.78); display: inline-flex; align-items: center; }
+html.sensory-active .ct-kicker::before, html.sensory-active .ct-kicker::after {
+  content: ''; display: inline-block; width: 26px; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--sa-accent),0.85)); }
+html.sensory-active .ct-kicker::before { margin-right: 12px; }
+html.sensory-active .ct-kicker::after { margin-left: 12px; transform: scaleX(-1); }
+html.sensory-active .ct-title { letter-spacing: -0.01em; }
+html.sensory-active .ct-title em { text-shadow: 0 0 34px rgba(var(--sa-accent),0.3); }
+html.sensory-active .ct-email-card {
+  background: linear-gradient(180deg, var(--sa-panel-hi), var(--sa-panel-lo));
+  -webkit-backdrop-filter: blur(16px) saturate(1.05); backdrop-filter: blur(16px) saturate(1.05);
+  border-color: var(--sa-hairline); }
+html.sensory-active .ct-email-card .ct-email-label { font-family: var(--font-ddt); letter-spacing: 0.24em; color: rgba(var(--sa-accent),0.7); }
+html.sensory-active .ct-copy { background: rgba(var(--sa-accent),0.06); border-color: rgba(176,196,252,0.22); border-radius: 10px; }
+html.sensory-active .ct-copy:hover { background: rgba(var(--sa-accent),0.14); }
+html.sensory-active .ct-social {
+  font-family: var(--font-ddt); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.14em;
+  border-radius: 10px; background: rgba(var(--sa-accent),0.04); border-color: rgba(176,196,252,0.14); }
+html.sensory-active .ct-social:hover { background: rgba(var(--sa-accent),0.1); border-color: rgba(176,196,252,0.34); box-shadow: 0 0 26px -10px rgba(var(--sa-accent),0.4); }
+html.sensory-active .ct-social svg { filter: brightness(0) invert(0.72); transition: filter 0.25s ease; }
+html.sensory-active .ct-social:hover svg { filter: none; }
+
+/* ══════════ ARTICLES: the art-* template over the field ══════════ */
+html.sensory-active .art { background: transparent !important; }
+
+/* Hero: the cover art dissolves into the field instead of a hard seam */
+html.sensory-active .art-hero-bg { -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 99%);
+  mask-image: linear-gradient(180deg, #000 55%, transparent 99%); }
+html.sensory-active .art-hero-bg img { filter: saturate(0.82) brightness(0.78) contrast(1.05); }
+html.sensory-active .art-hero-scrim {
+  background: linear-gradient(180deg, rgba(3,4,8,0.62) 0%, rgba(3,4,8,0.18) 30%, rgba(3,4,8,0.55) 72%, rgba(3,4,8,0.85) 100%); }
+html.sensory-active .art-back {
+  font-family: var(--font-ddt); font-weight: 400; font-size: 0.66rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(var(--sa-accent),0.85); }
+html.sensory-active .art-back::before { content: '[ '; color: rgba(176,196,252,0.5); }
+html.sensory-active .art-back::after { content: ' ]'; color: rgba(176,196,252,0.5); }
+html.sensory-active .art-back svg { display: none; }
+html.sensory-active .art-title { letter-spacing: -0.01em; text-shadow: 0 10px 60px rgba(0,0,0,0.7); }
+html.sensory-active .art-title em { text-shadow: 0 0 38px rgba(var(--sa-accent),0.38); }
+html.sensory-active .art-lead { color: rgba(224,230,246,0.72); }
+html.sensory-active .art-link {
+  font-family: var(--font-ddt); font-weight: 400; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.14em;
+  border-radius: 10px; background: rgba(var(--sa-accent),0.05); border-color: rgba(176,196,252,0.22); color: #dde5ff; }
+html.sensory-active .art-link:hover { background: rgba(var(--sa-accent),0.13); border-color: rgba(176,196,252,0.45); color: #fff; }
+html.sensory-active .art-link.primary { background: rgba(var(--sa-accent),0.16); border-color: rgba(var(--sa-accent),0.45); }
+html.sensory-active .art-link.primary:hover { background: rgba(var(--sa-accent),0.26); }
+
+/* Chapter rail → indexed channel list */
+html.sensory-active .art-chapters { border-left-color: rgba(176,196,252,0.14); counter-reset: artch; }
+html.sensory-active .art-chapters a {
+  font-family: var(--font-ddt); font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.12em;
+  color: rgba(206,216,242,0.44); counter-increment: artch; }
+html.sensory-active .art-chapters a::before { content: '0' counter(artch) ' · '; color: rgba(var(--sa-accent),0.55); }
+html.sensory-active .art-chapters a.sub { font-size: 0.6rem; counter-increment: none; }
+html.sensory-active .art-chapters a.sub::before { content: '· '; }
+html.sensory-active .art-chapters a:hover { color: #e6ecff; }
+html.sensory-active .art-chapters a.article-chapter-selected { color: #fff; border-left-color: rgba(var(--sa-accent),0.9); }
+html.sensory-active .art-rail .hp-eyebrow { font-size: 0.6rem; }
+
+/* Sections: seams instead of borders; luminous heads */
+html.sensory-active .art-section { border-top: 0; position: relative; }
+html.sensory-active .art-content > .art-section + .art-section::before { content: ''; position: absolute; top: 0; left: 0; right: 12%; height: 1px;
+  background: linear-gradient(90deg, rgba(var(--sa-accent),0.28), rgba(var(--sa-accent),0.05) 55%, transparent); }
+html.sensory-active .art-section h2 { letter-spacing: -0.01em; }
+html.sensory-active .art-section ul li::before { border-radius: 1px; background: rgba(var(--sa-accent),0.75); width: 5px; height: 5px; }
+html.sensory-active .art-section ol li::before { font-family: var(--font-ddt); color: rgba(var(--sa-accent),0.85); }
+html.sensory-active .art-section a { color: rgb(var(--sa-accent)); text-decoration-color: rgba(var(--sa-accent),0.4); }
+html.sensory-active .art-section a:hover { color: #e8eeff; text-decoration-color: rgb(var(--sa-accent)); }
+
+/* Figures: instrument frames */
+html.sensory-active .art-section > img, html.sensory-active .art-fig img, html.sensory-active .art-grid img {
+  border-color: rgba(176,196,252,0.14); border-radius: 12px; box-shadow: 0 24px 60px -30px rgba(0,0,0,0.85); }
+html.sensory-active .art-fig figcaption, html.sensory-active .art-cap {
+  font-family: var(--font-ddt); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.14em; color: rgba(190,204,238,0.42); }
+html.sensory-active .art-fig figcaption::before, html.sensory-active .art-cap::before { content: 'FIG · '; color: rgba(var(--sa-accent),0.6); }
+html.sensory-active .art-video, html.sensory-active .art-embed, html.sensory-active .art-section video {
+  border-color: rgba(176,196,252,0.14); border-radius: 12px; }
+
+/* Repo callout / team rows / next CTA */
+html.sensory-active .art-repo-text strong { letter-spacing: -0.01em; }
+html.sensory-active .art-repo-text span { font-family: var(--font-ddt); font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.12em; }
+html.sensory-active .art-team-id span { font-family: var(--font-ddt); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em; }
+html.sensory-active .art-next { border-top: 0; position: relative; }
+html.sensory-active .art-next::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--sa-accent),0.3), transparent); }
+html.sensory-active .art-next-label { font-family: var(--font-ddt); letter-spacing: 0.24em; color: rgba(var(--sa-accent),0.6); }
+
+/* Recommendations header follows the readout language */
+html.sensory-active .arec-section { border-top-color: rgba(176,196,252,0.1); }
+
+/* ── InfoModal + peek modals → frosted console panes ── */
+html.sensory-active .im-panel, html.sensory-active .hp-modal-panel {
+  background: linear-gradient(180deg, rgba(16,20,32,0.92), rgba(8,10,18,0.94)) !important;
+  border: 1px solid rgba(var(--sa-accent),0.2) !important;
+  box-shadow: 0 40px 110px -40px rgba(0,0,0,0.95), 0 0 60px -22px rgba(var(--sa-accent),0.25), inset 0 1px 0 rgba(196,210,255,0.08) !important; }
+
+/* ── HUD boot-in: readout lines flicker on in sequence (transform/opacity only) ── */
+@keyframes sa-hud-in { 0% { opacity: 0; transform: translateY(3px); } 60% { opacity: 0.4; } 100% { opacity: 1; transform: translateY(0); } }
+html.sensory-active .sa-hud span { opacity: 0; animation: sa-hud-in 0.6s ease forwards; }
+html.sensory-active .sa-hud span:nth-child(1) { animation-delay: 0.15s; }
+html.sensory-active .sa-hud span:nth-child(2) { animation-delay: 0.32s; }
+html.sensory-active .sa-hud span:nth-child(3) { animation-delay: 0.49s; }
+html.sensory-active .sa-hud span:nth-child(4) { animation-delay: 0.66s; }
+@media (prefers-reduced-motion: reduce) {
+  html.sensory-active .sa-hud span { animation: none; opacity: 1; }
+}

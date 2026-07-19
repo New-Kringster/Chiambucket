@@ -110,9 +110,27 @@ export default function PhotographyClient() {
   }, []);
 
   return (
-    <main>
+    <>
+      <main>
       {/* ── HERO ── */}
       <section className="ct-wrap ph-hero">
+        <div className="sa-hud" aria-hidden="true">
+          <div className="sa-hud-tl">
+            <span>CHANNEL // PHOTOGRAPHY</span>
+            <span>SOURCE · LYCHEE SELF-HOSTED</span>
+          </div>
+          <div className="sa-hud-tr">
+            <span>GALLERIES · 07</span>
+            <span>FORMAT · STILLS + MOTION</span>
+          </div>
+          <div className="sa-hud-bl">
+            <span>[ PERSPECTIVE ]</span>
+            <span>[ DETAIL ]</span>
+          </div>
+          <div className="sa-hud-br">
+            <span>MODE · DARK_SENSORY</span>
+          </div>
+        </div>
         <div className="ph-hero-media" aria-hidden="true">
           <LazyVideo webm="/images/index-photos-gif.webm" mp4="/images/index-photos-gif.mp4" poster="/images/abm-lr.webp" />
         </div>
@@ -436,9 +454,59 @@ export default function PhotographyClient() {
           border-color: color-mix(in srgb, var(--hp-indigo) 50%, transparent);
           transform: translateY(-2px);
         }
+
+        /* ═══════════ Dark-sensory / mission-control reskin (accent follows the violet theme) ═══════════ */
+        /* Hero: the shader field leads; the photo montage becomes a faint memory under it */
+        html.sensory-active .ph-hero-media { opacity: 0.16; filter: saturate(0.55) brightness(0.75); }
+        html.sensory-active .ph-hero .ct-title { text-transform: uppercase; letter-spacing: 0.02em; }
+        html.sensory-active .ph-hero .ct-title em { text-shadow: 0 0 38px rgba(var(--sa-accent),0.4); }
+        /* Hero kicker → mono instrument label with a leading signal tick */
+        html.sensory-active .ph-hero .ct-kicker {
+          font-family: var(--font-ddt, ui-monospace, monospace); text-transform: uppercase;
+          letter-spacing: 0.28em; font-size: 0.62rem; color: rgba(var(--sa-accent),0.78); display: inline-flex; align-items: center; }
+        html.sensory-active .ph-hero .ct-kicker::before {
+          content: ''; display: inline-block; width: 26px; height: 1px; margin-right: 12px;
+          background: linear-gradient(90deg, transparent, rgba(var(--sa-accent),0.85)); }
+        html.sensory-active .ph-hero-btns { justify-content: flex-start; }
+
+        /* My Tools → frosted instrument panels */
+        html.sensory-active .ph-tool-card {
+          background: linear-gradient(180deg, rgba(23,27,41,0.5), rgba(9,11,20,0.6)) !important;
+          -webkit-backdrop-filter: blur(16px) saturate(1.05); backdrop-filter: blur(16px) saturate(1.05);
+          border: 1px solid rgba(176,196,252,0.1) !important;
+          box-shadow: inset 0 1px 0 rgba(196,210,255,0.07), 0 24px 60px -30px rgba(0,0,0,0.85) !important; }
+        html.sensory-active .ph-tool-card:hover {
+          border-color: rgba(var(--sa-accent),0.32) !important;
+          box-shadow: inset 0 1px 0 rgba(196,210,255,0.12), 0 30px 72px -28px rgba(0,0,0,0.92), 0 0 44px -10px rgba(var(--sa-accent),0.22) !important; }
+        html.sensory-active .ph-tool-name {
+          font-family: var(--font-ddt, ui-monospace, monospace) !important; letter-spacing: 0.16em !important; color: rgba(var(--sa-accent),0.85) !important; }
+        html.sensory-active .ph-tool-icon {
+          background: linear-gradient(158deg, rgba(var(--sa-accent),0.16), rgba(255,255,255,0.02)) !important;
+          border: 1px solid rgba(176,196,252,0.16) !important; }
+        html.sensory-active .ph-tool-plus { color: rgba(180,198,238,0.42); }
+
+        /* Galleries → instrument frames + mono/luminous headers */
+        html.sensory-active .ph-gallery-num { -webkit-text-stroke: 1px rgba(var(--sa-accent),0.3) !important; }
+        html.sensory-active .ph-gallery-head::after {
+          background: linear-gradient(90deg, rgba(var(--sa-accent),0.42), rgba(176,196,252,0.08) 45%, transparent) !important; }
+        html.sensory-active .ph-gallery-open {
+          background: rgba(var(--sa-accent),0.05) !important; border: 1px solid rgba(176,196,252,0.18) !important; color: #dde5ff !important; }
+        html.sensory-active .ph-gallery-open:hover {
+          background: rgba(var(--sa-accent),0.13) !important; border-color: rgba(176,196,252,0.42) !important; color: #fff !important; }
+        html.sensory-active .ph-gallery-frame {
+          background: linear-gradient(180deg, rgba(23,27,41,0.42), rgba(9,11,20,0.55)) !important;
+          border: 1px solid rgba(176,196,252,0.1) !important; }
+        /* Gallery bottom fade → dissolves into the atmosphere navy, never black */
+        html.sensory-active .ph-gallery .expand-photography {
+          background: linear-gradient(180deg, rgba(5,7,14,0) 0%, rgba(5,7,14,0.88) 72%) !important; }
+        html.sensory-active .ph-gallery .expand-photography button {
+          background: rgba(var(--sa-accent),0.08) !important; border: 1px solid rgba(176,196,252,0.22) !important; color: #e2e9ff !important; }
+        html.sensory-active .ph-gallery .expand-photography button:hover {
+          background: rgba(var(--sa-accent),0.16) !important; border-color: rgba(176,196,252,0.45) !important; color: #fff !important; }
       `}</style>
 
       <InfoModal item={openTool} onClose={() => setOpenTool(null)} />
-    </main>
+      </main>
+    </>
   );
 }

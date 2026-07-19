@@ -1,6 +1,6 @@
 # Chiambucket
 
-Personal portfolio and website for Braven Chiam. Dark-themed, design-forward ("Refined Editorial Dark"), deployed on Vercel.
+Personal portfolio and website for Braven Chiam. Dark-themed, design-forward ("Dark Sensory / Signal Archive": a WebGL shader-gradient field behind every page, frosted instrument panels, terminal HUD typography), deployed on Vercel.
 
 **Live site:** [chiambucket.com](https://chiambucket.com)
 
@@ -10,6 +10,7 @@ Personal portfolio and website for Braven Chiam. Dark-themed, design-forward ("R
 
 - **Next.js 15 (App Router) + React 19 + TypeScript** — `app/` directory, server components by default
 - **framer-motion** — available for React animations (CSS handles most transitions)
+- **WebGL sensory field** — a fixed full-viewport fragment shader (`components/SensoryAtmosphere.tsx`) recolours per route and crossfades on navigation; static CSS fallback for reduced motion
 - **Vercel Analytics + Speed Insights** — loaded in `app/layout.tsx`
 - **Lychee** — self-hosted photo galleries embedded via a remote script (loaded after paint, non-blocking)
 - **No Tailwind, no CSS-in-JS** — one global stylesheet, `public/mainstyle.css`
@@ -31,9 +32,9 @@ Opens at `http://localhost:3000`. Use `npx tsc --noEmit` to type-check without d
 | `app/layout.tsx` | Root layout — stylesheet links, loader, Nav/Footer, Analytics, sets per-page theme |
 | `app/page.tsx` → `app/HomeClient.tsx` | Homepage — hero, disciplines, About bento, Projects, HomeLab, photography, CTA |
 | `app/<route>/page.tsx` | File-based routes (`/photography`, `/contact`, `/credits`, `/homelab`, article pages) |
-| `components/` | Shared `Nav`, `Footer`, `ClientEffects`, `ArticleRecommendations`, `ArticleScrollSpy` |
+| `components/` | Shared `Nav`, `Footer`, `ClientEffects`, `SensoryShell`/`SensoryAtmosphere`, `ArticleRecommendations`, `ArticleScrollSpy` |
 | `lib/theme.ts` | Per-page accent theme map (`data-theme` on `<html>`) |
-| `public/mainstyle.css` | Single global stylesheet (~5900 lines) |
+| `public/mainstyle.css` | Single global stylesheet (~6300 lines) |
 | `public/` | Images, fonts, downloads, `robots.txt` / `sitemap.xml` / `llms.txt` |
 | `next.config.mjs` | Permanent redirects from the old `.html` URLs to clean routes |
 | `vercel.json` | Security headers |

@@ -311,8 +311,9 @@ export default function LumenPage() {
       <style>{`
         /* ── Signal-path flow (high-level pipeline; CSS so nothing overlaps) ── */
         .lm-flow { margin: 1.2rem 0 0.6rem; padding: clamp(16px, 2.4vw, 26px); border-radius: 18px;
-          background: linear-gradient(165deg, rgba(20,22,38,0.7), rgba(10,11,20,0.85));
-          border: 1px solid var(--hp-line, rgba(255,255,255,0.1)); }
+          background: linear-gradient(165deg, var(--sa-panel-hi, rgba(20,22,38,0.7)), var(--sa-panel-lo, rgba(10,11,20,0.85)));
+          -webkit-backdrop-filter: blur(14px) saturate(1.05); backdrop-filter: blur(14px) saturate(1.05);
+          border: 1px solid var(--sa-hairline, rgba(255,255,255,0.1)); }
         .lm-flow-track { display: grid; grid-template-columns: 1fr auto 1.3fr auto 1fr; align-items: stretch; gap: 6px; }
         .lm-flow-stage { display: flex; flex-direction: column; gap: 9px; min-width: 0; }
         .lm-flow-tag { font-size: 0.6rem; letter-spacing: 0.13em; text-transform: uppercase; color: #7a8398; font-family: var(--font-ddt, monospace); }
@@ -377,8 +378,11 @@ export default function LumenPage() {
         .lm-pr-ex { margin: 9px 0; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; overflow: hidden; background: rgba(255,255,255,0.015); }
         .lm-pr-ex-q { padding: 8px 12px; font-style: italic; color: #e7ecf6; background: color-mix(in srgb, var(--hp-sky, #7fa8ff) 7%, transparent); border-bottom: 1px solid rgba(255,255,255,0.06); }
         .lm-pr-ex-code { margin: 0; padding: 10px 12px; font-family: var(--font-ddt, ui-monospace, monospace); font-size: 0.73rem; line-height: 1.5; color: #b7e3c8; white-space: pre-wrap; word-break: break-word; }
-        .lm-pr-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 96px; pointer-events: none;
-          background: linear-gradient(to bottom, rgba(8,9,16,0), rgba(8,9,16,0.97)); }
+        /* Collapsed preview dissolves into the field via a mask (no opaque fade slab) */
+        .lm-pr:not(.open) .lm-pr-content {
+          -webkit-mask-image: linear-gradient(180deg, #000 45%, transparent 97%);
+          mask-image: linear-gradient(180deg, #000 45%, transparent 97%); }
+        .lm-pr-fade { display: none; }
         .lm-pr-btn { display: inline-flex; align-items: center; gap: 7px; margin-top: 11px; padding: 8px 15px; cursor: pointer;
           border-radius: 999px; border: 1px solid color-mix(in srgb, var(--hp-sky, #7fa8ff) 40%, transparent);
           background: color-mix(in srgb, var(--hp-sky, #7fa8ff) 10%, transparent); color: var(--hp-sky, #7fa8ff);
@@ -408,8 +412,9 @@ export default function LumenPage() {
 
         /* ── Inline SVG diagrams ── */
         .lm-dia { width: 100%; box-sizing: border-box; margin: 1.2rem 0 0.6rem; padding: clamp(16px, 2.4vw, 26px); border-radius: 18px;
-          background: linear-gradient(165deg, rgba(20,22,38,0.7), rgba(10,11,20,0.85));
-          border: 1px solid var(--hp-line, rgba(255,255,255,0.1)); overflow-x: auto; -webkit-overflow-scrolling: touch; }
+          background: linear-gradient(165deg, var(--sa-panel-hi, rgba(20,22,38,0.7)), var(--sa-panel-lo, rgba(10,11,20,0.85)));
+          -webkit-backdrop-filter: blur(14px) saturate(1.05); backdrop-filter: blur(14px) saturate(1.05);
+          border: 1px solid var(--sa-hairline, rgba(255,255,255,0.1)); overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .lm-dia svg { width: 100%; height: auto; display: block; }
         /* On phones, both inline diagrams reflow to native layouts (see .lm-fc-m / .lm-hw-m)
            instead of shrinking the SVG or scrolling it sideways */

@@ -1,14 +1,15 @@
 # Chiambucket — Project Overview
 
-Personal portfolio/personal website for Braven Chiam. Dark-themed, design-forward ("Refined Editorial Dark"). Built with Next.js and deployed on Vercel.
+Personal portfolio/personal website for Braven Chiam. Dark-themed, design-forward. The current design language is **"Dark Sensory / Signal Archive"** (July 2026 redesign): every page rides a fixed WebGL shader-gradient field, content sits on frosted "instrument panels", labels read as letterspaced mono HUD readouts, and one warm ember accent is reserved for live/status moments. Built with Next.js and deployed on Vercel.
 
 ## Stack
 
 - **Next.js 15 (App Router) + React 19 + TypeScript** — `app/` directory, server components by default
 - **Vercel Analytics + Speed Insights** — loaded in `app/layout.tsx`
 - **framer-motion** — installed (`framer-motion`); available for React animations when CSS isn't enough. Prefer CSS for simple transitions; reach for it for orchestrated/gesture/layout animations.
+- **WebGL sensory field** — `components/SensoryAtmosphere.tsx` (domain-warped fBM fragment shader, per-theme palette uniforms with crossfade on navigation, film grain, focal bloom; static `--aura` CSS-mesh fallback on `prefers-reduced-motion`/no-WebGL; pauses when the tab is hidden). Mounted once via `components/SensoryShell.tsx` in `app/layout.tsx`; the inline head script sets `html.sensory-active` before paint.
 - **Lychee** — self-hosted photo gallery embedded via a remote script (homepage + photography). The remote script *and* its cross-origin stylesheet are injected client-side after paint (a `useEffect` appends a `<link data-lychee-css>`), so the homelab server never render-blocks first paint.
-- **No Tailwind, no CSS-in-JS.** One global stylesheet: `public/mainstyle.css` (~5900 lines)
+- **No Tailwind, no CSS-in-JS.** One global stylesheet: `public/mainstyle.css` (~6300 lines)
 - jQuery is **gone** — the old jQuery `.load()` includes were replaced by React components. `links.js`/`nav.html`/`footer.html`/`projects.js` etc. are legacy and no longer used by the app.
 
 ## Routing (Next.js App Router)
@@ -40,7 +41,9 @@ Routes are file-based under `app/<route>/page.tsx`. There is no `links.js` route
 
 - **`ArticleRecommendations.tsx`** (`'use client'`) — renders a "More to explore" project card grid at the end of every article page. Self-contained: includes all project data, the peek-modal system (same chapter content as homepage), and a "Load more" button (shows 3 cards initially, all on click). Takes an `exclude` prop (the current article's project ID, e.g. `"proj-june"`). Import it at the bottom of any article `main` element.
 - **`ArticleLinks.tsx`** (server component) — a row of key-link pills (`ArtLink[]` with `type: 'github' | 'video' | 'demo' | 'cad' | 'download'`, each with `label` + `url`) surfaced in the article hero, just after `.art-toolrow`. First link renders as the primary (filled) pill; all open in a new tab. Each article page passes its own GitHub / demo / video / CAD links. Styles are `.art-links` / `.art-link` in the ARTICLE section of `mainstyle.css`.
-- **`Nav.tsx`** (`'use client'`) — the nav with hamburger toggle; uses Next `<Link>`.
+- **`SensoryShell.tsx` / `SensoryAtmosphere.tsx`** (`'use client'`) — the site-wide shader field (see Stack). Do NOT mount per page; the single mount lives in `app/layout.tsx`. To add a theme palette, extend `PALETTES` in `SensoryAtmosphere.tsx` alongside the `html[data-theme]` block in `mainstyle.css`.
+- **Corner HUD readouts (`.sa-hud`)** — bespoke `.sa-hud` blocks (children `.sa-hud-tl/tr/bl/br`, each holding short letterspaced mono `<span>` lines) sit in the hero of home/photography/homelab/contact/credits/404/comingsoon. The global `.sa-hud` CSS positions them at the page corners, hides them ≤760px, and boots the lines in with a staggered reveal. Article pages deliberately do NOT carry corner HUD text (removed at the owner's request). Keep any HUD lines short, facts only, no em dashes.
+- **`Nav.tsx`** (`'use client'`) — the nav with hamburger toggle; uses Next `<Link>`. Restyled globally into a "console command bar" (indexed mono links) by the DARK SENSORY section; no markup changes needed for that.
 - **`Footer.tsx`** (`'use client'`) — shared footer (logo, socials, credits link).
 - **`LazyVideo.tsx`** (`'use client'`) — drop-in replacement for a decorative autoplaying `<video>` loop that defers its own weight. Props: `webm`, `mp4`, `poster`, optional `className` / `rootMargin`. The poster paints immediately; the `<source>`s are only injected once the element scrolls near the viewport (IntersectionObserver), and on **Save-Data** connections or **`prefers-reduced-motion`** the clip is never fetched at all (poster stands in). Used by the homepage About-bento media tiles (DaVinci, PowerPoint) and the photography hero montage. Renders a plain `<video>`, so existing CSS targeting those tiles still applies.
 - **`ClientEffects.tsx`** (`'use client'`) — global effects: cursor spotlight, nav scroll glow, and the `[data-reveal]` scroll-reveal IntersectionObserver (re-runs on every route change via `usePathname`, so new pages animate in).
@@ -51,7 +54,9 @@ Routes are file-based under `app/<route>/page.tsx`. There is no `links.js` route
 
 ## Design system (all in `public/mainstyle.css`)
 
-The file is one large stylesheet, organised by comment sections. Three families matter:
+The file is one large stylesheet, organised by comment sections. Four families matter:
+
+- **DARK SENSORY / SIGNAL ARCHIVE** — the LAST section of the file and the one that defines the current site-wide look. Everything is keyed on `html.sensory-active` (set before paint in `app/layout.tsx`). Tokens: `--sa-accent` (an `R,G,B` triplet following `data-theme`; always use `rgba(var(--sa-accent),x)`, never hardcode accent rgba), `--sa-ember` (`255,106,61`, the ONLY warm accent, reserved for live/status/error moments like status dots, 404, the NEW chip), `--font-ddt` (terminal mono face), `--sa-panel-hi`/`--sa-panel-lo` (frosted panel gradient stops), `--sa-hairline`. It strips `.hp-band` fills (seams become signal hairlines), frosts every card family into instrument panels, turns `.hp-btn` into ghost terminal buttons, reskins the nav into a console command bar and the footer into an instrument panel, restyles `ct-*` heroes, fully reskins the `art-*` article template (bracketed back link, indexed chapter rail, `FIG ·` captions, hero covers mask-dissolving into the field), and provides `.sa-hud`/`.sa-hud-tl|tr|bl|br` corner-HUD classes plus `.sa-live`/`.sa-live-dot`. Panels use `backdrop-filter` over the live canvas, so keep new blurred surfaces to a reasonable count per view.
 
 - **Homepage** — `HOMEPAGE REDESIGN v3 / v3.1 / v3.2 / v3.3` near the end. Tokens live in `:root` as `--hp-*` (`--hp-glass`, `--hp-line`, `--hp-blue`, `--hp-indigo`, `--hp-sky`, `--hp-ink`, …). Reusable: `.hp-band`, `.hp-section`, `.hp-eyebrow`, `.hp-btn` / `.hp-btn-ghost`, `.hp-md-tag.personal|.school|.highlight`, `.hp-pf-*` (project cards/grid), `.hp-cap-*`, `.hp-spot-*`, `.seh-*` / `.peh-*` (editorial section headers), `.icon-stack`.
 - **Page heroes** — `.ct-wrap` + `.ct-aura` + `.ct-kicker` + `.ct-title` (with `<em>` gradient accent) + `.ct-sub` (contact/portfolio/photography/comingsoon/404 heroes). `.cr-*` for the credits cards. **Aura gotcha:** keep `<div class="ct-aura">` (or `hp-hero-aura`/`art-hero-aura`) as the first child and let the higher-specificity `> .aura` rule re-assert `position:absolute`, otherwise the `> *` `z-index:2` rule drops it into flow.
@@ -66,6 +71,7 @@ Pages are recoloured by a single `data-theme` attribute on `<html>` so each rout
 - **`lib/theme.ts`** — `THEME_MAP` (route → theme name) + `themeForPath()`. Themes: `blue` (default), `violet`, `indigo`, `mauve`, `steel`, `datacenter`. Home and `project-june` stay `blue` (the signature/flagship); photography = `violet`, contact/credits/brolocator = `indigo`, csdp = `mauve`, pandus = `steel`, elecf = `violet`, homelab = `datacenter` (cyan + emerald, mission-control).
 - **Set in two places:** an inline `<script>` in `app/layout.tsx` `<head>` sets it before paint (no flash); `components/ClientEffects.tsx` updates it on client-side navigation (`themeForPath(pathname)`).
 - **How it recolours:** `:root` in `mainstyle.css` defines `--aura-1/2/3` (hero/page auras), `--em-grad` + `--title-grad` (gradient accent words), `--orb-edge` (section-number stroke), and overrides `--hp-blue/-deep`, `--hp-indigo`, `--hp-sky`. Each `html[data-theme="…"]` block re-points those tokens. **To theme a new page:** add its route to `THEME_MAP`; to add a new palette, add a `html[data-theme="…"]` block next to the others. Auras/buttons/links/gradient text follow automatically — don't hardcode accent rgba values, use the tokens.
+- **The shader field follows the same themes:** `PALETTES` in `components/SensoryAtmosphere.tsx` maps each theme name to six shader colour stops, and `html.sensory-active[data-theme="…"]` blocks in the DARK SENSORY section re-point `--sa-accent`. When adding a theme, update BOTH (plus the `--aura` block above, which feeds the reduced-motion fallback mesh).
 - The homepage hero has a drifting aura plus two free-floating orbs (`.hp-hero::before/::after`); the photography hero has a masked photo-montage backdrop (`index-photos-gif.webm`) + grain. Big section numbers (`.seh-number`/`.peh-number`) are dim with a luminous `-webkit-text-stroke` edge (var `--orb-edge`) for legibility.
 
 ## SEO / AI scraping

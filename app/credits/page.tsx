@@ -18,9 +18,29 @@ export const metadata: Metadata = {
 export default function CreditsPage() {
   return (
     <main>
-      <section className="cr-hero">
+      <section className="cr-hero mf-hero">
         <div className="ct-aura"></div>
-        <span className="ct-kicker">Colophon</span>
+
+        <div className="sa-hud" aria-hidden="true">
+          <div className="sa-hud-tl">
+            <span>DOC // MANIFEST</span>
+            <span>REV · 2026.07</span>
+          </div>
+          <div className="sa-hud-tr">
+            <span>SECTIONS · 03</span>
+            <span>FORMAT · COLOPHON</span>
+          </div>
+          <div className="sa-hud-bl">
+            <span>[ BUILD ]</span>
+            <span>[ HOST ]</span>
+            <span>[ TOOLS ]</span>
+          </div>
+          <div className="sa-hud-br">
+            <span>INTEGRITY · VERIFIED</span>
+          </div>
+        </div>
+
+        <span className="ct-kicker">Site manifest</span>
         <h1 className="ct-title">Credits &amp; <em>content.</em></h1>
         <p className="ct-sub">
           How this site was designed, built and hosted, and the tools and people that made
@@ -31,8 +51,11 @@ export default function CreditsPage() {
       <section className="hp-band" style={{ paddingTop: 0 }}>
         <div className="hp-section cr-stack">
 
-          <article className="cr-card" data-reveal>
-            <span className="hp-eyebrow">Designed &amp; built with</span>
+          <article className="cr-card mf-card" data-reveal>
+            <div className="mf-head">
+              <span className="hp-eyebrow">Designed &amp; built with</span>
+              <span className="mf-idx">REC · 01</span>
+            </div>
             <h2 className="cr-h">Claude Opus 4</h2>
             <p>
               This redesign was made together with Claude Opus 4, Anthropic&apos;s frontier AI
@@ -52,8 +75,11 @@ export default function CreditsPage() {
             </p>
           </article>
 
-          <article className="cr-card" data-reveal>
-            <span className="hp-eyebrow">Hosted on</span>
+          <article className="cr-card mf-card" data-reveal>
+            <div className="mf-head">
+              <span className="hp-eyebrow">Hosted on</span>
+              <span className="mf-idx">REC · 02</span>
+            </div>
             <h2 className="cr-h">Vercel</h2>
             <p>
               The site is served by{' '}
@@ -69,8 +95,11 @@ export default function CreditsPage() {
             </p>
           </article>
 
-          <article className="cr-card" data-reveal>
-            <span className="hp-eyebrow">Tools &amp; content</span>
+          <article className="cr-card mf-card" data-reveal>
+            <div className="mf-head">
+              <span className="hp-eyebrow">Tools &amp; content</span>
+              <span className="mf-idx">REC · 03</span>
+            </div>
             <h2 className="cr-h">Standing on open shoulders</h2>
             <p>A few open-source projects and assets do quiet work behind the scenes:</p>
             <ul className="cr-list">
@@ -86,8 +115,42 @@ export default function CreditsPage() {
             </p>
           </article>
 
+          <div className="mf-end" aria-hidden="true">// END OF MANIFEST</div>
+
         </div>
       </section>
+
+      <style>{`
+        /* ── CREDITS / MANIFEST (scoped mf-*) ── */
+
+        /* Numbered record header inside each card, closed by a hairline seam */
+        .mf-head {
+          display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+          padding-bottom: 13px; margin-bottom: 6px;
+          background: linear-gradient(90deg, rgba(var(--sa-accent, 150,164,255), 0.28), rgba(var(--sa-accent, 150,164,255), 0.05) 55%, transparent 90%) left bottom / 100% 1px no-repeat;
+        }
+        .mf-idx {
+          font-family: var(--font-ddt, 'ddt', ui-monospace, monospace); font-weight: 400;
+          font-size: 0.58rem; letter-spacing: 0.26em; text-transform: uppercase;
+          color: rgba(178,192,230,0.42); white-space: nowrap;
+        }
+
+        /* List markers follow the readout language: square accent ticks */
+        .mf-card .cr-list li::before { border-radius: 1px; background: rgba(var(--sa-accent, 150,164,255), 0.72); }
+
+        /* Manifest terminator */
+        .mf-end {
+          margin-top: 14px; text-align: center;
+          font-family: var(--font-ddt, 'ddt', ui-monospace, monospace); font-weight: 400;
+          font-size: 0.58rem; letter-spacing: 0.32em; text-indent: 0.32em; text-transform: uppercase;
+          color: rgba(178,192,230,0.34);
+        }
+
+        @media (max-width: 1100px) {
+          html.sensory-active .mf-hero .sa-hud-bl,
+          html.sensory-active .mf-hero .sa-hud-br { display: none; }
+        }
+      `}</style>
     </main>
   );
 }

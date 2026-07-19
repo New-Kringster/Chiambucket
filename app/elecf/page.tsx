@@ -267,9 +267,13 @@ export default function ElecfPage() {
 
       {/* Scoped styles: components grid */}
       <style>{`
+        /* The cover photo is bright cardboard-on-white; deepen the hero scrim on this page
+           so the [ ALL PROJECTS ] back link and title stay legible */
+        html.sensory-active .art-hero-scrim {
+          background: linear-gradient(180deg, rgba(3,4,8,0.82) 0%, rgba(3,4,8,0.45) 32%, rgba(3,4,8,0.62) 72%, rgba(3,4,8,0.88) 100%); }
         .ef-comp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: 12px; margin: 1.4rem 0; }
         .ef-comp { display: flex; flex-direction: column; gap: 7px; padding: 14px; border-radius: 16px; background: var(--hp-glass); border: 1px solid var(--hp-line); box-shadow: inset 0 1px 0 rgba(255,255,255,0.04); transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), border-color 0.35s ease; }
-        .ef-comp:hover { transform: translateY(-3px); border-color: rgba(127,168,255,0.35); }
+        .ef-comp:hover { transform: translateY(-3px); border-color: rgba(var(--sa-accent, 127,168,255), 0.35); }
         .ef-comp-ico { width: 100%; aspect-ratio: 1; border-radius: 12px; margin-bottom: 3px; display: grid; place-items: center; overflow: hidden; background: radial-gradient(circle at 50% 32%, #f5f6f8, #d7dae1); }
         .ef-comp-ico img { width: 78%; height: 78%; object-fit: contain; }
         .ef-comp.dark .ef-comp-ico { background: radial-gradient(circle at 50% 42%, #181820, #050507); }

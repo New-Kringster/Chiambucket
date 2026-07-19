@@ -86,6 +86,16 @@ const jitterStr = (m: Metric, base: number) => {
 };
 const snapVals = (b: TeleBase): Record<string, string> =>
   Object.fromEntries(METRICS.map((m) => [m.key, jitterStr(m, b[m.key] as number)]));
+/* Jitter-free snapshot for the FIRST render: the server and the hydrating
+   client must produce identical text or React reports a hydration mismatch. */
+const baseVals = (b: TeleBase): Record<string, string> =>
+  Object.fromEntries(
+    METRICS.map((m) => {
+      const v = b[m.key] as number;
+      const s = v.toFixed(m.dp);
+      return [m.key, m.signed && v >= 0 ? `+${s}` : s];
+    })
+  );
 
 /* ────────────────────────────────────────────────────────────────────────
  * Camera feeds: left and right sit about 90 degrees off the centre camera
@@ -136,7 +146,7 @@ export default function CommandLink() {
   const selectNode = (k: NodeKey) => { setPinned(true); setActive(k); };
 
   /* ── Telemetry state: jitter around the active mode's base each tick ── */
-  const [vals, setVals] = useState<Record<string, string>>(() => snapVals(TELE.day));
+  const [vals, setVals] = useState<Record<string, string>>(() => baseVals(TELE.day));
   const [changed, setChanged] = useState<Record<string, boolean>>({});
   const [heading, setHeading] = useState(214);
 

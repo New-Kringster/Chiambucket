@@ -85,9 +85,25 @@ export default function HomelabClient() {
     <main className="hl2">
       {/* ════════════ HERO ════════════ */}
       <header className="hl2-hero">
+        {/* corner HUD: bottom-left stays empty, the hero copy and CTAs live there */}
+        <div className="sa-hud" aria-hidden="true">
+          <div className="sa-hud-tl">
+            <span>SITE // HOMELAB</span>
+            <span>MODE · MISSION_CONTROL</span>
+          </div>
+          <div className="sa-hud-tr">
+            <span className="sa-hud-em">NODES · 0{SERVERS.length}</span>
+            <span>UPTIME TARGET · 24/7</span>
+            <span>SEGMENTS · 4 VLAN</span>
+          </div>
+          <div className="sa-hud-br">
+            <span>[ COMPUTE ]</span>
+            <span>[ STORAGE ]</span>
+            <span>[ NETWORK ]</span>
+          </div>
+        </div>
         <div className="hl2-hero-bg" aria-hidden="true">
           <div className="hl2-grid" />
-          <div className="hl2-aura" />
         </div>
 
         <div className="hl2-hero-inner">
@@ -326,7 +342,6 @@ export default function HomelabClient() {
               );
             })}
             </div>
-            {collapsed && <div className="hl2-stack-fade" aria-hidden="true" />}
           </div>
           {collapsible && (
             <div className="hl2-stack-more">
