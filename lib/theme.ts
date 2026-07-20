@@ -8,23 +8,17 @@
    lavender → mauve → violet gradient so the site stays cohesive
    while each page reads distinctly.
 
-   Routes not listed fall back to "blue" (the signature default):
-   home, project-june (the blue rover flagship), comingsoon, 404.
+   The site-wide default is now the warm "paper" theme (honey / amber /
+   chestnut). Only two routes keep a distinct cool palette: /contact and
+   /homelab. Every other route (home, articles, photography, credits, …)
+   falls through to "paper".
    ──────────────────────────────────────────────────────────────── */
 export const THEME_MAP: Record<string, string> = {
-  '/photography': 'violet',
   '/contact': 'indigo',
-  '/credits': 'indigo',
-  '/brolocator': 'indigo',
-  '/csdp': 'mauve',
-  '/pandus': 'steel',
-  '/elecf': 'violet',
-  '/lumen': 'violet',
-  '/beadreader': 'paper',
   '/homelab': 'datacenter',
 };
 
 export function themeForPath(pathname: string): string {
   const p = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
-  return THEME_MAP[p] ?? 'blue';
+  return THEME_MAP[p] ?? 'paper';
 }

@@ -521,9 +521,9 @@ export default function HomeClient() {
           </div>
           <div className="hp-hero-aura"></div>
           <div className="hp-hero-grid"></div>
-          <a className="hero-topper" href="/project-june">
+          <a className="hero-topper" href="/beadreader">
             <div className="hero-topper-new-tag">New</div>
-            <div className="hero-topper-content">Project June Rover</div>
+            <div className="hero-topper-content">BeadReader</div>
             <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" className="hero-topper-arrow"><path fill="#E8E8E8" d="M338.752 104.704a64 64 0 000 90.496l316.8 316.8-316.8 316.8a64 64 0 0090.496 90.496l362.048-362.048a64 64 0 000-90.496L429.248 104.704a64 64 0 00-90.496 0z"/></svg>
           </a>
           <div className="hp-hero-kicker">Braven Chiam · Singapore</div>

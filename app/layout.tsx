@@ -32,7 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Set the per-page accent theme before paint to avoid a colour flash */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){var m=${JSON.stringify(THEME_MAP)};var p=location.pathname;if(p.length>1&&p.slice(-1)==='/')p=p.slice(0,-1);var d=document.documentElement;d.setAttribute('data-theme',m[p]||'blue');d.classList.add('sensory-active');})();`,
+            __html: `(function(){var m=${JSON.stringify(THEME_MAP)};var p=location.pathname;if(p.length>1&&p.slice(-1)==='/')p=p.slice(0,-1);var d=document.documentElement;d.setAttribute('data-theme',m[p]||'paper');d.classList.add('sensory-active');})();`,
           }}
         />
         <link rel="stylesheet" href="/mainstyle.css" />
