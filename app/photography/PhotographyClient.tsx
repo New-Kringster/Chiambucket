@@ -123,10 +123,6 @@ export default function PhotographyClient() {
             <span>GALLERIES · 07</span>
             <span>FORMAT · STILLS + MOTION</span>
           </div>
-          <div className="sa-hud-bl">
-            <span>[ PERSPECTIVE ]</span>
-            <span>[ DETAIL ]</span>
-          </div>
           <div className="sa-hud-br">
             <span>MODE · DARK_SENSORY</span>
           </div>
@@ -137,6 +133,7 @@ export default function PhotographyClient() {
         <div className="ph-hero-scrim" aria-hidden="true"></div>
         <div className="ct-aura"></div>
         <div className="ph-hero-grain" aria-hidden="true"></div>
+        <div className="ph-hero-blur" aria-hidden="true"></div>
         <span className="ct-kicker">Photography</span>
         <h1 className="ct-title">
           Through a <em>different lens.</em>
@@ -192,6 +189,28 @@ export default function PhotographyClient() {
                 </div>
               );
             })}
+          </div>
+
+          {/* Live Figma board — a working file, embedded */}
+          <div className="ph-figma" data-reveal>
+            <div className="ph-figma-head">
+              <span className="ph-figma-label">Figma board</span>
+              <a className="ph-gallery-open" href="https://www.figma.com/design/yRQ5bjI3xm7b5Ovg1svmxt/Random-board" target="_blank" rel="noopener" aria-label="Open the board in Figma">
+                Open in Figma
+                <svg viewBox="0 0 24 24" fill="none" width="15" height="15" aria-hidden="true">
+                  <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M17 7H9M17 7V15" />
+                </svg>
+              </a>
+            </div>
+            <div className="ph-figma-frame">
+              <iframe
+                title="Figma board — Random board"
+                src="https://embed.figma.com/design/yRQ5bjI3xm7b5Ovg1svmxt/Random-board?node-id=0-1&embed-host=share"
+                loading="lazy"
+                allowFullScreen
+              ></iframe>
+            </div>
+            <p className="ph-figma-cap">A working file where interfaces and posters take shape before they become code or print.</p>
           </div>
         </div>
       </section>
@@ -251,16 +270,28 @@ export default function PhotographyClient() {
       {/* bespoke overrides scoped to photography page */}
       <style>{`
         /* ── Hero: photographic montage backdrop + violet aura + grain ── */
-        .ph-hero { position: relative; overflow: hidden; }
+        .ph-hero {
+          position: relative; overflow: hidden;
+          justify-content: flex-end; align-items: flex-start; text-align: left;
+          padding-bottom: clamp(48px, 8vh, 88px);
+        }
+        /* Bottom-left content column so the montage stays mostly uncovered */
+        .ph-hero > .ct-kicker,
+        .ph-hero > .ct-title,
+        .ph-hero > .ct-sub,
+        .ph-hero > .ph-hero-btns { align-self: flex-start; text-align: left; max-width: min(660px, 92vw); }
+        .ph-hero > .ct-sub { margin-left: 0; margin-right: 0; }
         .ph-hero > .ph-hero-media,
         .ph-hero > .ph-hero-scrim,
+        .ph-hero > .ph-hero-blur,
         .ph-hero > .ph-hero-grain { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
         .ph-hero-grain { z-index: 1; }
+        .ph-hero > .ph-hero-blur { z-index: 1; }
         .ph-hero-media video {
           width: 100%; height: 100%; object-fit: cover;
-          opacity: 0.26; filter: saturate(1.05) contrast(1.02);
-          -webkit-mask-image: radial-gradient(ellipse 82% 72% at 50% 42%, #000 28%, transparent 80%);
-          mask-image: radial-gradient(ellipse 82% 72% at 50% 42%, #000 28%, transparent 80%);
+          opacity: 0.5; filter: saturate(1.08) contrast(1.04);
+          -webkit-mask-image: radial-gradient(ellipse 120% 105% at 50% 34%, #000 60%, transparent 100%);
+          mask-image: radial-gradient(ellipse 120% 105% at 50% 34%, #000 60%, transparent 100%);
           animation: phHeroPan 44s ease-in-out infinite alternate;
         }
         @keyframes phHeroPan {
@@ -269,11 +300,11 @@ export default function PhotographyClient() {
         }
         .ph-hero-scrim {
           background:
-            linear-gradient(180deg, rgba(6,6,9,0.62) 0%, rgba(6,6,9,0.38) 40%, rgba(6,6,9,0.76) 100%),
-            radial-gradient(ellipse 70% 62% at 50% 44%, transparent 34%, rgba(6,6,9,0.66) 100%);
+            linear-gradient(180deg, rgba(6,6,9,0.42) 0%, rgba(6,6,9,0.06) 26%, rgba(6,6,9,0) 46%, rgba(6,6,9,0.6) 82%, rgba(6,6,9,0.82) 100%),
+            radial-gradient(ellipse 92% 72% at 20% 98%, rgba(6,6,9,0.72), transparent 62%);
         }
         .ph-hero-grain {
-          opacity: 0.55; mix-blend-mode: overlay;
+          opacity: 0.3; mix-blend-mode: overlay;
           background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
           background-size: 140px 140px;
         }
@@ -282,9 +313,23 @@ export default function PhotographyClient() {
            the highlights, so the montage stays visible but the mood reads darker. */
         .ph-hero-grain::after {
           content: ''; position: absolute; inset: 0;
-          opacity: 0.22; mix-blend-mode: multiply;
+          opacity: 0.28; mix-blend-mode: multiply;
           background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n2'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n2)'/%3E%3C/svg%3E");
           background-size: 220px 220px;
+        }
+        /* ── Progressive blur ramp anchored to the bottom text zone: two stacked
+           backdrop layers give a smooth clear→blurred gradient so the montage
+           reads sharp up top and the copy stays legible where it sits below. */
+        .ph-hero-blur {
+          -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+          -webkit-mask-image: linear-gradient(to top, #000 0%, #000 24%, transparent 60%);
+          mask-image: linear-gradient(to top, #000 0%, #000 24%, transparent 60%);
+        }
+        .ph-hero-blur::before {
+          content: ''; position: absolute; inset: 0;
+          -webkit-backdrop-filter: blur(11px); backdrop-filter: blur(11px);
+          -webkit-mask-image: linear-gradient(to top, #000 0%, #000 6%, transparent 38%);
+          mask-image: linear-gradient(to top, #000 0%, #000 6%, transparent 38%);
         }
         /* ── Diffuse the violet aura into a broad, gentle wash rather than a
            tight glow: scale the box up, push the blur much further, and back
@@ -368,6 +413,47 @@ export default function PhotographyClient() {
           line-height: 1.6;
           color: rgba(232,232,232,0.65);
           margin: 0;
+        }
+
+        /* ── Live Figma board: framed working artifact ── */
+        .ph-figma { margin-top: clamp(30px, 4vw, 48px); }
+        .ph-figma-head {
+          display: flex; align-items: center; justify-content: space-between;
+          gap: 16px; margin-bottom: 14px; flex-wrap: wrap;
+        }
+        .ph-figma-label {
+          display: inline-flex; align-items: center;
+          font-family: 'inter'; font-size: 0.72rem; font-weight: 700;
+          letter-spacing: 0.3em; text-transform: uppercase; color: var(--hp-sky);
+        }
+        .ph-figma-label::before {
+          content: ''; display: inline-block; width: 26px; height: 1px; margin-right: 12px;
+          background: linear-gradient(90deg, transparent, var(--hp-sky));
+        }
+        .ph-figma-frame {
+          position: relative; width: 100%; aspect-ratio: 16 / 9;
+          border-radius: 18px; overflow: hidden;
+          border: 1px solid var(--hp-line);
+          background: rgba(255,255,255,0.018);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 30px 60px -40px rgba(0,0,0,0.85);
+        }
+        .ph-figma-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+        .ph-figma-cap {
+          font-family: 'dmsans'; font-size: 0.85rem; line-height: 1.6;
+          color: rgba(232,232,232,0.55); margin: 13px 2px 0; max-width: 620px;
+        }
+
+        html.sensory-active .ph-figma-label {
+          font-family: var(--font-ddt, ui-monospace, monospace); letter-spacing: 0.24em;
+          font-size: 0.62rem; color: rgba(var(--sa-accent),0.82);
+        }
+        html.sensory-active .ph-figma-label::before {
+          background: linear-gradient(90deg, transparent, rgba(var(--sa-accent),0.85));
+        }
+        html.sensory-active .ph-figma-frame {
+          background: linear-gradient(180deg, var(--sa-panel-hi), var(--sa-panel-lo)) !important;
+          border: 1px solid var(--sa-hairline) !important;
+          box-shadow: inset 0 1px 0 rgba(196,210,255,0.07), 0 30px 66px -34px rgba(0,0,0,0.9) !important;
         }
 
         /* ── Galleries: editorial header + glass frame ── */
@@ -457,7 +543,7 @@ export default function PhotographyClient() {
 
         /* ═══════════ Dark-sensory / mission-control reskin (accent follows the violet theme) ═══════════ */
         /* Hero: the shader field leads; the photo montage becomes a faint memory under it */
-        html.sensory-active .ph-hero-media { opacity: 0.16; filter: saturate(0.55) brightness(0.75); }
+        html.sensory-active .ph-hero-media { opacity: 0.85; filter: saturate(0.95) brightness(0.95); }
         html.sensory-active .ph-hero .ct-title { text-transform: uppercase; letter-spacing: 0.02em; }
         html.sensory-active .ph-hero .ct-title em { text-shadow: 0 0 38px rgba(var(--sa-accent),0.4); }
         /* Hero kicker → mono instrument label with a leading signal tick */
