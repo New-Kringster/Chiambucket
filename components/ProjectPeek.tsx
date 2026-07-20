@@ -16,12 +16,13 @@ import { useEffect, useRef, useState } from 'react';
 
 /* Project order = the homepage gallery order (also the ALL_PROJECTS order). */
 export const PEEK_ORDER: string[] = [
-  'proj-june', 'proj-lora', 'proj-lumen', 'proj-ema', 'proj-pandus', 'proj-elecf',
+  'proj-june', 'proj-lora', 'proj-lumen', 'proj-beadreader', 'proj-ema', 'proj-pandus', 'proj-elecf',
   'proj-kauli', 'proj-sol', 'proj-copyboard', 'proj-webdev', 'proj-mc',
 ];
 
 const TITLES: Record<string, string> = {
   'proj-june': 'Project June', 'proj-lora': 'LoRA Messenger', 'proj-lumen': 'LUMEN',
+  'proj-beadreader': 'BeadReader',
   'proj-ema': 'EMA Smart Home', 'proj-pandus': 'Pandus Dispenser', 'proj-elecf': 'ELEC-F Concept',
   'proj-kauli': 'Kauli Concept', 'proj-sol': 'Series One Light', 'proj-copyboard': 'Copy Board',
   'proj-webdev': 'Web Development', 'proj-mc': 'Minecraft Live Map',
@@ -105,6 +106,20 @@ export function PeekModalContent({ id }: { id: string }) {
           {chapter('02', 'Fitting it on a no-PSRAM board', <><p>The WROOM left about 33&nbsp;KB of free RAM with WiFi up, and a voice clip is roughly 96&nbsp;KB, so the audio is streamed over a raw socket as it records, never held whole. Peak memory during an upload is around 10&nbsp;KB.</p><img className="hp-rd-fig" src="/images/lumen-mic.webp" alt="The INMP441 microphone wired to the ESP32" loading="lazy" /></>)}
           {chapter('03', 'A room you can talk to', <><p>Lights, a NeoPixel, a fan, a servo and a buzzer respond, with a local auto-mode and a web dashboard. Ask it to &ldquo;set the brightness to the humidity&rdquo; and it reads the live sensor and does exactly that.</p><img className="hp-rd-fig" src="/images/lumen-dashboard.webp" alt="The LUMEN web dashboard" loading="lazy" /></>)}
           {cta('See the full build', 'The memory wall, the wiring and the interactive demo.', 'Read the full article', '/lumen')}
+        </div>
+      </>
+    );
+    case 'proj-beadreader': return (
+      <>
+        {hero('/images/beadreader-pf-context.webp', 'BeadReader private book reader', ['Highlights', 'Personal Project'], 'highlight')}
+        <div className="hp-rd-body">
+          <h2 className="hp-md-title">BeadReader</h2>
+          <p className="hp-md-meta">Web App · Next.js · Supabase · Cloudflare R2 · Tailwind v4 · Self-Learnt</p>
+          <p className="hp-rd-lead">A small, private online book reader for a handful of friends. Log in with one access code, and the app remembers exactly where you left off, shows who else is reading, and tracks everyone&apos;s progress.</p>
+          {chapter('01', 'A library that remembers you', <><p>Open a book and it jumps back to the exact chapter and scroll position, stored as a fraction so it survives font-size changes. Colour, font and layout are saved per reader.</p><img className="hp-rd-fig" src="/images/beadreader/reader-paper.webp" alt="The reading view" loading="lazy" /></>)}
+          {chapter('02', 'Reading together', <><p>See who is online, spot a friend in the same book by their green ring and chapter number, and send a wave or a short disappearing note.</p><img className="hp-rd-fig" src="/images/beadreader/reader-menu.webp" alt="Presence and quick messages" loading="lazy" /></>)}
+          {chapter('03', 'A gate enforced in SQL', <p>Explicit chapters are gated in the database query itself, so gated text never leaves the server for a reader without access. The same chapter adapts per reader, down to a cal mode that removes it entirely.</p>)}
+          {cta('See the whole build', 'Presence, the content gate, webtoons and the stack.', 'Read the full article', '/beadreader')}
         </div>
       </>
     );

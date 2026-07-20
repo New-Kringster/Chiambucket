@@ -770,6 +770,23 @@ export default function HomeClient() {
                 </div>
               </article>
 
+              {/* BeadReader */}
+              <article id="proj-beadreader" className="hp-pf-card" data-article="/beadreader" data-type="personal" data-highlight="1" data-search="beadreader bead reader private book reader ebook webtoon nextjs supabase cloudflare r2 tailwind postgres presence reading stats access code personal highlight web app">
+                <div className="hp-pf-thumb">
+                  <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
+                  <span className="hp-pf-type personal">Personal</span><span className="hp-pf-star"><ST />Highlight</span>
+                  <img src="/images/beadreader-pf-context.webp" alt="BeadReader private book reader" loading="lazy" />
+                </div>
+                <div className="hp-pf-info">
+                  <h3 className="hp-pf-name">BeadReader</h3>
+                  <p className="hp-pf-blurb">A private, invite-only online book reader with live reading-together presence, per-reader resume, a SQL-enforced content gate, webtoons and shared reading stats. Next.js and Supabase.</p>
+                  <div className="hp-pf-foot">
+                    <div className="icon-stack"><img src="/images/nextjs-icon.webp" alt="" /><img src="/images/supabase-icon.webp" alt="" /><img src="/images/tailwind-icon.webp" alt="" /><img src="/images/cloudflare-icon.webp" alt="" /></div>
+                    <button className="hp-pf-view" onClick={() => { window.location.href = '/beadreader'; }}>Read article <AU /></button>
+                  </div>
+                </div>
+              </article>
+
               {/* EMA Smart Home */}
               <article id="proj-ema" className="hp-pf-card" data-article="/csdp" data-type="school" data-search="ema smart home beaglebone python socketio flask websocket spline mikrobus school group sensors">
                 <div className="hp-pf-thumb">
