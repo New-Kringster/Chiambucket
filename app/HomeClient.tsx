@@ -443,7 +443,7 @@ export default function HomeClient() {
           /* ── Hero: let the shader be the backdrop ── */
           html.sensory-active .hp-hero-grid { display: none; }
           html.sensory-active .hp-hero::before, html.sensory-active .hp-hero::after { opacity: 0.2; }
-          html.sensory-active .hp-hero-kicker { font-family: var(--font-ddt); letter-spacing: 0.3em; text-transform: uppercase; font-size: 0.6rem; color: rgba(200,214,255,0.55); }
+          html.sensory-active .hp-hero-kicker { font-family: var(--font-ddt); letter-spacing: 0.3em; text-transform: uppercase; font-size: 0.6rem; color: rgba(226,212,190,0.55); }
           html.sensory-active .hp-hero-kicker::before { content: '[ '; color: rgba(var(--sa-accent),0.6); }
           html.sensory-active .hp-hero-kicker::after { content: ' ]'; color: rgba(var(--sa-accent),0.6); }
           html.sensory-active .hp-hero-sub { color: rgba(222,229,248,0.68); }
@@ -461,7 +461,7 @@ export default function HomeClient() {
             font-family: var(--font-ddt) !important; text-transform: uppercase; letter-spacing: 0.1em;
             background: rgba(var(--sa-ember),0.16) !important; color: rgba(var(--sa-ember),0.95) !important;
             border: 1px solid rgba(var(--sa-ember),0.4) !important; }
-          html.sensory-active .hp-scroll { font-family: var(--font-ddt); text-transform: uppercase; letter-spacing: 0.24em; font-size: 0.56rem; color: rgba(180,198,238,0.5); }
+          html.sensory-active .hp-scroll { font-family: var(--font-ddt); text-transform: uppercase; letter-spacing: 0.24em; font-size: 0.56rem; color: rgba(214,200,180,0.5); }
 
           /* ── Cards: homepage-only detail on top of the global panel language ── */
           html.sensory-active .hp-disc::after { opacity: 0.7; }
@@ -471,9 +471,9 @@ export default function HomeClient() {
           html.sensory-active .hp-cap-card { padding: 24px 22px 22px !important; }
 
           /* Spotlight + homelab stat readouts */
-          html.sensory-active .hp-spot-stat b { color: #cfdcff; }
+          html.sensory-active .hp-spot-stat b { color: #f2e8d8; }
           html.sensory-active .hp-spot-stat span, html.sensory-active .hp-homelab-stat span {
-            font-family: var(--font-ddt); text-transform: uppercase; letter-spacing: 0.13em; font-size: 0.56rem; color: rgba(180,198,238,0.52); }
+            font-family: var(--font-ddt); text-transform: uppercase; letter-spacing: 0.13em; font-size: 0.56rem; color: rgba(214,200,180,0.52); }
           html.sensory-active .hp-spot-tags span {
             font-family: var(--font-ddt); text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.62rem; }
 
@@ -485,7 +485,7 @@ export default function HomeClient() {
 
           /* Experience + stack labels → mono spec readouts */
           html.sensory-active .hp-exp-chip span, html.sensory-active .hp-stack-label {
-            font-family: var(--font-ddt); text-transform: uppercase; letter-spacing: 0.11em; font-size: 0.55rem; color: rgba(180,198,238,0.52); }
+            font-family: var(--font-ddt); text-transform: uppercase; letter-spacing: 0.11em; font-size: 0.55rem; color: rgba(214,200,180,0.52); }
 
           /* Gallery + projects bottom fades → a strong dissolve into the atmosphere navy (never pure black) */
           html.sensory-active .photo-main-ver .expand {
@@ -993,7 +993,7 @@ export default function HomeClient() {
             .hp-collab-name { display: block; font-family: 'inter'; font-weight: 700; font-size: 1rem; color: #ededed; }
             .hp-collab-role { display: block; font-family: 'dmsans'; font-size: 0.82rem; color: rgba(232,232,232,0.55); margin-top: 2px; }
             .hp-collab-projects { display: flex; flex-wrap: wrap; gap: 7px; }
-            .hp-collab-proj { font-family: 'inter'; font-size: 0.74rem; font-weight: 600; padding: 5px 11px; border-radius: 999px; background: rgba(127,168,255,0.1); border: 1px solid rgba(127,168,255,0.22); color: #cdd9ff; transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease; }
+            .hp-collab-proj { font-family: 'inter'; font-size: 0.74rem; font-weight: 600; padding: 5px 11px; border-radius: 999px; background: rgba(var(--sa-accent),0.1); border: 1px solid rgba(var(--sa-accent),0.22); color: #f2e8d8; transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease; }
             .hp-collab-proj:hover { background: color-mix(in srgb, var(--hp-blue) 26%, transparent); border-color: color-mix(in srgb, var(--hp-indigo) 50%, transparent); color: #fff; transform: translateY(-1px); }
             .hp-collab-link { margin-top: auto; display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; font-family: 'inter'; font-size: 0.82rem; font-weight: 600; color: var(--hp-sky); transition: gap 0.25s ease, color 0.25s ease; }
             .hp-collab-link svg { width: 14px; height: 14px; }
