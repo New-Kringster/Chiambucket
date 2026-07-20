@@ -6433,6 +6433,16 @@ html.sensory-active .im-panel, html.sensory-active .hp-modal-panel {
   border: 1px solid rgba(var(--sa-accent),0.2) !important;
   box-shadow: 0 40px 110px -40px rgba(0,0,0,0.95), 0 0 60px -22px rgba(var(--sa-accent),0.25), inset 0 1px 0 rgba(196,210,255,0.08) !important; }
 
+/* Gallery bottom-fades dissolve into the WARM field on paper pages (they were
+   cool navy). The [data-theme="paper"] selector out-specifies the base sensory
+   fade rules, so /contact + /homelab (cool) are untouched. */
+html.sensory-active[data-theme="paper"] .ph-gallery .expand-photography {
+  background: linear-gradient(180deg, rgba(12,9,5,0) 0%, rgba(12,9,5,0.88) 72%) !important; }
+html.sensory-active[data-theme="paper"] .photo-main-ver .expand {
+  background: linear-gradient(180deg, rgba(12,9,5,0) 0%, rgba(12,9,5,0.55) 55%, rgba(12,9,5,0.97) 100%) !important; }
+html.sensory-active[data-theme="paper"] .hp-pf-showmore-wrap::before {
+  background: linear-gradient(to bottom, rgba(12,9,5,0) 0%, rgba(12,9,5,0.8) 62%, rgba(12,9,5,0.97) 100%) !important; }
+
 /* ── HUD boot-in: readout lines flicker on in sequence (transform/opacity only) ── */
 @keyframes sa-hud-in { 0% { opacity: 0; transform: translateY(3px); } 60% { opacity: 0.4; } 100% { opacity: 1; transform: translateY(0); } }
 html.sensory-active .sa-hud span { opacity: 0; animation: sa-hud-in 0.6s ease forwards; }
