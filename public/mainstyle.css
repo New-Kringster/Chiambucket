@@ -6097,7 +6097,7 @@ html[data-theme="paper"] {
 .art-zoom-cue {
   position: fixed; z-index: 40; top: 0; left: 0;
   width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center;
-  background: rgba(10,16,24,0.72); border: 1px solid rgba(var(--sa-accent),0.4); color: #cdd9ff;
+  background: var(--sa-btn); border: 1px solid rgba(var(--sa-accent),0.4); color: #f2e7d6;
   box-shadow: 0 6px 18px -6px rgba(0,0,0,0.6);
   -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
   pointer-events: none; opacity: 0; transform: translate(-100%, 0) scale(0.82);
@@ -6165,13 +6165,29 @@ html.sensory-active {
   --font-ddt: 'ddt', ui-monospace, 'SF Mono', Menlo, monospace;
   --sa-accent: 150,178,255;             /* cool signal (per-theme below) */
   --sa-ember: 255,106,61;               /* THE warm accent: live/status only */
-  --sa-panel-hi: rgba(23,27,41,0.5);    /* frosted instrument panel */
-  --sa-panel-lo: rgba(9,11,20,0.6);
+  /* Frosted surfaces are warm-charcoal by default (they sit over the warm paper
+     field); /contact + /homelab override these back to cool navy below. */
+  --sa-panel-hi: rgba(42,34,25,0.52);   /* frosted instrument panel (warm) */
+  --sa-panel-lo: rgba(22,17,12,0.62);
+  --sa-nav-a: rgba(19,15,10,0.8);       /* nav / command-bar surface */
+  --sa-nav-b: rgba(31,24,16,0.8);
+  --sa-btn: rgba(37,29,20,0.68);        /* button-hero (To BucketCentral) fill */
   --sa-hairline: rgba(var(--sa-accent),0.1);
-  --hp-glass: rgba(150,170,220,0.03);
+  --hp-glass: rgba(214,190,150,0.03);
   --hp-line: rgba(var(--sa-accent),0.08);
   --hp-ink: #eef1f8;
   --hp-ink-dim: rgba(224,230,244,0.5);
+  background: #080604;
+}
+/* Cool exceptions: restore the original navy surfaces for the two cool routes. */
+html.sensory-active[data-theme="indigo"],
+html.sensory-active[data-theme="datacenter"] {
+  --sa-panel-hi: rgba(23,27,41,0.5);
+  --sa-panel-lo: rgba(9,11,20,0.6);
+  --sa-nav-a: rgba(9,11,18,0.76);
+  --sa-nav-b: rgba(13,16,26,0.76);
+  --sa-btn: rgba(17,21,34,0.68);
+  --hp-glass: rgba(150,170,220,0.03);
   background: #030408;
 }
 html.sensory-active[data-theme="violet"]     { --sa-accent: 172,150,255; }
@@ -6259,11 +6275,11 @@ html.sensory-active .sa-live-dot { display: inline-block; width: 6px; height: 6p
 html.sensory-active .nav-closed {
   border-radius: 15px !important; width: 84vw !important; max-width: 1200px;
   padding: 14px 18px 14px 30px !important;
-  background: linear-gradient(90deg, rgba(9,11,18,0.76), rgba(13,16,26,0.76)) !important;
+  background: linear-gradient(90deg, var(--sa-nav-a), var(--sa-nav-b)) !important;
   border: 1px solid rgba(var(--sa-accent),0.2) !important;
   box-shadow: 0 16px 46px -18px rgba(0,0,0,0.78), inset 0 1px 0 rgba(196,210,255,0.06) !important; position: relative; }
 html.sensory-active .nav-open {
-  background: linear-gradient(180deg, rgba(11,13,20,0.82), rgba(9,11,18,0.86)) !important;
+  background: linear-gradient(180deg, var(--sa-nav-b), var(--sa-nav-a)) !important;
   border: 1px solid rgba(var(--sa-accent),0.16) !important; }
 html.sensory-active .nav-closed .navitem li { padding-left: 36px !important; }
 html.sensory-active .nav-closed .navitem li:hover { transform: none !important; }
@@ -6277,7 +6293,7 @@ html.sensory-active .nav-closed #navitem li:not(#Nav-Item-5) a::after {
   content: ''; position: absolute; left: 0; right: 0; bottom: -7px; height: 1px; background: rgba(var(--sa-accent),0.9);
   transform: scaleX(0); transform-origin: left; transition: transform .32s cubic-bezier(0.16,1,0.3,1); }
 html.sensory-active .nav-closed #navitem li:not(#Nav-Item-5) a:hover::after { transform: scaleX(1); }
-html.sensory-active .button-hero { --black-700: rgba(17,21,34,0.68) !important; --border_radius: 11px !important; }
+html.sensory-active .button-hero { --black-700: var(--sa-btn) !important; --border_radius: 11px !important; }
 html.sensory-active .button-hero::before { box-shadow: inset 0 0.5px rgba(196,210,255,0.35), 0 6px 16px -6px rgba(0,0,0,0.7), 0 0 0 1px rgba(var(--sa-accent),0.3) !important; }
 html.sensory-active .button-hero::after { background-color: rgba(var(--sa-accent),0.55) !important; }
 html.sensory-active .button-hero .dots_border { display: none !important; }
@@ -6413,7 +6429,7 @@ html.sensory-active .arec-section { border-top-color: rgba(var(--sa-accent),0.1)
 
 /* ── InfoModal + peek modals → frosted console panes ── */
 html.sensory-active .im-panel, html.sensory-active .hp-modal-panel {
-  background: linear-gradient(180deg, rgba(16,20,32,0.92), rgba(8,10,18,0.94)) !important;
+  background: linear-gradient(180deg, rgba(32,25,18,0.94), rgba(15,11,7,0.96)) !important;
   border: 1px solid rgba(var(--sa-accent),0.2) !important;
   box-shadow: 0 40px 110px -40px rgba(0,0,0,0.95), 0 0 60px -22px rgba(var(--sa-accent),0.25), inset 0 1px 0 rgba(196,210,255,0.08) !important; }
 
