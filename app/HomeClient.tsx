@@ -465,7 +465,7 @@ export default function HomeClient() {
 
           /* ── Cards: homepage-only detail on top of the global panel language ── */
           html.sensory-active .hp-disc::after { opacity: 0.7; }
-          html.sensory-active .hp-cap-card h4 { color: #a6bcff; }
+          html.sensory-active .hp-cap-card h4 { color: rgba(var(--sa-accent),0.92); }
           html.sensory-active .hp-disc-num { font-family: var(--font-ddt); }
           html.sensory-active .hp-disc { padding: 30px 26px 24px !important; }
           html.sensory-active .hp-cap-card { padding: 24px 22px 22px !important; }
