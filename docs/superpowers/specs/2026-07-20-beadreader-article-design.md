@@ -113,9 +113,16 @@ single-column collapse at 390px. Inserted inside the existing "Reading together"
 
 ## 6. Assets
 
-- **Generate** `public/images/beadreader-cover.webp` (hero) and `beadreader-pf-context.webp`
-  (gallery card) via `gpt-image-2`: warm cream/amber field, an open-book / stacked-spines
-  motif, the BeadReader wordmark, soft grain. Generate a small hero poster is not needed (static image).
+- **Official icon (required).** Copy `~/Downloads/beadreader-icon.png` (256×256 RGBA, a
+  monochrome grey "bead" glyph on transparent) into `public/images/beadreader-icon.png`. This
+  is THE official BeadReader mark and must be used faithfully (unmodified) wherever the mark
+  appears: the hero mark by the title, the `ReadingTogether` widget panel header, and composited
+  onto the generated cover. Do not redraw or recolour it.
+- **Cover.** Generate a warm cover *background* (no text, no fake logo) via `gpt-image-2` —
+  cream/amber field, open-book / stacked-spines motif, soft grain — then composite the OFFICIAL
+  icon onto it to produce `public/images/beadreader-cover.webp` (hero) and
+  `beadreader-pf-context.webp` (gallery card). The "BeadReader" wordmark on the hero comes from
+  the template's `.art-title` overlay, not from the generated image. No hero poster needed (static image).
 - **Copy** real screenshots from the project into `public/images/beadreader/`:
   login-light/dark, library-light/dark, reader-paper, reader-dark, contents-light/dark,
   presence-reader, reader-menu, webtoon, admin-books-light, stats-overview-light,
