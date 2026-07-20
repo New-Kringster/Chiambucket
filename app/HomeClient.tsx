@@ -116,6 +116,7 @@ const AU = () => <svg aria-hidden="true"><use href="#icon-arrow-ur" /></svg>;
 const SR = () => <svg aria-hidden="true"><use href="#icon-search" /></svg>;
 const ST = () => <svg aria-hidden="true"><use href="#icon-star" /></svg>;
 const SB = () => <svg aria-hidden="true"><use href="#icon-sparkle-btn" /></svg>;
+const CRWN = () => <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2.4 18.2h19.2l-1.5-9.4-5.4 3.9L12 4.8 9.3 12.7 3.9 8.8z" /></svg>;
 
 /* ── Design Tools 3D coverflow carousel ── */
 const TOOL_RING = [
@@ -279,7 +280,9 @@ export default function HomeClient() {
       const decided = cards().map((card) => {
         const type = card.dataset.type || '';
         const matchFilter = activeFilter === 'all' ||
-          (activeFilter === 'highlight' ? card.dataset.highlight === '1' : type === activeFilter);
+          (activeFilter === 'highlight' ? card.dataset.highlight === '1'
+            : activeFilter === 'flagship' ? card.dataset.flagship === '1'
+            : type === activeFilter);
         const matchSearch = !q || (card.dataset.search || '').includes(q);
         return { card, show: matchFilter && matchSearch };
       });
@@ -311,7 +314,7 @@ export default function HomeClient() {
     };
     (window as any).filterProjects = () => applyFilter({});
 
-    cards().forEach((c) => { if (c.dataset.highlight === '1') c.classList.add('is-highlight'); });
+    cards().forEach((c) => { if (c.dataset.highlight === '1') c.classList.add('is-highlight'); if (c.dataset.flagship === '1') c.classList.add('is-flagship'); });
     applyFilter();
   }, []);
 
@@ -629,13 +632,6 @@ export default function HomeClient() {
                 <h3 className="hp-tile-h" style={{ fontSize: '1.25rem' }}>Fun, engaging, never overwhelming.</h3>
               </div>
             </div>
-            <div className="hp-exp" data-reveal>
-              <div className="hp-exp-chip"><b>macOS</b><span>4 yrs daily</span></div>
-              <div className="hp-exp-chip"><b>Windows</b><span>10 yrs, incl. Server</span></div>
-              <div className="hp-exp-chip"><b>Linux</b><span>Debian, Ubuntu, Mint, UnRAID</span></div>
-              <div className="hp-exp-chip"><b>ECE Diploma</b><span>NYP · 2024 to 2027</span></div>
-              <div className="hp-exp-chip"><b>Director&apos;s List</b><span>NYP, Y2S1</span></div>
-            </div>
           </div>
         </section>
 
@@ -682,10 +678,19 @@ export default function HomeClient() {
                 <img src="/images/beadreader-flagship.webp" alt="BeadReader, a self-hosted invite-only private book reader" loading="lazy" />
                 <span className="hp-spot-badge"><ST /> Flagship Software Build</span>
               </div>
-              <div className="hp-spot-solo-cta">
-                <button className="hp-btn" onClick={() => openProject('proj-beadreader')}>Read the summary <SB /></button>
-                <button className="hp-btn hp-btn-ghost" onClick={() => { window.location.href = '/beadreader'; }}>Full article</button>
-                <button className="hp-btn hp-btn-ghost" onClick={() => window.open('https://github.com/New-Kringster/BeadReader', '_blank')}>GitHub</button>
+              <div className="hp-spot-solo-body">
+                <div className="hp-spot-stats">
+                  <div className="hp-spot-stat"><b>Live</b><span>read-together presence</span></div>
+                  <div className="hp-spot-stat"><b>SQL</b><span>content gate</span></div>
+                  <div className="hp-spot-stat"><b>Offline</b><span>PWA, service worker</span></div>
+                  <div className="hp-spot-stat"><b>1-click</b><span>Vercel deploy</span></div>
+                </div>
+                <div className="hp-spot-tags"><span>Next.js</span><span>Supabase</span><span>Cloudflare R2</span><span>Tailwind v4</span><span>TypeScript</span></div>
+                <div className="hp-spot-solo-cta">
+                  <button className="hp-btn" onClick={() => openProject('proj-beadreader')}>Read the summary <SB /></button>
+                  <button className="hp-btn hp-btn-ghost" onClick={() => { window.location.href = '/beadreader'; }}>Full article</button>
+                  <button className="hp-btn hp-btn-ghost" onClick={() => window.open('https://github.com/New-Kringster/BeadReader', '_blank')}>GitHub</button>
+                </div>
               </div>
             </article>
 
@@ -720,7 +725,7 @@ export default function HomeClient() {
                   onInput={() => { setProjectsExpanded(true); (window as any).filterProjects?.(); }} aria-label="Search projects" />
               </label>
               <div className="hp-pf-filters" role="group" aria-label="Filter projects">
-                {[['all','All'],['highlight','Highlights'],['personal','Personal'],['school','School']].map(([f, label], i) => (
+                {[['all','All'],['flagship','Flagship'],['highlight','Highlights'],['personal','Personal'],['school','School']].map(([f, label], i) => (
                   <button key={f} className={`hp-pf-filter${i === 0 ? ' is-active' : ''}`} data-filter={f}
                     onClick={(e) => { setProjectsExpanded(true); (window as any).setProjectFilter?.(e.currentTarget); }}>
                     {label}
@@ -733,10 +738,10 @@ export default function HomeClient() {
             <div className={`hp-pf-grid${projectsExpanded ? '' : ' is-clamped'}`} id="hp-pf-grid">
 
               {/* Project June */}
-              <article id="proj-june" className="hp-pf-card" data-article="/project-june" data-type="personal" data-highlight="1" data-search="project june 5g rc rover vehicle webrtc mqtt esp32 gps gyroscope laser spline cellular video personal highlight">
+              <article id="proj-june" className="hp-pf-card" data-article="/project-june" data-type="personal" data-flagship="1" data-search="project june 5g rc rover vehicle webrtc mqtt esp32 gps gyroscope laser spline cellular video personal flagship highlight">
                 <div className="hp-pf-thumb">
                   <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
-                  <span className="hp-pf-type personal">Personal</span><span className="hp-pf-star"><ST />Highlight</span>
+                  <span className="hp-pf-type personal">Personal</span><span className="hp-pf-crown"><CRWN />Flagship</span>
                   <img src="/images/ProjJuneBanner1.webp" alt="Project June rover" loading="lazy" />
                 </div>
                 <div className="hp-pf-info">
@@ -784,10 +789,10 @@ export default function HomeClient() {
               </article>
 
               {/* BeadReader */}
-              <article id="proj-beadreader" className="hp-pf-card" data-article="/beadreader" data-type="personal" data-highlight="1" data-search="beadreader bead reader private book reader ebook webtoon nextjs supabase cloudflare r2 tailwind postgres presence reading stats access code personal highlight web app">
+              <article id="proj-beadreader" className="hp-pf-card" data-article="/beadreader" data-type="personal" data-flagship="1" data-search="beadreader bead reader private book reader ebook webtoon nextjs supabase cloudflare r2 tailwind postgres presence reading stats access code personal flagship highlight web app">
                 <div className="hp-pf-thumb">
                   <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
-                  <span className="hp-pf-type personal">Personal</span><span className="hp-pf-star"><ST />Highlight</span>
+                  <span className="hp-pf-type personal">Personal</span><span className="hp-pf-crown"><CRWN />Flagship</span>
                   <img src="/images/beadreader-pf-context.webp" alt="BeadReader private book reader" loading="lazy" />
                 </div>
                 <div className="hp-pf-info">

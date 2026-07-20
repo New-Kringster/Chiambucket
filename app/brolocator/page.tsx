@@ -46,7 +46,7 @@ export default function BrolocatorPage() {
         <div className="art-hero-bg"><img src="/images/borlocator-pf-context.webp" alt="Brolocator LoRA Messenger device" /></div>
         <div className="art-hero-scrim"></div>
         <div className="art-hero-inner hp-section">
-          <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> All projects</a>
+          <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>
           <div className="art-tags">
             <span className="hp-md-tag personal">Personal Project</span>
           </div>

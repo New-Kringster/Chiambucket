@@ -55,7 +55,7 @@ export default function ElecfPage() {
         <div className="art-hero-bg"><img src="/images/elecf-prototype1.avif" alt="The ELEC-F cardboard freezer prototype with M5Stack and sensors" /></div>
         <div className="art-hero-scrim"></div>
         <div className="art-hero-inner hp-section">
-          <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> All projects</a>
+          <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>
           <div className="art-tags">
             <span className="hp-md-tag school">School Project</span>
             <span className="hp-md-tag personal">Team of 4</span>
@@ -268,9 +268,10 @@ export default function ElecfPage() {
       {/* Scoped styles: components grid */}
       <style>{`
         /* The cover photo is bright cardboard-on-white; deepen the hero scrim on this page
-           so the [ ALL PROJECTS ] back link and title stay legible */
+           so the back link and title stay legible, but still fade to transparent at the
+           bottom so the hero dissolves into the field (matches the global hero fade). */
         html.sensory-active .art-hero-scrim {
-          background: linear-gradient(180deg, rgba(3,4,8,0.82) 0%, rgba(3,4,8,0.45) 32%, rgba(3,4,8,0.62) 72%, rgba(3,4,8,0.88) 100%); }
+          background: linear-gradient(180deg, rgba(3,4,8,0.82) 0%, rgba(3,4,8,0.44) 32%, rgba(3,4,8,0.6) 68%, rgba(3,4,8,0.76) 85%, transparent 100%); }
         .ef-comp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: 12px; margin: 1.4rem 0; }
         .ef-comp { display: flex; flex-direction: column; gap: 7px; padding: 14px; border-radius: 16px; background: var(--hp-glass); border: 1px solid var(--hp-line); box-shadow: inset 0 1px 0 rgba(255,255,255,0.04); transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), border-color 0.35s ease; }
         .ef-comp:hover { transform: translateY(-3px); border-color: rgba(var(--sa-accent, 127,168,255), 0.35); }

@@ -153,7 +153,7 @@ export default function LumenPage() {
         <div className="art-hero-bg"><img src="/images/lumen-cover.webp" alt="LUMEN smart-home assistant: built with OpenAI Whisper and DeepSeek" /></div>
         <div className="art-hero-scrim"></div>
         <div className="art-hero-inner hp-section">
-          <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> All projects</a>
+          <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>
           <div className="art-tags">
             <span className="hp-md-tag highlight">Highlights</span>
             <span className="hp-md-tag school">School Project</span>
@@ -193,6 +193,7 @@ export default function LumenPage() {
               <a href="#memory">The memory wall</a>
               <a href="#auto">A room that runs itself</a>
               <a href="#deploy">Dashboard &amp; deployment</a>
+              <a href="#slides">Slide deck</a>
               <a href="#next">What I&apos;d add next</a>
             </nav>
           </div>
@@ -285,6 +286,19 @@ export default function LumenPage() {
               <img src="/images/lumen-dashboard.webp" alt="The LUMEN web dashboard: device control panel, live readout, history chart and activity log" loading="lazy" />
               <figcaption>The dashboard: device control, live state, the temp/humidity chart, the activity log and recordings, in one panel.</figcaption>
             </figure>
+          </section>
+
+          <section id="slides" className="art-section" data-reveal>
+            <h2>Slide deck</h2>
+            <p>The full project presentation, the same deck I took into the module review. It walks through the brief, the pipeline, the memory work and the demo. Use the arrows to page through it, or open it fullscreen.</p>
+            <div className="art-embed lm-deck">
+              <iframe
+                title="LUMEN project presentation (Figma deck)"
+                src="https://embed.figma.com/deck/SPhrhpw7sGvLo9PwOkXY8b/LUMEN?embed-host=share"
+                allowFullScreen
+                loading="lazy"
+              />
+            </div>
           </section>
 
           <section id="next" className="art-section" data-reveal>
@@ -401,6 +415,9 @@ export default function LumenPage() {
           display: flex; align-items: center; justify-content: center; border-radius: 8px; font-family: var(--font-ddt, monospace); font-size: 0.84rem; font-weight: 700;
           color: var(--hp-sky, #7fa8ff); background: color-mix(in srgb, var(--hp-sky, #7fa8ff) 14%, transparent); border: 1px solid color-mix(in srgb, var(--hp-sky, #7fa8ff) 35%, transparent); }
         .lm-steps b { color: #eef1f7; }
+
+        /* ── Figma slide deck (decks are 16:9, not the .art-embed default) ── */
+        .lm-deck { aspect-ratio: 16 / 9; }
 
         /* ── Demo video ── */
         .lm-demo { margin: 1.3rem 0 0.6rem; }

@@ -59,7 +59,7 @@ export function PeekModalContent({ id }: { id: string }) {
     <div className="hp-rd-hero">
       <img src={img} alt={alt} />
       <div className="hp-rd-hero-tags">
-        {tags.map(t => <span key={t} className={`hp-md-tag ${t === 'Highlights' ? 'highlight' : type}`}>{t}</span>)}
+        {tags.map(t => <span key={t} className={`hp-md-tag ${t === 'Flagship' ? 'flagship' : t === 'Highlights' ? 'highlight' : type}`}>{t}</span>)}
       </div>
     </div>
   );
@@ -67,7 +67,7 @@ export function PeekModalContent({ id }: { id: string }) {
   switch (id) {
     case 'proj-june': return (
       <>
-        {hero('/images/ProjJuneBanner1.webp', 'Project June rover', ['Highlights', 'Personal Project'], 'highlight')}
+        {hero('/images/ProjJuneBanner1.webp', 'Project June rover', ['Flagship', 'Personal Project'], 'highlight')}
         <div className="hp-rd-body">
           <h2 className="hp-md-title">Project June</h2>
           <p className="hp-md-meta">3 Weeks · High Difficulty · Self-Learnt · 3D Design · Cellular · WebRTC · MQTT</p>
@@ -111,7 +111,7 @@ export function PeekModalContent({ id }: { id: string }) {
     );
     case 'proj-beadreader': return (
       <>
-        {hero('/images/beadreader-pf-context.webp', 'BeadReader private book reader', ['Highlights', 'Personal Project'], 'highlight')}
+        {hero('/images/beadreader-pf-context.webp', 'BeadReader private book reader', ['Flagship', 'Personal Project'], 'highlight')}
         <div className="hp-rd-body">
           <h2 className="hp-md-title">BeadReader</h2>
           <p className="hp-md-meta">Web App · Next.js · Supabase · Cloudflare R2 · Tailwind v4 · Self-Learnt</p>

@@ -3,6 +3,7 @@ import ArticleScrollSpy from '../../components/ArticleScrollSpy';
 import ArticleLinks from '../../components/ArticleLinks';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
 import ReadingTogether from './ReadingTogether';
+import SpicyGate from './SpicyGate';
 
 const DEPLOY_URL =
   'https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FNew-Kringster%2FBeadReader&env=SESSION_SECRET,BOOTSTRAP_ADMIN_CODE&envDescription=SESSION_SECRET%20signs%20the%20login%20cookie%3B%20BOOTSTRAP_ADMIN_CODE%20is%20your%20first%20admin%20login%20code&envLink=https%3A%2F%2Fgithub.com%2FNew-Kringster%2FBeadReader%23environment-variables&project-name=beadreader&repository-name=beadreader&integration-ids=oac_VqOgBHqhEoFTPzGkPd7L0iH6';
@@ -49,9 +50,9 @@ export default function BeadReaderPage() {
         <div className="art-hero-bg"><img src="/images/beadreader-cover.webp" alt="BeadReader, a private online book reader" /></div>
         <div className="art-hero-scrim"></div>
         <div className="art-hero-inner hp-section">
-          <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> All projects</a>
+          <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>
           <div className="art-tags">
-            <span className="hp-md-tag highlight">Highlights</span>
+            <span className="hp-md-tag flagship">Flagship</span>
             <span className="hp-md-tag personal">Personal Project</span>
           </div>
           {/* On desktop the cover art carries the BeadReader wordmark, so this title is
@@ -153,6 +154,7 @@ export default function BeadReaderPage() {
             <h2>The spicy gate</h2>
             <p>Some chapters, or even passages inside a chapter, are marked explicit. Access is per reader, and it is enforced in the database query itself. A reader without access never receives the gated text, not even hidden in the response, so it cannot be pulled out of the raw API. This is a real gate, not CSS.</p>
             <p>The same chapter adapts to who is reading. A reader with access gets a blurred teaser that expands on a tap. A reader without access sees a small locked preview with a note to request it. A reader in cal mode sees the book with every explicit passage removed entirely, no markers and no pepper icon at all.</p>
+            <SpicyGate />
             <figure className="art-fig">
               <img src="/images/beadreader/contents-dark.webp" alt="A contents list with an explicit chapter marked" loading="lazy" />
               <figcaption>Explicit chapters carry a marker for readers who can see them, and are invisible to those who cannot.</figcaption>

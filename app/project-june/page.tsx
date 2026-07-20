@@ -47,9 +47,9 @@ export default function ProjectJunePage() {
         <div className="art-hero-bg"><img src="/images/ProjJuneBanner1.webp" alt="Project June, a 5G radio-controlled vehicle" /></div>
         <div className="art-hero-scrim"></div>
         <div className="art-hero-inner hp-section">
-          <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> All projects</a>
+          <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>
           <div className="art-tags">
-            <span className="hp-md-tag highlight">Highlights</span>
+            <span className="hp-md-tag flagship">Flagship</span>
             <span className="hp-md-tag personal">Personal Project</span>
           </div>
           <h1 className="art-title">Project <em>June</em></h1>

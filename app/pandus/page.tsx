@@ -46,7 +46,7 @@ export default function PandusPage() {
         <div className="art-hero-bg"><img src="/images/pandusarticle.webp" alt="Pandus syrup dispenser" /></div>
         <div className="art-hero-scrim"></div>
         <div className="art-hero-inner hp-section">
-          <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> All projects</a>
+          <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>
           <div className="art-tags">
             <span className="hp-md-tag school">School Project</span>
           </div>

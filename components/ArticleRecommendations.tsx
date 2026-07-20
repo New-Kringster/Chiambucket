@@ -5,6 +5,7 @@ import { PeekFeed } from './ProjectPeek';
 const AU = () => <svg aria-hidden="true"><use href="#arec-arrow-ur" /></svg>;
 const SR = () => <svg aria-hidden="true"><use href="#arec-search" /></svg>;
 const ST = () => <svg aria-hidden="true"><use href="#arec-star" /></svg>;
+const CR = () => <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2.4 18.2h19.2l-1.5-9.4-5.4 3.9L12 4.8 9.3 12.7 3.9 8.8z" /></svg>;
 
 type ProjectType = 'personal' | 'school';
 
@@ -16,15 +17,16 @@ interface Project {
   imgAlt: string;
   type: ProjectType;
   highlight?: boolean;
+  flagship?: boolean;
   articleUrl: string;
   icons: Array<{ src: string; alt: string }>;
 }
 
 const ALL_PROJECTS: Project[] = [
-  { id: 'proj-june', title: 'Project June', blurb: 'A 5G radio-controlled vehicle with 3 live video streams, GPS, a laser system, gyroscope and more. My most ambitious build.', img: '/images/ProjJuneBanner1.webp', imgAlt: 'Project June rover', type: 'personal', highlight: true, articleUrl: '/project-june', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32' }, { src: '/images/Kicad-icon.webp', alt: 'KiCAD' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }, { src: '/images/PlatformIO-icon.webp', alt: 'PlatformIO' }] },
+  { id: 'proj-june', title: 'Project June', blurb: 'A 5G radio-controlled vehicle with 3 live video streams, GPS, a laser system, gyroscope and more. My most ambitious build.', img: '/images/ProjJuneBanner1.webp', imgAlt: 'Project June rover', type: 'personal', flagship: true, articleUrl: '/project-june', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32' }, { src: '/images/Kicad-icon.webp', alt: 'KiCAD' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }, { src: '/images/PlatformIO-icon.webp', alt: 'PlatformIO' }] },
   { id: 'proj-lora', title: 'LoRA Messenger', blurb: 'An ESP32 messenger with 2-way voice over ESP-NOW and text over LoRa. Custom PCB in KiCAD, case in Onshape, all self-taught.', img: '/images/borlocator-pf-context.webp', imgAlt: 'LoRA Messenger', type: 'personal', highlight: true, articleUrl: '/brolocator', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32' }, { src: '/images/Kicad-icon.webp', alt: 'KiCAD' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }, { src: '/images/PlatformIO-icon.webp', alt: 'PlatformIO' }] },
   { id: 'proj-lumen', title: 'LUMEN', blurb: 'A voice-controlled smart-room assistant on an ESP32, with Whisper and a DeepSeek LLM via OpenRouter turning speech into one JSON command over MQTT.', img: '/images/lumen-pf-context.webp', imgAlt: 'LUMEN voice assistant', type: 'school', highlight: true, articleUrl: '/lumen', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32' }, { src: '/images/python-icon.webp', alt: 'Python' }, { src: '/images/docker-icon.webp', alt: 'Docker' }, { src: '/images/vscode-icon.webp', alt: 'VS Code' }] },
-  { id: 'proj-beadreader', title: 'BeadReader', blurb: 'A private, invite-only online book reader with live presence, per-reader resume, a SQL-enforced content gate, webtoons and shared reading stats. Next.js and Supabase.', img: '/images/beadreader-pf-context.webp', imgAlt: 'BeadReader private book reader', type: 'personal', highlight: true, articleUrl: '/beadreader', icons: [{ src: '/images/nextjs-icon.webp', alt: 'Next.js' }, { src: '/images/supabase-icon.webp', alt: 'Supabase' }, { src: '/images/tailwind-icon.webp', alt: 'Tailwind CSS' }, { src: '/images/cloudflare-icon.webp', alt: 'Cloudflare R2' }] },
+  { id: 'proj-beadreader', title: 'BeadReader', blurb: 'A private, invite-only online book reader with live presence, per-reader resume, a SQL-enforced content gate, webtoons and shared reading stats. Next.js and Supabase.', img: '/images/beadreader-pf-context.webp', imgAlt: 'BeadReader private book reader', type: 'personal', flagship: true, articleUrl: '/beadreader', icons: [{ src: '/images/nextjs-icon.webp', alt: 'Next.js' }, { src: '/images/supabase-icon.webp', alt: 'Supabase' }, { src: '/images/tailwind-icon.webp', alt: 'Tailwind CSS' }, { src: '/images/cloudflare-icon.webp', alt: 'Cloudflare R2' }] },
   { id: 'proj-ema', title: 'EMA Smart Home', blurb: 'A multi-node smart-home system on BeagleBone Black, Python and SocketIO, with a live dashboard and a 3D Spline view.', img: '/images/Ema-pf-context.webp', imgAlt: 'EMA Smart Home System', type: 'school', highlight: false, articleUrl: '/csdp', icons: [{ src: '/images/vscode-icon.webp', alt: 'VS Code' }, { src: '/images/figma-icon.webp', alt: 'Figma' }, { src: '/images/resolve-icon.webp', alt: 'DaVinci Resolve' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }] },
   { id: 'proj-pandus', title: 'Pandus Dispenser', blurb: 'My first school project: a 6-part 3D-printed water dispenser powered by an Arduino Uno and driven with PyFirmata.', img: '/images/pandusarticle.webp', imgAlt: 'Pandus Dispenser', type: 'school', highlight: false, articleUrl: '/pandus', icons: [{ src: '/images/onshape-icon.webp', alt: 'Onshape' }, { src: '/images/vscode-icon.webp', alt: 'VS Code' }, { src: '/images/resolve-icon.webp', alt: 'DaVinci Resolve' }, { src: '/images/powerpoint-icon.webp', alt: 'PowerPoint' }] },
   { id: 'proj-elecf', title: 'ELEC-F Concept', blurb: 'A freezer safety system on M5Stack. ToF and PIR sensors catch a worker trapped in a walk-in freezer, then a timer and alarm raise help.', img: '/images/elef2-pf-context.webp', imgAlt: 'ELEC-F Concept', type: 'school', highlight: false, articleUrl: '/elecf', icons: [{ src: '/images/figma-icon.webp', alt: 'Figma' }, { src: '/images/ps-pf-icon.webp', alt: 'Photoshop' }, { src: '/images/resolve-icon.webp', alt: 'DaVinci Resolve' }] },
@@ -85,17 +87,18 @@ export default function ArticleRecommendations({ exclude }: { exclude: string })
             {visible.map(p => (
               <article
                 key={p.id}
-                className={`hp-pf-card${p.highlight ? ' is-highlight' : ''}`}
+                className={`hp-pf-card${p.flagship ? ' is-flagship' : p.highlight ? ' is-highlight' : ''}`}
                 data-article={p.articleUrl}
                 data-type={p.type}
                 data-highlight={p.highlight ? '1' : undefined}
+                data-flagship={p.flagship ? '1' : undefined}
               >
                 <div className="hp-pf-thumb">
                   <button className="hp-pf-peek" onClick={() => openProject(p.id)} aria-label="Peek at a quick summary">
                     <span className="hp-pf-peek-pill"><SR />Peek summary</span>
                   </button>
                   <span className={`hp-pf-type ${p.type}`}>{p.type === 'personal' ? 'Personal' : 'School'}</span>
-                  {p.highlight && <span className="hp-pf-star"><ST />Highlight</span>}
+                  {p.flagship ? <span className="hp-pf-crown"><CR />Flagship</span> : p.highlight && <span className="hp-pf-star"><ST />Highlight</span>}
                   <img src={p.img} alt={p.imgAlt} loading="lazy" />
                 </div>
                 <div className="hp-pf-info">
