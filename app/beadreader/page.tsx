@@ -50,6 +50,19 @@ export default function BeadReaderPage() {
         <div className="art-hero-scrim"></div>
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> All projects</a>
+          <div
+            className="br-mark"
+            aria-hidden="true"
+            style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              width: 54, height: 54, borderRadius: 15, marginBottom: 20,
+              background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.14)',
+              backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.12)',
+            }}
+          >
+            <img src="/images/beadreader-icon.png" alt="" width={36} height={36} style={{ display: 'block' }} />
+          </div>
           <div className="art-tags">
             <span className="hp-md-tag highlight">Highlights</span>
             <span className="hp-md-tag personal">Personal Project</span>

@@ -39,7 +39,7 @@ Opens at `http://localhost:3000`. Use `npx tsc --noEmit` to type-check without d
 | `next.config.mjs` | Permanent redirects from the old `.html` URLs to clean routes |
 | `vercel.json` | Security headers |
 
-Article pages: `/project-june`, `/brolocator`, `/csdp`, `/pandus`, `/elecf`.
+Article pages: `/project-june`, `/lumen`, `/beadreader`, `/brolocator`, `/csdp`, `/pandus`, `/elecf`.
 
 ## Theming
 
