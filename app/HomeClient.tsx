@@ -655,7 +655,7 @@ export default function HomeClient() {
             <article className="hp-spotlight" data-reveal>
               <div className="hp-spot-media">
                 <img src="/images/ProjJuneBanner1.webp" alt="Project June, a 5G radio-controlled vehicle" loading="lazy" />
-                <span className="hp-spot-badge"><ST /> Flagship build</span>
+                <span className="hp-spot-badge"><ST /> Flagship Hardware Build</span>
               </div>
               <div className="hp-spot-body">
                 <span className="hp-key">Project June · Personal</span>
@@ -673,6 +673,19 @@ export default function HomeClient() {
                   <button className="hp-btn hp-btn-ghost" onClick={() => { window.location.href = '/project-june'; }}>Full article</button>
                   <button className="hp-btn hp-btn-ghost" onClick={() => window.open('https://youtu.be/MnkJsx-nwoE?si=kd1n5bYct6dWTcQC', '_blank')}>Watch the build</button>
                 </div>
+              </div>
+            </article>
+
+            {/* Flagship spotlight — BeadReader (software) */}
+            <article className="hp-spotlight hp-spotlight-solo" data-reveal>
+              <div className="hp-spot-media">
+                <img src="/images/beadreader-flagship.webp" alt="BeadReader, a self-hosted invite-only private book reader" loading="lazy" />
+                <span className="hp-spot-badge"><ST /> Flagship Software Build</span>
+              </div>
+              <div className="hp-spot-solo-cta">
+                <button className="hp-btn" onClick={() => openProject('proj-beadreader')}>Read the summary <SB /></button>
+                <button className="hp-btn hp-btn-ghost" onClick={() => { window.location.href = '/beadreader'; }}>Full article</button>
+                <button className="hp-btn hp-btn-ghost" onClick={() => window.open('https://github.com/New-Kringster/BeadReader', '_blank')}>GitHub</button>
               </div>
             </article>
 

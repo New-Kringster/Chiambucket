@@ -45,29 +45,19 @@ export default function BeadReaderPage() {
       <ArticleScrollSpy />
 
       {/* ── Feature hero ── */}
-      <header className="art-hero">
+      <header className="art-hero br-hero">
         <div className="art-hero-bg"><img src="/images/beadreader-cover.webp" alt="BeadReader, a private online book reader" /></div>
         <div className="art-hero-scrim"></div>
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> All projects</a>
-          <div
-            className="br-mark"
-            aria-hidden="true"
-            style={{
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              width: 54, height: 54, borderRadius: 15, marginBottom: 20,
-              background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.14)',
-              backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.12)',
-            }}
-          >
-            <img src="/images/beadreader-icon.png" alt="" width={36} height={36} style={{ display: 'block' }} />
-          </div>
           <div className="art-tags">
             <span className="hp-md-tag highlight">Highlights</span>
             <span className="hp-md-tag personal">Personal Project</span>
           </div>
-          <h1 className="art-title">Bead<em>Reader</em></h1>
+          {/* On desktop the cover art carries the BeadReader wordmark, so this title is
+              hidden there (kept for SEO/a11y). On phones the wide promo crops out its own
+              wordmark, so the title becomes visible and leads instead. */}
+          <h1 className="art-title br-hero-title">Bead<em>Reader</em></h1>
           <p className="art-lead">A small, private online book reader for a handful of friends. One person publishes books in Markdown or image webtoons, everyone else logs in with a single access code, and the app remembers exactly where each reader left off. You can see who else is reading, react in the moment, and follow everyone&apos;s progress in a shared stats dashboard.</p>
           <div className="art-toolrow">
             <span className="hp-key">Built with</span>
@@ -87,6 +77,20 @@ export default function BeadReaderPage() {
           />
         </div>
       </header>
+
+      <style>{`
+        /* Desktop: the promo cover shows its own wordmark, so the h1 is hidden
+           (present for SEO/a11y). The image is nudged so the wordmark clears the nav. */
+        .br-hero .art-hero-bg img { object-position: center 22%; }
+        .br-hero .br-hero-title { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+        /* Phones: the promo wordmark is too wide to fit a phone screen, so zoom the
+           backdrop into the phone mockups (pushing the baked wordmark out of frame)
+           and let the real gradient title lead instead. */
+        @media (max-width: 760px) {
+          .br-hero .art-hero-bg img { object-position: center; transform: scale(1.75); transform-origin: 66% 84%; }
+          .br-hero .br-hero-title { position: static; width: auto; height: auto; padding: 0; margin: 0; overflow: visible; clip: auto; white-space: normal; border: 0; }
+        }
+      `}</style>
 
       {/* ── Body ── */}
       <div className="art-body hp-section">

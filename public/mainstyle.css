@@ -5602,6 +5602,15 @@ html[data-theme="paper"] {
 .hp-spot-cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 1.6rem; }
 .hp-spot-cta .hp-btn { padding: 0.78rem 1.3rem; font-size: 0.85rem; }
 
+/* Solo flagship spotlight — a full designed promo graphic + a CTA row below it
+   (used by the BeadReader software flagship, whose image carries its own copy). */
+.hp-spotlight-solo { display: block; }
+.hp-spotlight-solo .hp-spot-media { min-height: 0; border-radius: 18px; }
+.hp-spotlight-solo .hp-spot-media img { height: auto; }
+.hp-spotlight-solo .hp-spot-media::after { display: none; }
+.hp-spot-solo-cta { display: flex; flex-wrap: wrap; gap: 10px; padding: 16px 6px 4px; }
+.hp-spot-solo-cta .hp-btn { padding: 0.78rem 1.3rem; font-size: 0.85rem; }
+
 /* ── Capabilities (skills the projects built up) ── */
 .hp-cap { margin: 0 0 clamp(42px, 6vw, 66px); scroll-margin-top: 120px; }
 .hp-cap-intro { max-width: 640px; margin-bottom: 24px; }
@@ -5718,7 +5727,7 @@ html[data-theme="paper"] {
 @media only screen and (max-width: 640px) {
   .hp-cap-grid { grid-template-columns: 1fr; }
   .hp-spot-stats { gap: 16px; }
-  .hp-spot-cta .hp-btn { flex: 1 1 auto; justify-content: center; }
+  .hp-spot-cta .hp-btn, .hp-spot-solo-cta .hp-btn { flex: 1 1 auto; justify-content: center; }
   .hp-rd-cta { padding: 16px 18px; }
   .hp-rd-chapter { gap: 12px; }
 }
@@ -5873,7 +5882,7 @@ html[data-theme="paper"] {
 .art-hero-bg img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
 .art-hero-scrim {
   position: absolute; inset: 0; z-index: 1;
-  background: linear-gradient(180deg, rgba(6,6,7,0.55) 0%, rgba(6,6,7,0.25) 26%, rgba(6,6,7,0.8) 76%, #060607 100%);
+  background: linear-gradient(180deg, rgba(6,6,7,0.5) 0%, rgba(6,6,7,0.12) 30%, rgba(6,6,7,0.5) 68%, rgba(6,6,7,0.72) 86%, transparent 100%);
 }
 .art-hero-inner { position: relative; z-index: 2; width: 100%; }
 .art-back {
@@ -6314,12 +6323,14 @@ html.sensory-active .ct-social:hover svg { filter: none; }
 /* ══════════ ARTICLES: the art-* template over the field ══════════ */
 html.sensory-active .art { background: transparent !important; }
 
-/* Hero: the cover art dissolves into the field instead of a hard seam */
-html.sensory-active .art-hero-bg { -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 99%);
-  mask-image: linear-gradient(180deg, #000 55%, transparent 99%); }
+/* Hero: the cover art dissolves into the live field. The image mask AND the
+   scrim both fade to transparent before the bottom edge, so the hero melts into
+   the exact field the body sits on (no cool-black band over a warm field). */
+html.sensory-active .art-hero-bg { -webkit-mask-image: linear-gradient(180deg, #000 42%, rgba(0,0,0,0.55) 74%, transparent 96%);
+  mask-image: linear-gradient(180deg, #000 42%, rgba(0,0,0,0.55) 74%, transparent 96%); }
 html.sensory-active .art-hero-bg img { filter: saturate(0.82) brightness(0.78) contrast(1.05); }
 html.sensory-active .art-hero-scrim {
-  background: linear-gradient(180deg, rgba(3,4,8,0.62) 0%, rgba(3,4,8,0.18) 30%, rgba(3,4,8,0.55) 72%, rgba(3,4,8,0.85) 100%); }
+  background: linear-gradient(180deg, rgba(3,4,8,0.58) 0%, rgba(3,4,8,0.12) 32%, rgba(3,4,8,0.44) 66%, rgba(3,4,8,0.68) 85%, transparent 100%); }
 html.sensory-active .art-back {
   font-family: var(--font-ddt); font-weight: 400; font-size: 0.66rem; letter-spacing: 0.2em; text-transform: uppercase;
   color: rgba(var(--sa-accent),0.85); }

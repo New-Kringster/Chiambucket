@@ -266,6 +266,7 @@ function PeekItem({ id, first, index }: { id: string; first: boolean; index: num
 */
 export function PeekFeed({ startId, exclude }: { startId: string; exclude?: string }) {
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const [expanded, setExpanded] = useState(false);
 
   const base = PEEK_ORDER.filter((id) => id !== exclude);
   const start = Math.max(0, base.indexOf(startId));
@@ -280,10 +281,19 @@ export function PeekFeed({ startId, exclude }: { startId: string; exclude?: stri
 
   return (
     <div className="hp-rd-feed" ref={rootRef}>
-      {order.map((id, i) => (
-        <PeekItem key={id} id={id} index={i} first={i === 0} />
-      ))}
-      <div className="hp-rd-feed-end" aria-hidden="true"><span>END OF FEED</span></div>
+      <PeekItem key={order[0]} id={order[0]} index={0} first={true} />
+      {order.length > 1 && !expanded ? (
+        <div className="hp-rd-feed-more" style={{ display: 'flex', justifyContent: 'center', padding: '32px 0 8px' }}>
+          <button className="hp-btn" onClick={() => setExpanded(true)}>Load more projects</button>
+        </div>
+      ) : (
+        <>
+          {order.slice(1).map((id, i) => (
+            <PeekItem key={id} id={id} index={i + 1} first={false} />
+          ))}
+          <div className="hp-rd-feed-end" aria-hidden="true"><span>END OF FEED</span></div>
+        </>
+      )}
     </div>
   );
 }
