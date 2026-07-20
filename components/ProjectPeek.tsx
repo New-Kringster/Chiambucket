@@ -16,7 +16,7 @@ import { useEffect, useRef, useState } from 'react';
 
 /* Project order = the homepage gallery order (also the ALL_PROJECTS order). */
 export const PEEK_ORDER: string[] = [
-  'proj-june', 'proj-lora', 'proj-lumen', 'proj-beadreader', 'proj-ema', 'proj-pandus', 'proj-elecf',
+  'proj-june', 'proj-beadreader', 'proj-lora', 'proj-lumen', 'proj-ema', 'proj-pandus', 'proj-elecf',
   'proj-kauli', 'proj-sol', 'proj-copyboard', 'proj-webdev', 'proj-mc',
 ];
 

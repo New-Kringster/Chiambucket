@@ -5590,12 +5590,13 @@ html[data-theme="paper"] {
 .hp-spot-badge {
   position: absolute; top: 14px; left: 14px; z-index: 2;
   display: inline-flex; align-items: center; gap: 6px;
-  font-family: 'inter'; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-  color: #ffce5a; padding: 0.36rem 0.72rem; border-radius: 999px;
-  background: rgba(20,16,0,0.55); border: 1px solid rgba(255,170,0,0.45);
-  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  font-family: 'inter'; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+  color: #23160a; padding: 0.4rem 0.8rem; border-radius: 999px;
+  background: linear-gradient(135deg, #ffe6a0, #f3b444);
+  border: 1px solid rgba(255,226,150,0.9);
+  box-shadow: 0 8px 20px -7px rgba(243,180,68,0.75), inset 0 1px 0 rgba(255,255,255,0.55);
 }
-.hp-spot-badge svg { width: 12px; height: 12px; }
+.hp-spot-badge svg { width: 13px; height: 13px; }
 .hp-spot-body { display: flex; flex-direction: column; justify-content: center; padding: clamp(16px, 2.2vw, 30px) clamp(14px, 1.8vw, 26px); }
 .hp-spot-title {
   font-family: 'oswaldbold'; font-size: clamp(1.6rem, 3vw, 2.4rem); line-height: 1.1; letter-spacing: -0.015em;

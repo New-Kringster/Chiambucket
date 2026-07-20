@@ -493,11 +493,7 @@ export default function HomeClient() {
           html.sensory-active .hp-pf-showmore-wrap::before {
             background: linear-gradient(to bottom, rgba(5,7,14,0) 0%, rgba(5,7,14,0.8) 62%, rgba(5,7,14,0.97) 100%) !important; }
 
-          /* Cool the warm flagship badge so it reads in the deck palette */
-          html.sensory-active .hp-spot-badge {
-            background: rgba(12,16,28,0.62) !important; border: 1px solid rgba(var(--sa-accent),0.42) !important;
-            color: #cddbff !important; font-family: var(--font-ddt); text-transform: uppercase; letter-spacing: 0.14em; }
-          html.sensory-active .hp-spot-badge svg { color: rgba(var(--sa-accent),0.95); fill: rgba(var(--sa-accent),0.95); }
+          /* The flagship spotlight badge stays the premium gold crown (see .hp-spot-badge). */
         `}</style>
 
         {/* ── HERO ── */}
@@ -651,7 +647,7 @@ export default function HomeClient() {
             <article className="hp-spotlight" data-reveal>
               <div className="hp-spot-media">
                 <img src="/images/ProjJuneBanner1.webp" alt="Project June, a 5G radio-controlled vehicle" loading="lazy" />
-                <span className="hp-spot-badge"><ST /> Flagship Hardware Build</span>
+                <span className="hp-spot-badge"><CRWN /> Flagship Hardware Build</span>
               </div>
               <div className="hp-spot-body">
                 <span className="hp-key">Project June · Personal</span>
@@ -676,7 +672,7 @@ export default function HomeClient() {
             <article className="hp-spotlight hp-spotlight-solo" data-reveal>
               <div className="hp-spot-media">
                 <img src="/images/beadreader-flagship.webp" alt="BeadReader, a self-hosted invite-only private book reader" loading="lazy" />
-                <span className="hp-spot-badge"><ST /> Flagship Software Build</span>
+                <span className="hp-spot-badge"><CRWN /> Flagship Software Build</span>
               </div>
               <div className="hp-spot-solo-body">
                 <div className="hp-spot-stats">
@@ -754,6 +750,23 @@ export default function HomeClient() {
                 </div>
               </article>
 
+              {/* BeadReader */}
+              <article id="proj-beadreader" className="hp-pf-card" data-article="/beadreader" data-type="personal" data-flagship="1" data-search="beadreader bead reader private book reader ebook webtoon nextjs supabase cloudflare r2 tailwind postgres presence reading stats access code personal flagship highlight web app">
+                <div className="hp-pf-thumb">
+                  <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
+                  <span className="hp-pf-type personal">Personal</span><span className="hp-pf-crown"><CRWN />Flagship</span>
+                  <img src="/images/beadreader-pf-context.webp" alt="BeadReader private book reader" loading="lazy" />
+                </div>
+                <div className="hp-pf-info">
+                  <h3 className="hp-pf-name">BeadReader</h3>
+                  <p className="hp-pf-blurb">A private, invite-only online book reader with live reading-together presence, per-reader resume, a SQL-enforced content gate, webtoons and shared reading stats. Next.js and Supabase.</p>
+                  <div className="hp-pf-foot">
+                    <div className="icon-stack"><img src="/images/nextjs-icon.webp" alt="" /><img src="/images/supabase-icon.webp" alt="" /><img src="/images/tailwind-icon.webp" alt="" /><img src="/images/cloudflare-icon.webp" alt="" /></div>
+                    <button className="hp-pf-view" onClick={() => { window.location.href = '/beadreader'; }}>Read article <AU /></button>
+                  </div>
+                </div>
+              </article>
+
               {/* LoRA Messenger */}
               <article id="proj-lora" className="hp-pf-card" data-article="/brolocator" data-type="personal" data-highlight="1" data-search="lora messenger esp32 espnow voice pcb kicad onshape oled battery personal radio highlight">
                 <div className="hp-pf-thumb">
@@ -784,23 +797,6 @@ export default function HomeClient() {
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/esp-icon.webp" alt="" /><img src="/images/python-icon.webp" alt="" /><img src="/images/docker-icon.webp" alt="" /><img src="/images/vscode-icon.webp" alt="" /></div>
                     <button className="hp-pf-view" onClick={() => { window.location.href = '/lumen'; }}>Read article <AU /></button>
-                  </div>
-                </div>
-              </article>
-
-              {/* BeadReader */}
-              <article id="proj-beadreader" className="hp-pf-card" data-article="/beadreader" data-type="personal" data-flagship="1" data-search="beadreader bead reader private book reader ebook webtoon nextjs supabase cloudflare r2 tailwind postgres presence reading stats access code personal flagship highlight web app">
-                <div className="hp-pf-thumb">
-                  <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
-                  <span className="hp-pf-type personal">Personal</span><span className="hp-pf-crown"><CRWN />Flagship</span>
-                  <img src="/images/beadreader-pf-context.webp" alt="BeadReader private book reader" loading="lazy" />
-                </div>
-                <div className="hp-pf-info">
-                  <h3 className="hp-pf-name">BeadReader</h3>
-                  <p className="hp-pf-blurb">A private, invite-only online book reader with live reading-together presence, per-reader resume, a SQL-enforced content gate, webtoons and shared reading stats. Next.js and Supabase.</p>
-                  <div className="hp-pf-foot">
-                    <div className="icon-stack"><img src="/images/nextjs-icon.webp" alt="" /><img src="/images/supabase-icon.webp" alt="" /><img src="/images/tailwind-icon.webp" alt="" /><img src="/images/cloudflare-icon.webp" alt="" /></div>
-                    <button className="hp-pf-view" onClick={() => { window.location.href = '/beadreader'; }}>Read article <AU /></button>
                   </div>
                 </div>
               </article>
