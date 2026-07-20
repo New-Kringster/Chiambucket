@@ -4691,6 +4691,18 @@ html[data-theme="datacenter"] {
   --dc-grid: rgba(120,160,210,0.06);
 }
 
+/* Paper — beadreader (warm honey / amber / chestnut, the reading room) */
+html[data-theme="paper"] {
+  --hp-blue: #c98a3a; --hp-blue-deep: #6b4a2f;
+  --hp-indigo: #d69a4c; --hp-sky: #e8c690;
+  --aura-1: rgba(201,138,58,0.30);
+  --aura-2: rgba(214,166,102,0.22);
+  --aura-3: rgba(150,104,64,0.16);
+  --em-grad: linear-gradient(102deg, #f0dcc0, #c98a3a);
+  --title-grad: linear-gradient(102deg, #f2e2c8 0%, #d99f52 52%, #c07f34 100%);
+  --orb-edge: rgba(240,220,192,0.20);
+}
+
 /* ── Shared layout helpers ── */
 .hp-section { max-width: var(--hp-max); margin: 0 auto; padding: 0 var(--hp-pad); position: relative; z-index: 2; }
 .hp-band { padding: clamp(64px, 9vw, 130px) 0; position: relative; }
@@ -6136,6 +6148,7 @@ html.sensory-active[data-theme="indigo"]     { --sa-accent: 150,164,255; }
 html.sensory-active[data-theme="mauve"]      { --sa-accent: 196,150,236; }
 html.sensory-active[data-theme="steel"]      { --sa-accent: 148,196,235; }
 html.sensory-active[data-theme="datacenter"] { --sa-accent: 116,232,208; }
+html.sensory-active[data-theme="paper"]      { --sa-accent: 224,168,102; }
 
 html.sensory-active body { background: transparent; }
 html.sensory-active main { position: relative; z-index: 1; background: transparent; }

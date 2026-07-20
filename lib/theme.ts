@@ -20,6 +20,7 @@ export const THEME_MAP: Record<string, string> = {
   '/pandus': 'steel',
   '/elecf': 'violet',
   '/lumen': 'violet',
+  '/beadreader': 'paper',
   '/homelab': 'datacenter',
 };
 
