@@ -6173,7 +6173,7 @@ html.sensory-active {
   --sa-panel-lo: rgba(22,17,12,0.62);
   --sa-nav-a: rgba(19,15,10,0.8);       /* nav / command-bar surface */
   --sa-nav-b: rgba(31,24,16,0.8);
-  --sa-btn: rgba(37,29,20,0.68);        /* button-hero (To BucketCentral) fill */
+  --sa-btn: rgba(37,29,20,0.68);        /* button-hero (sparkle CTA) fill */
   --sa-hairline: rgba(var(--sa-accent),0.1);
   --hp-glass: rgba(214,190,150,0.03);
   --hp-line: rgba(var(--sa-accent),0.08);

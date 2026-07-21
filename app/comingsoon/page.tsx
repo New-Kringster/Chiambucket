@@ -51,7 +51,7 @@ export default function ComingSoonPage() {
             </div>
             <div className="cw-row">
               <dt>REF</dt>
-              <dd>BUCKETCENTRAL</dd>
+              <dd>IN DEVELOPMENT</dd>
             </div>
           </dl>
         </div>

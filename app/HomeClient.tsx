@@ -532,12 +532,12 @@ export default function HomeClient() {
           </h1>
           <p className="hp-hero-sub">I&apos;m an engineer who designs. I build hardware and software with a design-first mindset, from 5G rovers and custom PCBs to a solar-powered homelab and photography.</p>
           <div className="hp-hero-cta">
-            <a className="hp-btn" href="#portfolio-items-holder">Explore my work <AC /></a>
-            <button className="button-hero" onClick={() => { window.location.href = '/comingsoon'; }}>
+            <button className="button-hero" onClick={() => { document.getElementById('portfolio-items-holder')?.scrollIntoView({ behavior: 'smooth' }); }}>
               <div className="dots_border"></div>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="sparkle"><use href="#icon-sparkle-btn"/></svg>
-              <span className="text_button">To BucketCentral</span>
+              <span className="text_button">View my work</span>
             </button>
+            <a className="hp-btn" href="/contact">Get in touch <AC /></a>
           </div>
           <div className="hp-scroll"><span className="hp-mouse"><span></span></span>Scroll</div>
         </header>
@@ -1071,7 +1071,7 @@ export default function HomeClient() {
           <h2>Let&apos;s make something with <span className="hp-roll" data-words="intention.,purpose.,meaning.,care.,soul." aria-label="intention"><em>intention.</em></span></h2>
           <div className="hp-cta-row">
             <button className="hp-btn" onClick={() => { window.location.href = '/contact'; }}>Contact me <AC /></button>
-            <button className="hp-btn hp-btn-ghost" onClick={() => { window.location.href = '/comingsoon'; }}>Explore BucketCentral</button>
+            <a className="hp-btn hp-btn-ghost" href="#portfolio-items-holder">Browse projects</a>
           </div>
         </section>
       </main>

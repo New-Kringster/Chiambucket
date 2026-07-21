@@ -3,18 +3,18 @@ import HomeClient from './HomeClient';
 
 export const metadata: Metadata = {
   title: 'Braven Chiam · Chiambucket | Engineer, Designer & Photographer',
-  description: 'Braven Chiam is an engineer who designs. Explore his projects (5G rovers, custom PCBs, smart-home systems), design and photography work, and a solar-powered self-hosted homelab.',
-  keywords: 'Braven Chiam, Chiambucket, engineer, designer, photographer, Singapore, homelab, self-hosted, ESP32, PCB design, 3D CAD, portfolio',
+  description: 'Braven Chiam is an engineer who designs. Flagship builds: Project June, a 5G rover streaming three live video feeds, and BeadReader, a private invite-only book reader. Plus custom PCBs, design, photography and a solar-powered homelab.',
+  keywords: 'Braven Chiam, Chiambucket, Project June, 5G rover, BeadReader, book reader app, engineer, designer, photographer, Singapore, ESP32, PCB design, Next.js, homelab, portfolio',
   alternates: { canonical: 'https://www.chiambucket.com/' },
   openGraph: {
     title: 'Braven Chiam · Chiambucket | Engineer, Designer & Photographer',
-    description: 'An engineer who designs. Projects, design, photography and a solar-powered homelab, all in one place.',
+    description: 'Flagship builds Project June (a 5G rover) and BeadReader (a private book reader), plus custom PCBs, design, photography and a solar-powered homelab.',
     url: 'https://www.chiambucket.com/',
     type: 'website',
   },
   twitter: {
     title: 'Braven Chiam · Chiambucket',
-    description: 'An engineer who designs. Projects, design, photography and a solar-powered homelab.',
+    description: 'Flagship builds Project June (a 5G rover) and BeadReader (a private book reader), plus engineering, design, photography and a homelab.',
   },
 };
 
@@ -38,6 +38,10 @@ const jsonLd = [
       'https://www.instagram.com/bombastic_demise',
       'https://www.youtube.com/@newkringster2564',
     ],
+    subjectOf: [
+      { '@type': 'CreativeWork', name: 'Project June', url: 'https://www.chiambucket.com/project-june' },
+      { '@type': 'SoftwareApplication', name: 'BeadReader', url: 'https://www.chiambucket.com/beadreader' },
+    ],
   },
   {
     '@context': 'https://schema.org',
@@ -45,6 +49,27 @@ const jsonLd = [
     name: 'Chiambucket',
     url: 'https://www.chiambucket.com/',
     author: { '@type': 'Person', name: 'Braven Chiam' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: 'Project June',
+    headline: 'Project June, a 5G rover that streams, senses and steers',
+    url: 'https://www.chiambucket.com/project-june',
+    author: { '@type': 'Person', name: 'Braven Chiam' },
+    about: 'A 5G radio-controlled rover with three simultaneous live WebRTC video streams, MQTT telemetry, a full sensor suite and a custom PCB, designed enclosure to firmware in three weeks.',
+    keywords: '5G rover, WebRTC, ESP32, MQTT, custom PCB, KiCAD, Onshape, telemetry',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'BeadReader',
+    url: 'https://www.chiambucket.com/beadreader',
+    applicationCategory: 'BookApplication',
+    operatingSystem: 'Web',
+    author: { '@type': 'Person', name: 'Braven Chiam' },
+    about: 'A private, invite-only online book reader with access-code auth, live read-together presence, an SQL-enforced explicit-content gate, text and webtoon books, reading stats and offline support. Built with Next.js, Supabase and Cloudflare R2.',
+    keywords: 'private book reader, invite-only, Next.js, Supabase, Cloudflare R2, reading together, offline PWA',
   },
 ];
 
