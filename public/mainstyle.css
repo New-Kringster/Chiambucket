@@ -5163,7 +5163,7 @@ html[data-theme="paper"] {
 .hp-chip { font-family: 'inter'; font-size: 0.74rem; font-weight: 500; color: rgba(232,232,232,0.78); padding: 0.45rem 0.9rem; border-radius: 999px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); }
 .hp-homelab-media { position: relative; border-radius: 22px; overflow: hidden; border: 1px solid var(--hp-line); background: #0b0b0c; box-shadow: 0 30px 70px -34px rgba(0,0,0,0.9); }
 .hp-homelab-media > img { width: 100%; display: block; position: relative; z-index: 1; }
-.hp-homelab-glow { position: absolute; inset: 0; z-index: 2; pointer-events: none; mix-blend-mode: screen; opacity: 0.45; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.hp-homelab-glow { position: absolute; inset: 0; z-index: 2; pointer-events: none; mix-blend-mode: screen; opacity: 0.45; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: inherit; }
 .hp-homelab-glow img { width: 140%; filter: blur(40px); }
 
 /* ───────────────────────  PHOTOGRAPHY  ──────────────────── */
@@ -5748,6 +5748,8 @@ html[data-theme="paper"] {
 }
 @media only screen and (max-width: 640px) {
   .hp-cap-grid { grid-template-columns: 1fr; }
+  /* Push the promo art below the flagship badge so it never covers the lockup */
+  .hp-spotlight-solo .hp-spot-media { padding-top: 50px; background: #000; }
   .hp-spot-stats { gap: 16px; }
   .hp-spot-cta .hp-btn, .hp-spot-solo-cta .hp-btn { flex: 1 1 auto; justify-content: center; }
   .hp-rd-cta { padding: 16px 18px; }

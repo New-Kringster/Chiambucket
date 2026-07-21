@@ -487,11 +487,11 @@ export default function HomeClient() {
           html.sensory-active .hp-exp-chip span, html.sensory-active .hp-stack-label {
             font-family: var(--font-ddt); text-transform: uppercase; letter-spacing: 0.11em; font-size: 0.55rem; color: rgba(214,200,180,0.52); }
 
-          /* Gallery + projects bottom fades → a strong dissolve into the atmosphere navy (never pure black) */
+          /* Gallery + projects bottom fades → a strong dissolve into the warm paper atmosphere (never pure black) */
           html.sensory-active .photo-main-ver .expand {
-            background: linear-gradient(180deg, rgba(5,7,14,0) 0%, rgba(5,7,14,0.55) 55%, rgba(5,7,14,0.97) 100%) !important; }
+            background: linear-gradient(180deg, rgba(12,9,5,0) 0%, rgba(12,9,5,0.55) 55%, rgba(12,9,5,0.97) 100%) !important; }
           html.sensory-active .hp-pf-showmore-wrap::before {
-            background: linear-gradient(to bottom, rgba(5,7,14,0) 0%, rgba(5,7,14,0.8) 62%, rgba(5,7,14,0.97) 100%) !important; }
+            background: linear-gradient(to bottom, rgba(12,9,5,0) 0%, rgba(12,9,5,0.8) 62%, rgba(12,9,5,0.97) 100%) !important; }
 
           /* The flagship spotlight badge stays the premium gold crown (see .hp-spot-badge). */
         `}</style>
