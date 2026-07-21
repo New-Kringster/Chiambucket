@@ -1,13 +1,6 @@
 # Dev tooling and scratch files — keep these out of the production deploy
-serve.mjs
-screenshot.mjs
-screenshot-static.mjs
 shot.mjs
 temporary screenshots/
-testing.html
-testing2.html
-banner-making.html
-reference1.png
 *.pdf
 
 # GIFs are never served — the site uses .webm/.mp4 twins instead (see CLAUDE.md).

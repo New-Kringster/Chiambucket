@@ -10,7 +10,7 @@ Personal portfolio/personal website for Braven Chiam. Dark-themed, design-forwar
 - **WebGL sensory field** — `components/SensoryAtmosphere.tsx` (domain-warped fBM fragment shader, per-theme palette uniforms with crossfade on navigation, film grain, focal bloom; static `--aura` CSS-mesh fallback on `prefers-reduced-motion`/no-WebGL; pauses when the tab is hidden). Mounted once via `components/SensoryShell.tsx` in `app/layout.tsx`; the inline head script sets `html.sensory-active` before paint.
 - **Lychee** — self-hosted photo gallery embedded via a remote script (homepage + photography). The remote script *and* its cross-origin stylesheet are injected client-side after paint (a `useEffect` appends a `<link data-lychee-css>`), so the homelab server never render-blocks first paint.
 - **No Tailwind, no CSS-in-JS.** One global stylesheet: `public/mainstyle.css` (~6300 lines)
-- jQuery is **gone** — the old jQuery `.load()` includes were replaced by React components. `links.js`/`nav.html`/`footer.html`/`projects.js` etc. are legacy and no longer used by the app.
+- jQuery is **gone** — the old jQuery `.load()` includes were replaced by React components. The legacy `links.js`/`nav.html`/`footer.html`/`projects.js` files and the pre-Next root `*.html` pages have been deleted.
 
 ## Routing (Next.js App Router)
 
@@ -35,7 +35,7 @@ Routes are file-based under `app/<route>/page.tsx`. There is no `links.js` route
 
 - **`next.config.mjs`** keeps permanent redirects from the old `.html` URLs to the clean routes (`/ProjectJune.html` → `/project-june`, etc.). `/portfolio` and `/portfolio.html` both redirect to `/#portfolio-items-holder` (the portfolio page was removed; its content lives in the homepage Projects section).
 - **`app/layout.tsx`** is the root layout: links `mainstyle.css`, renders `<ClientEffects/>`, `<Nav/>`, `{children}`, `<Footer/>`, plus Analytics/Speed Insights. It also holds site-wide `metadata` (metadataBase, OG defaults). There is **no page loader and no external CSS CDN** — both were removed for performance (the old `#loader` splash and the animate.css CDN link are gone).
-- Legacy root `*.html` files (`index.html`, `ProjectJune.html`, …) are **dead** — Next does not serve them; they remain only as historical reference.
+- The legacy pre-Next root `*.html` files (`index.html`, `ProjectJune.html`, …) have been **removed**. `next.config.mjs` still redirects the old `.html` URLs to the clean routes for any stale inbound links.
 - **`app/api/homelab-status/route.ts`** is the one dynamic endpoint (a serverless function): it pings the public `*.chiambucket.com` services server-side and returns up/down JSON for the homelab page's live status dots. Everything else still prerenders as static.
 
 ## Shared components (`components/`)
@@ -109,14 +109,13 @@ Pages are recoloured by a single `data-theme` attribute on `<html>` so each rout
 ## Screenshot workflow
 
 - Puppeteer is at `/opt/homebrew/lib/node_modules/puppeteer`.
-- **`shot.mjs`** (preferred) — `node shot.mjs <url> <label> [desktop|mobile|WxH] [full]`. It scrolls the page first so `[data-reveal]` sections animate in and lazy images load. Scroll to a section with `SCROLLY=<px> node shot.mjs <url> <label> desktop`. Saves to `temporary screenshots/screenshot-N-…png` (auto-incremented).
-- `screenshot.mjs` — the older desktop-only, top-of-page helper.
+- **`shot.mjs`** (the one screenshot helper) — `node shot.mjs <url> <label> [desktop|mobile|WxH] [full]`. It scrolls the page first so `[data-reveal]` sections animate in and lazy images load. Scroll to a section with `SCROLLY=<px> node shot.mjs <url> <label> desktop`. Saves to `temporary screenshots/screenshot-N-…png` (auto-incremented).
 - Always screenshot from `http://localhost:<port>`, never `file:///`. After capturing, Read the PNG and compare against the homepage / `project-june` reference; fix mismatches and re-shoot (≥2 passes).
 
 ## Deployment
 
 - Static-friendly Next.js app on **Vercel** (every route prerenders as static). `npm run build` must pass.
-- `vercel.json` sets security headers. `.vercelignore` keeps dev tooling (`serve.mjs`, `screenshot*.mjs`, `shot.mjs`, `temporary screenshots/`, scratch HTML, PDFs, `*.gif`) out of the deploy.
+- `vercel.json` sets security headers. `.vercelignore` keeps dev tooling (`shot.mjs`, `temporary screenshots/`, PDFs, `*.gif`) out of the deploy.
 
 ## Pages still incomplete / placeholders
 
