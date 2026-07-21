@@ -9,7 +9,7 @@ Personal portfolio/personal website for Braven Chiam. Dark-themed, design-forwar
 - **framer-motion** — installed (`framer-motion`); available for React animations when CSS isn't enough. Prefer CSS for simple transitions; reach for it for orchestrated/gesture/layout animations.
 - **WebGL sensory field** — `components/SensoryAtmosphere.tsx` (domain-warped fBM fragment shader, per-theme palette uniforms with crossfade on navigation, film grain, focal bloom; static `--aura` CSS-mesh fallback on `prefers-reduced-motion`/no-WebGL; pauses when the tab is hidden). Mounted once via `components/SensoryShell.tsx` in `app/layout.tsx`; the inline head script sets `html.sensory-active` before paint.
 - **Lychee** — self-hosted photo gallery embedded via a remote script (homepage + photography). The remote script *and* its cross-origin stylesheet are injected client-side after paint (a `useEffect` appends a `<link data-lychee-css>`), so the homelab server never render-blocks first paint.
-- **No Tailwind, no CSS-in-JS.** One global stylesheet: `public/mainstyle.css` (~6300 lines)
+- **No Tailwind, no CSS-in-JS.** One global stylesheet: `public/mainstyle.css` (~3760 lines; the dead legacy pre-Next rules were purged)
 - jQuery is **gone** — the old jQuery `.load()` includes were replaced by React components. The legacy `links.js`/`nav.html`/`footer.html`/`projects.js` files and the pre-Next root `*.html` pages have been deleted.
 
 ## Routing (Next.js App Router)
