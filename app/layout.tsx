@@ -38,9 +38,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="stylesheet" href="/mainstyle.css" />
       </head>
       <body>
-        <div className="irregular-screen">
-          Irregular screen size detected, Content may not be displayed correctly.
-        </div>
         <ClientEffects />
         <ArticleLightbox />
         <SensoryShell />

@@ -1,36 +1,67 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+
+const PORTFOLIO_ID = 'portfolio-items-holder';
 
 export default function Nav() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
   const toggle = () => setOpen((v) => !v);
+  /* Picking a destination closes the menu. Same-page anchors (Portfolio, View my
+     work) never unmount this component, so it has to be closed explicitly. */
+  const close = () => setOpen(false);
+
+  /* Already on the homepage, scroll to the section directly. Leaving it to the
+     href would do nothing on a repeat click, because the URL still carries
+     #portfolio-items-holder from last time and the router sees no change. */
+  const goToPortfolio = (e?: React.MouseEvent) => {
+    close();
+    if (pathname !== '/') {
+      if (!e) window.location.href = `/#${PORTFOLIO_ID}`;
+      return;
+    }
+    e?.preventDefault();
+    const target = document.getElementById(PORTFOLIO_ID);
+    if (!target) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    window.history.replaceState(null, '', `/#${PORTFOLIO_ID}`);
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open]);
 
   const itemClass = open ? 'Nav-Menu-Items-Open' : 'Nav-Menu-Items';
 
   return (
     <div className="nav-holder" id="nav-holder">
       <nav className={open ? 'nav-open' : 'nav-closed'} id="nav">
-        <Link href="/" className="logo">
+        <Link href="/" className="logo" onClick={close}>
           <img src="/images/logo.webp" alt="Chiambucket logo" />
         </Link>
         <ul className={open ? 'navitem-open' : 'navitem'} id="navitem">
           <li className={itemClass} id="Nav-Item-2">
-            <Link href="/photography">Photography</Link>
+            <Link href="/photography" onClick={close}>Photography</Link>
           </li>
           <li className={itemClass} id="Nav-Item-3">
-            <Link href="/homelab">HomeLab</Link>
+            <Link href="/homelab" onClick={close}>HomeLab</Link>
           </li>
           <li className={itemClass} id="Nav-Item-4">
-            <Link href="/#portfolio-items-holder">Portfolio</Link>
+            <Link href={`/#${PORTFOLIO_ID}`} onClick={goToPortfolio}>Portfolio</Link>
           </li>
           <li className={itemClass} id="Nav-Item-45">
-            <Link href="/contact">Contact</Link>
+            <Link href="/contact" onClick={close}>Contact</Link>
           </li>
           <li className={itemClass} id="Nav-Item-5">
             <button
               className="button-hero"
-              onClick={() => { window.location.href = '/#portfolio-items-holder'; }}
+              onClick={() => goToPortfolio()}
             >
               <div className="dots_border"></div>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="sparkle">

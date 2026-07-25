@@ -21,24 +21,6 @@ export default function CreditsPage() {
       <section className="cr-hero mf-hero">
         <div className="ct-aura"></div>
 
-        <div className="sa-hud" aria-hidden="true">
-          <div className="sa-hud-tl">
-            <span>DOC // MANIFEST</span>
-            <span>REV · 2026.07</span>
-          </div>
-          <div className="sa-hud-tr">
-            <span>SECTIONS · 03</span>
-            <span>FORMAT · COLOPHON</span>
-          </div>
-          <div className="sa-hud-bl">
-            <span>[ BUILD ]</span>
-            <span>[ HOST ]</span>
-            <span>[ TOOLS ]</span>
-          </div>
-          <div className="sa-hud-br">
-            <span>INTEGRITY · VERIFIED</span>
-          </div>
-        </div>
 
         <span className="ct-kicker">Site manifest</span>
         <h1 className="ct-title">Credits &amp; <em>content.</em></h1>
@@ -146,10 +128,6 @@ export default function CreditsPage() {
           color: rgba(178,192,230,0.34);
         }
 
-        @media (max-width: 1100px) {
-          html.sensory-active .mf-hero .sa-hud-bl,
-          html.sensory-active .mf-hero .sa-hud-br { display: none; }
-        }
       `}</style>
     </main>
   );

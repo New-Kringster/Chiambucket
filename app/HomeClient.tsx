@@ -245,19 +245,6 @@ export default function HomeClient() {
     return () => clearInterval(id);
   }, []);
 
-  /* ── HUD terminal clock (Singapore time) ── */
-  useEffect(() => {
-    const el = document.querySelector<HTMLElement>('[data-hud-clock]');
-    if (!el) return;
-    const tick = () => {
-      const t = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Singapore', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(new Date());
-      el.textContent = `${t} SGT`;
-    };
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, []);
-
   /* ── Lychee stylesheet: inject after paint so the cross-origin homelab CSS never render-blocks first paint ── */
   useEffect(() => {
     if (document.querySelector('link[data-lychee-css]')) return;
@@ -457,10 +444,13 @@ export default function HomeClient() {
             -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
           html.sensory-active .hero-topper-content {
             font-family: var(--font-ddt) !important; text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.66rem !important; }
+          /* NEW chip: solid ember with dark type, so it reads as a badge rather than a whisper */
           html.sensory-active .hero-topper-new-tag {
             font-family: var(--font-ddt) !important; text-transform: uppercase; letter-spacing: 0.1em;
-            background: rgba(var(--sa-ember),0.16) !important; color: rgba(var(--sa-ember),0.95) !important;
-            border: 1px solid rgba(var(--sa-ember),0.4) !important; }
+            font-weight: 700;
+            background: rgb(var(--sa-ember)) !important; color: #17100b !important;
+            border: 1px solid rgba(255,146,105,0.9) !important;
+            box-shadow: 0 2px 12px -2px rgba(var(--sa-ember),0.55); }
           html.sensory-active .hp-scroll { font-family: var(--font-ddt); text-transform: uppercase; letter-spacing: 0.24em; font-size: 0.56rem; color: rgba(214,200,180,0.5); }
 
           /* ── Cards: homepage-only detail on top of the global panel language ── */
@@ -498,27 +488,6 @@ export default function HomeClient() {
 
         {/* ── HERO ── */}
         <header className="hp-hero">
-          <div className="sa-hud" aria-hidden="true">
-            <div className="sa-hud-tl">
-              <span>SYSTEM.ID // CHIAMBUCKET.001</span>
-              <span>LOCAL_ENCODING · UTF-8</span>
-              <span>SIGNAL_STRENGTH · 98%</span>
-            </div>
-            <div className="sa-hud-tr">
-              <span className="sa-hud-em" data-hud-clock>--:--:-- SGT</span>
-              <span>LAT 1.3521 N</span>
-              <span>LONG 103.8198 E</span>
-            </div>
-            <div className="sa-hud-bl">
-              <span>[ ENGINEER ]</span>
-              <span>[ DESIGNER ]</span>
-              <span>[ PHOTOGRAPHER ]</span>
-            </div>
-            <div className="sa-hud-br">
-              <span>RENDER // WEBGL.FBM</span>
-              <span>MODE · DARK_SENSORY</span>
-            </div>
-          </div>
           <div className="hp-hero-aura"></div>
           <div className="hp-hero-grid"></div>
           <a className="hero-topper" href="/beadreader">

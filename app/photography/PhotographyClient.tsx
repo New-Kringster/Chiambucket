@@ -114,19 +114,6 @@ export default function PhotographyClient() {
       <main>
       {/* ── HERO ── */}
       <section className="ct-wrap ph-hero">
-        <div className="sa-hud" aria-hidden="true">
-          <div className="sa-hud-tl">
-            <span>CHANNEL // PHOTOGRAPHY</span>
-            <span>SOURCE · LYCHEE SELF-HOSTED</span>
-          </div>
-          <div className="sa-hud-tr">
-            <span>GALLERIES · 07</span>
-            <span>FORMAT · STILLS + MOTION</span>
-          </div>
-          <div className="sa-hud-br">
-            <span>MODE · DARK_SENSORY</span>
-          </div>
-        </div>
         <div className="ph-hero-media" aria-hidden="true">
           <LazyVideo webm="/images/index-photos-gif.webm" mp4="/images/index-photos-gif.mp4" poster="/images/abm-lr.webp" />
         </div>

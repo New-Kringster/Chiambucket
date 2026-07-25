@@ -490,10 +490,6 @@ html {
 }
 
 
-.irregular-screen {
-  display: none;
-}
-
 .logo {
     width: 70px;
 }
@@ -1491,18 +1487,6 @@ html {
 
 /* Media Qurey */
 @media only screen and (max-width: 1235px) {
-    .irregular-screen {
-      position: fixed;
-      color: white;
-      z-index: 999;
-      bottom: 0;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: red;
-    }
-
     .Nav-Menu-Items {
       display: none !important;
     }
@@ -1616,9 +1600,6 @@ html {
 }
 
 @media only screen and (max-width: 480px) {
-  .irregular-screen {
-    display: none;
-  }
   .abm-top8 .center {
     height: 300px;
   }
@@ -2703,8 +2684,10 @@ html[data-theme="paper"] {
   font-family: 'inter'; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
   padding: 0.3rem 0.65rem; border-radius: 999px; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
 }
-.hp-pf-type.personal { background: rgba(239,122,5,0.85); color: #1a0e00; }
-.hp-pf-type.school { background: rgba(var(--sa-accent),0.85); color: #021726; }
+/* Origin badges carry opposite temperatures so they read apart at a glance:
+   personal = warm amber, school = cool teal. Never both on the accent token. */
+.hp-pf-type.personal { background: rgba(239,122,5,0.9); color: #1a0e00; }
+.hp-pf-type.school { background: rgba(94,178,196,0.92); color: #04212a; }
 .hp-pf-star {
   position: absolute; top: 12px; right: 12px; z-index: 2;
   display: flex; align-items: center; gap: 5px;
@@ -2773,7 +2756,7 @@ html[data-theme="paper"] {
 .hp-modal-content { box-sizing: border-box; padding: 30px clamp(22px, 4vw, 38px) 34px; max-height: inherit; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .hp-md-tag { font-family: 'inter'; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.3rem 0.7rem; border-radius: 999px; }
 .hp-md-tag.personal { background: rgba(239,122,5,0.18); color: #f0a868; border: 1px solid rgba(239,122,5,0.38); }
-.hp-md-tag.school { background: rgba(var(--sa-accent),0.18); color: #6db4ee; border: 1px solid rgba(var(--sa-accent),0.4); }
+.hp-md-tag.school { background: rgba(94,178,196,0.16); color: #93d6e4; border: 1px solid rgba(94,178,196,0.42); }
 .hp-md-tag.highlight { background: rgba(255,170,0,0.16); color: #ffce5a; border: 1px solid rgba(255,170,0,0.4); }
 .hp-md-tag.flagship { background: linear-gradient(135deg, rgba(255,230,160,0.95), rgba(243,180,68,0.95)); color: #23160a; border: 1px solid rgba(255,226,150,0.9); box-shadow: 0 4px 14px -6px rgba(243,180,68,0.7); }
 .hp-md-title { font-family: 'oswaldbold'; font-size: clamp(1.8rem, 4vw, 2.6rem); color: #f2f2f2; letter-spacing: -0.015em; margin: 8px 0 4px; }
@@ -3508,7 +3491,11 @@ html.sensory-active ::selection { background: rgba(var(--sa-accent),0.32); color
 
 /* ── Bands ride the field: strip fills, seams become signal hairlines ── */
 html.sensory-active .hp-band { background: transparent !important; border: 0; position: relative; }
+/* width/border-radius are reset because two bands (.abm-bg, .hp-homelab-band) use the
+   same ::before for a round glow orb; without this the seam inherits their fixed
+   width and stops short of centre instead of spanning left 8% → right 8%. */
 html.sensory-active .hp-band + .hp-band::before { content: ''; position: absolute; top: 0; left: 8%; right: 8%; height: 1px;
+  width: auto; border-radius: 0;
   background: linear-gradient(90deg, transparent, rgba(var(--sa-accent),0.05) 18%, rgba(var(--sa-accent),0.38) 50%, rgba(var(--sa-accent),0.05) 82%, transparent); }
 
 /* The shader replaces every static aura */
@@ -3600,7 +3587,9 @@ html.sensory-active .nav-closed #navitem li:not(#Nav-Item-5) a::after {
 html.sensory-active .nav-closed #navitem li:not(#Nav-Item-5) a:hover::after { transform: scaleX(1); }
 html.sensory-active .button-hero { --black-700: var(--sa-btn) !important; --border_radius: 11px !important; }
 html.sensory-active .button-hero::before { box-shadow: inset 0 0.5px rgba(196,210,255,0.35), 0 6px 16px -6px rgba(0,0,0,0.7), 0 0 0 1px rgba(var(--sa-accent),0.3) !important; }
-html.sensory-active .button-hero::after { background-color: rgba(var(--sa-accent),0.55) !important; }
+/* background-image is killed too: the stock button ships three violet radial
+   gradients that only show on hover, which read as purple against this palette */
+html.sensory-active .button-hero::after { background-color: rgba(var(--sa-accent),0.42) !important; background-image: none !important; }
 html.sensory-active .button-hero .dots_border { display: none !important; }
 html.sensory-active .button-hero .text_button { color: #e2e9ff !important; }
 html.sensory-active .button-hero .sparkle { color: #dfe7ff !important; }

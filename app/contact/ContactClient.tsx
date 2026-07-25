@@ -29,27 +29,6 @@ export default function ContactClient() {
         <div className="ct-aura"></div>
         <div className="cx-monolith" aria-hidden="true"></div>
 
-        <div className="sa-hud" aria-hidden="true">
-          <div className="sa-hud-tl">
-            <span>CHANNEL // CONTACT</span>
-            <span>ENCRYPTION · NONE</span>
-            <span>CARRIER · SMTP + HTTPS</span>
-          </div>
-          <div className="sa-hud-tr">
-            <span className="sa-hud-em">RESPONSE_WINDOW · 24-48H</span>
-            <span>TZ · UTC+8 SINGAPORE</span>
-            <span>LANG · EN</span>
-          </div>
-          <div className="sa-hud-bl">
-            <span>[ EMAIL ]</span>
-            <span>[ SOCIALS ]</span>
-          </div>
-          <div className="sa-hud-br">
-            <span className="sa-live"><span className="sa-live-dot"></span>UPLINK · OPEN</span>
-            <span>QUEUE · 0 PENDING</span>
-          </div>
-        </div>
-
         <span className="ct-kicker">Private access terminal</span>
         <h1 className="ct-title cx-title">Let&apos;s <em>talk.</em></h1>
         <p className="ct-sub">
@@ -169,14 +148,6 @@ export default function ContactClient() {
         .cx-soc:focus-visible { outline: 1px solid rgba(var(--sa-accent, 150,164,255), 0.7); outline-offset: 4px; border-radius: 4px; }
         .cx-soc:active { transform: translateY(1px); }
 
-        /* HUD live dot spacing on this page */
-        .cx-wrap .sa-live-dot { margin-right: 8px; }
-
-        /* Mid-width: bottom HUD rows would crowd the centered column */
-        @media (max-width: 1100px) {
-          html.sensory-active .cx-wrap .sa-hud-bl,
-          html.sensory-active .cx-wrap .sa-hud-br { display: none; }
-        }
       `}</style>
     </main>
   );
