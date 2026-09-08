@@ -3053,10 +3053,15 @@ html[data-theme="paper"] {
    ═══════════════════════════════════════════════════════════════ */
 
 /* ── Hero word rotator: "Creating with Intention / Purpose / ..." ── */
-.hp-roll { display: inline-block; white-space: nowrap; transition: width 0.5s cubic-bezier(0.16,1,0.3,1); }
+/* All words are stacked in the same grid cell, so the slot is always as wide as the
+   widest word at any breakpoint. The headline therefore never changes width or rewraps
+   while the words cycle (the rewrap was a 0.4 desktop CLS). Only the active word is
+   visible; the others stay invisible but keep contributing their width. */
+.hp-roll { display: inline-grid; grid-template-columns: 1fr; justify-items: center; white-space: nowrap; vertical-align: baseline; }
 /* taller line-height gives the gradient (background-clip:text) leading room so the
    tops of tall letters like 'I' aren't sliced off; baseline alignment is preserved */
-.hp-roll em { display: inline-block; line-height: 1.28; }
+.hp-roll em { grid-area: 1 / 1; display: inline-block; line-height: 1.28; visibility: hidden; }
+.hp-roll em.is-active, .hp-roll em.is-out { visibility: visible; }
 .hp-roll em.is-out { animation: hpRollOut 0.38s cubic-bezier(0.6,0,0.7,0.2) forwards; }
 .hp-roll em.is-in { animation: hpRollIn 0.55s cubic-bezier(0.16,1,0.3,1) both; }
 @keyframes hpRollOut { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-0.46em); opacity: 0; } }
@@ -3134,7 +3139,6 @@ html[data-theme="paper"] {
 
 @media (prefers-reduced-motion: reduce) {
   .hp-roll em.is-out, .hp-roll em.is-in { animation: none; }
-  .hp-roll { transition: none; }
   .hp-hero-kicker { animation: none; }
   .hp-spot-badge svg { animation: none; }
   .hp-cap-card { opacity: 1; }
