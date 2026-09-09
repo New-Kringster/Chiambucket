@@ -109,10 +109,6 @@ const COLLABORATORS: Collab[] = [
   { name: 'Abel Goh', role: 'Team member on ELEC-F', img: '/images/abel-goh.webp', fit: 'cover', profile: 'https://frequent-location-124634.framer.app', projects: [{ label: 'ELEC-F', url: '/elecf' }] },
 ];
 
-/* Hero headline rotator words (first is the SSR default). */
-const HERO_WORDS = ['Intention.', 'Purpose.', 'Meaning.', 'Intent.', 'Vision.'];
-const CTA_WORDS = ['intention.', 'purpose.', 'meaning.', 'care.', 'soul.'];
-
 /* ── Shared icon helpers ── */
 const AC = () => <svg aria-hidden="true"><use href="#icon-arrow-circle" /></svg>;
 const CR = () => <svg aria-hidden="true"><use href="#icon-chevron-right" /></svg>;
@@ -309,33 +305,42 @@ export default function HomeClient() {
     applyFilter();
   }, []);
 
-  /* ── Word rotator: swaps the visible <em> in place (no width writes, no reflow) ── */
+  /* ── Word rotator (with cleanup so intervals don't stack on re-visits) ── */
   useEffect(() => {
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
     const timeouts: ReturnType<typeof setTimeout>[] = [];
     const intervals: ReturnType<typeof setInterval>[] = [];
+    const resizeHandlers: Array<() => void> = [];
 
-    document.querySelectorAll<HTMLElement>('.hp-roll').forEach((el, idx) => {
-      const words = Array.from(el.querySelectorAll('em'));
-      if (words.length < 2) return;
+    function initRoller(el: HTMLElement, startDelay: number) {
+      const em = el.querySelector('em') as HTMLElement | null;
+      const words = (el.getAttribute('data-words') || '').split(',').map((s) => s.trim()).filter(Boolean);
+      if (!em || words.length < 2) return;
       let i = 0;
-      const tick = () => {
-        const cur = words[i];
-        const ni = (i + 1) % words.length;
-        const next = words[ni];
-        cur.classList.remove('is-in'); cur.classList.add('is-out');
-        timeouts.push(setTimeout(() => {
-          cur.classList.remove('is-out', 'is-active'); cur.setAttribute('aria-hidden', 'true');
-          next.classList.add('is-active', 'is-in'); next.removeAttribute('aria-hidden');
-          i = ni;
-        }, 360));
+      const widthOf = (text: string) => {
+        const g = em!.cloneNode(false) as HTMLElement;
+        g.textContent = text; g.style.cssText = 'position:absolute;left:-9999px;visibility:hidden;width:auto';
+        el.appendChild(g); const w = g.getBoundingClientRect().width; el.removeChild(g); return w;
       };
-      timeouts.push(setTimeout(() => { intervals.push(setInterval(tick, 2800)); }, idx * 1100));
-    });
+      el.style.width = widthOf(words[0]) + 'px';
+      const tick = () => {
+        const ni = (i + 1) % words.length;
+        el.style.width = widthOf(words[ni]) + 'px';
+        em!.classList.remove('is-in'); em!.classList.add('is-out');
+        setTimeout(() => { i = ni; em!.textContent = words[i]; em!.classList.remove('is-out'); void em!.offsetWidth; em!.classList.add('is-in'); }, 360);
+      };
+      const t = setTimeout(() => { intervals.push(setInterval(tick, 2800)); }, startDelay);
+      timeouts.push(t);
+      const onResize = () => { el.style.width = widthOf(words[i]) + 'px'; };
+      window.addEventListener('resize', onResize);
+      resizeHandlers.push(onResize);
+    }
+    document.querySelectorAll<HTMLElement>('.hp-roll').forEach((el, idx) => initRoller(el, idx * 1100));
 
     return () => {
       timeouts.forEach(clearTimeout);
       intervals.forEach(clearInterval);
+      resizeHandlers.forEach((h) => window.removeEventListener('resize', h));
     };
   }, []);
 
@@ -492,15 +497,7 @@ export default function HomeClient() {
           </a>
           <div className="hp-hero-kicker">Braven Chiam · Singapore</div>
           <h1 className="hp-hero-title hero-headline-text">
-            Creating with{' '}
-            <span className="hp-roll" aria-label="Intention">
-              {/* Every word is rendered and stacked in one grid cell, so the slot is always as
-                  wide as the widest word and the headline never rewraps (that rewrap was the
-                  desktop CLS 0.4 reported by Vercel). */}
-              {HERO_WORDS.map((w, i) => (
-                <em key={w} className={i === 0 ? 'is-active' : undefined} aria-hidden={i !== 0}>{w}</em>
-              ))}
-            </span>
+            Creating with <span className="hp-roll" data-words="Intention.,Purpose.,Meaning.,Intent.,Vision." aria-label="Intention"><em>Intention.</em></span>
           </h1>
           <p className="hp-hero-sub">I&apos;m an engineer who designs. I build hardware and software with a design-first mindset, from 5G rovers and custom PCBs to a solar-powered homelab and photography.</p>
           <div className="hp-hero-cta">
@@ -1040,13 +1037,7 @@ export default function HomeClient() {
         {/* ── CLOSING CTA ── */}
         <section className="hp-cta" data-reveal>
           <span className="hp-eyebrow">Get in touch</span>
-          <h2>Let&apos;s make something with{' '}
-              <span className="hp-roll" aria-label="intention">
-                {CTA_WORDS.map((w, i) => (
-                  <em key={w} className={i === 0 ? 'is-active' : undefined} aria-hidden={i !== 0}>{w}</em>
-                ))}
-              </span>
-            </h2>
+          <h2>Let&apos;s make something with <span className="hp-roll" data-words="intention.,purpose.,meaning.,care.,soul." aria-label="intention"><em>intention.</em></span></h2>
           <div className="hp-cta-row">
             <button className="hp-btn" onClick={() => { window.location.href = '/contact'; }}>Contact me <AC /></button>
             <a className="hp-btn hp-btn-ghost" href="#portfolio-items-holder">Browse projects</a>
