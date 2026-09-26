@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import PressNav from './press/PressNav';
+import { isPressPath } from '../lib/theme';
 
 const PORTFOLIO_ID = 'portfolio-items-holder';
 
@@ -36,6 +38,8 @@ export default function Nav() {
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [open]);
+
+  if (isPressPath(pathname)) return <PressNav />;
 
   const itemClass = open ? 'Nav-Menu-Items-Open' : 'Nav-Menu-Items';
 

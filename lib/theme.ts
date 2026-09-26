@@ -22,3 +22,18 @@ export function themeForPath(pathname: string): string {
   const p = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
   return THEME_MAP[p] ?? 'paper';
 }
+
+/* ────────────────────────────────────────────────────────────────
+   "Press" design (paper, riso ink, pen sketches).
+
+   Routes listed here have moved to the paper redesign. They skip the
+   dark WebGL field, get the press nav and footer, and read their
+   styles from app/press.css (everything scoped under html.press).
+   Add a route here when its page is rebuilt in the press language.
+   ──────────────────────────────────────────────────────────────── */
+export const PRESS_ROUTES: string[] = ['/'];
+
+export function isPressPath(pathname: string): boolean {
+  const p = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+  return PRESS_ROUTES.includes(p);
+}

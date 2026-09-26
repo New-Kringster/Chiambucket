@@ -1,6 +1,6 @@
 # Chiambucket
 
-Personal portfolio and website for Braven Chiam. Dark-themed, design-forward ("Dark Sensory / Signal Archive": a WebGL shader-gradient field behind every page, frosted instrument panels, terminal HUD typography), deployed on Vercel.
+Personal portfolio and website for Braven Chiam, deployed on Vercel. The site is moving to a paper design ("Press": risograph ink, pen sketches and hatching, printed in code). The homepage has moved; the other pages still use the dark "Dark Sensory / Signal Archive" design (a WebGL shader-gradient field, frosted panels, terminal HUD type).
 
 **Live site:** [chiambucket.com](https://chiambucket.com)
 
@@ -10,6 +10,7 @@ Personal portfolio and website for Braven Chiam. Dark-themed, design-forward ("D
 
 - **Next.js 15 (App Router) + React 19 + TypeScript** — `app/` directory, server components by default
 - **framer-motion** — available for React animations (CSS handles most transitions)
+- **Press design** — `app/press.css` plus `components/press/`: `RisoPrint` separates a photo into riso ink layers (yellow, fluorescent pink, blue) as canvas halftones; **rough.js** draws the pen sketches and hatching. Fraunces and Shantell Sans load through `next/font`
 - **WebGL sensory field** — a fixed full-viewport fragment shader (`components/SensoryAtmosphere.tsx`) recolours per route and crossfades on navigation; static CSS fallback for reduced motion
 - **Vercel Analytics + Speed Insights** — loaded in `app/layout.tsx`
 - **Lychee** — self-hosted photo galleries embedded via a remote script (loaded after paint, non-blocking)
@@ -30,10 +31,11 @@ Opens at `http://localhost:3000`. Use `npx tsc --noEmit` to type-check without d
 | Path | Purpose |
 |------|---------|
 | `app/layout.tsx` | Root layout — stylesheet links, loader, Nav/Footer, Analytics, sets per-page theme |
-| `app/page.tsx` → `app/HomeClient.tsx` | Homepage — hero, disciplines, About bento, Projects, HomeLab, photography, CTA |
+| `app/page.tsx` → `app/HomeClient.tsx` | Homepage (press design): a hero riso "press" you can tap to print another photo, the about note, flagship builds and an index of write-ups, riso photo prints, the homelab, say hello |
+| `app/press.css`, `components/press/` | Press design system: tokens, stamp buttons, tape, `RisoPrint`, rough.js sketches, press nav and footer |
 | `app/<route>/page.tsx` | File-based routes (`/photography`, `/contact`, `/credits`, `/homelab`, article pages) |
 | `components/` | Shared `Nav`, `Footer`, `ClientEffects`, `SensoryShell`/`SensoryAtmosphere`, `ArticleRecommendations`, `ArticleScrollSpy` |
-| `lib/theme.ts` | Per-page accent theme map (`data-theme` on `<html>`) |
+| `lib/theme.ts` | Per-page accent theme map (`data-theme` on `<html>`) and `PRESS_ROUTES`, the routes already on the press design |
 | `public/mainstyle.css` | Single global stylesheet (~6300 lines) |
 | `public/` | Images, fonts, downloads, `robots.txt` / `sitemap.xml` / `llms.txt` |
 | `next.config.mjs` | Permanent redirects from the old `.html` URLs to clean routes |
@@ -43,7 +45,7 @@ Article pages: `/project-june`, `/lumen`, `/beadreader`, `/brolocator`, `/csdp`,
 
 ## Theming
 
-Each route maps to a named accent theme (`blue`, `violet`, `indigo`, `mauve`, `steel`) via `lib/theme.ts`, written to `<html data-theme="…">` and resolved by CSS-variable blocks in `mainstyle.css`. Hues are sampled from a saved navy → lavender → mauve → violet gradient so pages read distinctly while staying cohesive.
+Routes listed in `PRESS_ROUTES` (`lib/theme.ts`) get `html.press` instead of the dark field: paper background, press nav and footer, styles from `app/press.css`. Every other route maps to a named accent theme (`blue`, `violet`, `indigo`, `mauve`, `steel`) via `lib/theme.ts`, written to `<html data-theme="…">` and resolved by CSS-variable blocks in `mainstyle.css`. Hues are sampled from a saved navy → lavender → mauve → violet gradient so pages read distinctly while staying cohesive.
 
 ## Deployment
 
