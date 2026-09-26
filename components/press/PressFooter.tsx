@@ -1,31 +1,41 @@
 import Link from 'next/link';
 import Mark from './Mark';
 
-const ELSEWHERE = [
-  { label: 'Instagram', url: 'https://www.instagram.com/bombastic_demise' },
-  { label: 'YouTube', url: 'https://www.youtube.com/@newkringster2564' },
-  { label: 'GitHub', url: 'https://github.com/New-Kringster' },
-  { label: 'LinkedIn', url: 'https://www.linkedin.com/in/braven-chiambucket/' },
-  { label: 'WhatsApp', url: 'https://wa.me/6597100366' },
+/* Brand marks, drawn in one ink colour so they sit on the paper like print. */
+const SOCIALS = [
+  { label: 'Instagram', url: 'https://www.instagram.com/bombastic_demise', view: '0 0 24 24',
+    d: 'M12 2.2c3.2 0 3.6 0 4.8.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.26.07 1.64.07 4.81s-.01 3.55-.07 4.81c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.26.06-1.64.07-4.81.07s-3.55-.01-4.81-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9 3.7 3.7 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.21 15.55 2.2 15.17 2.2 12s.01-3.55.07-4.81c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.45 2.21 8.83 2.2 12 2.2zm0 4.64a5.16 5.16 0 1 0 0 10.32 5.16 5.16 0 0 0 0-10.32zm0 8.5a3.34 3.34 0 1 1 0-6.68 3.34 3.34 0 0 1 0 6.68zm5.37-9.9a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4z' },
+  { label: 'WhatsApp', url: 'https://wa.me/6597100366', view: '-2 -2 24 24',
+    d: 'M9.516.012C4.206.262.017 4.652.033 9.929a9.798 9.798 0 0 0 1.085 4.465L.06 19.495a.387.387 0 0 0 .47.453l5.034-1.184a9.981 9.981 0 0 0 4.284 1.032c5.427.083 9.951-4.195 10.12-9.58C20.15 4.441 15.351-.265 9.516.011zm6.007 15.367a7.784 7.784 0 0 1-5.52 2.27 7.77 7.77 0 0 1-3.474-.808l-.701-.347-3.087.726.65-3.131-.346-.672A7.62 7.62 0 0 1 2.197 9.9c0-2.07.812-4.017 2.286-5.48a7.85 7.85 0 0 1 5.52-2.271c2.086 0 4.046.806 5.52 2.27a7.672 7.672 0 0 1 2.287 5.48c0 2.052-.825 4.03-2.287 5.481zM14.842 12.045l-1.931-.55a.723.723 0 0 0-.713.186l-.472.478a.707.707 0 0 1-.765.16c-.913-.367-2.835-2.063-3.326-2.912a.694.694 0 0 1 .056-.774l.412-.53a.71.71 0 0 0 .089-.726L7.38 5.553a.723.723 0 0 0-1.125-.256c-.539.453-1.179 1.14-1.256 1.903-.137 1.343.443 3.036 2.637 5.07 2.535 2.349 4.566 2.66 5.887 2.341.75-.18 1.35-.903 1.727-1.494a.713.713 0 0 0-.408-1.072z' },
+  { label: 'YouTube', url: 'https://www.youtube.com/@newkringster2564', view: '-2 -5 24 24',
+    d: 'M15.812.017H4.145C1.855.017 0 1.852 0 4.116v5.768c0 2.264 1.856 4.1 4.145 4.1h11.667c2.29 0 4.145-1.836 4.145-4.1V4.116c0-2.264-1.856-4.1-4.145-4.1zM13.009 7.28L7.552 9.855a.219.219 0 0 1-.314-.196V4.35c0-.161.173-.266.318-.193l5.458 2.735a.216.216 0 0 1-.005.389z' },
+  { label: 'GitHub', url: 'https://github.com/New-Kringster', view: '0 0 512 499.368',
+    d: 'M256.003 0C114.555 0 0 114.555 0 256.003c0 113.286 73.28 208.961 175.038 242.865 12.796 2.247 17.586-5.433 17.586-12.153 0-6.077-.309-26.225-.309-47.686-64.313 11.844-80.941-15.674-86.058-30.055-2.896-7.37-15.359-30.1-26.269-36.177-8.948-4.808-21.752-16.652-.31-16.961 20.168-.309 34.574 18.564 39.382 26.244 23.038 38.732 59.839 27.828 74.555 21.101 2.227-16.627 8.947-27.828 16.318-34.239-56.968-6.386-116.467-28.471-116.467-126.399 0-27.827 9.907-50.866 26.225-68.787-2.562-6.41-11.51-32.655 2.562-67.853 0 0 21.436-6.72 70.409 26.244 20.483-5.767 42.227-8.638 63.998-8.638 21.751 0 43.52 2.896 63.997 8.638 48.973-33.279 70.39-26.244 70.39-26.244 14.09 35.192 5.117 61.443 2.562 67.853 16.318 17.921 26.244 40.625 26.244 68.787 0 98.237-59.84 119.988-116.801 126.399 9.282 8.014 17.277 23.373 17.277 47.371 0 34.238-.309 61.751-.309 70.389 0 6.721 4.808 14.735 17.586 12.179C438.739 464.964 512 368.955 512 256.003 512 114.555 397.445 0 256.003 0z' },
+  { label: 'LinkedIn', url: 'https://www.linkedin.com/in/braven-chiambucket/', view: '0 0 24 24',
+    d: 'M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z' },
 ];
 
-/* Footer for press routes, set like a colophon on the last page of a zine. */
+/* Footer for press routes, same three parts as the dark footer: home, socials, credits. */
 export default function PressFooter() {
   return (
     <footer className="pr-foot">
       <div className="pr-foot-inner">
         <Link href="/" className="pr-foot-home">
           <Mark />
-          <span>Chiambucket</span>
+          <span>Chiambucket home</span>
         </Link>
-        <ul className="pr-foot-links" aria-label="Elsewhere">
-          {ELSEWHERE.map((l) => (
-            <li key={l.label}><a href={l.url} target="_blank" rel="noopener">{l.label}</a></li>
+        <ul className="pr-foot-social" aria-label="Elsewhere">
+          {SOCIALS.map((s) => (
+            <li key={s.label}>
+              <a href={s.url} target="_blank" rel="noopener" aria-label={s.label} title={s.label}>
+                <svg viewBox={s.view} width="22" height="22" fill="currentColor" aria-hidden="true"><path d={s.d} /></svg>
+              </a>
+            </li>
           ))}
         </ul>
-        <p className="pr-foot-colophon">
-          Set in Newsreader and DM Sans. The photographs are printed by the page itself, in riso
-          yellow, fluorescent pink and blue. &copy; 2026 Braven Chiam. <Link className="pr-link" href="/credits">Credits</Link>
+        <p className="pr-foot-right">
+          &copy; Chiambucket 2026<br />
+          Credits to content <Link className="pr-link" href="/credits">here</Link>
         </p>
       </div>
     </footer>

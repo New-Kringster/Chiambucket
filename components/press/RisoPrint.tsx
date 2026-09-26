@@ -37,8 +37,10 @@ const PASSES: Record<Separation, InkName[]> = {
 const SHEET: readonly [number, number, number] = [250, 248, 242];
 
 /* A printed tint that deepens toward the bottom of the sheet, so type can be
-   knocked out of it. `from` is where it starts (0 top, 1 bottom). */
-export interface Flood { from: number; blue?: number; pink?: number; yellow?: number }
+   knocked out of it. `from` is where the ramp starts (0 top, 1 bottom);
+   `base` (0..1) is the share of each ink laid evenly over the whole sheet;
+   `curve` shapes the ramp (below 1 deepens sooner, above 1 later). */
+export interface Flood { from: number; base?: number; curve?: number; blue?: number; pink?: number; yellow?: number }
 
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 const smooth = (a: number, b: number, v: number) => {
@@ -129,7 +131,8 @@ async function separate(img: HTMLImageElement, w: number, h: number, o: Opts, al
         t0 = performance.now();
       }
       const yc = (j + 0.5) * step;
-      const fl = flood ? flood * Math.pow(smooth(o.flood!.from, 1, yc / h), 1.15) : 0;
+      const b0 = o.flood?.base ?? 0;
+      const fl = flood ? flood * (b0 + (1 - b0) * Math.pow(smooth(o.flood!.from, 1, yc / h), o.flood!.curve ?? 1.15)) : 0;
       for (let i = 0; i < sw; i++) {
         const k = (j * sw + i) * 4;
         let cov = coverage(o.mode, ink, lut[data[k]], lut[data[k + 1]], lut[data[k + 2]]);
