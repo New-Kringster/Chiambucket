@@ -24,8 +24,8 @@ export default function PressFooter() {
           ))}
         </ul>
         <p className="pr-foot-colophon">
-          Set in Fraunces and Shantell Sans. The prints are drawn by the page itself, in riso blue,
-          fluorescent pink and yellow. &copy; 2026 Braven Chiam. <Link href="/credits">Credits</Link>
+          Set in Newsreader and DM Sans. The photographs are printed by the page itself, in riso
+          yellow, fluorescent pink and blue. &copy; 2026 Braven Chiam. <Link className="pr-link" href="/credits">Credits</Link>
         </p>
       </div>
     </footer>

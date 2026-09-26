@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Fraunces, Shantell_Sans } from 'next/font/google';
+import { Newsreader } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
@@ -11,18 +11,13 @@ import ArticleLightbox from '../components/ArticleLightbox';
 import SensoryShell from '../components/SensoryShell';
 import { THEME_MAP, PRESS_ROUTES } from '../lib/theme';
 
-/* Press typography: Fraunces for print (its SOFT and WONK axes give the
-   display cuts their inky, hand-set wobble), Shantell Sans for pen notes. */
-const fraunces = Fraunces({
+/* Press typography: Newsreader, an editorial serif with optical sizes, for
+   display and text. UI labels use the local DM Sans from mainstyle.css. */
+const newsreader = Newsreader({
   subsets: ['latin'],
-  axes: ['SOFT', 'WONK', 'opsz'],
-  variable: '--font-fraunces',
-  display: 'swap',
-});
-const shantell = Shantell_Sans({
-  subsets: ['latin'],
-  axes: ['INFM', 'BNCE'],
-  variable: '--font-shantell',
+  style: ['normal', 'italic'],
+  axes: ['opsz'],
+  variable: '--font-newsreader',
   display: 'swap',
 });
 
@@ -44,7 +39,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${shantell.variable}`} suppressHydrationWarning>
+    <html lang="en" className={newsreader.variable} suppressHydrationWarning>
       <head>
         {/* Before paint: set the accent theme, and pick the press (paper) or
             sensory (dark field) look for this route so neither flashes. */}
