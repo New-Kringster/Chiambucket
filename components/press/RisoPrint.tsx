@@ -17,28 +17,34 @@ import { useEffect, useRef, useState } from 'react';
     with the pointer via --mx / --my (-1..1) set on any ancestor.
 */
 
-type InkName = 'yellow' | 'pink' | 'blue';
+type InkName = 'yellow' | 'pink' | 'blue' | 'red' | 'black';
 
 const INKS: Record<InkName, { rgb: readonly [number, number, number]; angle: number; ox: number; oy: number; k: number }> = {
   // angle: screen angle (deg); ox/oy: resting misregistration (CSS px); k: pointer drift (px)
   yellow: { rgb: [255, 232, 0], angle: 0, ox: 0.6, oy: -0.4, k: 2.6 },
   pink: { rgb: [255, 72, 176], angle: 75, ox: -0.7, oy: 0.45, k: -2 },
   blue: { rgb: [0, 120, 191], angle: 15, ox: 0.15, oy: 0.25, k: 1 },
+  red: { rgb: [226, 38, 27], angle: 15, ox: -0.5, oy: 0.35, k: -2 },
+  black: { rgb: [18, 18, 18], angle: 45, ox: 0.2, oy: -0.2, k: 1.2 },
 };
 
-export type Separation = 'cmy' | 'duo';
+/* cmy: yellow, pink, blue. duo: pink and blue. duotone: red and black, the
+   two-ink poster print. mono: black alone. */
+export type Separation = 'cmy' | 'duo' | 'duotone' | 'mono';
 
 const PASSES: Record<Separation, InkName[]> = {
   cmy: ['yellow', 'pink', 'blue'],
   duo: ['pink', 'blue'],
+  duotone: ['red', 'black'],
+  mono: ['black'],
 };
 
-/* The sheet the ink lands on (matches --pr-sheet). */
-const SHEET: readonly [number, number, number] = [250, 248, 242];
+/* The paper the ink lands on (matches --sw-paper). */
+const SHEET: readonly [number, number, number] = [243, 242, 238];
 
 /* A printed tint that deepens toward the bottom of the sheet, so type can be
    knocked out of it. `from` is where it starts (0 top, 1 bottom). */
-export interface Flood { from: number; blue?: number; pink?: number; yellow?: number }
+export interface Flood { from: number; blue?: number; pink?: number; yellow?: number; red?: number; black?: number }
 
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 const smooth = (a: number, b: number, v: number) => {
@@ -64,6 +70,12 @@ function coverage(mode: Separation, ink: InkName, r: number, g: number, b: numbe
     return tone(y - k * 0.75 * smooth(0.45, 0.95, k), 0.82);
   }
   const dark = 1 - (0.3 * r + 0.59 * g + 0.11 * b);
+  if (mode === 'mono') return Math.pow(smooth(0.03, 1, dark), 1.05);
+  if (mode === 'duotone') {
+    // Red carries the mid-tones broadly; black only comes in for the shadows.
+    if (ink === 'red') return smooth(0.1, 0.92, dark) * 0.78;
+    return Math.pow(smooth(0.3, 1, dark), 1.15) * 0.97;
+  }
   if (ink === 'blue') return smooth(0.1, 0.95, dark);
   const warm = clamp01((r - b) * 1.5 + (r - g) * 0.5);
   return clamp01(smooth(0.05, 0.8, dark) * 0.5 + warm * 0.5);

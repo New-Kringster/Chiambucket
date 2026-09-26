@@ -1,11 +1,11 @@
 'use client';
 import { usePathname } from 'next/navigation';
-import PressFooter from './press/PressFooter';
+import SwissFooter from './swiss/SwissFooter';
 import { isPressPath } from '../lib/theme';
 
 export default function Footer() {
   const pathname = usePathname();
-  if (isPressPath(pathname)) return <PressFooter />;
+  if (isPressPath(pathname)) return <SwissFooter />;
   const openExt = (url: string) => window.open(url, '_blank', 'noopener');
 
   return (

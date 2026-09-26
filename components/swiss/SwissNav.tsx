@@ -1,17 +1,17 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Mark from './Mark';
+import Mark from '../press/Mark';
 
-/* Nav for press routes: ink on paper, the signature mark, four links.
-   On phones the links fold into a sheet behind a "Menu" button. */
-export default function PressNav() {
+/* Nav for the light-design routes: the mark and name on the left, four
+   links on the right. On phones the links fold into a sheet behind "Menu". */
+export default function SwissNav() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const close = () => setOpen(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -25,13 +25,13 @@ export default function PressNav() {
   }, [open]);
 
   return (
-    <header className={`pr-nav${scrolled ? ' is-scrolled' : ''}${open ? ' is-open' : ''}`}>
-      <div className="pr-nav-row">
-        <Link href="/" className="pr-nav-home" onClick={close}>
+    <header className={`sw-nav${scrolled ? ' is-scrolled' : ''}${open ? ' is-open' : ''}`}>
+      <div className="sw-nav-row">
+        <Link href="/" className="sw-nav-home" onClick={close}>
           <Mark />
-          <span className="pr-nav-name">Chiambucket</span>
+          <span>Chiambucket</span>
         </Link>
-        <nav id="pr-nav-links" className="pr-nav-links" aria-label="Main">
+        <nav id="sw-nav-links" className="sw-nav-links" aria-label="Main">
           <a href="/#portfolio-items-holder" onClick={close}>Work</a>
           <Link href="/photography" onClick={close}>Photographs</Link>
           <Link href="/homelab" onClick={close}>HomeLab</Link>
@@ -39,9 +39,9 @@ export default function PressNav() {
         </nav>
         <button
           type="button"
-          className="pr-nav-toggle"
+          className="sw-nav-toggle"
           aria-expanded={open}
-          aria-controls="pr-nav-links"
+          aria-controls="sw-nav-links"
           onClick={() => setOpen((v) => !v)}
         >
           {open ? 'Close' : 'Menu'}

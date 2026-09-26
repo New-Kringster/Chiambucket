@@ -1,6 +1,6 @@
 # Chiambucket
 
-Personal portfolio and website for Braven Chiam, deployed on Vercel. The site is moving to a paper design ("Press": risograph prints of Braven's photographs rendered in code, fine engraved hatching, an image-led editorial layout set in Newsreader). The homepage has moved; the other pages still use the dark "Dark Sensory / Signal Archive" design (a WebGL shader-gradient field, frosted panels, terminal HUD type).
+Personal portfolio and website for Braven Chiam, deployed on Vercel. The site is moving to a light design. This branch (`redesign/swiss`) tries the Swiss style: Host Grotesk on a twelve-column grid, black on off-white with one spot red, and a red and black halftone print of Braven's photographs rendered in code. The homepage has moved; the other pages still use the dark "Dark Sensory / Signal Archive" design (a WebGL shader-gradient field, frosted panels, terminal HUD type).
 
 **Live site:** [chiambucket.com](https://chiambucket.com)
 
@@ -10,7 +10,7 @@ Personal portfolio and website for Braven Chiam, deployed on Vercel. The site is
 
 - **Next.js 15 (App Router) + React 19 + TypeScript** — `app/` directory, server components by default
 - **framer-motion** — available for React animations (CSS handles most transitions)
-- **Press design** — `app/press.css` plus `components/press/`: `RisoPrint` separates a photo into riso inks (yellow, fluorescent pink, blue) and paints them per pixel as fine canvas halftones; `Plate` shows build photos as they are. Newsreader loads through `next/font`; DM Sans is local
+- **Swiss design** — `app/swiss.css`, `components/swiss/` (nav, footer) and `components/press/RisoPrint.tsx`, which paints photos as halftone prints on canvas (red and black duotone for the hero). Host Grotesk loads through `next/font`
 - **WebGL sensory field** — a fixed full-viewport fragment shader (`components/SensoryAtmosphere.tsx`) recolours per route and crossfades on navigation; static CSS fallback for reduced motion
 - **Vercel Analytics + Speed Insights** — loaded in `app/layout.tsx`
 - **Lychee** — self-hosted photo galleries embedded via a remote script (loaded after paint, non-blocking)
@@ -31,8 +31,8 @@ Opens at `http://localhost:3000`. Use `npx tsc --noEmit` to type-check without d
 | Path | Purpose |
 |------|---------|
 | `app/layout.tsx` | Root layout — stylesheet links, loader, Nav/Footer, Analytics, sets per-page theme |
-| `app/page.tsx` → `app/HomeClient.tsx` | Homepage (press design): a full-width riso hero with the name knocked out (tap for the next plate), intro and contents, flagship builds with real photos, write-up cards, a grid of riso photographs, the homelab, say hello |
-| `app/press.css`, `components/press/` | Press design system: tokens, buttons, hatching, `RisoPrint`, `Plate`, press nav and footer |
+| `app/page.tsx` → `app/HomeClient.tsx` | Homepage (Swiss design): the name set large, lede and index, a red and black print you can advance, about, selected work, a photo grid, the homelab, say hello |
+| `app/swiss.css`, `components/swiss/`, `components/press/` | Swiss design system: tokens, the grid, nav and footer, the halftone print |
 | `app/<route>/page.tsx` | File-based routes (`/photography`, `/contact`, `/credits`, `/homelab`, article pages) |
 | `components/` | Shared `Nav`, `Footer`, `ClientEffects`, `SensoryShell`/`SensoryAtmosphere`, `ArticleRecommendations`, `ArticleScrollSpy` |
 | `lib/theme.ts` | Per-page accent theme map (`data-theme` on `<html>`) and `PRESS_ROUTES`, the routes already on the press design |
@@ -45,7 +45,7 @@ Article pages: `/project-june`, `/lumen`, `/beadreader`, `/brolocator`, `/csdp`,
 
 ## Theming
 
-Routes listed in `PRESS_ROUTES` (`lib/theme.ts`) get `html.press` instead of the dark field: paper background, press nav and footer, styles from `app/press.css`. Every other route maps to a named accent theme (`blue`, `violet`, `indigo`, `mauve`, `steel`) via `lib/theme.ts`, written to `<html data-theme="…">` and resolved by CSS-variable blocks in `mainstyle.css`. Hues are sampled from a saved navy → lavender → mauve → violet gradient so pages read distinctly while staying cohesive.
+Routes listed in `PRESS_ROUTES` (`lib/theme.ts`) get `html.press` instead of the dark field: the light background, the Swiss nav and footer, and styles from `app/swiss.css`. Every other route maps to a named accent theme (`blue`, `violet`, `indigo`, `mauve`, `steel`) via `lib/theme.ts`, written to `<html data-theme="…">` and resolved by CSS-variable blocks in `mainstyle.css`. Hues are sampled from a saved navy → lavender → mauve → violet gradient so pages read distinctly while staying cohesive.
 
 ## Deployment
 

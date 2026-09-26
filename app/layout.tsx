@@ -1,9 +1,9 @@
 import type { Metadata, Viewport } from 'next';
-import { Newsreader } from 'next/font/google';
+import { Host_Grotesk } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
-import './press.css';
+import './swiss.css';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 import ClientEffects from '../components/ClientEffects';
@@ -11,13 +11,10 @@ import ArticleLightbox from '../components/ArticleLightbox';
 import SensoryShell from '../components/SensoryShell';
 import { THEME_MAP, PRESS_ROUTES } from '../lib/theme';
 
-/* Press typography: Newsreader, an editorial serif with optical sizes, for
-   display and text. UI labels use the local DM Sans from mainstyle.css. */
-const newsreader = Newsreader({
+/* Swiss typography: one grotesque, Host Grotesk, in a range of weights. */
+const grotesk = Host_Grotesk({
   subsets: ['latin'],
-  style: ['normal', 'italic'],
-  axes: ['opsz'],
-  variable: '--font-newsreader',
+  variable: '--font-grotesk',
   display: 'swap',
 });
 
@@ -39,7 +36,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={newsreader.variable} suppressHydrationWarning>
+    <html lang="en" className={grotesk.variable} suppressHydrationWarning>
       <head>
         {/* Before paint: set the accent theme, and pick the press (paper) or
             sensory (dark field) look for this route so neither flashes. */}
