@@ -1,0 +1,24 @@
+/* Host styles for the WaterSlop chapter. Its own styles are scoped in
+   chapter/chapter.css under .ws-chapter. */
+@font-face {
+  font-family: 'Libre Baskerville';
+  src: url('/waterslop/fonts/libre-baskerville-400.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Libre Baskerville';
+  src: url('/waterslop/fonts/libre-baskerville-700.ttf') format('truetype');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: Manrope;
+  src: url('/waterslop/fonts/manrope-normal-2.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+.ws-chapter {
+  --ws-grain: url('/waterslop/grain.png');
+}

@@ -154,11 +154,19 @@ export default function SensoryAtmosphere() {
 
     /* Palette state: `cur` is what renders, `target` follows data-theme.
        The render loop eases cur → target, so route changes crossfade. */
+    let raf = 0;
     const paletteFor = () => PALETTES[document.documentElement.getAttribute('data-theme') || 'blue'] || PALETTES.blue;
     let target = paletteFor();
     const cur = target.map((v) => v.slice());
-    const themeWatch = new MutationObserver(() => { target = paletteFor(); });
-    themeWatch.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    /* A page can set data-sensory-paused on <html> while an opaque layer
+       covers the field (the WaterSlop chapter stage does), so the GPU is not
+       spent drawing a background nobody can see. */
+    const paused = () => document.documentElement.hasAttribute('data-sensory-paused');
+    const themeWatch = new MutationObserver(() => {
+      target = paletteFor();
+      if (!paused() && !raf && !document.hidden) raf = requestAnimationFrame(render);
+    });
+    themeWatch.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'data-sensory-paused'] });
 
     const mouse = { x: 0.5, y: 0.5, tx: 0.5, ty: 0.5 };
     const onMove = (e: PointerEvent) => { mouse.tx = e.clientX / window.innerWidth; mouse.ty = 1 - e.clientY / window.innerHeight; };
@@ -175,9 +183,9 @@ export default function SensoryAtmosphere() {
     resize();
     window.addEventListener('resize', resize);
 
-    let raf = 0;
     const start = performance.now();
     const render = (now: number) => {
+      if (paused()) { raf = 0; return; }
       mouse.x += (mouse.tx - mouse.x) * 0.05;
       mouse.y += (mouse.ty - mouse.y) * 0.05;
       for (let i = 0; i < 6; i++) {
@@ -191,7 +199,7 @@ export default function SensoryAtmosphere() {
     };
     const onVis = () => {
       if (document.hidden) { cancelAnimationFrame(raf); raf = 0; }
-      else if (!raf) raf = requestAnimationFrame(render);
+      else if (!raf && !paused()) raf = requestAnimationFrame(render);
     };
     document.addEventListener('visibilitychange', onVis);
     raf = requestAnimationFrame(render);
