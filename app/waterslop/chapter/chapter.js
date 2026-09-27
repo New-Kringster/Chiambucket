@@ -284,6 +284,13 @@ export function mountChapter(root, { assetBase, onCover = () => {} }) {
     stage.dataset.ledIntensity = (info?.ledIntensity || 0).toFixed(3);
   }
 
+  // The controller does its own smoothing. A host's `scroll-behavior: smooth`
+  // would turn each per-frame scroll into a native animation on engines that
+  // ignore `behavior: "instant"`.
+  const html = document.documentElement,
+    hostScrollBehavior = html.style.scrollBehavior;
+  html.style.scrollBehavior = "auto";
+
   // Text, navigation and scrolling run while the 3D scene loads.
   navigate(location.hash.slice(1), true);
   onScroll();
@@ -327,6 +334,7 @@ export function mountChapter(root, { assetBase, onCover = () => {} }) {
     controller.destroy();
     measurer.disconnect();
     listening.abort();
+    html.style.scrollBehavior = hostScrollBehavior;
     if (covered) onCover(false);
     scene?.dispose();
     scene = null;

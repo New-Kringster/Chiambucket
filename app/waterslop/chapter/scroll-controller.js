@@ -62,7 +62,6 @@ export function createScrollController({
     position = read(),
     velocity = 0,
     lastTick = 0,
-    written = null,
     idle = 0,
     previous = read(),
     direction = 1,
@@ -72,9 +71,18 @@ export function createScrollController({
     clock.clearTimeout(idle);
     motion = null;
     velocity = 0;
-    written = null;
     onChange("manual");
   }
+  // Positions this controller wrote recently. iOS Safari can apply a
+  // programmatic scroll a frame or more late, so its scroll event reports an
+  // older write rather than the latest one.
+  const recent = [];
+  function remember(p) {
+    recent.push({ p, at: clock.now() });
+    while (recent.length > 16 || clock.now() - recent[0].at > 400)
+      recent.shift();
+  }
+  const ours = (p) => recent.some((w) => Math.abs(p - w.p) <= tolerance());
   function begin(next) {
     // A running spring keeps its position, velocity and frame clock, so the
     // handover lands between frames without a stall.
@@ -151,12 +159,10 @@ export function createScrollController({
   }
   function scroll() {
     const p = read();
-    if (motion) {
-      // Our own writes echo back as scroll events. Anything else is the
-      // reader taking over, e.g. the scrollbar or find in page.
-      if (written === null || Math.abs(p - written) <= tolerance()) return;
-      stop();
-    }
+    // Our own writes echo back as scroll events, sometimes late. Anything
+    // else is the reader taking over, e.g. the scrollbar or find in page.
+    if (ours(p)) return;
+    if (motion) stop();
     if (Math.abs(p - previous) > epsilon) direction = p > previous ? 1 : -1;
     previous = p;
     schedule();
@@ -199,7 +205,8 @@ export function createScrollController({
       direction = 1;
       if (immediate || reduced()) {
         write(to);
-        previous = read();
+        remember(to);
+        previous = to;
         schedule();
       } else
         begin({
@@ -242,8 +249,8 @@ export function createScrollController({
       const [lo, hi] = bounds();
       position = clamp(position, lo, hi);
       write(position);
-      written = read();
-      previous = written;
+      remember(position);
+      previous = position;
       if (done) {
         stop();
         if (m.kind !== "autoplay") schedule();
