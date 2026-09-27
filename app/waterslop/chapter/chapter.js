@@ -56,7 +56,8 @@ export function mountChapter(root, { assetBase, onCover = () => {} }) {
     lastTime = 0,
     autoTurn = 0,
     storyTop = 0,
-    storyLength = 1;
+    storyLength = 1,
+    lastBlueprint = -1;
 
   // Cache the chapter's position; reading layout every frame would force reflow.
   function measure() {
@@ -255,6 +256,13 @@ export function mountChapter(root, { assetBase, onCover = () => {} }) {
       `translateY(${motion.matches ? 0 : (1 - range(p, 0, 0.045)) * -75}px)`;
     opacity($(".halo"), Math.max(s.hero, s.finish) * 0.7);
     opacity($(".blueprint"), s.blueprint);
+    // Behind iOS Safari's floating toolbar the page shows the story's own
+    // background, so it follows the blueprint colour too.
+    if (s.blueprint !== lastBlueprint)
+      story.style.setProperty(
+        "--ws-blueprint",
+        (lastBlueprint = s.blueprint).toFixed(3),
+      );
     opacity($(".component-copy"), s.copy * s.focus);
     opacity($(".final-copy"), s.finish);
     const next = nextStop(p);

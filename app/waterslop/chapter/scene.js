@@ -603,21 +603,37 @@ export async function createScene(host, onProgress, { assetBase }) {
   let width = 0,
     height = 0,
     lastFrame = "";
+  // Framing follows the stage (the host's parent). The canvas may be taller,
+  // bleeding above the stage, and that extra height extends the view upward.
+  const frame = host.parentElement;
   function resize() {
     width = host.clientWidth;
-    height = host.clientHeight;
-    renderer.setSize(width, height, false);
+    height = frame.clientHeight || host.clientHeight;
+    const above = Math.max(
+      0,
+      frame.getBoundingClientRect().top - host.getBoundingClientRect().top,
+    );
+    const unitsPerPixel = 103.2 / height;
+    renderer.setSize(width, host.clientHeight, false);
     camera.left = (-51.6 * width) / height;
     camera.right = (51.6 * width) / height;
+    camera.top = 51.6 + above * unitsPerPixel;
+    camera.bottom =
+      -51.6 - (host.clientHeight - height - above) * unitsPerPixel;
     camera.updateProjectionMatrix();
     lastFrame = "";
+    // Resizing clears the canvas; redraw now rather than on the next scroll.
+    if (lastRender) render(...lastRender);
   }
+  let lastRender = null;
   resize();
   const observer = new ResizeObserver(resize);
   observer.observe(host);
+  observer.observe(frame);
   const tmp = new THREE.Vector3(),
     focusPoint = new THREE.Vector3();
   function render(state, reduced = false, interaction = {}) {
+    lastRender = [state, reduced, interaction];
     const { p, componentIndex, focus } = state;
     const ledIntensity = interaction.ledIntensity || 0;
     const chip =

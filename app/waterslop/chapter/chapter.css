@@ -64,14 +64,38 @@
   padding: 12px;
   background: var(--ink);
   color: var(--bg);
-  transform: translateY(-200%);
 }
-.ws-chapter .skip:focus {
-  transform: none;
+/* Hidden until focused. Moving it above the viewport is not enough: iOS 26
+   Safari draws content above the viewport behind the status bar. */
+.ws-chapter .skip:not(:focus) {
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+/* iOS 26 Safari also draws the page behind the status bar and the floating
+   address bar. On touch screens the scene and backdrop bleed upward into the
+   status-bar band. Safari cuts pinned content off at the bottom controls, so
+   there the chapter background behind the stage follows the stage colour. */
+.ws-chapter {
+  --ws-bleed: 0px;
+}
+@media (pointer: coarse) {
+  .ws-chapter {
+    --ws-bleed: 80px;
+  }
 }
 .ws-chapter #story {
   height: 1100vh;
   position: relative;
+  background: var(--bg);
+  background: color-mix(
+    in srgb,
+    #07101b calc(var(--ws-blueprint, 0) * 100%),
+    var(--bg)
+  );
 }
 .ws-chapter .stage {
   position: sticky;
@@ -82,6 +106,15 @@
   isolation: isolate;
   background: var(--bg);
 }
+@supports (overflow: clip) {
+  .ws-chapter #story {
+    overflow: clip;
+  }
+  .ws-chapter .stage {
+    overflow-x: clip;
+    overflow-y: visible;
+  }
+}
 .ws-chapter #scene,
 .ws-chapter .blueprint,
 .ws-chapter .texture,
@@ -89,6 +122,11 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
+}
+.ws-chapter #scene,
+.ws-chapter .blueprint,
+.ws-chapter .texture {
+  top: calc(-1 * var(--ws-bleed));
 }
 .ws-chapter #scene {
   z-index: 2;
@@ -504,18 +542,30 @@
 }
 @media (max-width: 760px) {
   .ws-chapter .stage[data-tour="true"] #scene {
-    mask-image: linear-gradient(#000 28%, transparent 43%);
+    mask-image: linear-gradient(
+      #000 calc(28% + 0.72 * var(--ws-bleed)),
+      transparent calc(43% + 0.57 * var(--ws-bleed))
+    );
   }
   .ws-chapter .stage[data-tour="true"][data-component="power"] #scene {
-    mask-image: linear-gradient(#000 20%, transparent 32%);
+    mask-image: linear-gradient(
+      #000 calc(20% + 0.8 * var(--ws-bleed)),
+      transparent calc(32% + 0.68 * var(--ws-bleed))
+    );
   }
 }
 @media (max-width: 760px) and (max-height: 740px) {
   .ws-chapter .stage[data-tour="true"] #scene {
-    mask-image: linear-gradient(#000 23%, transparent 37%);
+    mask-image: linear-gradient(
+      #000 calc(23% + 0.77 * var(--ws-bleed)),
+      transparent calc(37% + 0.63 * var(--ws-bleed))
+    );
   }
   .ws-chapter .stage[data-tour="true"][data-component="power"] #scene {
-    mask-image: linear-gradient(#000 16%, transparent 27%);
+    mask-image: linear-gradient(
+      #000 calc(16% + 0.84 * var(--ws-bleed)),
+      transparent calc(27% + 0.73 * var(--ws-bleed))
+    );
   }
 }
 @media (min-width: 761px) {
