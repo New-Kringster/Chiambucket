@@ -119,8 +119,6 @@ export default function PhotographyClient() {
         </div>
         <div className="ph-hero-scrim" aria-hidden="true"></div>
         <div className="ct-aura"></div>
-        <div className="ph-hero-grain" aria-hidden="true"></div>
-        <div className="ph-hero-blur" aria-hidden="true"></div>
         <span className="ct-kicker">Photography</span>
         <h1 className="ct-title">
           Photography <em>and design.</em>
@@ -273,54 +271,17 @@ export default function PhotographyClient() {
         .ph-hero > .ph-hero-btns { align-self: flex-start; text-align: left; max-width: min(660px, 92vw); }
         .ph-hero > .ct-sub { margin-left: 0; margin-right: 0; }
         .ph-hero > .ph-hero-media,
-        .ph-hero > .ph-hero-scrim,
-        .ph-hero > .ph-hero-blur,
-        .ph-hero > .ph-hero-grain { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
-        .ph-hero-grain { z-index: 1; }
-        .ph-hero > .ph-hero-blur { z-index: 1; }
+        .ph-hero > .ph-hero-scrim { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
         .ph-hero-media video {
           width: 100%; height: 100%; object-fit: cover;
-          opacity: 0.5; filter: saturate(1.08) contrast(1.04);
+          opacity: 0.5;
           -webkit-mask-image: radial-gradient(ellipse 120% 105% at 50% 34%, #000 60%, transparent 100%);
           mask-image: radial-gradient(ellipse 120% 105% at 50% 34%, #000 60%, transparent 100%);
-          animation: phHeroPan 44s ease-in-out infinite alternate;
-        }
-        @keyframes phHeroPan {
-          from { transform: scale(1.08) translate3d(-1%, -1%, 0); }
-          to   { transform: scale(1.17) translate3d(1.5%, 1%, 0); }
         }
         .ph-hero-scrim {
           background:
             linear-gradient(180deg, rgba(6,6,9,0.42) 0%, rgba(6,6,9,0.06) 26%, rgba(6,6,9,0) 46%, rgba(6,6,9,0.6) 82%, rgba(6,6,9,0.82) 100%),
             radial-gradient(ellipse 92% 72% at 20% 98%, rgba(6,6,9,0.72), transparent 62%);
-        }
-        .ph-hero-grain {
-          opacity: 0.3; mix-blend-mode: overlay;
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-          background-size: 140px 140px;
-        }
-        /* Second, coarser grain pass multiplied underneath: deepens shadows
-           (mix-blend-mode:multiply) without overlay's tendency to blow out
-           the highlights, so the montage stays visible but the mood reads darker. */
-        .ph-hero-grain::after {
-          content: ''; position: absolute; inset: 0;
-          opacity: 0.28; mix-blend-mode: multiply;
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n2'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n2)'/%3E%3C/svg%3E");
-          background-size: 220px 220px;
-        }
-        /* ── Progressive blur ramp anchored to the bottom text zone: two stacked
-           backdrop layers give a smooth clear→blurred gradient so the montage
-           reads sharp up top and the copy stays legible where it sits below. */
-        .ph-hero-blur {
-          -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
-          -webkit-mask-image: linear-gradient(to top, #000 0%, #000 24%, transparent 60%);
-          mask-image: linear-gradient(to top, #000 0%, #000 24%, transparent 60%);
-        }
-        .ph-hero-blur::before {
-          content: ''; position: absolute; inset: 0;
-          -webkit-backdrop-filter: blur(11px); backdrop-filter: blur(11px);
-          -webkit-mask-image: linear-gradient(to top, #000 0%, #000 6%, transparent 38%);
-          mask-image: linear-gradient(to top, #000 0%, #000 6%, transparent 38%);
         }
         /* ── Diffuse the violet aura into a broad, gentle wash rather than a
            tight glow: scale the box up, push the blur much further, and back
@@ -332,7 +293,6 @@ export default function PhotographyClient() {
           filter: blur(180px);
           opacity: 0.5;
         }
-        @media (prefers-reduced-motion: reduce) { .ph-hero-media video { animation: none; } }
 
         .ph-hero-btns {
           display: flex;
@@ -533,8 +493,8 @@ export default function PhotographyClient() {
         }
 
         /* ═══════════ Dark-sensory / mission-control reskin (accent follows the violet theme) ═══════════ */
-        /* Hero: the shader field leads; the photo montage becomes a faint memory under it */
-        html.sensory-active .ph-hero-media { opacity: 0.85; filter: saturate(0.95) brightness(0.95); }
+        /* Hero: the backdrop leads; the photo montage sits faintly under it */
+        html.sensory-active .ph-hero-media { opacity: 0.8; }
         html.sensory-active .ph-hero .ct-title { text-transform: uppercase; letter-spacing: 0.02em; }
         html.sensory-active .ph-hero .ct-title em { text-shadow: 0 0 38px rgba(var(--sa-accent),0.4); }
         /* Hero kicker → mono instrument label with a leading signal tick */

@@ -1,6 +1,6 @@
 # Chiambucket
 
-Personal portfolio and website for Braven Chiam. Dark-themed ("Dark Sensory / Signal Archive": a WebGL shader-gradient background drawn once as a still frame, dark panels, a warm accent), deployed on Vercel. Projects are presented by the hardware, software and design work in each.
+Personal portfolio and website for Braven Chiam. Dark-themed ("Dark Sensory / Signal Archive": a static CSS background with a soft top light and faint perfboard dots, dark panels, a warm accent), deployed on Vercel. Projects are presented by the hardware, software and design work in each.
 
 **Live site:** [chiambucket.com](https://chiambucket.com)
 
@@ -10,7 +10,7 @@ Personal portfolio and website for Braven Chiam. Dark-themed ("Dark Sensory / Si
 
 - **Next.js 15 (App Router) + React 19 + TypeScript** — `app/` directory, server components by default
 - **framer-motion** — available for React animations (CSS handles most transitions)
-- **WebGL background** — a full-viewport fragment shader (`components/SensoryAtmosphere.tsx`) drawn as a still frame; it redraws only on resize and while crossfading between route palettes, so idle pages do no GPU work. Static CSS fallback for reduced motion
+- **Background** — one static CSS layer (`components/Backdrop.tsx`, styles at the end of `mainstyle.css`); no canvas or animation, so idle and scrolling pages do no background work
 - **Vercel Analytics + Speed Insights** — loaded in `app/layout.tsx`
 - **Lychee** — self-hosted photo galleries embedded via a remote script (loaded after paint, non-blocking)
 - **No Tailwind, no CSS-in-JS** — one global stylesheet, `public/mainstyle.css`
@@ -32,7 +32,7 @@ Opens at `http://localhost:3000`. Use `npx tsc --noEmit` to type-check without d
 | `app/layout.tsx` | Root layout — stylesheet links, loader, Nav/Footer, Analytics, sets per-page theme |
 | `app/page.tsx` → `app/HomeClient.tsx` | Homepage — hero, disciplines, About bento, Projects, HomeLab, photography, CTA |
 | `app/<route>/page.tsx` | File-based routes (`/photography`, `/contact`, `/credits`, `/homelab`, article pages) |
-| `components/` | Shared `Nav`, `Footer`, `ClientEffects`, `SensoryShell`/`SensoryAtmosphere`, `ArticleRecommendations`, `ArticleScrollSpy` |
+| `components/` | Shared `Nav`, `Footer`, `ClientEffects`, `Backdrop`, `ArticleRecommendations`, `ArticleScrollSpy` |
 | `lib/theme.ts` | Per-page accent theme map (`data-theme` on `<html>`) |
 | `public/mainstyle.css` | Single global stylesheet (~6300 lines) |
 | `public/` | Images, fonts, downloads, `robots.txt` / `sitemap.xml` / `llms.txt` |

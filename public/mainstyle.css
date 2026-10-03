@@ -3853,3 +3853,113 @@ html.sensory-active .art-fig figcaption::before, html.sensory-active .art-cap::b
   .hp-hsd-cell i { display: block; font-family: 'dmsans'; font-style: normal; font-size: 0.78rem; line-height: 1.7; color: rgba(var(--sa-accent, 224,168,102),0.8); }
   .hp-hsd-cell.is-empty { display: none; }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   BACKDROP (2026-10): replaces the WebGL field (components/Backdrop.tsx)
+   One fixed static layer: a soft pool of light at the top of the screen
+   over the warm base, and a faint perfboard dot grid visible only inside
+   that light. Painted once; nothing here animates. Section glow orbs and
+   the film-grain overlay are retired with the shader.
+   ═══════════════════════════════════════════════════════════════ */
+html.sensory-active { --sa-base: #090704; background: var(--sa-base); }
+html.sensory-active[data-theme="indigo"],
+html.sensory-active[data-theme="datacenter"] { --sa-base: #04050a; }
+.sa-backdrop {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  contain: strict;
+  background:
+    radial-gradient(62% 52% at 50% -10%, rgba(var(--sa-accent),0.15), transparent 72%),
+    radial-gradient(110% 70% at 50% -6%, rgba(var(--sa-accent),0.05), transparent 78%),
+    radial-gradient(140% 90% at 50% 120%, rgba(0,0,0,0.55), transparent 70%),
+    var(--sa-base);
+}
+.sa-backdrop::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(var(--sa-accent),0.5) 0.7px, transparent 1.2px);
+  background-size: 22px 22px;
+  background-position: center top;
+  opacity: 0.22;
+  -webkit-mask-image: radial-gradient(52% 44% at 50% -6%, #000 0%, rgba(0,0,0,0.45) 48%, transparent 78%);
+          mask-image: radial-gradient(52% 44% at 50% -6%, #000 0%, rgba(0,0,0,0.45) 48%, transparent 78%);
+}
+/* retired background decoration */
+body::after,
+.hp-hero::before, .hp-hero::after,
+.abm-bg::before, .abm-bg::after,
+.hp-hero-grid { display: none !important; }
+/* the homelab card art keeps its glow without a blend mode or a live blur */
+.hp-homelab-glow { mix-blend-mode: normal; opacity: 0.22; }
+.hp-homelab-glow img { filter: none; }
+
+/* ── Project card hierarchy (2026-10) ──
+   Flagship and highlight projects keep full cards, two to a row, with their
+   gold edge. Ordinary projects use compact horizontal cards, three to a row.
+   Projects with no write-up yet (.is-soon) are muted grey and show a
+   "Coming soon" label instead of a link. */
+.hp-pf-grid > .hp-pf-card { flex: 0 1 calc((100% - 18px) / 2); }
+.hp-pf-grid > .hp-pf-card:not(.is-compact) .hp-pf-thumb { aspect-ratio: 16 / 9; }
+.hp-pf-grid > .hp-pf-card.is-compact {
+  flex: 0 1 calc((100% - 36px) / 3);
+  flex-direction: row; align-items: stretch; border-radius: 16px;
+}
+.hp-pf-card.is-compact .hp-pf-thumb { flex: 0 0 36%; aspect-ratio: auto; min-height: 140px; }
+.hp-pf-card.is-compact .hp-pf-thumb::after { background: linear-gradient(to right, transparent 55%, rgba(10,10,11,0.55)); }
+.hp-pf-card.is-compact .hp-pf-type { font-size: 0.6rem; padding: 3px 7px; }
+.hp-pf-card.is-compact .hp-pf-info { padding: 14px 16px 14px; gap: 6px; min-width: 0; }
+.hp-pf-card.is-compact .hp-pf-name { font-size: 1.12rem; }
+.hp-pf-card.is-compact .hp-pf-blurb {
+  font-size: 0.8rem; line-height: 1.45;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.hp-pf-card.is-compact .hp-pf-foot { margin-top: 2px; gap: 8px; }
+.hp-pf-card.is-compact .hp-pf-foot .icon-stack { margin-left: 8px; }
+.hp-pf-card.is-compact .hp-pf-foot .icon-stack img { width: 22px; height: 22px; }
+.hp-pf-card.is-compact .hp-pf-view { padding: 6px 11px; font-size: 0.74rem; }
+.hp-pf-card.is-compact .hp-pf-peek-pill { padding: 0.38rem 0.7rem; font-size: 0.72rem; }
+.hp-pf-card.is-compact:hover { transform: translateY(-3px); }
+
+html.sensory-active .hp-pf-card.is-soon {
+  background: linear-gradient(180deg, rgba(36,36,38,0.94), rgba(24,24,26,0.96)) !important;
+  border-color: rgba(255,255,255,0.07) !important;
+}
+html.sensory-active .hp-pf-card.is-soon:hover {
+  transform: none; border-color: rgba(255,255,255,0.13) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04) !important;
+}
+.hp-pf-card.is-soon .hp-pf-thumb img { filter: grayscale(0.8) brightness(0.7); }
+.hp-pf-card.is-soon:hover .hp-pf-thumb img { transform: none; }
+.hp-pf-card.is-soon .hp-pf-name { color: rgba(236,236,238,0.88); }
+.hp-pf-card.is-soon .hp-pf-blurb { color: rgba(226,226,230,0.66); }
+.hp-pf-card.is-soon .hp-pf-type { background: rgba(150,150,156,0.85); color: #141416; }
+.hp-pf-card.is-soon .icon-stack { opacity: 0.6; filter: grayscale(1); }
+.hp-pf-soon {
+  display: inline-flex; align-items: center; white-space: nowrap;
+  font-family: 'dmsans'; font-size: 0.74rem; font-weight: 600; letter-spacing: 0.02em;
+  color: rgba(226,226,230,0.62);
+  padding: 5px 11px; border-radius: 999px; border: 1px dashed rgba(255,255,255,0.22);
+}
+.hp-rd-cta.is-soon .hp-pf-soon { font-size: 0.82rem; padding: 8px 14px; }
+
+@media (max-width: 1100px) {
+  .hp-pf-grid > .hp-pf-card.is-compact { flex-basis: calc((100% - 18px) / 2); }
+}
+@media (max-width: 760px) {
+  .hp-pf-grid > .hp-pf-card,
+  .hp-pf-grid > .hp-pf-card.is-compact { flex-basis: 100%; }
+}
+@media (max-width: 420px) {
+  .hp-pf-card.is-compact .hp-pf-thumb { flex-basis: 34%; min-height: 128px; }
+  .hp-pf-card.is-compact .hp-pf-foot .icon-stack { display: none; }
+}
+/* touch screens: the compact thumbnail is small, so the peek cue is icon-only
+   (the button keeps its aria-label) */
+@media (hover: none) {
+  .hp-pf-card.is-compact .hp-pf-peek { padding: 8px; }
+  .hp-pf-card.is-compact .hp-pf-peek-pill { font-size: 0; gap: 0; padding: 0.5rem; }
+  .hp-pf-card.is-compact .hp-pf-peek-pill svg { width: 15px; height: 15px; }
+}
+/* compact cards keep their own height when they share a row with a full card */
+.hp-pf-grid > .hp-pf-card.is-compact { align-self: flex-start; }
+/* end-of-article recommendations: three across, full cards first */
+.arec-section .hp-pf-grid > .hp-pf-card:not(.is-compact) { flex-basis: calc((100% - 36px) / 3); }
+@media (max-width: 1100px) { .arec-section .hp-pf-grid > .hp-pf-card:not(.is-compact) { flex-basis: calc((100% - 18px) / 2); } }
+@media (max-width: 760px) { .arec-section .hp-pf-grid > .hp-pf-card:not(.is-compact) { flex-basis: 100%; } }

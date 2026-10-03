@@ -38,7 +38,6 @@ const ArrowCircle = () => (
 
 /* ── Reader content for one project ── */
 export function PeekModalContent({ id }: { id: string }) {
-  const nav = (url: string) => () => { window.location.href = url; };
 
   const chapter = (num: string, title: string, body: React.ReactNode) => (
     <section className="hp-rd-chapter" key={num}>
@@ -47,11 +46,20 @@ export function PeekModalContent({ id }: { id: string }) {
     </section>
   );
 
+  const ext = (url: string) => (/^https?:/.test(url) ? { target: '_blank', rel: 'noopener' } : {});
   const cta = (text: string, sub: string, btnLabel: string, btnUrl: string, ghost?: { label: string; url: string }) => (
     <div className="hp-rd-cta">
       <div className="hp-rd-cta-text"><strong>{text}</strong><span>{sub}</span></div>
-      <button className="hp-btn" onClick={nav(btnUrl)}>{btnLabel} <ArrowCircle /></button>
-      {ghost && <button className="hp-btn hp-btn-ghost" onClick={nav(ghost.url)}>{ghost.label}</button>}
+      <a className="hp-btn" href={btnUrl} {...ext(btnUrl)}>{btnLabel} <ArrowCircle /></a>
+      {ghost && <a className="hp-btn hp-btn-ghost" href={ghost.url} {...ext(ghost.url)}>{ghost.label}</a>}
+    </div>
+  );
+  /* Projects with no write-up yet: say so plainly instead of linking to a placeholder. */
+  const soon = (text: string, sub: string, live?: { label: string; url: string }) => (
+    <div className="hp-rd-cta is-soon">
+      <div className="hp-rd-cta-text"><strong>{text}</strong><span>{sub}</span></div>
+      {live && <a className="hp-btn" href={live.url} target="_blank" rel="noopener">{live.label} <ArrowCircle /></a>}
+      <span className="hp-pf-soon">Write-up coming soon</span>
     </div>
   );
 
@@ -175,7 +183,7 @@ export function PeekModalContent({ id }: { id: string }) {
           <p className="hp-md-meta">Concept · Communication Skills · 3D in Blender</p>
           <p className="hp-rd-lead">An original product concept I created and pitched for a communication-skills project, presented with 3D scenes built in Blender.</p>
           {chapter('01', 'Idea to presentation', <><p>The brief was as much about communicating an idea as having one. I designed the concept, rendered it in Blender, and built the deck around making it land with an audience.</p><img className="hp-rd-fig" src="/images/kauli-obj.webp" alt="Kauli concept render" loading="lazy" /></>)}
-          {cta('See the concept and pitch', 'Renders, reasoning and the final presentation.', 'Read the full article', '/comingsoon')}
+          {soon('Kauli concept', 'The renders and pitch will get a full write-up.')}
         </div>
       </>
     );
@@ -187,7 +195,7 @@ export function PeekModalContent({ id }: { id: string }) {
           <p className="hp-md-meta">Personal · 3D Design · Ultralight 20g</p>
           <p className="hp-rd-lead">My own take on the popular ZeroMouse: an ultralight 20g gaming mouse I designed from scratch to play a little sharper in FPS games.</p>
           {chapter('01', 'Designing for grams', <p>Every part of the shell was modelled to shed weight without losing rigidity, balancing grip comfort against the goal of reaching around 20 grams.</p>)}
-          {cta('See the design', 'The model, the trade-offs and how it feels to use.', 'Read the full article', '/comingsoon')}
+          {soon('Series One Light', 'The model and its trade-offs will get a full write-up.')}
         </div>
       </>
     );
@@ -199,7 +207,7 @@ export function PeekModalContent({ id }: { id: string }) {
           <p className="hp-md-meta">Personal · PCB Design · KiCAD · 1 Week</p>
           <p className="hp-rd-lead">A from-scratch KiCAD recreation of NYP&apos;s ATMega328 dev board, made so I could have my own copy to work with at home.</p>
           {chapter('01', 'Reverse-engineered, then rebuilt', <p>I worked from the school board&apos;s schematic to recreate it in KiCAD. Some parts were out of production so I sourced substitutes and used it as my first proper run at reflow soldering.</p>)}
-          {cta('The full recreation', 'Sourcing parts, the layout, and the reflow.', 'Read the full article', '/comingsoon')}
+          {soon('Copy Board', 'Sourcing parts, the layout and the reflow will get a full write-up.')}
         </div>
       </>
     );
@@ -211,7 +219,7 @@ export function PeekModalContent({ id }: { id: string }) {
           <p className="hp-md-meta">School · HTML &amp; CSS · First Website</p>
           <p className="hp-rd-lead">The first fully functional website I built, HTML and CSS, as the final assignment for my web development class. The Chiambucket site was my second attempt.</p>
           {chapter('01', 'Where it started', <p>This was my introduction to building for the web. You can see how far the craft has come since then.</p>)}
-          {cta('See where it began', 'Open the live site or read the write-up.', 'Live demo', 'https://tht.chiambucket.com', { label: 'Read the article', url: '/comingsoon' })}
+          {soon('See where it began', 'The site is still online.', { label: 'Live demo', url: 'https://tht.chiambucket.com' })}
         </div>
       </>
     );
@@ -223,7 +231,7 @@ export function PeekModalContent({ id }: { id: string }) {
           <p className="hp-md-meta">Personal · Docker · Paper &amp; Dynmap</p>
           <p className="hp-rd-lead">A self-hosted Minecraft server on the homelab, with a live web map of the multiplayer world that anyone can pan around in real time.</p>
           {chapter('01', 'Server and map', <p>A Paper server runs in Docker with the Dynmap plugin generating a live, interactive map that updates as players explore and build.</p>)}
-          {cta('Explore the world live', "Open the interactive map or read how it's hosted.", 'Open live map', 'https://map.chiambucket.com', { label: 'Read the article', url: '/comingsoon' })}
+          {soon('Explore the world live', 'The map updates as players explore.', { label: 'Open live map', url: 'https://map.chiambucket.com' })}
         </div>
       </>
     );

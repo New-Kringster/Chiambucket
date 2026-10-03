@@ -72,7 +72,7 @@ export default function CreditsPage() {
               <li><b>Framer Motion</b> for the homelab page and the project demos</li>
               <li><b>Lychee</b>, the photo gallery I host for the photography page</li>
               <li><b>Oswald, Inter and DM Sans</b>, the main typefaces</li>
-              <li><b>A WebGL shader</b> for the background, drawn as a still frame so an idle page does no GPU work</li>
+              <li><b>Plain CSS</b> for the background: one static layer with a soft light and faint dots, so an idle page does no background work</li>
               <li><b>Inline SVG</b> for the icons</li>
             </ul>
             <p style={{ marginTop: '1.4rem' }}>

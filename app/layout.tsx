@@ -6,7 +6,7 @@ import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 import ClientEffects from '../components/ClientEffects';
 import ArticleLightbox from '../components/ArticleLightbox';
-import SensoryShell from '../components/SensoryShell';
+import Backdrop from '../components/Backdrop';
 import { THEME_MAP } from '../lib/theme';
 
 export const viewport: Viewport = {
@@ -40,7 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <ClientEffects />
         <ArticleLightbox />
-        <SensoryShell />
+        <Backdrop />
         <Nav />
         {children}
         <Footer />

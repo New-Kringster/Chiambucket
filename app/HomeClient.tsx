@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Script from 'next/script';
 import InfoModal, { type InfoItem } from '../components/InfoModal';
 import LazyVideo from '../components/LazyVideo';
@@ -53,7 +53,6 @@ const TILE_ENGINEERING: InfoItem = {
   add: "The render on the card is from my Kauli concept, made in Blender. Below is the live dashboard I designed for the EMA smart home.",
   media: '/images/Cdyspstart.webp',
   links: [
-    { label: 'See the Kauli concept', url: '/comingsoon' },
     { label: 'EMA smart-home UI', url: '/csdp' },
   ],
 };
@@ -168,11 +167,22 @@ function ToolCarousel() {
     return () => mq.removeEventListener?.('change', onChange);
   }, []);
 
+  // Rotate only while the tile is on screen, so an idle page does no work.
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const [onScreen, setOnScreen] = useState(false);
   useEffect(() => {
-    if (reduced) return;
+    const el = rootRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setOnScreen(e.isIntersecting));
+    io.observe(el);
+    return () => io.disconnect();
+  }, [reduced]);
+
+  useEffect(() => {
+    if (reduced || !onScreen) return;
     const id = setInterval(() => setActive((a) => (a + 1) % n), 2200);
     return () => clearInterval(id);
-  }, [reduced, n]);
+  }, [reduced, onScreen, n]);
 
   // Shortest signed offset of slot i from the active slot, e.g. for n=6: -2..3 → wrapped to -3..2
   const offsetOf = (i: number) => {
@@ -203,7 +213,7 @@ function ToolCarousel() {
   }
 
   return (
-    <div className="hp-tcar" aria-label={`Design tools carousel, currently showing ${TOOL_RING[active].name}`}>
+    <div className="hp-tcar" ref={rootRef} aria-label={`Design tools carousel, currently showing ${TOOL_RING[active].name}`}>
       <div className="hp-tcar-stage">
         <div className="hp-tcar-ring">
           {TOOL_RING.map((tool, i) => {
@@ -265,11 +275,15 @@ export default function HomeClient() {
 
   /* ── Blink easter egg ── */
   useEffect(() => {
-    const id = setInterval(() => {
-      const el = document.getElementById('sukuna-blink');
-      if (el) { el.classList.add('abm-top1-blink'); setTimeout(() => el.classList.remove('abm-top1-blink'), 50); }
-    }, 4000);
-    return () => clearInterval(id);
+    const el = document.getElementById('sukuna-blink');
+    if (!el || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    let id: ReturnType<typeof setInterval> | undefined;
+    const io = new IntersectionObserver(([e]) => {
+      clearInterval(id);
+      if (e.isIntersecting) id = setInterval(() => { el.classList.add('abm-top1-blink'); setTimeout(() => el.classList.remove('abm-top1-blink'), 50); }, 4000);
+    });
+    io.observe(el);
+    return () => { io.disconnect(); clearInterval(id); };
   }, []);
 
   /* ── Lychee stylesheet: inject after paint so the cross-origin homelab CSS never render-blocks first paint ── */
@@ -332,44 +346,6 @@ export default function HomeClient() {
     applyFilter();
   }, []);
 
-  /* ── Word rotator (with cleanup so intervals don't stack on re-visits) ── */
-  useEffect(() => {
-    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
-    const timeouts: ReturnType<typeof setTimeout>[] = [];
-    const intervals: ReturnType<typeof setInterval>[] = [];
-    const resizeHandlers: Array<() => void> = [];
-
-    function initRoller(el: HTMLElement, startDelay: number) {
-      const em = el.querySelector('em') as HTMLElement | null;
-      const words = (el.getAttribute('data-words') || '').split(',').map((s) => s.trim()).filter(Boolean);
-      if (!em || words.length < 2) return;
-      let i = 0;
-      const widthOf = (text: string) => {
-        const g = em!.cloneNode(false) as HTMLElement;
-        g.textContent = text; g.style.cssText = 'position:absolute;left:-9999px;visibility:hidden;width:auto';
-        el.appendChild(g); const w = g.getBoundingClientRect().width; el.removeChild(g); return w;
-      };
-      el.style.width = widthOf(words[0]) + 'px';
-      const tick = () => {
-        const ni = (i + 1) % words.length;
-        el.style.width = widthOf(words[ni]) + 'px';
-        em!.classList.remove('is-in'); em!.classList.add('is-out');
-        setTimeout(() => { i = ni; em!.textContent = words[i]; em!.classList.remove('is-out'); void em!.offsetWidth; em!.classList.add('is-in'); }, 360);
-      };
-      const t = setTimeout(() => { intervals.push(setInterval(tick, 2800)); }, startDelay);
-      timeouts.push(t);
-      const onResize = () => { el.style.width = widthOf(words[i]) + 'px'; };
-      window.addEventListener('resize', onResize);
-      resizeHandlers.push(onResize);
-    }
-    document.querySelectorAll<HTMLElement>('.hp-roll').forEach((el, idx) => initRoller(el, idx * 1100));
-
-    return () => {
-      timeouts.forEach(clearTimeout);
-      intervals.forEach(clearInterval);
-      resizeHandlers.forEach((h) => window.removeEventListener('resize', h));
-    };
-  }, []);
 
   /* ── Lychee gallery ── */
   const initLychee = () => {
@@ -447,14 +423,14 @@ export default function HomeClient() {
       </svg>
 
       {/* Atmosphere backdrop + page-agnostic reskin are global now:
-          SensoryShell mounts in app/layout.tsx, tokens/panels/nav/footer live in
+          Backdrop mounts in app/layout.tsx, tokens/panels/nav/footer live in
           the DARK SENSORY section of mainstyle.css. Only homepage-specific
           retuning stays here. */}
       <main>
 
         {/* ═══════ DARK SENSORY, homepage-specific retuning ═══════ */}
         <style>{`
-          /* ── Hero: let the shader be the backdrop ── */
+          /* ── Hero: let the backdrop show through ── */
           html.sensory-active .hp-hero-grid { display: none; }
           html.sensory-active .hp-hero::before, html.sensory-active .hp-hero::after { opacity: 0.2; }
           html.sensory-active .hp-hero-kicker { font-family: var(--font-ddt); letter-spacing: 0.08em; font-size: 0.82rem; color: rgba(226,212,190,0.6); }
@@ -755,7 +731,7 @@ export default function HomeClient() {
                   <p className="hp-pf-blurb">A 5G rover with three live camera feeds, GPS, a laser pointer and seven sensors, driven from a web console.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/esp-icon.webp" alt="" /><img src="/images/Kicad-icon.webp" alt="" /><img src="/images/onshape-icon.webp" alt="" /><img src="/images/PlatformIO-icon.webp" alt="" /></div>
-                    <button className="hp-pf-view" onClick={() => { window.location.href = '/project-june'; }}>Read article <AU /></button>
+                    <a className="hp-pf-view" href="/project-june">Read article <AU /></a>
                   </div>
                 </div>
               </article>
@@ -772,7 +748,7 @@ export default function HomeClient() {
                   <p className="hp-pf-blurb">A private, invite-only online book reader with live reading-together presence, per-reader resume, a SQL-enforced content gate, webtoons and shared reading stats. Next.js and Supabase.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/nextjs-icon.webp" alt="" /><img src="/images/supabase-icon.webp" alt="" /><img src="/images/tailwind-icon.webp" alt="" /><img src="/images/cloudflare-icon.webp" alt="" /></div>
-                    <button className="hp-pf-view" onClick={() => { window.location.href = '/beadreader'; }}>Read article <AU /></button>
+                    <a className="hp-pf-view" href="/beadreader">Read article <AU /></a>
                   </div>
                 </div>
               </article>
@@ -789,7 +765,7 @@ export default function HomeClient() {
                   <p className="hp-pf-blurb">Two ESP32 handhelds: text over LoRa, rough two-way voice over ESP-NOW. My first PCB, in KiCAD, and a case in Onshape.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/esp-icon.webp" alt="" /><img src="/images/Kicad-icon.webp" alt="" /><img src="/images/onshape-icon.webp" alt="" /><img src="/images/PlatformIO-icon.webp" alt="" /></div>
-                    <button className="hp-pf-view" onClick={() => { window.location.href = '/brolocator'; }}>Read article <AU /></button>
+                    <a className="hp-pf-view" href="/brolocator">Read article <AU /></a>
                   </div>
                 </div>
               </article>
@@ -806,13 +782,13 @@ export default function HomeClient() {
                   <p className="hp-pf-blurb">A voice-controlled smart-room assistant on an ESP32, with Whisper and a DeepSeek LLM via OpenRouter turning speech into one JSON command over MQTT.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/esp-icon.webp" alt="" /><img src="/images/python-icon.webp" alt="" /><img src="/images/docker-icon.webp" alt="" /><img src="/images/vscode-icon.webp" alt="" /></div>
-                    <button className="hp-pf-view" onClick={() => { window.location.href = '/lumen'; }}>Read article <AU /></button>
+                    <a className="hp-pf-view" href="/lumen">Read article <AU /></a>
                   </div>
                 </div>
               </article>
 
               {/* EMA Smart Home */}
-              <article id="proj-ema" className="hp-pf-card" data-article="/csdp" data-type="school" data-search="ema smart home beaglebone python socketio flask websocket spline mikrobus school group sensors">
+              <article id="proj-ema" className="hp-pf-card is-compact" data-article="/csdp" data-type="school" data-search="ema smart home beaglebone python socketio flask websocket spline mikrobus school group sensors">
                 <div className="hp-pf-thumb">
                   <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
                   <span className="hp-pf-type school">School</span>
@@ -823,13 +799,13 @@ export default function HomeClient() {
                   <p className="hp-pf-blurb">A team smart home: four BeagleBone Black nodes report to a SocketIO server with a live 3D Spline dashboard. Graded A.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/vscode-icon.webp" alt="" /><img src="/images/figma-icon.webp" alt="" /><img src="/images/resolve-icon.webp" alt="" /><img src="/images/onshape-icon.webp" alt="" /></div>
-                    <button className="hp-pf-view" onClick={() => { window.location.href = '/csdp'; }}>Read article <AU /></button>
+                    <a className="hp-pf-view" href="/csdp">Read article <AU /></a>
                   </div>
                 </div>
               </article>
 
               {/* Pandus */}
-              <article id="proj-pandus" className="hp-pf-card" data-article="/pandus" data-type="school" data-search="pandus dispenser arduino uno pyfirmata 3d printed servo pump syrup school first">
+              <article id="proj-pandus" className="hp-pf-card is-compact" data-article="/pandus" data-type="school" data-search="pandus dispenser arduino uno pyfirmata 3d printed servo pump syrup school first">
                 <div className="hp-pf-thumb">
                   <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
                   <span className="hp-pf-type school">School</span>
@@ -840,13 +816,13 @@ export default function HomeClient() {
                   <p className="hp-pf-blurb">My first school project: a six-part 3D-printed syrup dispenser run by an Arduino Uno and PyFirmata.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/onshape-icon.webp" alt="" /><img src="/images/vscode-icon.webp" alt="" /><img src="/images/resolve-icon.webp" alt="" /><img src="/images/powerpoint-icon.webp" alt="" /></div>
-                    <button className="hp-pf-view" onClick={() => { window.location.href = '/pandus'; }}>Read article <AU /></button>
+                    <a className="hp-pf-view" href="/pandus">Read article <AU /></a>
                   </div>
                 </div>
               </article>
 
               {/* ELEC-F */}
-              <article id="proj-elecf" className="hp-pf-card" data-article="/elecf" data-type="school" data-search="elec-f elecf concept m5-stack m5stack freezer safety sensors engineering course school">
+              <article id="proj-elecf" className="hp-pf-card is-compact" data-article="/elecf" data-type="school" data-search="elec-f elecf concept m5-stack m5stack freezer safety sensors engineering course school">
                 <div className="hp-pf-thumb">
                   <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
                   <span className="hp-pf-type school">School</span>
@@ -857,13 +833,13 @@ export default function HomeClient() {
                   <p className="hp-pf-blurb">A walk-in freezer alarm on M5Stack. If someone is inside when the door shuts, a timer starts and the alarm sounds when it runs out.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/figma-icon.webp" alt="" /><img src="/images/ps-pf-icon.webp" alt="" /><img src="/images/resolve-icon.webp" alt="" /></div>
-                    <button className="hp-pf-view" onClick={() => { window.location.href = '/elecf'; }}>Read article <AU /></button>
+                    <a className="hp-pf-view" href="/elecf">Read article <AU /></a>
                   </div>
                 </div>
               </article>
 
               {/* Kauli */}
-              <article id="proj-kauli" className="hp-pf-card" data-article="/comingsoon" data-type="school" data-search="kauli concept blender 3d communication skills presentation school onshape">
+              <article id="proj-kauli" className="hp-pf-card is-compact is-soon" data-type="school" data-search="kauli concept blender 3d communication skills presentation school onshape">
                 <div className="hp-pf-thumb">
                   <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
                   <span className="hp-pf-type school">School</span>
@@ -874,13 +850,13 @@ export default function HomeClient() {
                   <p className="hp-pf-blurb">A product concept I pitched for a communication-skills module, rendered in Blender.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/blender-icon.webp" alt="" /><img src="/images/ps-pf-icon.webp" alt="" /><img src="/images/resolve-icon.webp" alt="" /></div>
-                    <button className="hp-pf-view" onClick={() => { window.location.href = '/comingsoon'; }}>Read article <AU /></button>
+                    <span className="hp-pf-soon">Coming soon</span>
                   </div>
                 </div>
               </article>
 
               {/* Series One Light */}
-              <article id="proj-sol" className="hp-pf-card" data-article="/comingsoon" data-type="personal" data-search="series one light zeromouse optimum tech ultralight 20g fps mouse onshape personal">
+              <article id="proj-sol" className="hp-pf-card is-compact is-soon" data-type="personal" data-search="series one light zeromouse optimum tech ultralight 20g fps mouse onshape personal">
                 <div className="hp-pf-thumb">
                   <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
                   <span className="hp-pf-type personal">Personal</span>
@@ -891,13 +867,13 @@ export default function HomeClient() {
                   <p className="hp-pf-blurb">An ultralight gaming mouse shell, aiming for about 20 g, based on the ZeroMouse.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/onshape-icon.webp" alt="" /><img src="/images/ps-pf-icon.webp" alt="" /></div>
-                    <button className="hp-pf-view" onClick={() => { window.location.href = '/comingsoon'; }}>Read article <AU /></button>
+                    <span className="hp-pf-soon">Coming soon</span>
                   </div>
                 </div>
               </article>
 
               {/* Copy Board */}
-              <article id="proj-copyboard" className="hp-pf-card" data-article="/comingsoon" data-type="personal" data-search="copy board kicad pcb schematic dev board school recreation personal">
+              <article id="proj-copyboard" className="hp-pf-card is-compact is-soon" data-type="personal" data-search="copy board kicad pcb schematic dev board school recreation personal">
                 <div className="hp-pf-thumb">
                   <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
                   <span className="hp-pf-type personal">Personal</span>
@@ -908,13 +884,13 @@ export default function HomeClient() {
                   <p className="hp-pf-blurb">A KiCAD recreation of my school&apos;s dev board, made because I couldn&apos;t bring the original home.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/Kicad-icon.webp" alt="" /></div>
-                    <button className="hp-pf-view" onClick={() => { window.location.href = '/comingsoon'; }}>Read article <AU /></button>
+                    <span className="hp-pf-soon">Coming soon</span>
                   </div>
                 </div>
               </article>
 
               {/* Web Dev */}
-              <article id="proj-webdev" className="hp-pf-card" data-article="/comingsoon" data-type="school" data-search="web development html css website school first chrome canva demo tht">
+              <article id="proj-webdev" className="hp-pf-card is-compact is-soon" data-type="school" data-search="web development html css website school first chrome canva demo tht">
                 <div className="hp-pf-thumb">
                   <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
                   <span className="hp-pf-type school">School</span>
@@ -925,13 +901,13 @@ export default function HomeClient() {
                   <p className="hp-pf-blurb">My first fully functional website, built with HTML and CSS as the final assignment for my web development class.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/vscode-icon.webp" alt="" /><img src="/images/chrome-icon.webp" alt="" /><img src="/images/canva-icon.webp" alt="" /></div>
-                    <button className="hp-pf-view" onClick={() => { window.location.href = '/comingsoon'; }}>Read article <AU /></button>
+                    <span className="hp-pf-soon">Coming soon</span>
                   </div>
                 </div>
               </article>
 
               {/* Minecraft */}
-              <article id="proj-mc" className="hp-pf-card" data-article="/comingsoon" data-type="personal" data-search="minecraft server paper dynmap live interactive map docker multiplayer personal demo">
+              <article id="proj-mc" className="hp-pf-card is-compact is-soon" data-type="personal" data-search="minecraft server paper dynmap live interactive map docker multiplayer personal demo">
                 <div className="hp-pf-thumb">
                   <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
                   <span className="hp-pf-type personal">Personal</span>
@@ -942,7 +918,7 @@ export default function HomeClient() {
                   <p className="hp-pf-blurb">A Paper server in Docker on my homelab, with a live Dynmap of the world.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/docker-icon.webp" alt="" /><img src="/images/chrome-icon.webp" alt="" /></div>
-                    <button className="hp-pf-view" onClick={() => { window.location.href = '/comingsoon'; }}>Read article <AU /></button>
+                    <span className="hp-pf-soon">Coming soon</span>
                   </div>
                 </div>
               </article>
