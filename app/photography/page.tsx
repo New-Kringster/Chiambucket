@@ -1,21 +1,22 @@
 import type { Metadata } from 'next';
 import PhotographyClient from './PhotographyClient';
 
+const description =
+  'Photo albums by Braven Chiam from Europe, China, New Zealand and Hong Kong, plus ultrawide 21:9 frames, and the software he edits with.';
+
 export const metadata: Metadata = {
-  title: 'Photography · Braven Chiam | Chiambucket',
-  description:
-    'Browse photo albums from Europe, China, New Zealand, 21:9 ultrawide shots, and more. Photography by Braven Chiam, a Singapore-based engineer and designer.',
+  title: 'Photography | Braven Chiam',
+  description,
   alternates: { canonical: 'https://www.chiambucket.com/photography' },
   openGraph: {
-    title: 'Photography · Braven Chiam | Chiambucket',
-    description:
-      'Albums from Europe, China, New Zealand and more. Design through a different lens.',
+    title: 'Photography | Braven Chiam',
+    description,
     url: 'https://www.chiambucket.com/photography',
     type: 'website',
   },
   twitter: {
-    title: 'Photography · Braven Chiam',
-    description: 'Photo albums by Braven Chiam: Europe, China, New Zealand and more.',
+    title: 'Photography | Braven Chiam',
+    description: 'Photo albums by Braven Chiam: Europe, China, New Zealand, Hong Kong and more.',
   },
 };
 
@@ -24,7 +25,7 @@ const jsonLd = {
   '@type': 'ImageGallery',
   name: 'Photography by Braven Chiam',
   description:
-    'A collection of photo albums by Braven Chiam, covering travel and creative photography across Europe, China, New Zealand, and more.',
+    'Photo albums by Braven Chiam from Europe, China, New Zealand and Hong Kong, plus ultrawide 21:9 frames.',
   url: 'https://www.chiambucket.com/photography',
   author: {
     '@type': 'Person',

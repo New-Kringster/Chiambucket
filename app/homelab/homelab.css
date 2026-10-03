@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   HOMELAB v2 — "Mission Control" datacenter theme (namespace hl2-*)
+   HOMELAB v2: datacenter theme (namespace hl2-*)
    Imported by HomelabClient. Consumes datacenter tokens from
    :root[data-theme="datacenter"] in mainstyle.css, with fallbacks.
    ═══════════════════════════════════════════════════════════════ */
@@ -21,11 +21,7 @@
 }
 .hl2 ::selection { background: rgba(var(--sa-accent),0.28); color: #fff; }
 
-/* frosted instrument panels: blur the field behind every card, crown with an inset highlight */
-.hl2-pillar, .hl2-machine, .hl2-storage-col, .hl2-svc, .hl2-map-wrap {
-  -webkit-backdrop-filter: blur(16px) saturate(1.05);
-  backdrop-filter: blur(16px) saturate(1.05);
-}
+/* panels: inset highlight and a soft drop (no backdrop blur) */
 .hl2-pillar, .hl2-machine, .hl2-storage-col, .hl2-svc {
   box-shadow: inset 0 1px 0 rgba(196,210,255,0.07), 0 24px 60px -30px rgba(0,0,0,0.85);
 }
@@ -41,8 +37,7 @@
 
 /* ── shared bits ── */
 .hl2-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dc-dim); flex-shrink: 0; box-shadow: 0 0 0 0 currentColor; }
-.hl2-dot.on { background: var(--dc-online); animation: hl2pulse 2.4s ease-in-out infinite; }
-@keyframes hl2pulse { 0%,100% { box-shadow: 0 0 0 0 var(--pulse, rgba(52,211,153,0.55)); } 50% { box-shadow: 0 0 0 5px transparent; } }
+.hl2-dot.on { background: var(--dc-online); }
 
 .hl2-btn {
   display: inline-flex; align-items: center; gap: 0.5rem;
@@ -57,7 +52,7 @@
 .hl2-btn:hover svg { transform: translateX(3px); }
 .hl2-btn.ghost {
   color: var(--dc-ink); background: rgba(var(--sa-accent),0.06);
-  border: 1px solid var(--dc-line); box-shadow: none; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  border: 1px solid var(--dc-line); box-shadow: none;
 }
 .hl2-btn.ghost:hover { background: rgba(var(--sa-accent),0.12); border-color: rgba(var(--sa-accent),0.4); }
 .hl2-btn.small { font-size: 0.8rem; padding: 0.6rem 1rem; border-radius: 10px; }
@@ -83,8 +78,7 @@
 .hl2-statusbar { display: inline-flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 8px 14px; border-radius: 10px;
   font-family: var(--dc-mono); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dc-dim);
   background: linear-gradient(180deg, var(--sa-panel-hi, rgba(23,27,41,0.5)), var(--sa-panel-lo, rgba(9,11,20,0.6)));
-  border: 1px solid var(--dc-line); box-shadow: inset 0 1px 0 rgba(196,210,255,0.07);
-  -webkit-backdrop-filter: blur(16px) saturate(1.05); backdrop-filter: blur(16px) saturate(1.05); }
+  border: 1px solid var(--dc-line); box-shadow: inset 0 1px 0 rgba(196,210,255,0.07); }
 .hl2-live { display: inline-flex; align-items: center; gap: 8px; color: var(--dc-online); font-weight: 600; }
 .hl2-tele b { color: var(--dc-cyan); }
 .hl2-sep { width: 1px; height: 12px; background: var(--dc-line); }
@@ -99,14 +93,13 @@
 .hl2-hero-cta { display: flex; gap: 12px; margin-top: 2.4rem; flex-wrap: wrap; }
 
 .hl2-scrollcue { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); width: 22px; height: 34px; border: 2px solid rgba(var(--sa-accent),0.3); border-radius: 12px; z-index: 2; }
-.hl2-scrollcue span { position: absolute; top: 6px; left: 50%; transform: translateX(-50%); width: 3px; height: 7px; border-radius: 2px; background: var(--dc-cyan); animation: hl2scroll 1.6s ease-in-out infinite; }
-@keyframes hl2scroll { 0% { opacity: 0; transform: translate(-50%, -2px); } 40% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, 12px); } }
+.hl2-scrollcue span { position: absolute; top: 6px; left: 50%; transform: translateX(-50%); width: 3px; height: 7px; border-radius: 2px; background: var(--dc-cyan); }
 
 /* ═══════════ MISSION ═══════════ */
 .hl2-mission-lead { font-family: 'dmsans'; font-size: clamp(1.15rem, 2.2vw, 1.5rem); line-height: 1.55; color: #dcebf2; max-width: 880px; }
 .hl2-mission-lead { color: #d7ebf2; }
 
-/* shared section lead (map + access) — sits between the head and the section content */
+/* shared section lead: sits between the head and the section content */
 .hl2-map-lead { font-family: 'dmsans'; font-size: clamp(1rem, 1.5vw, 1.12rem); line-height: 1.64; color: var(--dc-dim); max-width: 720px; margin: 0 0 clamp(30px, 4vw, 44px); }
 .hl2-map-lead b { color: var(--dc-cyan); font-weight: 600; }
 .hl2-pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: clamp(34px, 5vw, 56px); }
@@ -129,7 +122,7 @@
 .hl2-machine-photo img { width: 100%; display: block; filter: drop-shadow(0 16px 26px rgba(0,0,0,0.6)); transition: transform .6s cubic-bezier(.16,1,.3,1); }
 .hl2-machine:hover .hl2-machine-photo img { transform: scale(1.04) translateY(-4px); }
 
-/* "The real thing" — actual rack photo in the machines section */
+/* rack photo in the servers section */
 .hl2-rackreal { display: grid; grid-template-columns: auto 1fr; gap: clamp(26px, 4vw, 56px); align-items: center; margin-top: clamp(40px, 5vw, 64px); }
 .hl2-rackreal-photo { position: relative; margin: 0; border-radius: 18px; overflow: hidden; border: 1px solid var(--dc-line, rgba(var(--sa-accent),0.14)); box-shadow: 0 30px 70px -34px rgba(0,0,0,0.85); }
 .hl2-rackreal-photo img { display: block; height: clamp(380px, 52vh, 540px); width: auto; max-width: 100%; }
@@ -144,7 +137,7 @@
 }
 .hl2-machine-state { position: absolute; top: 16px; right: 16px; display: inline-flex; align-items: center; gap: 7px; font-family: var(--dc-mono); font-size: 0.64rem; letter-spacing: 0.14em; text-transform: uppercase;
   padding: 5px 10px; border-radius: 999px; background: rgba(4,8,11,0.7); border: 1px solid var(--dc-line); }
-.hl2-machine-state.always-on { color: var(--dc-online); } .hl2-machine-state.always-on .hl2-dot { background: var(--dc-online); animation: hl2pulse 2.4s ease-in-out infinite; }
+.hl2-machine-state.always-on { color: var(--dc-online); } .hl2-machine-state.always-on .hl2-dot { background: var(--dc-online); }
 .hl2-machine-state.on-demand { color: var(--dc-warn); } .hl2-machine-state.on-demand .hl2-dot { background: var(--dc-warn); }
 .hl2-machine-body { padding: 18px 22px 24px; display: flex; flex-direction: column; gap: 4px; }
 .hl2-machine-head { display: flex; align-items: baseline; gap: 10px; }
@@ -207,7 +200,7 @@
 .hl2-svc-ico img { width: 30px; height: 30px; object-fit: contain; }
 .hl2-svc-status { display: inline-flex; align-items: center; gap: 6px; font-family: var(--dc-mono); font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dc-dim); }
 .hl2-svc-status .hl2-dot { width: 7px; height: 7px; }
-.hl2-svc-status.up { color: var(--dc-online); } .hl2-svc-status.up .hl2-dot { background: var(--dc-online); animation: hl2pulse 2.4s ease-in-out infinite; }
+.hl2-svc-status.up { color: var(--dc-online); } .hl2-svc-status.up .hl2-dot { background: var(--dc-online); }
 .hl2-svc-status.down { color: rgba(var(--sa-ember, 255,106,61),0.95); } .hl2-svc-status.down .hl2-dot { background: rgba(var(--sa-ember, 255,106,61),0.95); box-shadow: 0 0 10px rgba(var(--sa-ember, 255,106,61),0.7); }
 .hl2-svc-status.self { color: var(--hp-indigo); } .hl2-svc-status.self .hl2-dot { background: var(--hp-indigo); }
 .hl2-svc-status.build { color: var(--dc-warn); } .hl2-svc-status.build .hl2-dot { background: var(--dc-warn); box-shadow: 0 0 6px rgba(var(--sa-ember),0.5); }
@@ -238,7 +231,7 @@
 .hl2-chev { transition: transform .35s cubic-bezier(.16,1,.3,1); }
 .hl2-chev.up { transform: rotate(180deg); }
 
-/* ═══════════ ACCESS · six roads home ═══════════ */
+/* ═══════════ ACCESS ═══════════ */
 .hl2-roads { position: relative; margin-top: clamp(26px, 4vw, 44px); }
 .hl2-road { position: relative; display: grid; grid-template-columns: 44px minmax(190px, 240px) 1fr; align-items: start; gap: 22px;
   padding: 15px 20px 15px 0; border-radius: 14px; transition: background .3s ease; }
@@ -251,7 +244,7 @@
 .hl2-road-node i { width: 13px; height: 13px; border-radius: 50%; background: #090f14; border: 2px solid rgba(140,180,225,0.4);
   position: relative; z-index: 1; transition: border-color .3s, box-shadow .3s, background .3s; }
 .hl2-road:hover .hl2-road-node i { border-color: var(--dc-cyan); box-shadow: 0 0 10px rgba(var(--sa-accent),0.5); }
-.hl2-road.primary .hl2-road-node i { --pulse: rgba(var(--sa-accent),0.55); border-color: var(--dc-cyan); background: var(--dc-cyan); box-shadow: 0 0 12px rgba(var(--sa-accent),0.7); animation: hl2pulse 2.4s ease-in-out infinite; }
+.hl2-road.primary .hl2-road-node i { --pulse: rgba(var(--sa-accent),0.55); border-color: var(--dc-cyan); background: var(--dc-cyan); box-shadow: 0 0 12px rgba(var(--sa-accent),0.7); }
 .hl2-road-home .hl2-road-node i { width: 15px; height: 15px; border-radius: 4px; transform: rotate(45deg);
   border-color: var(--hp-indigo); background: var(--hp-indigo); box-shadow: 0 0 14px rgba(111,136,230,0.55); }
 .hl2-road-name { grid-column: 2; }
@@ -299,9 +292,8 @@
 .hl2-map-svg { display: block; width: 100%; min-width: 720px; height: auto; }
 
 .hl2-zone-label { font-family: var(--dc-mono); font-size: 11px; letter-spacing: 0.12em; opacity: 0.85; }
-.hl2-edge { stroke: rgba(var(--sa-accent),0.22); stroke-width: 1.6; stroke-dasharray: 5 7; animation: hl2flow 1.4s linear infinite; }
-@keyframes hl2flow { to { stroke-dashoffset: -24; } }
-.hl2-edge.redundant { stroke: rgba(var(--sa-accent),0.1); animation-duration: 2.2s; }
+.hl2-edge { stroke: rgba(var(--sa-accent),0.22); stroke-width: 1.6; stroke-dasharray: 5 7; }
+.hl2-edge.redundant { stroke: rgba(var(--sa-accent),0.1); }
 .hl2-edge.hot { stroke-width: 2.6; stroke-opacity: 1; } /* stroke colour set inline to the VLAN hue */
 
 .hl2-node { cursor: pointer; }
@@ -330,7 +322,7 @@
   --dc-ink: #cfe9f2; --dc-dim: rgba(207,233,242,0.56); --dc-line: var(--sa-hairline, rgba(176,196,252,0.1));
   --dc-mono: var(--font-ddt, ui-monospace, 'SF Mono', 'Menlo', monospace);
   position: fixed; inset: 0; z-index: 1200; display: grid; place-items: center; padding: clamp(14px, 4vw, 40px);
-  background: rgba(2,5,8,0.72); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  background: rgba(2,5,8,0.88);
 }
 .hl2-modal {
   position: relative; width: min(940px, 100%); max-height: 90vh; overflow-y: auto;
@@ -340,7 +332,7 @@
 }
 .hl2-modal-x { position: absolute; top: 14px; right: 14px; z-index: 4; width: 38px; height: 38px; display: grid; place-items: center;
   border-radius: 10px; cursor: pointer; color: var(--dc-ink); background: rgba(8,14,18,0.7); border: 1px solid var(--dc-line);
-  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); transition: background .25s, border-color .25s, transform .3s; }
+  transition: background .25s, border-color .25s, transform .3s; }
 .hl2-modal-x:hover { background: rgba(var(--sa-accent),0.12); border-color: rgba(var(--sa-accent),0.4); transform: rotate(90deg); }
 .hl2-modal-grid { display: grid; grid-template-columns: 0.92fr 1.08fr; }
 .hl2-modal-media { position: relative; padding: clamp(24px, 3vw, 36px); border-right: 1px solid var(--dc-line);
@@ -411,7 +403,5 @@
   .hl2-hero { min-height: auto; padding-top: 130px; padding-bottom: 70px; }
   .hl2-hero-stats { gap: 18px 28px; }
   .hl2-map-controls { flex-direction: column; align-items: flex-start; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .hl2-edge, .hl2-dot.on { animation: none !important; }
+  .hl2-statusbar .hl2-sep { display: none; }
 }

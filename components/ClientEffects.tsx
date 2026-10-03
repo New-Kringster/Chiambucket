@@ -11,13 +11,8 @@ export default function ClientEffects() {
     document.documentElement.setAttribute('data-theme', themeForPath(pathname));
   }, [pathname]);
 
-  // One-time effects: cursor spotlight, nav scroll glow
+  // One-time effect: nav scroll glow
   useEffect(() => {
-    const onMouseMove = (e: MouseEvent) => {
-      document.documentElement.style.setProperty('--cursor-x', e.clientX + 'px');
-      document.documentElement.style.setProperty('--cursor-y', e.clientY + 'px');
-    };
-    document.addEventListener('mousemove', onMouseMove);
 
     const onScroll = () => {
       const holder = document.querySelector('.nav-holder');
@@ -26,7 +21,6 @@ export default function ClientEffects() {
     window.addEventListener('scroll', onScroll, { passive: true });
 
     return () => {
-      document.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('scroll', onScroll);
     };
   }, []);

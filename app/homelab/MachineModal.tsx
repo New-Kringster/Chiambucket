@@ -24,16 +24,16 @@ function MachineVisual({ kind }: { kind: 'runs' | 'pxe' | 'wake' }) {
             </motion.span>
           ))}
         </div>
-        <span className="hl2-mv-foot"><b>{icons.length}</b> of {SERVICES.length} services on this page live on NewMain</span>
+        <span className="hl2-mv-foot"><b>{icons.length}</b> of the {SERVICES.length} services on this page run on NewMain</span>
       </div>
     );
   }
 
   if (kind === 'pxe') {
     const steps = [
-      { t: 'Local SSD', s: 'CaCa keeps a 1TB NVMe SSD of its own' },
-      { t: 'Boots itself', s: 'Proxmox comes up straight off that local disk' },
-      { t: 'Runs the VMs', s: 'CasaOS and Debian run from the same SSD' },
+      { t: 'Local SSD', s: 'A 1 TB NVMe SSD inside the machine' },
+      { t: 'Proxmox', s: 'Proxmox boots from that disk' },
+      { t: 'VMs', s: 'CasaOS and Debian run from the same SSD' },
     ];
     return (
       <div className="hl2-mv">
@@ -60,7 +60,7 @@ function MachineVisual({ kind }: { kind: 'runs' | 'pxe' | 'wake' }) {
   // wake
   return (
     <div className="hl2-mv">
-      <span className="hl2-mv-label">Wake on demand</span>
+      <span className="hl2-mv-label">How it wakes</span>
       <div className="hl2-mv-wake">
         <span className="hl2-mv-packet" aria-hidden="true" />
         <div className="hl2-mv-cores">
@@ -75,7 +75,7 @@ function MachineVisual({ kind }: { kind: 'runs' | 'pxe' | 'wake' }) {
           ))}
         </div>
       </div>
-      <span className="hl2-mv-foot">One Wake-on-LAN packet spins up <b>20 cores</b> in seconds</span>
+      <span className="hl2-mv-foot">One Wake-on-LAN packet from UpSnap starts all <b>20 cores</b></span>
     </div>
   );
 }

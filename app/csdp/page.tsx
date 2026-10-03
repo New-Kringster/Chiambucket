@@ -2,15 +2,19 @@ import type { Metadata } from 'next';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
 import ArticleScrollSpy from '../../components/ArticleScrollSpy';
 import ArticleLinks from '../../components/ArticleLinks';
+import LazyVideo from '../../components/LazyVideo';
 import NodeMap from './NodeMap';
 
+const DESCRIPTION =
+  'A school group project, graded A: four BeagleBone Black Wireless nodes (climate, bathroom, kitchen, intrusion) linked to a SocketIO web server that hosts a live dashboard with a Spline 3D view.';
+
 export const metadata: Metadata = {
-  title: 'EMA Smart Home System — Chiambucket',
-  description: 'Project article: a multi-node smart-home system on BeagleBone Black, Python and SocketIO, with a live 3D dashboard.',
+  title: 'EMA Smart Home | Braven Chiam',
+  description: DESCRIPTION,
   alternates: { canonical: 'https://www.chiambucket.com/csdp' },
   openGraph: {
-    title: 'EMA Smart Home System — Chiambucket',
-    description: 'A multi-node smart-home system on BeagleBone Black with a live Spline 3D dashboard.',
+    title: 'EMA Smart Home | Braven Chiam',
+    description: DESCRIPTION,
     url: 'https://www.chiambucket.com/csdp',
     type: 'article',
     images: [{ url: '/images/Ema-pf-context.webp' }],
@@ -20,8 +24,8 @@ export const metadata: Metadata = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Article',
-  headline: 'EMA Smart Home System',
-  description: 'A multi-node smart-home system on BeagleBone Black, Python and SocketIO, with a live Spline 3D dashboard. Awarded an A grade.',
+  headline: 'EMA Smart Home',
+  description: DESCRIPTION,
   image: 'https://www.chiambucket.com/images/Ema-pf-context.webp',
   author: { '@type': 'Person', name: 'Braven Chiam', url: 'https://www.chiambucket.com/' },
   publisher: { '@type': 'Person', name: 'Braven Chiam' },
@@ -40,19 +44,18 @@ export default function CsdpPage() {
     <main className="art">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <ArticleScrollSpy />
-      {/* Sub-chapters must not consume the rail's channel index (keeps mains at 01..07) */}
 
       {/* Feature hero */}
       <header className="art-hero">
-        <div className="art-hero-bg"><img src="/images/Ema-pf-context.webp" alt="EMA Smart Home System" /></div>
+        <div className="art-hero-bg"><img src="/images/Ema-pf-context.webp" alt="EMA Smart Home" /></div>
         <div className="art-hero-scrim"></div>
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>
           <div className="art-tags">
-            <span className="hp-md-tag school">School Project</span>
+            <span className="hp-md-tag school">School project, team of five</span>
           </div>
           <h1 className="art-title">EMA Smart <em>Home</em></h1>
-          <p className="art-lead">The EMA smart home system was the most complex group project I have worked on, requiring us to apply concepts and skills learned across multiple courses. Our team was awarded an &ldquo;A&rdquo; for the project.</p>
+          <p className="art-lead">A smart home system on four BeagleBone Black Wireless boards, built to cut energy use. It was the most complex group project I have worked on and drew on several of our courses. We got an A.</p>
           <div className="art-toolrow">
             <span className="hp-key">Built with</span>
             <div className="icon-stack">
@@ -68,7 +71,7 @@ export default function CsdpPage() {
             links={[
               { type: 'demo', label: 'Live demo', url: 'https://csdpdemo.chiambucket.com' },
               { type: 'github', label: 'GitHub', url: 'https://github.com/New-Kringster/EMA-Smart-home-System' },
-              { type: 'video', label: 'Demo video', url: 'https://youtu.be/PFhsRaakJAs' },
+              { type: 'video', label: 'Promo video', url: 'https://youtu.be/PFhsRaakJAs' },
             ]}
           />
         </div>
@@ -80,16 +83,16 @@ export default function CsdpPage() {
           <div className="art-rail-inner">
             <span className="hp-eyebrow">Chapters</span>
             <nav className="art-chapters article-chapter-wrapper">
-              <a href="#PromoVideo">Promotional Video</a>
+              <a href="#PromoVideo">Video</a>
               <a href="#Team">Team</a>
-              <a href="#ProjBackground">Project Background</a>
-              <a href="#DesignProcess">Design Process</a>
-              <a href="#Climate" className="sub">Climate Node</a>
-              <a href="#Bathroom" className="sub">Bathroom Node</a>
-              <a href="#Kitchen" className="sub">Kitchen Node</a>
-              <a href="#Intrusion" className="sub">Intrusion Node</a>
+              <a href="#ProjBackground">Brief</a>
+              <a href="#DesignProcess">Dashboard</a>
+              <a href="#Climate" className="sub">Climate node</a>
+              <a href="#Bathroom" className="sub">Bathroom node</a>
+              <a href="#Kitchen" className="sub">Kitchen node</a>
+              <a href="#Intrusion" className="sub">Intrusion node</a>
               <a href="#Connectivity">Connectivity</a>
-              <a href="#SlideDeck">Slide Deck</a>
+              <a href="#SlideDeck">Slide deck</a>
               <a href="#Documentation">Documentation</a>
             </nav>
           </div>
@@ -97,13 +100,13 @@ export default function CsdpPage() {
 
         <div className="art-content">
 
-          {/* Promotional Video */}
           <section id="PromoVideo" className="art-section" data-reveal>
-            <h2>Promotional Video</h2>
+            <h2>Video</h2>
             <div className="art-video">
               <iframe
                 src="https://www.youtube.com/embed/PFhsRaakJAs?si=t2kIXeFsMyZwU73l"
-                title="EMA Smart Home System promotional video"
+                title="EMA Smart Home promotional video"
+                loading="lazy"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
@@ -120,7 +123,7 @@ export default function CsdpPage() {
                   <div className="art-team-avatar tyr-profile"></div>
                   <div>
                     <b>Tan Yong Rui</b>
-                    <span>Team Leader, Docs, Code</span>
+                    <span>Team lead, docs, code</span>
                   </div>
                 </div>
                 <a
@@ -129,7 +132,7 @@ export default function CsdpPage() {
                   target="_blank"
                   rel="noopener"
                 >
-                  View Profile <img src="/images/fwd-arrow.svg" alt="" />
+                  Profile <img src="/images/fwd-arrow.svg" alt="" />
                 </a>
               </div>
 
@@ -137,8 +140,8 @@ export default function CsdpPage() {
                 <div className="art-team-id">
                   <div className="art-team-avatar braven-profile"></div>
                   <div>
-                    <b>Braven (me)</b>
-                    <span>Art, Code, Design</span>
+                    <b>Braven Chiam (me)</b>
+                    <span>Art, code, design</span>
                   </div>
                 </div>
                 <a
@@ -147,7 +150,7 @@ export default function CsdpPage() {
                   target="_blank"
                   rel="noopener"
                 >
-                  View Profile <img src="/images/fwd-arrow.svg" alt="" />
+                  Profile <img src="/images/fwd-arrow.svg" alt="" />
                 </a>
               </div>
 
@@ -156,7 +159,7 @@ export default function CsdpPage() {
                   <div className="art-team-avatar zx-profile"></div>
                   <div>
                     <b>Ong Zheng Xian</b>
-                    <span>Docs, Code</span>
+                    <span>Docs, code</span>
                   </div>
                 </div>
                 <a
@@ -165,7 +168,7 @@ export default function CsdpPage() {
                   target="_blank"
                   rel="noopener"
                 >
-                  View Profile <img src="/images/fwd-arrow.svg" alt="" />
+                  Profile <img src="/images/fwd-arrow.svg" alt="" />
                 </a>
               </div>
 
@@ -174,7 +177,7 @@ export default function CsdpPage() {
                   <div className="art-team-avatar jyc-profile"></div>
                   <div>
                     <b>Joycelyn Wong</b>
-                    <span>Docs, Code</span>
+                    <span>Docs, code</span>
                   </div>
                 </div>
                 <a
@@ -183,7 +186,7 @@ export default function CsdpPage() {
                   target="_blank"
                   rel="noopener"
                 >
-                  View Profile <img src="/images/fwd-arrow.svg" alt="" />
+                  Profile <img src="/images/fwd-arrow.svg" alt="" />
                 </a>
               </div>
 
@@ -192,113 +195,96 @@ export default function CsdpPage() {
                   <div className="art-team-avatar"></div>
                   <div>
                     <b>Benjamin Lee</b>
-                    <span>Team Member</span>
+                    <span>Team member</span>
                   </div>
                 </div>
-                <span className="art-team-link is-disabled">No Profile</span>
+                <span className="art-team-link is-disabled">No profile</span>
               </div>
             </div>
           </section>
 
-          {/* Project Background */}
           <section id="ProjBackground" className="art-section" data-reveal>
-            <h2>Project Background</h2>
-            <p>Given four BeagleBone Black Wireless boards and a selection of MikroBUS click modules, we were challenged to create a Wi-Fi connected system that supports sustainable living. Our solution was a smart home system that monitors energy usage in real time and intelligently controls devices to minimize consumption. To further extend its capabilities, we integrated an intrusion-detection node into the system.</p>
+            <h2>Brief</h2>
+            <p>We were given four BeagleBone Black Wireless boards and a set of MikroBUS click modules, and asked to build a Wi-Fi connected system that supports sustainable living. We built a smart home system that monitors energy use in real time and switches devices to cut consumption, then added an intrusion-detection node.</p>
             <figure className="art-fig">
-              <img src="/images/csdp1.webp" alt="Intended placement of each board within a home" loading="lazy" />
-              <figcaption>Intended placement of each board within a home</figcaption>
+              <img src="/images/csdp1.webp" alt="Where each board sits in the home" loading="lazy" />
+              <figcaption>Where each board sits in the home</figcaption>
             </figure>
           </section>
 
-          {/* Design Process */}
           <section id="DesignProcess" className="art-section" data-reveal>
-            <h2>Design Process</h2>
-            <p>As a software-driven project, we focused on user interface design, prioritizing clarity, readability, and efficient communication of information. We also added Spline3D into the final design for more clarity. <a href="https://csdpdemo.chiambucket.com" target="_blank" rel="noopener">DEMO PAGE</a></p>
+            <h2>Dashboard</h2>
+            <p>Most of the project was software, so the design work went into the dashboard: clear, readable, and quick to take in. We added a Spline 3D model of the home that shows each action as it happens. Try the <a href="https://csdpdemo.chiambucket.com" target="_blank" rel="noopener">live demo</a>.</p>
             <figure className="art-fig">
-              <img src="/images/csdp2.webp" alt="Figma mockup of the UI that was used" loading="lazy" />
-              <figcaption>Figma mockup of the UI that was used</figcaption>
+              <img src="/images/csdp2.webp" alt="Figma mockup of the dashboard" loading="lazy" />
+              <figcaption>Figma mockup of the dashboard</figcaption>
             </figure>
             <figure className="art-fig">
-              <video autoPlay loop muted playsInline>
-                <source src="/images/csdp3.webm" type="video/webm" />
-                <source src="/images/csdp3.mp4" type="video/mp4" />
-              </video>
-              <figcaption>Screenshot of the final UI that was made</figcaption>
+              <LazyVideo webm="/images/csdp3.webm" mp4="/images/csdp3.mp4" poster="/images/posters/csdp3.webp" />
+              <figcaption>The finished dashboard</figcaption>
             </figure>
             <figure className="art-fig">
-              <video autoPlay loop muted playsInline>
-                <source src="/images/csdp4.webm" type="video/webm" />
-                <source src="/images/csdp4.mp4" type="video/mp4" />
-              </video>
-              <figcaption>Live visualisation of actions using Spline3D</figcaption>
+              <LazyVideo webm="/images/csdp4.webm" mp4="/images/csdp4.mp4" poster="/images/posters/csdp4.webp" />
+              <figcaption>The Spline 3D view showing actions live</figcaption>
             </figure>
           </section>
 
-          {/* Climate Node */}
           <section id="Climate" className="art-section" data-reveal>
-            <h2>Climate Node</h2>
-            <p>The climate node monitors for temperature, humidity and the presence of humans, it toggles the fan on only when a person is detected and the environment is warm and humid</p>
+            <h2>Climate node</h2>
+            <p>Monitors temperature, humidity and whether someone is in the room. The fan turns on only when a person is detected and the room is warm and humid.</p>
             <img src="/images/csdp5.webp" alt="Climate node hardware" loading="lazy" />
           </section>
 
-          {/* Bathroom Node */}
           <section id="Bathroom" className="art-section" data-reveal>
-            <h2>Bathroom Node</h2>
-            <p>The bathroom node allows you to set a timer for how long you would want to shower for, using the buttons and display. It automatically starts when it detects you entering the shower. A buzzer is sounded when your time is up</p>
+            <h2>Bathroom node</h2>
+            <p>You set how long you want to shower for with the buttons and display. The timer starts when it detects you entering the shower, and a buzzer sounds when time is up.</p>
             <img src="/images/csdp6.webp" alt="Bathroom node hardware" loading="lazy" />
           </section>
 
-          {/* Kitchen Node */}
           <section id="Kitchen" className="art-section" data-reveal>
-            <h2>Kitchen Node</h2>
-            <p>The kitchen node monitors energy usage from the fridge and reports an energy score on the dashboard, It also functions as a fire alarm, the alarm sounds across all nodes if there is an uncontrolled fire detected.</p>
+            <h2>Kitchen node</h2>
+            <p>Monitors the fridge&rsquo;s energy use and reports an energy score to the dashboard. It is also the fire alarm: if it detects an uncontrolled fire, the alarm sounds on every node.</p>
             <img src="/images/csdp7.webp" alt="Kitchen node hardware" loading="lazy" />
           </section>
 
-          {/* Intrusion Node */}
           <section id="Intrusion" className="art-section" data-reveal>
-            <h2>Intrusion Node</h2>
-            <p>The intrusion node detects for door knocks and the opening of the door at unusual times and starts an alarm across all nodes</p>
+            <h2>Intrusion node</h2>
+            <p>Detects knocks on the door, and the door opening at unusual times, and sounds an alarm on every node.</p>
             <img src="/images/csdp8.webp" alt="Intrusion node hardware" loading="lazy" />
           </section>
 
-          {/* Connectivity */}
           <section id="Connectivity" className="art-section" data-reveal>
             <h2>Connectivity</h2>
-            <p>Each board connects to a SocketIO web server which hosts the dashboard and coordinates events and alarms too.</p>
-            <p>Here is that mesh laid out as a hub and spokes, the BeagleBone controller in the middle with a live link out to each of the five nodes. Click a node to inspect it, or trigger the flame alarm to watch an alert race down the line.</p>
+            <p>Each board connects to a SocketIO web server, which hosts the dashboard and coordinates events and alarms between the nodes.</p>
+            <p>The map below shows the four nodes and the server. Select a node to see what it does, or simulate a kitchen fire to see the alarm reach every node.</p>
             <NodeMap />
             <figure className="art-fig">
-              <img src="/images/csdp9.webp" alt="A chart of how each system connects with each other" loading="lazy" />
-              <figcaption>A chart of how each system connects with each other</figcaption>
+              <img src="/images/csdp9.webp" alt="Diagram of how the nodes, server and dashboard connect" loading="lazy" />
+              <figcaption>How the nodes, server and dashboard connect</figcaption>
             </figure>
             <div className="art-repo">
               <div className="art-repo-text">
-                <strong>EMA Smart Home on GitHub</strong>
-                <span>The full source for the node firmware and SocketIO dashboard server.</span>
+                <strong>Source on GitHub</strong>
+                <span>The node code and the SocketIO dashboard server.</span>
               </div>
-              <a className="hp-btn" href="https://github.com/New-Kringster/EMA-Smart-home-System" target="_blank" rel="noopener">View GitHub Repo <Circle /></a>
+              <a className="hp-btn" href="https://github.com/New-Kringster/EMA-Smart-home-System" target="_blank" rel="noopener">View on GitHub <Circle /></a>
             </div>
           </section>
 
-          {/* Slide Deck */}
           <section id="SlideDeck" className="art-section" data-reveal>
-            <h2>Slide Deck</h2>
+            <h2>Slide deck</h2>
             <div className="art-embed art-pdf">
-              <object data="https://content.chiambucket.com/downloadable/csdpf1.pdf" type="application/pdf">
-                <p>Alt link <a href="https://content.chiambucket.com/downloadable/csdpf1.pdf">to the PDF!</a></p>
-              </object>
+              <iframe src="https://content.chiambucket.com/downloadable/csdpf1.pdf" title="EMA Smart Home slide deck (PDF)" loading="lazy"></iframe>
             </div>
+            <p><a href="https://content.chiambucket.com/downloadable/csdpf1.pdf" target="_blank" rel="noopener">Open the slide deck (PDF)</a></p>
           </section>
 
-          {/* Documentation */}
           <section id="Documentation" className="art-section" data-reveal>
             <h2>Documentation</h2>
             <div className="art-embed art-pdf">
-              <object data="https://content.chiambucket.com/downloadable/csdpf2.pdf" type="application/pdf">
-                <p>Alt link <a href="https://content.chiambucket.com/downloadable/csdpf2.pdf">to the PDF!</a></p>
-              </object>
+              <iframe src="https://content.chiambucket.com/downloadable/csdpf2.pdf" title="EMA Smart Home documentation (PDF)" loading="lazy"></iframe>
             </div>
+            <p><a href="https://content.chiambucket.com/downloadable/csdpf2.pdf" target="_blank" rel="noopener">Open the documentation (PDF)</a></p>
           </section>
 
           <div className="art-next">

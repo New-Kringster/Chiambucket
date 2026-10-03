@@ -8,27 +8,27 @@ import { PeekFeed } from '../components/ProjectPeek';
 /* Capability cards (Projects section) → detail pop-ups. Content drawn from the real builds. */
 const CAPABILITIES: InfoItem[] = [
   { eyebrow: 'Capability', title: 'Microcontrollers & Firmware',
-    blurb: 'The brains of almost everything I build. I write bare-metal firmware in C and C++ on the ESP32 and Arduino families, flashing and debugging over PlatformIO.',
-    points: ['ESP32 firmware for the Project June rover and the LoRA Messenger', 'Custom PWM motor control, servo steering and sensor drivers', 'Reading a whole suite of sensors at once while keeping the loop fast'],
+    blurb: 'I write firmware in C and C++ for ESP32 and Arduino boards with PlatformIO.',
+    points: ['ESP32-S3 firmware for Project June and ESP32 firmware for the LoRA Messenger', 'PWM motor control, servo steering and sensor drivers', 'MicroPython on an ESP32 for LUMEN, streaming audio with about 10 KB of peak memory'],
     chips: ['ESP32', 'Arduino', 'ATmega328', 'PlatformIO', 'C / C++'] },
   { eyebrow: 'Capability', title: 'PCB Design',
-    blurb: 'Taking a circuit from a schematic to a board I can hold. I design in KiCAD, route the layout, then reflow-solder the SMD parts by hand.',
+    blurb: 'I draw the schematic and lay out the board in KiCAD, then solder the SMD parts myself.',
     points: ['The LoRA Messenger’s custom board, reflowed at home', 'A from-scratch recreation of my school’s ATmega328 dev board', 'Schematic capture, footprint sourcing and respins'],
     chips: ['KiCAD', 'EAGLE', 'SMD reflow', 'Schematic capture'] },
   { eyebrow: 'Capability', title: 'Wireless Comms',
-    blurb: 'Getting devices to talk, near or far. I pick the radio and protocol to fit the job, from long-range LoRa to low-latency WebRTC video over cellular.',
+    blurb: 'LoRa for range, ESP-NOW for quick local links, MQTT for telemetry and WebRTC for live video over cellular.',
     points: ['Three live WebRTC camera streams over 5G on Project June', 'Long-range text on LoRa and two-way voice on ESP-NOW', 'MQTT telemetry brokered through my homelab'],
     chips: ['LoRa', 'ESP-NOW', 'MQTT', 'WebRTC', 'SocketIO', '5G'] },
   { eyebrow: 'Capability', title: '3D & CAD',
-    blurb: 'Designing the physical shell. I model enclosures and parts in Onshape, visualise in Blender, then 3D print and iterate until the fit is right.',
-    points: ['The rover chassis and the LoRA Messenger’s handheld case', 'Tolerance-tuned fits and print-in-place mechanisms', 'Concept renders for pitches and posters'],
+    blurb: 'I model enclosures and parts in Onshape, render in Blender, and 3D print until the fit is right.',
+    points: ['The LoRA Messenger’s handheld case', 'The six-part Pandus dispenser body, which fit on the first print', 'Concept renders for pitches and posters'],
     chips: ['Onshape', 'Blender', '3D printing', 'Enclosure design'] },
   { eyebrow: 'Capability', title: 'Design & Media',
-    blurb: 'The design-first half of the work. I move between interfaces, posters, motion and 3D so a project communicates, not just functions.',
+    blurb: 'Interfaces in Figma and Spline, posters in Photoshop, and project videos in DaVinci Resolve.',
     points: ['UI and dashboards in Figma, often with Spline 3D scenes', 'Posters and graphics in Photoshop', 'Project films cut and graded in DaVinci Resolve'],
     chips: ['Figma', 'Photoshop', 'DaVinci Resolve', 'Premiere Pro', 'Spline 3D'] },
   { eyebrow: 'Capability', title: 'Infrastructure',
-    blurb: 'Where my projects live and how I reach them. I run a self-hosted homelab on Proxmox and Docker, fronted by Nginx and a segmented UniFi network.',
+    blurb: 'A self-hosted homelab on Unraid, Proxmox and Docker, behind Nginx and a segmented UniFi network.',
     points: ['Self-hosted services behind Nginx Proxy Manager and CrowdSec', 'A WireGuard and Tailscale mesh to reach home from anywhere', 'coturn and MQTT that back real hardware projects'],
     chips: ['Proxmox', 'Docker', 'Nginx', 'Tailscale', 'Wireguard', 'Unifi'],
     link: { label: 'Explore the HomeLab', url: '/homelab' } },
@@ -38,8 +38,8 @@ const CAPABILITIES: InfoItem[] = [
 const TILE_INTRO: InfoItem = {
   eyebrow: 'Hello',
   title: "Hi, I'm Braven",
-  blurb: "I'm a 19-year-old engineering student in Singapore. It all started when I was young, taking apart a broken radio just to see how it worked. That same curiosity never left me, it just grew into rovers, custom PCBs, a solar-powered homelab and this very site.",
-  add: "Today I split my time across hardware, software and design, an engineer who designs, chasing the same feeling that broken radio first gave me: working out how something ticks, then making it better.",
+  blurb: "I'm a 19-year-old Electronic and Computer Engineering student at Nanyang Polytechnic in Singapore. I started by taking apart a broken radio to see how it worked. Now I build rovers, circuit boards, web apps and the homelab they run on.",
+  add: "Most projects need hardware, software and design, and I like doing all three myself.",
   links: [
     { label: 'Get in touch', url: '/contact' },
     { label: 'Sukuna art credit', url: 'https://www.pinterest.com/pin/665547651180427494/' },
@@ -47,10 +47,10 @@ const TILE_INTRO: InfoItem = {
 };
 
 const TILE_ENGINEERING: InfoItem = {
-  eyebrow: 'Design-first engineering',
-  title: 'Every engineer should be a designer',
-  blurb: "I don't treat function and form as a trade-off. I approach a circuit or a chassis the way I'd approach an interface: grounded in what it has to do, then shaped by how it actually feels to use. It should work well and look like it was meant to.",
-  add: "The render on the card is a Blender scene from my Kauli concept, a product I designed and pitched for a communication-skills brief. That same instinct carries into my interface work, like the live dashboard I designed for the EMA smart-home system shown below.",
+  eyebrow: 'Engineering',
+  title: 'Circuits, firmware and 3D CAD',
+  blurb: "I design circuit boards in KiCAD, write firmware in C and C++ with PlatformIO, and model enclosures in Onshape to 3D print. I also design the interface when a project has one.",
+  add: "The render on the card is from my Kauli concept, made in Blender. Below is the live dashboard I designed for the EMA smart home.",
   media: '/images/Cdyspstart.webp',
   links: [
     { label: 'See the Kauli concept', url: '/comingsoon' },
@@ -61,7 +61,7 @@ const TILE_ENGINEERING: InfoItem = {
 const TILE_MICRO: InfoItem = {
   eyebrow: 'The brains of the build',
   title: 'Microcontrollers I build with',
-  blurb: "Almost everything I make has a microcontroller at its core. I write bare-metal firmware in C and C++, flashing and debugging over PlatformIO, and I choose the chip to fit the job rather than forcing the job onto one chip.",
+  blurb: "Most of my builds run on a microcontroller. I write the firmware in C and C++ with PlatformIO and pick the board to suit the project.",
   points: [
     'ESP32, my default for anything wireless, with WiFi, ESP-NOW and plenty of headroom',
     'Arduino Uno and the ATmega328 for simpler, well-supported builds',
@@ -77,15 +77,9 @@ const TILE_MICRO: InfoItem = {
 };
 
 const TILE_PPT: InfoItem = {
-  eyebrow: 'Presenting & slide design',
-  title: 'Slides that hold a room',
-  blurb: "A deck should carry the talk, not compete with it. I design slides to land one idea at a time and keep only the key points on screen, large and readable, so the audience can take them in at a glance and keep listening to me rather than reading the wall.",
-  add: "Strong typography, real imagery and a clear visual rhythm do the heavy lifting, while the detail lives in what I say. That keeps the slides clean and the delivery engaging.",
-  points: [
-    'One key idea per slide, never a wall of text',
-    'Only the most important points make the cut',
-    'Visual hierarchy and motion that guide the eye',
-  ],
+  eyebrow: 'Slides',
+  title: 'Slides for school pitches',
+  blurb: "I design the decks for my school presentations: one idea per slide, large type and real photos, with the detail in what I say.",
   links: [
     { label: 'Download the slides (.pptx)', url: 'https://content.chiambucket.com/downloadable/CPB1v4.pptx' },
   ],
@@ -107,6 +101,39 @@ const COLLABORATORS: Collab[] = [
   { name: 'Ong Zheng Xian', role: 'Docs · Code', img: 'https://www.ongkian.com/css/images/Passport_Photo.jpg', fit: 'cover', profile: 'https://www.ongkian.com', projects: [{ label: 'EMA Smart Home', url: '/csdp' }] },
   { name: 'Joycelyn Wong', role: 'Docs · Code', img: 'https://framerusercontent.com/images/asafLs7NWVzXO9AolaQ8XVF5F4.jpg?scale-down-to=512&width=1280&height=807', fit: 'cover', profile: 'https://joycelynwong.framer.website/projects/ema', projects: [{ label: 'EMA Smart Home', url: '/csdp' }] },
   { name: 'Abel Goh', role: 'Team member on ELEC-F', img: '/images/abel-goh.webp', fit: 'cover', profile: 'https://frequent-location-124634.framer.app', projects: [{ label: 'ELEC-F', url: '/elecf' }] },
+];
+
+/* What I did on each project, by discipline. null = no work in that discipline.
+   Facts from the write-ups. Rows open the project's peek summary. */
+const HSD: { id: string; name: string; kind: string; hw: string | null; sw: string | null; de: string | null }[] = [
+  { id: 'proj-june', name: 'Project June', kind: 'Personal, 3 weeks',
+    hw: 'ESP32-S3 with GPS, IMU and more sensors, a MOSFET motor driver and a 2S3P battery pack I built, three phones for 5G and cameras',
+    sw: 'Three WebRTC video streams through a TURN server, MQTT telemetry, Xbox controller input',
+    de: 'Operator console in Figma with a Spline 3D model of the rover' },
+  { id: 'proj-beadreader', name: 'BeadReader', kind: 'Personal',
+    hw: null,
+    sw: 'Next.js, Supabase Postgres, Cloudflare R2, my own cookie auth, a content gate enforced in SQL',
+    de: 'Reading themes, live presence rings, a reading stats page' },
+  { id: 'proj-lora', name: 'LoRA Messenger', kind: 'Personal, 3 months',
+    hw: 'My first PCB, laid out in KiCAD and soldered by hand: ESP32, LoRa radio, two displays, LiPo',
+    sw: 'PlatformIO firmware for LoRa text, ESP-NOW voice and a range-test mode',
+    de: 'A 3D-printed case modelled in Onshape' },
+  { id: 'proj-lumen', name: 'LUMEN', kind: 'School, IoT module',
+    hw: 'ESP32-WROOM with an I2S microphone, DHT22, PIR, light sensor, NeoPixel, fan, servo and OLED',
+    sw: 'MicroPython, a FastAPI server in Docker, Whisper and DeepSeek through OpenRouter, MQTT',
+    de: null },
+  { id: 'proj-ema', name: 'EMA Smart Home', kind: 'School, team of 5',
+    hw: 'Four BeagleBone Black Wireless boards with MikroBUS sensor modules',
+    sw: 'A SocketIO server that hosts the dashboard and sounds the fire alarm on every node',
+    de: 'Dashboard UI in Figma and a live 3D house in Spline' },
+  { id: 'proj-elecf', name: 'ELEC-F', kind: 'School, team of 4',
+    hw: 'Two M5Stack Fire controllers, a ToF door sensor, a PIR presence sensor, an RGB light and a buzzer',
+    sw: 'Timer and alarm logic on the M5Stack',
+    de: 'The cardboard freezer prototype and the project poster' },
+  { id: 'proj-pandus', name: 'Pandus Dispenser', kind: 'School, my first project',
+    hw: 'Arduino Uno, a DC pump on a relay, a servo, an infrared sensor and high-power LEDs',
+    sw: 'Python with PyFirmata',
+    de: 'A six-part body modelled in Onshape that fit on the first print' },
 ];
 
 /* ── Shared icon helpers ── */
@@ -430,13 +457,11 @@ export default function HomeClient() {
           /* ── Hero: let the shader be the backdrop ── */
           html.sensory-active .hp-hero-grid { display: none; }
           html.sensory-active .hp-hero::before, html.sensory-active .hp-hero::after { opacity: 0.2; }
-          html.sensory-active .hp-hero-kicker { font-family: var(--font-ddt); letter-spacing: 0.3em; text-transform: uppercase; font-size: 0.6rem; color: rgba(226,212,190,0.55); }
-          html.sensory-active .hp-hero-kicker::before { content: '[ '; color: rgba(var(--sa-accent),0.6); }
-          html.sensory-active .hp-hero-kicker::after { content: ' ]'; color: rgba(var(--sa-accent),0.6); }
+          html.sensory-active .hp-hero-kicker { font-family: var(--font-ddt); letter-spacing: 0.08em; font-size: 0.82rem; color: rgba(226,212,190,0.6); }
           html.sensory-active .hp-hero-sub { color: rgba(222,229,248,0.68); }
           /* brutalist terminal headline: condensed caps riding the light plume */
           html.sensory-active .hp-hero-title { text-transform: uppercase; letter-spacing: 0.015em; }
-          /* the rolling accent word catches the light source */
+          /* the accent words catch the light source */
           html.sensory-active .hp-hero-title em { text-shadow: 0 0 34px rgba(var(--sa-accent),0.35); }
           /* "New" topper pill → terminal status chip */
           html.sensory-active .hero-topper {
@@ -495,11 +520,11 @@ export default function HomeClient() {
             <div className="hero-topper-content">BeadReader</div>
             <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" className="hero-topper-arrow"><path fill="#E8E8E8" d="M338.752 104.704a64 64 0 000 90.496l316.8 316.8-316.8 316.8a64 64 0 0090.496 90.496l362.048-362.048a64 64 0 000-90.496L429.248 104.704a64 64 0 00-90.496 0z"/></svg>
           </a>
-          <div className="hp-hero-kicker">Braven Chiam · Singapore</div>
+          <div className="hp-hero-kicker">Braven Chiam, Singapore</div>
           <h1 className="hp-hero-title hero-headline-text">
-            Creating with <span className="hp-roll" data-words="Intention.,Purpose.,Meaning.,Intent.,Vision." aria-label="Intention"><em>Intention.</em></span>
+            Hardware, software <em>and design.</em>
           </h1>
-          <p className="hp-hero-sub">I&apos;m an engineer who designs. I build hardware and software with a design-first mindset, from 5G rovers and custom PCBs to a solar-powered homelab and photography.</p>
+          <p className="hp-hero-sub">I&apos;m a third-year Electronic and Computer Engineering student at Nanyang Polytechnic. I design circuit boards, write the software that runs on them, and model the cases they go in.</p>
           <div className="hp-hero-cta">
             <button className="button-hero" onClick={() => { document.getElementById('portfolio-items-holder')?.scrollIntoView({ behavior: 'smooth' }); }}>
               <div className="dots_border"></div>
@@ -511,19 +536,35 @@ export default function HomeClient() {
           <div className="hp-scroll"><span className="hp-mouse"><span></span></span>Scroll</div>
         </header>
 
-        {/* ── DISCIPLINES ── */}
-        <section className="hp-band">
+        {/* ── HARDWARE / SOFTWARE / DESIGN ── */}
+        <section className="hp-band" id="what-i-do">
           <div className="hp-section">
             <div className="hp-band-intro" data-reveal>
               <span className="hp-eyebrow">What I do</span>
-              <h2>One person, four disciplines, built to work together.</h2>
-              <p>Everything I make sits at the intersection of engineering and design. Here&apos;s the full picture, without the page-hopping.</p>
+              <h2>What I did on each project.</h2>
+              <p>Split into hardware, software and design. Most builds use all three. Select a row for a short summary.</p>
             </div>
-            <div className="hp-disciplines">
-              <a className="hp-disc" href="#portfolio-items-holder" data-reveal data-delay="1"><span className="hp-disc-num">01</span><span className="hp-disc-title">Engineering</span><span className="hp-disc-desc">Microcontrollers, custom PCBs and 3D CAD. Hardware and software, mostly self-taught.</span><span className="hp-disc-link">See projects <CR /></span></a>
-              <a className="hp-disc" href="/photography" data-reveal data-delay="2"><span className="hp-disc-num">02</span><span className="hp-disc-title">Design</span><span className="hp-disc-desc">Design-first thinking across interfaces, posters, slides and motion. Clear and intentional.</span><span className="hp-disc-link">View design &amp; photos <CR /></span></a>
-              <a className="hp-disc" href="#photolink" data-reveal data-delay="3"><span className="hp-disc-num">03</span><span className="hp-disc-title">Photography</span><span className="hp-disc-desc">Finding inspiration through perspective and detail, then bringing it back to the work.</span><span className="hp-disc-link">Browse gallery <CR /></span></a>
-              <a className="hp-disc" href="/homelab" data-reveal data-delay="4"><span className="hp-disc-num">04</span><span className="hp-disc-title">HomeLab</span><span className="hp-disc-desc">Self-hosted, solar-powered servers running every Chiambucket service, including this site.</span><span className="hp-disc-link">Explore setup <CR /></span></a>
+            <div className="hp-hsd" role="table" aria-label="Projects by hardware, software and design" data-reveal>
+              <div className="hp-hsd-row hp-hsd-head" role="row">
+                <span role="columnheader">Project</span>
+                <span role="columnheader">Hardware</span>
+                <span role="columnheader">Software</span>
+                <span role="columnheader">Design</span>
+              </div>
+              {HSD.map((p) => (
+                <div key={p.id} className="hp-hsd-row" role="row">
+                  <span className="hp-hsd-name" role="rowheader">
+                    <button type="button" onClick={() => openProject(p.id)}>{p.name}</button>
+                    <small>{p.kind}</small>
+                  </span>
+                  {(['hw', 'sw', 'de'] as const).map((k) => (
+                    <span key={k} role="cell" className={`hp-hsd-cell${p[k] ? '' : ' is-empty'}`}>
+                      <i aria-hidden="true">{k === 'hw' ? 'Hardware' : k === 'sw' ? 'Software' : 'Design'}</i>
+                      {p[k] ?? <span className="sr-only">None</span>}
+                    </span>
+                  ))}
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -533,7 +574,7 @@ export default function HomeClient() {
           <div className="hp-section">
             <div className="section-editorial-header" data-reveal>
               <span className="seh-number">01</span>
-              <div className="seh-content"><span className="seh-eyebrow">About</span><span className="seh-title">An engineer who designs</span></div>
+              <div className="seh-content"><span className="seh-eyebrow">About</span><span className="seh-title">What I work with</span></div>
             </div>
             <div className="hp-bento">
               {/* Intro */}
@@ -541,16 +582,16 @@ export default function HomeClient() {
                 <span className="hp-tile-go"><AU /></span>
                 <img className="hp-wave" src="/images/wave.webp" alt="Waving hand" />
                 <a className="hp-blink" id="sukuna-blink" href="https://www.pinterest.com/pin/665547651180427494/" onClick={(e) => e.stopPropagation()} aria-label="A little friend"></a>
-                <h3 className="hp-tile-h">Hi, I&apos;m Braven.<br />An engineer who designs.</h3>
-                <p className="hp-tile-p">Grounded in function, guided by human experience, and driven to make things that feel like art.</p>
+                <h3 className="hp-tile-h">Hi, I&apos;m Braven.</h3>
+                <p className="hp-tile-p">Electronic and Computer Engineering student in Singapore. Most of what I know about building things I taught myself through these projects.</p>
               </div>
               {/* Engineering */}
               <div className="hp-tile hp-tile-eng hp-clickable" data-reveal data-delay="1" role="button" tabIndex={0} onClick={() => setOpenTile(TILE_ENGINEERING)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(TILE_ENGINEERING); } }}>
                 <span className="hp-tile-go"><AU /></span>
                 <div className="hp-tile-media"><img src="/images/abm-engineering.webp" alt="" /></div>
                 <span className="hp-key">Engineering</span>
-                <h3 className="hp-tile-h">A design-first<br />engineering approach.</h3>
-                <p className="hp-tile-p">I believe every engineer should be a designer, grounded in function, guided by experience.</p>
+                <h3 className="hp-tile-h">Circuits, firmware<br />and 3D CAD.</h3>
+                <p className="hp-tile-p">Custom PCBs in KiCAD, firmware in PlatformIO, enclosures in Onshape.</p>
               </div>
               {/* Microcontrollers */}
               <div className="hp-tile hp-tile-micro hp-clickable" data-reveal data-delay="2" role="button" tabIndex={0} onClick={() => setOpenTile(TILE_MICRO)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(TILE_MICRO); } }}>
@@ -559,42 +600,42 @@ export default function HomeClient() {
                 <div className="hp-iconrow">
                   <img src="/images/microchip-icon.webp" alt="Microchip" /><img src="/images/esp-icon.webp" alt="ESP32" /><img src="/images/PlatformIO-icon.webp" alt="PlatformIO" /><img src="/images/arduino-icon.webp" alt="Arduino" />
                 </div>
-                <h3 className="hp-tile-h">Powerful hardware meets powerful software.</h3>
+                <h3 className="hp-tile-h">ESP32, Arduino, ATmega328 and PlatformIO.</h3>
               </div>
               {/* DaVinci */}
               <div className="hp-tile hp-media-tile hp-tile-davinci hp-clickable" data-reveal role="link" tabIndex={0} onClick={() => window.open('https://www.youtube.com/@newkringster2564', '_blank')} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}>
                 <span className="hp-tile-go"><AU /></span>
                 <LazyVideo webm="/images/Davinci-showcase.webm" mp4="/images/Davinci-showcase.mp4" poster="/images/Davinci-showcase-poster.webp" />
                 <div className="hp-media-scrim"></div>
-                <div className="hp-media-body"><span className="hp-key">DaVinci Resolve</span><h3 className="hp-tile-h">Clear, creative, experimental.</h3><p className="hp-tile-p">Videos that add meaning and communicate a project&apos;s vision.</p></div>
+                <div className="hp-media-body"><span className="hp-key">DaVinci Resolve</span><h3 className="hp-tile-h">Project videos.</h3><p className="hp-tile-p">I film and edit the demo video for each build.</p></div>
               </div>
               {/* Figma */}
               <div className="hp-tile hp-tile-figma hp-clickable" data-reveal data-delay="1" role="link" tabIndex={0} onClick={() => { window.location.href = '/photography'; }} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}>
                 <span className="hp-tile-go"><AU /></span>
                 <span className="hp-key">Figma</span>
                 <div className="hp-figma-stack"><img className="back" src="/images/ELECF.webp" alt="" /><img className="mid" src="/images/Dashboard.webp" alt="" /><img className="front" src="/images/Cdyspstart.webp" alt="" /></div>
-                <div><h3 className="hp-tile-h">Clean, functional.</h3><p className="hp-tile-p">Posters and interfaces that communicate instantly, without friction.</p></div>
+                <div><h3 className="hp-tile-h">Interfaces and posters.</h3><p className="hp-tile-p">The Project June console, the EMA dashboard and the ELEC-F poster.</p></div>
               </div>
               {/* Design Tools */}
               <div className="hp-tile hp-tile-tools hp-clickable" data-reveal data-delay="2" role="link" tabIndex={0} onClick={() => { window.location.href = '#capabilities'; }} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}>
                 <span className="hp-tile-go"><AU /></span>
                 <span className="hp-key">Design Tools</span>
                 <ToolCarousel />
-                <p className="hp-tile-p">A toolkit I reach for daily, from raster and vector to 3D and motion.</p>
+                <p className="hp-tile-p">Photoshop, Figma, DaVinci Resolve, Premiere Pro, Spline and PowerPoint.</p>
               </div>
               {/* Photography */}
               <div className="hp-tile hp-media-tile hp-tile-photo hp-clickable" data-reveal role="link" tabIndex={0} onClick={() => { window.location.href = '#photolink'; }} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}>
                 <span className="hp-tile-go"><AU /></span>
                 <img src="/images/abm-lr.webp" alt="Photography" />
                 <div className="hp-media-scrim"></div>
-                <div className="hp-media-body"><span className="hp-key">Photography</span><h3 className="hp-tile-h">Through a different lens.</h3><p className="hp-tile-p">Photography sharpens my perspective, attention to detail, and approach to design.</p></div>
+                <div className="hp-media-body"><span className="hp-key">Photography</span><h3 className="hp-tile-h">Travel photos.</h3><p className="hp-tile-p">Europe, China, New Zealand and Hong Kong.</p></div>
               </div>
               {/* PowerPoint */}
               <div className="hp-tile hp-tile-ppt hp-clickable" data-reveal data-delay="1" role="button" tabIndex={0} onClick={() => setOpenTile(TILE_PPT)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(TILE_PPT); } }}>
                 <span className="hp-tile-go"><AU /></span>
                 <span className="hp-key">PowerPoint</span>
                 <div className="hp-ppt-media"><LazyVideo webm="/images/CPB1v4.webm" mp4="/images/CPB1v4.mp4" poster="/images/CPB1v4-poster.webp" /></div>
-                <h3 className="hp-tile-h" style={{ fontSize: '1.25rem' }}>Fun, engaging, never overwhelming.</h3>
+                <h3 className="hp-tile-h" style={{ fontSize: '1.25rem' }}>Slides for school pitches.</h3>
               </div>
             </div>
           </div>
@@ -608,7 +649,7 @@ export default function HomeClient() {
               <div className="peh-content">
                 <div className="peh-eyebrow">Selected Work</div>
                 <h2 className="peh-title">Projects</h2>
-                <p className="peh-description">Builds spanning engineering, design and homelab infrastructure. Read a chaptered summary on any card, or open the full article.</p>
+                <p className="peh-description">Open a card for a short summary, or read the full write-up.</p>
               </div>
             </div>
 
@@ -616,19 +657,19 @@ export default function HomeClient() {
             <article className="hp-spotlight" data-reveal>
               <div className="hp-spot-media">
                 <img src="/images/ProjJuneBanner1.webp" alt="Project June, a 5G radio-controlled vehicle" loading="lazy" />
-                <span className="hp-spot-badge"><CRWN /> Flagship Hardware Build</span>
+                <span className="hp-spot-badge">Main hardware build</span>
               </div>
               <div className="hp-spot-body">
                 <span className="hp-key">Project June · Personal</span>
-                <h3 className="hp-spot-title">A 5G rover that streams, senses and steers.</h3>
-                <p className="hp-spot-lead">My most ambitious build: a radio-controlled vehicle with three live video streams over 5G, full telemetry, and a complete sensor suite, designed enclosure to firmware in three weeks.</p>
+                <h3 className="hp-spot-title">A 5G rover with three live cameras.</h3>
+                <p className="hp-spot-lead">I drive it over 5G from anywhere with signal. Three phones on board stream the video, and an ESP32-S3 reads GPS and the other sensors and drives the motor through a MOSFET driver I built. Three weeks from start to first drive.</p>
                 <div className="hp-spot-stats">
                   <div className="hp-spot-stat"><b>3</b><span>live video streams</span></div>
                   <div className="hp-spot-stat"><b>5G</b><span>cellular link</span></div>
                   <div className="hp-spot-stat"><b>8+</b><span>onboard sensors</span></div>
                   <div className="hp-spot-stat"><b>3 wks</b><span>concept to drive</span></div>
                 </div>
-                <div className="hp-spot-tags"><span>ESP32</span><span>WebRTC</span><span>MQTT</span><span>KiCAD</span><span>Onshape</span><span>PlatformIO</span></div>
+                <div className="hp-spot-tags"><span>ESP32-S3</span><span>WebRTC</span><span>MQTT</span><span>KiCAD</span><span>Onshape</span><span>PlatformIO</span></div>
                 <div className="hp-spot-cta">
                   <button className="hp-btn" onClick={() => openProject('proj-june')}>Read the summary <SB /></button>
                   <button className="hp-btn hp-btn-ghost" onClick={() => { window.location.href = '/project-june'; }}>Full article</button>
@@ -641,7 +682,7 @@ export default function HomeClient() {
             <article className="hp-spotlight hp-spotlight-solo" data-reveal>
               <div className="hp-spot-media">
                 <img src="/images/beadreader-flagship.webp" alt="BeadReader, a self-hosted invite-only private book reader" loading="lazy" />
-                <span className="hp-spot-badge"><CRWN /> Flagship Software Build</span>
+                <span className="hp-spot-badge">Main software build</span>
               </div>
               <div className="hp-spot-solo-body">
                 <div className="hp-spot-stats">
@@ -663,8 +704,8 @@ export default function HomeClient() {
             <div className="hp-cap" id="capabilities" data-reveal>
               <div className="hp-cap-intro">
                 <span className="hp-eyebrow">Capabilities</span>
-                <h3 className="hp-cap-h">Every build leaves behind a skill.</h3>
-                <p className="hp-cap-p">The toolkit below is the sum of these projects, mostly self-taught, one problem at a time.</p>
+                <h3 className="hp-cap-h">Skills, and where I used them.</h3>
+                <p className="hp-cap-p">Open a card to see the projects behind each one.</p>
               </div>
               <div className="hp-cap-grid">
                 {CAPABILITIES.map((cap) => (
@@ -681,7 +722,7 @@ export default function HomeClient() {
             </div>
 
             <div className="hp-pf-lead" data-reveal>
-              <h3>All projects</h3><span>Search, filter, and tap any card for a chaptered summary.</span>
+              <h3>All projects</h3><span>Search or filter, then open a card for a summary.</span>
             </div>
             <div className="hp-pf-toolbar" data-reveal>
               <label className="hp-pf-search-wrap">
@@ -690,7 +731,7 @@ export default function HomeClient() {
                   onInput={() => { setProjectsExpanded(true); (window as any).filterProjects?.(); }} aria-label="Search projects" />
               </label>
               <div className="hp-pf-filters" role="group" aria-label="Filter projects">
-                {[['all','All'],['flagship','Flagship'],['highlight','Highlights'],['personal','Personal'],['school','School']].map(([f, label], i) => (
+                {[['all','All'],['personal','Personal'],['school','School']].map(([f, label], i) => (
                   <button key={f} className={`hp-pf-filter${i === 0 ? ' is-active' : ''}`} data-filter={f}
                     onClick={(e) => { setProjectsExpanded(true); (window as any).setProjectFilter?.(e.currentTarget); }}>
                     {label}
@@ -706,12 +747,12 @@ export default function HomeClient() {
               <article id="proj-june" className="hp-pf-card" data-article="/project-june" data-type="personal" data-flagship="1" data-search="project june 5g rc rover vehicle webrtc mqtt esp32 gps gyroscope laser spline cellular video personal flagship highlight">
                 <div className="hp-pf-thumb">
                   <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
-                  <span className="hp-pf-type personal">Personal</span><span className="hp-pf-crown"><CRWN />Flagship</span>
+                  <span className="hp-pf-type personal">Personal</span>
                   <img src="/images/ProjJuneBanner1.webp" alt="Project June rover" loading="lazy" />
                 </div>
                 <div className="hp-pf-info">
                   <h3 className="hp-pf-name">Project June</h3>
-                  <p className="hp-pf-blurb">A 5G radio-controlled vehicle with 3 live video streams, GPS, a laser system, gyroscope and more. My most ambitious build.</p>
+                  <p className="hp-pf-blurb">A 5G rover with three live camera feeds, GPS, a laser pointer and seven sensors, driven from a web console.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/esp-icon.webp" alt="" /><img src="/images/Kicad-icon.webp" alt="" /><img src="/images/onshape-icon.webp" alt="" /><img src="/images/PlatformIO-icon.webp" alt="" /></div>
                     <button className="hp-pf-view" onClick={() => { window.location.href = '/project-june'; }}>Read article <AU /></button>
@@ -723,7 +764,7 @@ export default function HomeClient() {
               <article id="proj-beadreader" className="hp-pf-card" data-article="/beadreader" data-type="personal" data-flagship="1" data-search="beadreader bead reader private book reader ebook webtoon nextjs supabase cloudflare r2 tailwind postgres presence reading stats access code personal flagship highlight web app">
                 <div className="hp-pf-thumb">
                   <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
-                  <span className="hp-pf-type personal">Personal</span><span className="hp-pf-crown"><CRWN />Flagship</span>
+                  <span className="hp-pf-type personal">Personal</span>
                   <img src="/images/beadreader-pf-context.webp" alt="BeadReader private book reader" loading="lazy" />
                 </div>
                 <div className="hp-pf-info">
@@ -740,12 +781,12 @@ export default function HomeClient() {
               <article id="proj-lora" className="hp-pf-card" data-article="/brolocator" data-type="personal" data-highlight="1" data-search="lora messenger esp32 espnow voice pcb kicad onshape oled battery personal radio highlight">
                 <div className="hp-pf-thumb">
                   <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
-                  <span className="hp-pf-type personal">Personal</span><span className="hp-pf-star"><ST />Highlight</span>
+                  <span className="hp-pf-type personal">Personal</span>
                   <img src="/images/borlocator-pf-context.webp" alt="LoRA Messenger" loading="lazy" />
                 </div>
                 <div className="hp-pf-info">
                   <h3 className="hp-pf-name">LoRA Messenger</h3>
-                  <p className="hp-pf-blurb">An ESP32 messenger with 2-way voice over ESP-NOW and text over LoRa. Custom PCB in KiCAD, case in Onshape, all self-taught.</p>
+                  <p className="hp-pf-blurb">Two ESP32 handhelds: text over LoRa, rough two-way voice over ESP-NOW. My first PCB, in KiCAD, and a case in Onshape.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/esp-icon.webp" alt="" /><img src="/images/Kicad-icon.webp" alt="" /><img src="/images/onshape-icon.webp" alt="" /><img src="/images/PlatformIO-icon.webp" alt="" /></div>
                     <button className="hp-pf-view" onClick={() => { window.location.href = '/brolocator'; }}>Read article <AU /></button>
@@ -757,7 +798,7 @@ export default function HomeClient() {
               <article id="proj-lumen" className="hp-pf-card" data-article="/lumen" data-type="school" data-highlight="1" data-search="lumen esp32 voice assistant wake word whisper deepseek llm mqtt fastapi micropython inmp441 microphone smart room iot nyp school highlight">
                 <div className="hp-pf-thumb">
                   <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
-                  <span className="hp-pf-type school">School</span><span className="hp-pf-star"><ST />Highlight</span>
+                  <span className="hp-pf-type school">School</span>
                   <img src="/images/lumen-pf-context.webp" alt="LUMEN voice assistant" loading="lazy" />
                 </div>
                 <div className="hp-pf-info">
@@ -779,7 +820,7 @@ export default function HomeClient() {
                 </div>
                 <div className="hp-pf-info">
                   <h3 className="hp-pf-name">EMA Smart Home</h3>
-                  <p className="hp-pf-blurb">A multi-node smart-home system on BeagleBone Black, Python and SocketIO, with a live dashboard and a 3D Spline view.</p>
+                  <p className="hp-pf-blurb">A team smart home: four BeagleBone Black nodes report to a SocketIO server with a live 3D Spline dashboard. Graded A.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/vscode-icon.webp" alt="" /><img src="/images/figma-icon.webp" alt="" /><img src="/images/resolve-icon.webp" alt="" /><img src="/images/onshape-icon.webp" alt="" /></div>
                     <button className="hp-pf-view" onClick={() => { window.location.href = '/csdp'; }}>Read article <AU /></button>
@@ -788,7 +829,7 @@ export default function HomeClient() {
               </article>
 
               {/* Pandus */}
-              <article id="proj-pandus" className="hp-pf-card" data-article="/pandus" data-type="school" data-search="pandus dispenser arduino uno pyfirmata 3d printed servo pump water school first">
+              <article id="proj-pandus" className="hp-pf-card" data-article="/pandus" data-type="school" data-search="pandus dispenser arduino uno pyfirmata 3d printed servo pump syrup school first">
                 <div className="hp-pf-thumb">
                   <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
                   <span className="hp-pf-type school">School</span>
@@ -796,7 +837,7 @@ export default function HomeClient() {
                 </div>
                 <div className="hp-pf-info">
                   <h3 className="hp-pf-name">Pandus Dispenser</h3>
-                  <p className="hp-pf-blurb">My first school project: a 6-part 3D-printed water dispenser powered by an Arduino Uno and driven with PyFirmata.</p>
+                  <p className="hp-pf-blurb">My first school project: a six-part 3D-printed syrup dispenser run by an Arduino Uno and PyFirmata.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/onshape-icon.webp" alt="" /><img src="/images/vscode-icon.webp" alt="" /><img src="/images/resolve-icon.webp" alt="" /><img src="/images/powerpoint-icon.webp" alt="" /></div>
                     <button className="hp-pf-view" onClick={() => { window.location.href = '/pandus'; }}>Read article <AU /></button>
@@ -805,7 +846,7 @@ export default function HomeClient() {
               </article>
 
               {/* ELEC-F */}
-              <article id="proj-elecf" className="hp-pf-card" data-article="/comingsoon" data-type="school" data-search="elec-f elecf concept m5-stack m5stack freezer safety sensors engineering course school">
+              <article id="proj-elecf" className="hp-pf-card" data-article="/elecf" data-type="school" data-search="elec-f elecf concept m5-stack m5stack freezer safety sensors engineering course school">
                 <div className="hp-pf-thumb">
                   <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
                   <span className="hp-pf-type school">School</span>
@@ -813,7 +854,7 @@ export default function HomeClient() {
                 </div>
                 <div className="hp-pf-info">
                   <h3 className="hp-pf-name">ELEC-F Concept</h3>
-                  <p className="hp-pf-blurb">A freezer safety system on M5Stack. ToF and PIR sensors catch a worker trapped in a walk-in freezer, then a timer and alarm raise help.</p>
+                  <p className="hp-pf-blurb">A walk-in freezer alarm on M5Stack. If someone is inside when the door shuts, a timer starts and the alarm sounds when it runs out.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/figma-icon.webp" alt="" /><img src="/images/ps-pf-icon.webp" alt="" /><img src="/images/resolve-icon.webp" alt="" /></div>
                     <button className="hp-pf-view" onClick={() => { window.location.href = '/elecf'; }}>Read article <AU /></button>
@@ -830,7 +871,7 @@ export default function HomeClient() {
                 </div>
                 <div className="hp-pf-info">
                   <h3 className="hp-pf-name">Kauli Concept</h3>
-                  <p className="hp-pf-blurb">A conceptual product designed and presented for a communication-skills project, with 3D scenes built in Blender.</p>
+                  <p className="hp-pf-blurb">A product concept I pitched for a communication-skills module, rendered in Blender.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/blender-icon.webp" alt="" /><img src="/images/ps-pf-icon.webp" alt="" /><img src="/images/resolve-icon.webp" alt="" /></div>
                     <button className="hp-pf-view" onClick={() => { window.location.href = '/comingsoon'; }}>Read article <AU /></button>
@@ -847,7 +888,7 @@ export default function HomeClient() {
                 </div>
                 <div className="hp-pf-info">
                   <h3 className="hp-pf-name">Series One Light</h3>
-                  <p className="hp-pf-blurb">My ultralight 20g take on the ZeroMouse, built to play a little better in FPS games.</p>
+                  <p className="hp-pf-blurb">An ultralight gaming mouse shell, aiming for about 20 g, based on the ZeroMouse.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/onshape-icon.webp" alt="" /><img src="/images/ps-pf-icon.webp" alt="" /></div>
                     <button className="hp-pf-view" onClick={() => { window.location.href = '/comingsoon'; }}>Read article <AU /></button>
@@ -898,7 +939,7 @@ export default function HomeClient() {
                 </div>
                 <div className="hp-pf-info">
                   <h3 className="hp-pf-name">Minecraft Live Map</h3>
-                  <p className="hp-pf-blurb">A Paper server running Dynmap, a live and interactive map for the multiplayer world.</p>
+                  <p className="hp-pf-blurb">A Paper server in Docker on my homelab, with a live Dynmap of the world.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/docker-icon.webp" alt="" /><img src="/images/chrome-icon.webp" alt="" /></div>
                     <button className="hp-pf-view" onClick={() => { window.location.href = '/comingsoon'; }}>Read article <AU /></button>
@@ -978,8 +1019,8 @@ export default function HomeClient() {
           <div className="hp-section hp-homelab">
             <div className="hp-homelab-text">
               <span className="hp-eyebrow">Infrastructure</span>
-              <h2 className="hp-homelab-h">Servers that turn clean energy into experiences.</h2>
-              <p className="hp-homelab-p">My homelab runs a stack of self-hosted services on solar export credits, with Ubiquiti networking and open-source Docker apps behind it. Lately I&apos;m leaning more toward cloud hosting too, so this site itself now lives on Vercel.</p>
+              <h2 className="hp-homelab-h">My homelab.</h2>
+              <p className="hp-homelab-p">Three servers at home run my photo library, my files, and the MQTT and TURN servers that Project June and LUMEN use. They run on solar export credits. This site is hosted on Vercel.</p>
               <div className="hp-homelab-stats">
                 <div className="hp-homelab-stat"><b>3</b><span>servers</span></div>
                 <div className="hp-homelab-stat"><b>24TB</b><span>usable storage</span></div>
@@ -1010,7 +1051,7 @@ export default function HomeClient() {
           <div className="hp-section">
             <div className="section-editorial-header" data-reveal>
               <span className="seh-number">03</span>
-              <div className="seh-content"><span className="seh-eyebrow">Gallery</span><span className="seh-title">Photography, Highlights</span></div>
+              <div className="seh-content"><span className="seh-eyebrow">Gallery</span><span className="seh-title">Photography</span></div>
             </div>
             <div className="hp-albums" data-reveal role="tablist" aria-label="Photo albums">
               {[['highlight','Highlights'],['europe','Europe'],['china','China'],['zealand','New Zealand'],['by219','21:9'],['general','General']].map(([key, label], i) => (
@@ -1037,7 +1078,7 @@ export default function HomeClient() {
         {/* ── CLOSING CTA ── */}
         <section className="hp-cta" data-reveal>
           <span className="hp-eyebrow">Get in touch</span>
-          <h2>Let&apos;s make something with <span className="hp-roll" data-words="intention.,purpose.,meaning.,care.,soul." aria-label="intention"><em>intention.</em></span></h2>
+          <h2>Email me at <a href="mailto:braven@chiambucket.com"><em>braven@chiambucket.com</em></a></h2>
           <div className="hp-cta-row">
             <button className="hp-btn" onClick={() => { window.location.href = '/contact'; }}>Contact me <AC /></button>
             <a className="hp-btn hp-btn-ghost" href="#portfolio-items-holder">Browse projects</a>

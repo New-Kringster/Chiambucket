@@ -118,14 +118,15 @@ function renderPrompt(src: string): ReactNode[] {
 }
 
 /* Shows the system prompt with a Formatted/Code toggle, a preview that fades
-   out, and a Show more / less control. */
+   out, and a Show more / less control. The Code view is the prompt verbatim; the
+   Formatted view is a reading copy, so it swaps the prompt's dashes for colons. */
 export default function PromptReveal({ text }: { text: string }) {
   const [open, setOpen] = useState(false);
   const [view, setView] = useState<View>('formatted');
   return (
     <div className={`lm-pr${open ? ' open' : ''}`}>
       <div className="lm-pr-head">
-        <span className="lm-pr-eyebrow">System prompt · server/prompts.py</span>
+        <span className="lm-pr-eyebrow">System prompt, from server/prompts.py</span>
         <div className="lm-pr-toggle" role="tablist" aria-label="Prompt view">
           <button type="button" role="tab" aria-selected={view === 'formatted'} className={`lm-pr-tab${view === 'formatted' ? ' on' : ''}`} onClick={() => setView('formatted')}>
             Formatted
@@ -139,7 +140,7 @@ export default function PromptReveal({ text }: { text: string }) {
         <div className="lm-pr-content">
           {view === 'code'
             ? <pre className="lm-pr-pre">{text}</pre>
-            : <div className="lm-pr-fmt">{renderPrompt(text)}</div>}
+            : <div className="lm-pr-fmt">{renderPrompt(text.replace(/[ \t]*\u2014[ \t]*/g, ': '))}</div>}
         </div>
         {!open && <div className="lm-pr-fade" aria-hidden="true" />}
       </div>

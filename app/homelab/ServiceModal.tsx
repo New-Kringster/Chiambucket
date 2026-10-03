@@ -10,9 +10,9 @@ export default function ServiceModal({ service, status, onClose }: { service: Se
       {(s) => {
         const live = s.statusKey ? status[s.statusKey] : undefined;
         const statusCls = s.statusKey ? (live === 'up' ? 'up' : live === 'down' ? 'down' : 'wait') : s.featured ? 'build' : 'self';
-        const statusText = s.statusKey ? (live === 'up' ? 'online' : live === 'down' ? 'offline' : 'checking…') : s.featured ? 'current build' : 'self-hosted';
+        const statusText = s.statusKey ? (live === 'up' ? 'online' : live === 'down' ? 'offline' : 'checking') : s.featured ? 'building now' : 'private';
         const access = s.statusKey
-          ? 'Public, via Nginx Proxy Manager + CrowdSec'
+          ? 'Public, through Nginx Proxy Manager and CrowdSec'
           : s.featured
             ? 'In development on NewMain'
             : 'Private, on the Tailscale network';
@@ -31,7 +31,7 @@ export default function ServiceModal({ service, status, onClose }: { service: Se
             {s.long?.map((para, i) => <p key={i} className="hl2-modal-p">{para}</p>)}
 
             <dl className="hl2-smodal-facts">
-              <div><dt>Runs on</dt><dd>{s.hosts.join(' · ')}</dd></div>
+              <div><dt>Runs on</dt><dd>{s.hosts.join(', ')}</dd></div>
               <div><dt>Load</dt><dd>{WEIGHT_META[s.weight].label}</dd></div>
               <div><dt>Access</dt><dd>{access}</dd></div>
               <div><dt>Category</dt><dd>{s.category}</dd></div>

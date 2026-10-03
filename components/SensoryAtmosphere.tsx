@@ -3,13 +3,12 @@ import { useEffect, useRef } from 'react';
 
 /*
   SensoryAtmosphere — the "dark sensory" field behind every page.
-  A full-viewport WebGL fragment shader draws a slowly flowing, domain-warped
-  fBM gradient with in-shader film grain and a soft focal bloom. The palette is
-  driven by the route's `data-theme` on <html> and CROSSFADES on client-side
-  navigation (a MutationObserver retargets the palette; the render loop lerps).
-  It degrades to a static CSS mesh (the per-theme --aura tokens) on
-  prefers-reduced-motion or when WebGL is unavailable, and pauses when the tab
-  is hidden. A second fixed layer lays fine SVG-turbulence grain over the page.
+  A full-viewport WebGL fragment shader draws a domain-warped fBM gradient
+  with in-shader film grain and a soft focal bloom, as a STILL frame: it is
+  redrawn only on resize and while a route change crossfades the palette
+  (driven by `data-theme` on <html>), then it stops. An idle page does no GPU
+  work. It degrades to a static CSS mesh (the per-theme --aura tokens) on
+  prefers-reduced-motion or when WebGL is unavailable.
 */
 
 const FRAG = `
@@ -111,10 +110,6 @@ const PALETTES: Record<string, Palette> = {
   ],
 };
 
-// Fine grain tile (SVG fractal noise) as a data URI for the over-content overlay.
-const GRAIN_URI =
-  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
-
 export default function SensoryAtmosphere() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -153,16 +148,15 @@ export default function SensoryAtmosphere() {
     const uPal = ['uC0', 'uC1', 'uC2', 'uC3', 'uCv', 'uBloom'].map((n) => gl.getUniformLocation(prog, n));
 
     /* Palette state: `cur` is what renders, `target` follows data-theme.
-       The render loop eases cur → target, so route changes crossfade. */
+       settle() eases cur → target, so route changes crossfade. */
     const paletteFor = () => PALETTES[document.documentElement.getAttribute('data-theme') || 'blue'] || PALETTES.blue;
     let target = paletteFor();
     const cur = target.map((v) => v.slice());
-    const themeWatch = new MutationObserver(() => { target = paletteFor(); });
-    themeWatch.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
-    const mouse = { x: 0.5, y: 0.5, tx: 0.5, ty: 0.5 };
-    const onMove = (e: PointerEvent) => { mouse.tx = e.clientX / window.innerWidth; mouse.ty = 1 - e.clientY / window.innerHeight; };
-    window.addEventListener('pointermove', onMove, { passive: true });
+    /* The field is drawn as a still frame: once on load, again on resize,
+       and for the ~1s it takes a route change to crossfade the palette.
+       Nothing runs while the page is idle, so it costs no GPU time. */
+    const FIELD_TIME = 24; // seconds into the flow; picks a pleasing still
 
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
@@ -172,36 +166,45 @@ export default function SensoryAtmosphere() {
       gl.viewport(0, 0, w, h);
       gl.uniform2f(uRes, w, h);
     };
-    resize();
-    window.addEventListener('resize', resize);
+
+    const draw = () => {
+      for (let i = 0; i < 6; i++) gl.uniform3f(uPal[i], cur[i][0], cur[i][1], cur[i][2]);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    };
 
     let raf = 0;
-    const start = performance.now();
-    const render = (now: number) => {
-      mouse.x += (mouse.tx - mouse.x) * 0.05;
-      mouse.y += (mouse.ty - mouse.y) * 0.05;
+    const settle = () => {
+      let moving = false;
       for (let i = 0; i < 6; i++) {
-        for (let j = 0; j < 3; j++) cur[i][j] += (target[i][j] - cur[i][j]) * 0.04;
-        gl.uniform3f(uPal[i], cur[i][0], cur[i][1], cur[i][2]);
+        for (let j = 0; j < 3; j++) {
+          const d = target[i][j] - cur[i][j];
+          if (Math.abs(d) > 0.0005) { cur[i][j] += d * 0.08; moving = true; } else cur[i][j] = target[i][j];
+        }
       }
-      gl.uniform1f(uTime, (now - start) / 1000);
-      gl.uniform2f(uMouse, mouse.x, mouse.y);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-      raf = requestAnimationFrame(render);
+      draw();
+      raf = moving ? requestAnimationFrame(settle) : 0;
     };
-    const onVis = () => {
-      if (document.hidden) { cancelAnimationFrame(raf); raf = 0; }
-      else if (!raf) raf = requestAnimationFrame(render);
+    const kick = () => { if (!raf) raf = requestAnimationFrame(settle); };
+
+    const themeWatch2 = new MutationObserver(() => { target = paletteFor(); kick(); });
+    themeWatch2.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+    let resizeT = 0;
+    const onResize = () => {
+      window.clearTimeout(resizeT);
+      resizeT = window.setTimeout(() => { resize(); draw(); }, 120);
     };
-    document.addEventListener('visibilitychange', onVis);
-    raf = requestAnimationFrame(render);
+    gl.uniform1f(uTime, FIELD_TIME);
+    gl.uniform2f(uMouse, 0.5, 0.5);
+    resize();
+    draw();
+    window.addEventListener('resize', onResize);
 
     return () => {
       cancelAnimationFrame(raf);
-      themeWatch.disconnect();
-      window.removeEventListener('resize', resize);
-      window.removeEventListener('pointermove', onMove);
-      document.removeEventListener('visibilitychange', onVis);
+      window.clearTimeout(resizeT);
+      themeWatch2.disconnect();
+      window.removeEventListener('resize', onResize);
       // Deliberately do NOT call WEBGL_lose_context.loseContext() here.
       // React Strict Mode (dev) and client-side route changes tear this effect
       // down and re-run it; if we force-lose the context, the re-run's
@@ -218,7 +221,6 @@ export default function SensoryAtmosphere() {
         <canvas ref={canvasRef} className="sa-canvas" />
         <div className="sa-veil" />
       </div>
-      <div className="sa-grain" aria-hidden="true" style={{ backgroundImage: GRAIN_URI }} />
       <style>{`
         .sa-root { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
         .sa-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
@@ -234,10 +236,6 @@ export default function SensoryAtmosphere() {
         /* A darkening veil so text over the shader always stays legible */
         .sa-veil { position: absolute; inset: 0; background:
           radial-gradient(115% 88% at 50% 42%, transparent 38%, rgba(3,4,8,0.62) 100%); }
-        /* Fine, STATIC film grain (no animation) — texture, never TV static.
-           z-index 2 keeps it above content but below the nav (z 999). */
-        .sa-grain { position: fixed; inset: 0; z-index: 2; pointer-events: none;
-          opacity: 0.028; mix-blend-mode: soft-light; background-size: 200px 200px; }
       `}</style>
     </>
   );

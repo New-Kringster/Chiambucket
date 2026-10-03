@@ -1,6 +1,6 @@
 # Chiambucket
 
-Personal portfolio and website for Braven Chiam. Dark-themed, design-forward ("Dark Sensory / Signal Archive": a WebGL shader-gradient field behind every page, frosted instrument panels, terminal HUD typography), deployed on Vercel.
+Personal portfolio and website for Braven Chiam. Dark-themed ("Dark Sensory / Signal Archive": a WebGL shader-gradient background drawn once as a still frame, dark panels, a warm accent), deployed on Vercel. Projects are presented by the hardware, software and design work in each.
 
 **Live site:** [chiambucket.com](https://chiambucket.com)
 
@@ -10,7 +10,7 @@ Personal portfolio and website for Braven Chiam. Dark-themed, design-forward ("D
 
 - **Next.js 15 (App Router) + React 19 + TypeScript** — `app/` directory, server components by default
 - **framer-motion** — available for React animations (CSS handles most transitions)
-- **WebGL sensory field** — a fixed full-viewport fragment shader (`components/SensoryAtmosphere.tsx`) recolours per route and crossfades on navigation; static CSS fallback for reduced motion
+- **WebGL background** — a full-viewport fragment shader (`components/SensoryAtmosphere.tsx`) drawn as a still frame; it redraws only on resize and while crossfading between route palettes, so idle pages do no GPU work. Static CSS fallback for reduced motion
 - **Vercel Analytics + Speed Insights** — loaded in `app/layout.tsx`
 - **Lychee** — self-hosted photo galleries embedded via a remote script (loaded after paint, non-blocking)
 - **No Tailwind, no CSS-in-JS** — one global stylesheet, `public/mainstyle.css`

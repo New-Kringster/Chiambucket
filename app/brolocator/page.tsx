@@ -4,13 +4,16 @@ import ArticleScrollSpy from '../../components/ArticleScrollSpy';
 import ArticleLinks from '../../components/ArticleLinks';
 import LinkDemo from './LinkDemo';
 
+const DESCRIPTION =
+  'My first PCB: an ESP32 handheld that sends text over LoRa with no internet and does crude full-duplex voice over ESP-NOW. KiCAD board, 3D-printed Onshape case, PlatformIO firmware.';
+
 export const metadata: Metadata = {
-  title: 'LoRA Messenger (Brolocator) — Chiambucket',
-  description: 'A LoRA-based peer-to-peer messenger with 2-way voice, custom PCB, and 3D-printed enclosure, built with ESP32, KiCad, and PlatformIO.',
+  title: 'LoRA Messenger | Braven Chiam',
+  description: DESCRIPTION,
   alternates: { canonical: 'https://www.chiambucket.com/brolocator' },
   openGraph: {
-    title: 'LoRA Messenger (Brolocator) — Chiambucket',
-    description: 'A LoRA-based peer-to-peer messenger with 2-way voice, custom PCB, and 3D-printed enclosure.',
+    title: 'LoRA Messenger | Braven Chiam',
+    description: DESCRIPTION,
     url: 'https://www.chiambucket.com/brolocator',
     type: 'article',
     images: [{ url: '/images/borlocator-pf-context.webp' }],
@@ -20,8 +23,9 @@ export const metadata: Metadata = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Article',
-  headline: 'LoRA Messenger (Brolocator)',
-  description: 'A LoRA-based peer-to-peer messenger that sends messages over long distances without internet, with 2-way voice communication, custom PCB design, and a 3D-printed enclosure.',
+  headline: 'LoRA Messenger',
+  alternativeHeadline: 'Brolocator',
+  description: DESCRIPTION,
   image: 'https://www.chiambucket.com/images/borlocator-pf-context.webp',
   author: { '@type': 'Person', name: 'Braven Chiam', url: 'https://www.chiambucket.com/' },
   publisher: { '@type': 'Person', name: 'Braven Chiam' },
@@ -43,15 +47,15 @@ export default function BrolocatorPage() {
 
       {/* Feature hero */}
       <header className="art-hero">
-        <div className="art-hero-bg"><img src="/images/borlocator-pf-context.webp" alt="Brolocator LoRA Messenger device" /></div>
+        <div className="art-hero-bg"><img src="/images/borlocator-pf-context.webp" alt="The LoRA Messenger handheld" /></div>
         <div className="art-hero-scrim"></div>
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>
           <div className="art-tags">
-            <span className="hp-md-tag personal">Personal Project</span>
+            <span className="hp-md-tag personal">Personal project</span>
           </div>
           <h1 className="art-title">LoRA <em>Messenger</em></h1>
-          <p className="art-lead">I started this project with the goal of learning how to use the ESP32 microcontroller. With help from YouTube and ChatGPT, I created &quot;Brolocator&quot;, a device that lets you send messages over long distances without internet. It can also perform crude full-duplex 2-way voice transmissions within range of ESP-NOW.</p>
+          <p className="art-lead">My first PCB and my first ESP32 project. Two of these handhelds text each other over LoRa with no internet, and do crude full-duplex two-way voice over ESP-NOW when they are in range. I called it Brolocator while I was building it.</p>
           <div className="art-toolrow">
             <span className="hp-key">Built with</span>
             <div className="icon-stack">
@@ -79,12 +83,12 @@ export default function BrolocatorPage() {
           <div className="art-rail-inner">
             <span className="hp-eyebrow">Chapters</span>
             <nav className="art-chapters article-chapter-wrapper">
-              <a href="#Demo">Demo Video</a>
-              <a href="#Functionality">Functionality</a>
-              <a href="#ProjectDevelopment">Project Development</a>
+              <a href="#Demo">Demo</a>
+              <a href="#Functionality">What it does</a>
+              <a href="#ProjectDevelopment">Development</a>
               <a href="#Code">Code</a>
-              <a href="#PCBDesign">PCB Design</a>
-              <a href="#threeDDesign">3D Design</a>
+              <a href="#PCBDesign">PCB</a>
+              <a href="#threeDDesign">Case</a>
               <a href="#Assembly">Assembly</a>
             </nav>
           </div>
@@ -92,11 +96,12 @@ export default function BrolocatorPage() {
 
         <div className="art-content">
           <section id="Demo" className="art-section" data-reveal>
-            <h2>Demo Video</h2>
+            <h2>Demo</h2>
             <div className="art-video">
               <iframe
                 src="https://www.youtube.com/embed/1nbiYCAtGPA?si=DX0zrik6DufUva5P"
-                title="Brolocator LoRA Messenger demo video"
+                title="LoRA Messenger demo video"
+                loading="lazy"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
@@ -105,98 +110,98 @@ export default function BrolocatorPage() {
           </section>
 
           <section id="Functionality" className="art-section" data-reveal>
-            <h2>Functionality</h2>
+            <h2>What it does</h2>
             <ul>
-              <li>Use LoRA for long distance messaging</li>
-              <li>2-way voice communication when in range of ESP-NOW</li>
-              <li>Powered off rechargeable LiPo batteries</li>
-              <li>2 displays</li>
-              <li>A mode for range testing</li>
-              <li>Decent and simple to use UI</li>
+              <li>Sends text messages over LoRa, across long distances</li>
+              <li>Two-way voice over ESP-NOW when the other unit is in range</li>
+              <li>Runs on rechargeable LiPo batteries</li>
+              <li>Two displays</li>
+              <li>A range-test mode</li>
+              <li>A simple menu UI</li>
             </ul>
-            <p>The two radios trade off against each other: LoRa reaches kilometres but only carries text a packet at a time, while ESP-NOW is a short hop that is fast enough for live voice. Try the link below to feel the difference.</p>
+            <p>The two radios do different jobs. LoRa reaches further but only carries short text packets. ESP-NOW is short range but fast enough for crude two-way voice. The demo below shows both.</p>
 
             <LinkDemo />
 
             <div className="art-grid">
-              <img src="/images/Brolocator1.webp" alt="Brolocator device front view" loading="lazy" />
-              <img src="/images/Brolocator2.webp" alt="Brolocator device side view" loading="lazy" />
-              <img src="/images/Brolocator3.webp" alt="Brolocator display close-up" loading="lazy" />
-              <img src="/images/Brolocator4.webp" alt="Brolocator UI screenshot" loading="lazy" />
-              <img src="/images/Brolocator5.webp" alt="Brolocator messaging interface" loading="lazy" />
-              <img src="/images/Brolocator6.webp" alt="Brolocator range test mode" loading="lazy" />
+              <img src="/images/Brolocator1.webp" alt="LoRA Messenger, front" loading="lazy" />
+              <img src="/images/Brolocator2.webp" alt="LoRA Messenger, side" loading="lazy" />
+              <img src="/images/Brolocator3.webp" alt="Close-up of the displays" loading="lazy" />
+              <img src="/images/Brolocator4.webp" alt="The menu UI" loading="lazy" />
+              <img src="/images/Brolocator5.webp" alt="The messaging screen" loading="lazy" />
+              <img src="/images/Brolocator6.webp" alt="Range-test mode" loading="lazy" />
             </div>
           </section>
 
           <section id="ProjectDevelopment" className="art-section" data-reveal>
-            <h2>Project Development</h2>
-            <p>Brolocator is my first deep dive into microcontrollers, and also my first attempt at designing a PCB. I used PlatformIO to code the ESP32, and with some help from YouTube and ChatGPT, I was able to learn how to use each component to build the Brolocator.</p>
+            <h2>Development</h2>
+            <p>This was my first deep dive into microcontrollers and my first PCB. I learned how to use each component with help from YouTube and ChatGPT.</p>
             <figure className="art-fig">
-              <img src="/images/Brolocator7.webp" alt="Development of the Brolocator" loading="lazy" />
-              <figcaption>Development of the Brolocator</figcaption>
+              <img src="/images/Brolocator7.webp" alt="Breadboard prototype with the ESP32, LoRa module, I2S mic and speaker, two OLED displays, rotary encoder and buttons" loading="lazy" />
+              <figcaption>Breadboard prototype: ESP32 DevKit, Ebyte E220-900D LoRa module, I2S mic and speaker, two I2C OLED displays, rotary encoder and buttons</figcaption>
             </figure>
           </section>
 
           <section id="Code" className="art-section" data-reveal>
             <h2>Code</h2>
-            <p>Based on my research, PlatformIO was the best choice for developing code for the ESP32. You can download the PlatformIO project files below.</p>
-            <img src="/images/Brolocator8.webp" alt="PlatformIO code screenshot" loading="lazy" />
+            <p>I wrote the ESP32 firmware in PlatformIO, which my research pointed to as the best fit for the ESP32. The source is on GitHub, and the full PlatformIO project is below.</p>
+            <img src="/images/Brolocator8.webp" alt="The firmware open in PlatformIO" loading="lazy" />
             <div className="art-repo">
               <div className="art-repo-text">
-                <strong>PlatformIO Project Files</strong>
-                <span>Download the full PlatformIO project for the Brolocator ESP32 firmware.</span>
+                <strong>PlatformIO project</strong>
+                <span>The complete firmware project, ready to open in PlatformIO.</span>
               </div>
-              <a className="hp-btn" href="https://file.chiambucket.com/public/api/raw?hash=Uw31ufKRXVAmviDG4Y3zsw" target="_blank" rel="noopener">Download Project <Circle /></a>
+              <a className="hp-btn" href="https://file.chiambucket.com/public/api/raw?hash=Uw31ufKRXVAmviDG4Y3zsw" target="_blank" rel="noopener">Download project <Circle /></a>
             </div>
             <div className="art-repo">
               <div className="art-repo-text">
-                <strong>Brolocator on GitHub</strong>
-                <span>The full source for the Brolocator firmware, hosted alongside the PlatformIO project.</span>
+                <strong>Source on GitHub</strong>
+                <span>The firmware source.</span>
               </div>
-              <a className="hp-btn" href="https://github.com/New-Kringster/Bro_Locator" target="_blank" rel="noopener">View GitHub Repo <Circle /></a>
+              <a className="hp-btn" href="https://github.com/New-Kringster/Bro_Locator" target="_blank" rel="noopener">View on GitHub <Circle /></a>
             </div>
           </section>
 
           <section id="PCBDesign" className="art-section" data-reveal>
-            <h2>PCB Design</h2>
-            <p>I used KiCAD to design a PCB for all the components. You can download the KiCAD files below.</p>
+            <h2>PCB</h2>
+            <p>I designed the board in KiCAD to carry every component.</p>
             <figure className="art-fig">
-              <img src="/images/Brolocator9.webp" alt="KiCAD schematic for Brolocator PCB" loading="lazy" />
+              <img src="/images/Brolocator9.webp" alt="KiCAD schematic" loading="lazy" />
               <figcaption>Schematic</figcaption>
             </figure>
             <figure className="art-fig">
-              <img src="/images/Brolocator10.webp" alt="KiCAD PCB board layout" loading="lazy" />
-              <figcaption>Board</figcaption>
+              <img src="/images/Brolocator10.webp" alt="KiCAD board layout" loading="lazy" />
+              <figcaption>Board layout</figcaption>
             </figure>
-            <img src="/images/Brolocator11.webp" alt="Finished Brolocator PCB" loading="lazy" />
+            <img src="/images/Brolocator11.webp" alt="The finished PCB" loading="lazy" />
             <div className="art-repo">
               <div className="art-repo-text">
-                <strong>KiCAD PCB Files</strong>
-                <span>Download the full KiCAD project for the Brolocator PCB design.</span>
+                <strong>KiCAD files</strong>
+                <span>The full KiCAD project for the board.</span>
               </div>
-              <a className="hp-btn" href="https://file.chiambucket.com/public/api/raw?hash=y5dKQ_glrduAHZ2b09PwFw" target="_blank" rel="noopener">Download KiCAD Files <Circle /></a>
+              <a className="hp-btn" href="https://file.chiambucket.com/public/api/raw?hash=y5dKQ_glrduAHZ2b09PwFw" target="_blank" rel="noopener">Download KiCAD files <Circle /></a>
             </div>
           </section>
 
           <section id="threeDDesign" className="art-section" data-reveal>
-            <h2>3D Design</h2>
-            <p>I used Onshape to design a case for the board. You can get the files and view a live preview of the model below.</p>
+            <h2>Case</h2>
+            <p>I modelled the case in Onshape and 3D printed it. The live model is linked below.</p>
             <figure className="art-fig">
-              <img src="/images/Brolocator12.webp" alt="3D model of the Brolocator case" loading="lazy" />
-              <figcaption>3D model of the Brolocator case</figcaption>
+              <img src="/images/Brolocator12.webp" alt="Case model in Onshape" loading="lazy" />
+              <figcaption>The case in Onshape</figcaption>
             </figure>
             <figure className="art-fig">
-              <img src="/images/Brolocator16.webp" alt="Design iterations for the Brolocator case" loading="lazy" />
-              <figcaption>Design iterations</figcaption>
+              <img src="/images/Brolocator16.webp" alt="Printed case iterations side by side" loading="lazy" />
+              <figcaption>Printed iterations</figcaption>
             </figure>
             <figure className="art-fig">
-              <img src="/images/Brolocator17.webp" alt="Design failures and lessons learned" loading="lazy" />
-              <figcaption>Learning from design failures</figcaption>
+              <img src="/images/Brolocator17.webp" alt="Case clips before and after reinforcing" loading="lazy" />
+              <figcaption>Fixing a failure: reinforced, stronger clips</figcaption>
             </figure>
             <div className="art-repo">
               <div className="art-repo-text">
-                <strong>Onshape 3D Model</strong>
-                <span>View the live interactive 3D model of the Brolocator case on Onshape.</span>
+                <strong>Onshape model</strong>
+                <span>The live 3D model of the case.</span>
               </div>
               <a className="hp-btn" href="https://cad.onshape.com/documents/06f42027d48061220c14a0ca/w/a8ae7436030816f045f9e912/e/ee2cc98ca48e0de54fb6f19a?renderMode=0&uiState=69242b3fb36228e1cf876de1" target="_blank" rel="noopener">View on Onshape <Circle /></a>
             </div>
@@ -204,18 +209,17 @@ export default function BrolocatorPage() {
 
           <section id="Assembly" className="art-section" data-reveal>
             <h2>Assembly</h2>
-            <p>Assembly of all components together.</p>
             <figure className="art-fig">
-              <img src="/images/Brolocator13.webp" alt="All components soldered to the PCB and working" loading="lazy" />
+              <img src="/images/Brolocator13.webp" alt="All components soldered to the PCB" loading="lazy" />
               <figcaption>All components soldered to the PCB and working</figcaption>
             </figure>
             <figure className="art-fig">
-              <img src="/images/Brolocator14.webp" alt="Fitting PCB into the case" loading="lazy" />
-              <figcaption>Fitting PCB into case</figcaption>
+              <img src="/images/Brolocator14.webp" alt="Fitting the PCB into the case" loading="lazy" />
+              <figcaption>Fitting the PCB into the case</figcaption>
             </figure>
             <figure className="art-fig">
-              <img src="/images/Brolocator15.webp" alt="Completed Brolocator device" loading="lazy" />
-              <figcaption>Complete</figcaption>
+              <img src="/images/Brolocator15.webp" alt="The finished LoRA Messenger" loading="lazy" />
+              <figcaption>Finished</figcaption>
             </figure>
           </section>
 

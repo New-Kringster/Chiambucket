@@ -5,12 +5,12 @@ import LumenConsole from './LumenConsole';
 import PromptReveal from './PromptReveal';
 
 export const metadata: Metadata = {
-  title: 'LUMEN — Chiambucket',
-  description: 'An AI voice-controlled smart-room assistant: an ESP32 with a wake word, an INMP441 mic and sensors, paired with a FastAPI relay that calls OpenRouter for Whisper speech-to-text and a DeepSeek command parser, all squeezed onto a no-PSRAM board.',
+  title: 'LUMEN | Braven Chiam',
+  description: 'An ESP32 voice assistant for a smart room: wake word and INMP441 mic on the board, a FastAPI relay that calls Whisper and a DeepSeek command parser through OpenRouter, and MQTT out to the devices, on a board with no PSRAM.',
   alternates: { canonical: 'https://www.chiambucket.com/lumen' },
   openGraph: {
-    title: 'LUMEN — Chiambucket',
-    description: 'An ESP32 voice assistant: wake word + mic on-device, Whisper + a DeepSeek command parser via OpenRouter on a FastAPI relay, talking to the room over MQTT.',
+    title: 'LUMEN | Braven Chiam',
+    description: 'An ESP32 voice assistant: wake word and mic on the board, Whisper and a DeepSeek command parser via OpenRouter on a FastAPI relay, MQTT to the room.',
     url: 'https://www.chiambucket.com/lumen',
     type: 'article',
     images: [{ url: '/images/logo.png' }],
@@ -20,8 +20,8 @@ export const metadata: Metadata = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Article',
-  headline: 'LUMEN — ESP32 Voice Assistant',
-  description: 'An AI voice-controlled smart-room assistant on an ESP32 (MicroPython) paired with a FastAPI relay that calls OpenRouter for Whisper speech-to-text and a DeepSeek LLM command parser, fanning out to the room over MQTT. Built for NYP IoT Programming.',
+  headline: 'LUMEN, an ESP32 voice assistant',
+  description: 'A voice-controlled smart-room assistant on an ESP32 (MicroPython) with a FastAPI relay that calls OpenRouter for Whisper speech-to-text and a DeepSeek command parser, sending commands to the room over MQTT. Built for NYP IoT Programming.',
   image: 'https://www.chiambucket.com/images/logo.png',
   author: { '@type': 'Person', name: 'Braven Chiam', url: 'https://www.chiambucket.com/' },
   publisher: { '@type': 'Person', name: 'Braven Chiam' },
@@ -155,11 +155,10 @@ export default function LumenPage() {
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>
           <div className="art-tags">
-            <span className="hp-md-tag highlight">Highlights</span>
-            <span className="hp-md-tag school">School Project</span>
+            <span className="hp-md-tag school">School project</span>
           </div>
           <h1 className="art-title"><em>LUMEN</em></h1>
-          <p className="art-lead">A voice-controlled smart-room assistant. Say &ldquo;Hello Robot&rdquo; (or hold the button), speak, and the room answers: an ESP32 captures your voice, a server transcribes it and asks an LLM to turn the request into one strict JSON command, and that command fans back out over MQTT to lights, a fan, a servo and a buzzer. The hard part was not the AI. It was fitting all of this onto a microcontroller with about 33&nbsp;KB of free RAM.</p>
+          <p className="art-lead">A voice-controlled smart-room assistant. Say &ldquo;Hello Robot&rdquo; or hold a button and speak. An ESP32 records the audio, a server transcribes it and has an LLM turn it into one JSON command, and MQTT carries that command to the lights, fan, servo and buzzer. The hard part was fitting it onto a board with about 33&nbsp;KB of free RAM.</p>
           <div className="art-toolrow">
             <span className="hp-key">Built with</span>
             <div className="icon-stack">
@@ -188,12 +187,12 @@ export default function LumenPage() {
               <a href="#overview">Overview</a>
               <a href="#try">Try it</a>
               <a href="#how">How it works</a>
-              <a href="#brain">The brain</a>
-              <a href="#hardware">The hardware</a>
-              <a href="#memory">The memory wall</a>
-              <a href="#auto">A room that runs itself</a>
-              <a href="#deploy">Dashboard &amp; deployment</a>
-              <a href="#slides">Slide deck</a>
+              <a href="#brain">The parser</a>
+              <a href="#hardware">Hardware</a>
+              <a href="#memory">Memory</a>
+              <a href="#auto">Auto mode</a>
+              <a href="#deploy">Dashboard</a>
+              <a href="#slides">Slides</a>
               <a href="#next">What I&apos;d add next</a>
             </nav>
           </div>
@@ -202,95 +201,95 @@ export default function LumenPage() {
         <div className="art-content">
           <section id="overview" className="art-section" data-reveal>
             <h2>Overview</h2>
-            <p>LUMEN is my Mini Project for NYP&apos;s IoT Programming module. The brief was open: build a connected device that does something useful. I wanted to see how far a cheap ESP32 could go if I gave it real language understanding instead of a fixed list of commands, so I built a smart-room assistant you actually talk to.</p>
-            <p>It listens for a wake word, records what you say, and turns plain English into actions: &ldquo;dim the light a bit,&rdquo; &ldquo;turn the fan on in ten minutes,&rdquo; &ldquo;set the brightness to match the humidity,&rdquo; &ldquo;good night.&rdquo; The intelligence lives on a small server; the ESP32 stays a lean, reliable pair of ears and hands.</p>
+            <p>LUMEN was my mini project for NYP&apos;s IoT Programming module. The brief was open: build a connected device that does something useful. I wanted to see what a cheap ESP32 could do with real language understanding instead of a fixed list of commands.</p>
+            <p>It listens for a wake word, records what you say and turns it into actions: &ldquo;dim the light a bit&rdquo;, &ldquo;turn the fan on in ten minutes&rdquo;, &ldquo;set the brightness to match the humidity&rdquo;, &ldquo;good night&rdquo;. The language work runs on a small server. The ESP32 only records audio and runs commands.</p>
             <figure className="lm-demo">
-              <video controls preload="metadata" poster="/images/lumen-demo-poster.webp" playsInline>
+              <video controls preload="none" poster="/images/posters/lumen-demo.webp" playsInline width={1280} height={720}>
                 <source src="/videos/lumen-demo.webm" type="video/webm" />
                 <source src="/videos/lumen-demo.mp4" type="video/mp4" />
               </video>
-              <figcaption>LUMEN in action: the wake word, a few spoken commands, and the room responding.</figcaption>
+              <figcaption>The wake word, a few spoken commands and the room responding.</figcaption>
             </figure>
           </section>
 
           <section id="try" className="art-section" data-reveal>
             <h2>Try it</h2>
-            <p>Here is the whole loop in miniature. A phrase comes in; it travels the same path the real system uses (trigger, then Whisper for speech-to-text and a DeepSeek LLM that parses it to one JSON command, both reached through OpenRouter, then MQTT out to the device); and the room reacts. Pick a phrase, or let it cycle.</p>
+            <p>The same path the real system uses, in miniature: a trigger, Whisper for speech-to-text, a DeepSeek LLM that parses the text into one JSON command (both through OpenRouter), then MQTT out to the devices. Pick a phrase or let it cycle.</p>
             <LumenConsole />
-            <p className="art-cap-note">The last two phrases show the guardrails: a question is answered from live sensor data and takes no action, and an impossible request is politely refused. The ESP32 only ever trusts validated JSON.</p>
+            <p className="art-cap-note">The last two phrases show the guardrails: a question is answered from live sensor data and takes no action, and an impossible request is refused. The ESP32 only acts on validated JSON.</p>
           </section>
 
           <section id="how" className="art-section" data-reveal>
             <h2>How it works</h2>
-            <p>The golden rule of the whole design: <strong>the ESP32 does almost no thinking.</strong> It records audio and executes commands. Everything heavy (speech-to-text, the language model, logging) happens on a FastAPI server running in Docker on my homelab; the board just talks to it over the local network.</p>
+            <p><strong>The ESP32 does almost no thinking.</strong> It records audio and executes commands. Speech-to-text, the language model and logging run on a FastAPI server in Docker on my homelab, which the board reaches over the local network.</p>
             <SignalPath />
-            <p>A trigger (the &ldquo;Hello Robot&rdquo; wake word, or a push-to-talk button as the reliable fallback) starts an INMP441 microphone capturing 16&nbsp;kHz mono audio. The board wraps it as a WAV and streams it to the server&apos;s <code>/upload</code> endpoint. From there the server calls <strong>OpenRouter</strong> for both steps on a single API key: Whisper transcribes the audio, then a DeepSeek model turns the text into one JSON command under a strict system prompt. The server validates that JSON and publishes it to an MQTT topic the ESP32 subscribes to. The same result is appended to a Google Sheet for logging, with an estimated cost per request.</p>
-            <p>One detail that makes the answers feel smart: the server also subscribes to the room&apos;s state and sensor topics and caches the latest values, then feeds them to the LLM as context. That is how &ldquo;what&apos;s the temperature?&rdquo; or &ldquo;is the fan on?&rdquo; get answered from real readings rather than guesses.</p>
-            <h3>The voice pipeline, step by step</h3>
+            <p>A trigger (the &ldquo;Hello Robot&rdquo; wake word, or a push-to-talk button as the fallback) starts an INMP441 microphone capturing 16&nbsp;kHz mono audio. The board wraps it as a WAV and streams it to the server&apos;s <code>/upload</code> endpoint. The server calls <strong>OpenRouter</strong> for both steps on one API key: Whisper transcribes the audio, then a DeepSeek model turns the text into one JSON command under a strict system prompt. The server validates the JSON and publishes it to an MQTT topic the ESP32 subscribes to. Each result is also appended to a Google Sheet with an estimated cost per request.</p>
+            <p>The server also subscribes to the room&apos;s state and sensor topics, caches the latest values and passes them to the LLM as context. That is how &ldquo;what&apos;s the temperature?&rdquo; and &ldquo;is the fan on?&rdquo; get answered from real readings.</p>
+            <h3>The voice pipeline</h3>
             <ol className="lm-steps">
               <li><b>Trigger.</b> You say &ldquo;Hello Robot&rdquo; or hold the push-to-talk button.</li>
-              <li><b>Record.</b> The INMP441 captures about three seconds of 16&nbsp;kHz mono audio; the red REC LED stays lit for the whole capture.</li>
-              <li><b>Wrap &amp; upload.</b> The raw PCM gets a 44-byte WAV header and streams to <code>/upload</code> as it is recorded.</li>
-              <li><b>Transcribe.</b> The server sends the clip to OpenRouter, where Whisper turns the audio into text.</li>
-              <li><b>Add context.</b> The transcript plus a live snapshot of device state and sensor readings goes to the model.</li>
-              <li><b>Parse.</b> A DeepSeek model (also via OpenRouter) returns one JSON command, validated against the schema (retry once, else a safe no-op).</li>
-              <li><b>Fan out.</b> The server publishes the command to MQTT and appends a row to the Google Sheet.</li>
-              <li><b>Execute.</b> The ESP32 receives it, acts on it, and shows the spoken reply on its OLED.</li>
+              <li><b>Record.</b> The INMP441 captures about three seconds of 16&nbsp;kHz mono audio. The red REC LED stays lit during the capture.</li>
+              <li><b>Wrap and upload.</b> The raw PCM gets a 44-byte WAV header and streams to <code>/upload</code> as it is recorded.</li>
+              <li><b>Transcribe.</b> The server sends the clip to OpenRouter, where Whisper turns it into text.</li>
+              <li><b>Add context.</b> The transcript and a snapshot of device state and sensor readings go to the model.</li>
+              <li><b>Parse.</b> A DeepSeek model (also through OpenRouter) returns one JSON command, validated against the schema: retry once, else a no-op.</li>
+              <li><b>Send.</b> The server publishes the command to MQTT and appends a row to the Google Sheet.</li>
+              <li><b>Execute.</b> The ESP32 receives it, acts on it and shows the reply on its OLED.</li>
             </ol>
           </section>
 
           <section id="brain" className="art-section" data-reveal>
-            <h2>The brain: turning language into one command</h2>
-            <p>The model never controls a device directly. Its only job is to convert one sentence into exactly one of three JSON shapes, and nothing else:</p>
+            <h2>The parser: one sentence, one command</h2>
+            <p>The model never controls a device directly. It converts one sentence into exactly one of three JSON shapes:</p>
             <ul className="lm-list">
-              <li><b>action</b> — a single change. &ldquo;Turn the fan on,&rdquo; &ldquo;set it to cyan.&rdquo;</li>
-              <li><b>sequence</b> — ordered steps, each with a delay from the moment you spoke. &ldquo;Lights off, then fan off a second later.&rdquo;</li>
-              <li><b>timer</b> — one change after a countdown. &ldquo;Light off in ten minutes.&rdquo;</li>
+              <li><b>action</b>: a single change. &ldquo;Turn the fan on&rdquo;, &ldquo;set it to cyan&rdquo;.</li>
+              <li><b>sequence</b>: ordered steps, each with a delay from the moment you spoke. &ldquo;Lights off, then fan off a second later&rdquo;.</li>
+              <li><b>timer</b>: one change after a countdown. &ldquo;Light off in ten minutes&rdquo;.</li>
             </ul>
             <CommandFlowchart />
-            <p>The request does not even have to be in English. Because the audio passes through Whisper first, LUMEN transcribes and understands many languages, then resolves each one to the same JSON vocabulary, so a command spoken in Malay or Mandarin lands on exactly the same action as its English version.</p>
-            <p>A long, deliberately strict system prompt pins down the device vocabulary (white LED, NeoPixel RGB, fan, servo, buzzer, comfort range, auto-mode), forces valid JSON with numbers as numbers, and maps colour names to RGB itself. Every response is checked against a schema on the server; if it fails, the server retries once, then falls back to a harmless no-op rather than sending the board something it cannot trust.</p>
+            <p>It is multilingual. Whisper transcribes many languages and each one resolves to the same JSON vocabulary, so a command spoken in Malay or Mandarin produces the same action as the English version.</p>
+            <p>A long, strict system prompt fixes the device vocabulary (white LED, NeoPixel RGB, fan, servo, buzzer, comfort range, auto mode), forces valid JSON with numbers as numbers, and has the model map colour names to RGB itself. The server checks every response against a schema. If it fails, the server retries once, then falls back to a no-op instead of sending the board something it cannot trust.</p>
             <PromptReveal text={SYSTEM_PROMPT} />
-            <p>My favourite behaviour is the one that ties the language model to the physical room. Ask it to &ldquo;set the brightness to the humidity percentage&rdquo; and it reads the live humidity from the cached sensor state, rounds it, clamps it to the LED&apos;s 0&ndash;100 range, and emits a real <code>set_brightness</code> command. The room&apos;s own readings become inputs to the request.</p>
+            <p>The model can also use the room&apos;s readings as inputs. Ask it to &ldquo;set the brightness to the humidity percentage&rdquo; and it reads the live humidity from the cached sensor state, rounds it, clamps it to the LED&apos;s 0 to 100 range and emits a real <code>set_brightness</code> command.</p>
           </section>
 
           <section id="hardware" className="art-section" data-reveal>
-            <h2>The hardware</h2>
-            <p>Everything hangs off a single ESP32-WROOM. Inputs on one side, outputs on the other, all sharing one non-blocking main loop so nothing ever stalls trigger detection.</p>
+            <h2>Hardware</h2>
+            <p>Everything hangs off one ESP32-WROOM running MicroPython. Inputs on one side, outputs on the other, all served by one non-blocking main loop so trigger detection never stalls.</p>
             <HardwareHub />
-            <p>The LDR is a <em>digital</em> light module (sensitivity set on its own potentiometer), so there are no analog reads anywhere, which sidesteps the ESP32&apos;s ADC-versus-WiFi headache entirely. A red LED lights only while the microphone is capturing, as a recording indicator. A small SSD1306 OLED, driven by two navigation buttons, shows status and the last command across four pages. The DF2301Q wake-word module is wired into the design and its driver is written, but on the bench the push-to-talk button is the trigger I actually demo with.</p>
+            <p>The LDR is a digital light module with its own sensitivity potentiometer, so there are no analog reads, which avoids the ESP32&apos;s ADC conflict with WiFi. A red LED lights only while the microphone is recording. An SSD1306 OLED with two navigation buttons shows status and the last command across four pages. The DF2301Q wake-word module is wired in and its driver is written, but on the bench I demo with the push-to-talk button.</p>
             <figure className="art-fig">
               <img src="/images/lumen-mic.webp" alt="Close-up of the INMP441 I2S microphone wired to the ESP32" loading="lazy" />
-              <figcaption>The INMP441 I2S microphone, the ears of the whole system.</figcaption>
+              <figcaption>The INMP441 I2S microphone.</figcaption>
             </figure>
           </section>
 
           <section id="memory" className="art-section" data-reveal>
-            <h2>The memory wall</h2>
-            <p>This is the part I am proudest of, and it is invisible in a demo. The ESP32-WROOM has no PSRAM. With WiFi up, MicroPython left me roughly 33&nbsp;KB of usable RAM, and a voice clip is about 96&nbsp;KB. The audio literally does not fit in memory.</p>
-            <p>So nothing ever holds the whole clip. The microphone is one persistent, pre-warmed instance; the capture buffers are tiny and allocated lazily; and the upload is <strong>streamed over a raw socket</strong> as it is recorded (a preamble, the WAV header, then PCM sent chunk by chunk, then a tail). Peak memory during an upload is about 10&nbsp;KB. Build one big <code>bytes</code> object instead and the garbage collector grabs a ~26&nbsp;KB block from the same scarce heap that WiFi and the I2S microphone need, which starves the network stack and the upload times out.</p>
-            <p>I found the ceiling the hard way, with the OLED. A lean four-page status screen ships in the current firmware and boots happily. But when I made it richer (live-refreshing sensor values, a recording splash) that extra code alone grew the heap just enough to tip the board over at boot: it could no longer connect to MQTT (<code>ENOBUFS</code>) or open the microphone (<code>ENOMEM</code>). The lesson was precise. The OLED can live here as long as it stays small. To make room for everything else I also cut a real-time clock and clock-time schedules, so timers now run off a monotonic tick count instead of a wall clock and need no clock at all.</p>
+            <h2>Fitting it in memory</h2>
+            <p>The ESP32-WROOM has no PSRAM. With WiFi up, MicroPython left me about 33&nbsp;KB of usable RAM. A voice clip is about 96&nbsp;KB, so the audio does not fit in memory.</p>
+            <p>So nothing holds the whole clip. The microphone is one persistent, pre-warmed instance, the capture buffers are small and allocated lazily, and the upload is <strong>streamed over a raw socket</strong> as it records: a preamble, the WAV header, the PCM chunk by chunk, then a tail. Peak memory during an upload is about 10&nbsp;KB. Building one big <code>bytes</code> object instead makes the garbage collector take a ~26&nbsp;KB block from the same heap that WiFi and the I2S microphone need, which starves the network stack and the upload times out.</p>
+            <p>The OLED showed me where the ceiling is. A lean four-page status screen ships in the current firmware. A richer version with live-refreshing sensor values and a recording splash grew the heap enough to break boot: the board could no longer connect to MQTT (<code>ENOBUFS</code>) or open the microphone (<code>ENOMEM</code>). To make room I also removed the real-time clock and clock-time schedules. Timers now run off a monotonic tick count and need no clock.</p>
           </section>
 
           <section id="auto" className="art-section" data-reveal>
-            <h2>A room that runs itself</h2>
-            <p>LUMEN is not only reactive. A lightweight auto-mode runs locally on the board: if it detects motion while the room is dark, it turns the white LED on, then off again after five minutes of stillness. If the temperature climbs above the comfort range, the fan switches on, with a small hysteresis gap so it does not chatter around the threshold.</p>
-            <p>Auto-mode and manual control coexist cleanly. Any spoken command immediately takes priority and clears the automatic state, so the system never fights you for control of a light you just set yourself.</p>
+            <h2>Auto mode</h2>
+            <p>Auto mode runs locally on the board. If it detects motion while the room is dark, it turns the white LED on, then off after five minutes without motion. If the temperature rises above the comfort range, the fan turns on, with a hysteresis gap so it does not toggle around the threshold.</p>
+            <p>Any spoken command takes priority and clears the automatic state, so auto mode never overrides a light you just set.</p>
           </section>
 
           <section id="deploy" className="art-section" data-reveal>
-            <h2>Dashboard &amp; deployment</h2>
-            <p>The server is a Dockerised FastAPI app, and it ships with a web dashboard. There is a device control panel (white LED, an RGB picker, fan, servo, buzzer, an auto-mode toggle and a comfort-range editor), a live state readout, a temperature and humidity history chart, an activity log of recent commands, a player for the last few voice recordings, and a text box that pipes straight into the same LLM path, which is my reliable backup if the microphone misbehaves during a live demo. A reset clears the chart, log and recordings.</p>
-            <p>It lives on my homelab behind Nginx Proxy Manager and Cloudflare, which front the dashboard at a clean HTTPS hostname. The MQTT broker is reached directly rather than through Cloudflare. The ESP32 itself only ever talks to a LAN address, never the public hostname, which keeps the firmware lean.</p>
+            <h2>Dashboard and deployment</h2>
+            <p>The server is a Dockerised FastAPI app with a web dashboard: device controls (white LED, RGB picker, fan, servo, buzzer, auto-mode toggle, comfort-range editor), a live state readout, a temperature and humidity history chart, a log of recent commands, a player for the last few voice recordings, and a text box that feeds the same LLM path. The text box is my backup if the microphone fails during a live demo. A reset clears the chart, log and recordings.</p>
+            <p>It runs on my homelab behind Nginx Proxy Manager and Cloudflare, which serve the dashboard on an HTTPS hostname. The MQTT broker is reached directly, not through Cloudflare. The ESP32 only talks to a LAN address, never the public hostname, which keeps the firmware small.</p>
             <figure className="art-fig lm-dash">
-              <img src="/images/lumen-dashboard.webp" alt="The LUMEN web dashboard: device control panel, live readout, history chart and activity log" loading="lazy" />
-              <figcaption>The dashboard: device control, live state, the temp/humidity chart, the activity log and recordings, in one panel.</figcaption>
+              <img src="/images/lumen-dashboard.webp" alt="The LUMEN web dashboard: device controls, live readout, history chart and activity log" loading="lazy" />
+              <figcaption>The dashboard: device controls, live state, the temperature and humidity chart, the activity log and recordings.</figcaption>
             </figure>
           </section>
 
           <section id="slides" className="art-section" data-reveal>
-            <h2>Slide deck</h2>
-            <p>The full project presentation, the same deck I took into the module review. It walks through the brief, the pipeline, the memory work and the demo. Use the arrows to page through it, or open it fullscreen.</p>
+            <h2>Slides</h2>
+            <p>The deck I presented at the module review: the brief, the pipeline, the memory work and the demo.</p>
             <div className="art-embed lm-deck">
               <iframe
                 title="LUMEN project presentation (Figma deck)"
@@ -303,14 +302,13 @@ export default function LumenPage() {
 
           <section id="next" className="art-section" data-reveal>
             <h2>What I&apos;d add next</h2>
-            <p>Almost everything I cut comes back cheaply on an ESP32-S3 with PSRAM, which is the upgrade I would make first. The WROOM is genuinely at its ceiling streaming microphone audio while running WiFi and MQTT at once.</p>
+            <p>An ESP32-S3 with PSRAM would bring back most of what I cut. The WROOM is at its limit streaming microphone audio while running WiFi and MQTT.</p>
             <ul className="lm-list">
-              <li><b>A richer OLED</b> — live-refreshing sensor pages and a recording splash, the variants I had to strip back to keep the lean screen that ships now.</li>
-              <li><b>Clock-time schedules</b> (&ldquo;every day at 8&nbsp;am&rdquo;), which need a real-time clock I removed to save memory.</li>
-              <li><b>Durable history</b> so the dashboard&apos;s charts and the timers survive a reboot; today the last couple of hours live only in volatile RAM.</li>
-              <li><b>Finishing the wake word</b> on hardware so push-to-talk becomes the fallback, not the primary trigger.</li>
+              <li><b>A richer OLED</b>: live-refreshing sensor pages and a recording splash, the versions I had to remove.</li>
+              <li><b>Clock-time schedules</b> (&ldquo;every day at 8&nbsp;am&rdquo;), which need the real-time clock I removed to save memory.</li>
+              <li><b>Durable history</b>, so the dashboard&apos;s charts and the timers survive a reboot. Today the last couple of hours live only in RAM.</li>
+              <li><b>A working wake word</b> on the hardware, so push-to-talk becomes the fallback instead of the main trigger.</li>
             </ul>
-            <p>LUMEN taught me more about memory discipline on a constrained device than any project before it. The AI was the easy, fun layer on top; making it run reliably on a board that could barely hold a single second of audio was the real engineering.</p>
 
             <div className="art-next">
               <span className="art-next-label">Check out the next article</span>
@@ -326,7 +324,6 @@ export default function LumenPage() {
         /* ── Signal-path flow (high-level pipeline; CSS so nothing overlaps) ── */
         .lm-flow { margin: 1.2rem 0 0.6rem; padding: clamp(16px, 2.4vw, 26px); border-radius: 18px;
           background: linear-gradient(165deg, var(--sa-panel-hi, rgba(20,22,38,0.7)), var(--sa-panel-lo, rgba(10,11,20,0.85)));
-          -webkit-backdrop-filter: blur(14px) saturate(1.05); backdrop-filter: blur(14px) saturate(1.05);
           border: 1px solid var(--sa-hairline, rgba(255,255,255,0.1)); }
         .lm-flow-track { display: grid; grid-template-columns: 1fr auto 1.3fr auto 1fr; align-items: stretch; gap: 6px; }
         .lm-flow-stage { display: flex; flex-direction: column; gap: 9px; min-width: 0; }
@@ -421,7 +418,7 @@ export default function LumenPage() {
 
         /* ── Demo video ── */
         .lm-demo { margin: 1.3rem 0 0.6rem; }
-        .lm-demo video { width: 100%; aspect-ratio: 16 / 9; display: block; border-radius: 14px; background: #000; border: 1px solid rgba(255,255,255,0.08); }
+        .lm-demo video { width: 100%; height: auto; aspect-ratio: 16 / 9; display: block; border-radius: 14px; background: #000; border: 1px solid rgba(255,255,255,0.08); }
         .lm-demo figcaption { margin-top: 0.7rem; font-size: 0.86rem; color: #8b94a8; text-align: center; }
 
         /* ── Dashboard (tall portrait) figure ── */
@@ -430,7 +427,6 @@ export default function LumenPage() {
         /* ── Inline SVG diagrams ── */
         .lm-dia { width: 100%; box-sizing: border-box; margin: 1.2rem 0 0.6rem; padding: clamp(16px, 2.4vw, 26px); border-radius: 18px;
           background: linear-gradient(165deg, var(--sa-panel-hi, rgba(20,22,38,0.7)), var(--sa-panel-lo, rgba(10,11,20,0.85)));
-          -webkit-backdrop-filter: blur(14px) saturate(1.05); backdrop-filter: blur(14px) saturate(1.05);
           border: 1px solid var(--sa-hairline, rgba(255,255,255,0.1)); overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .lm-dia svg { width: 100%; height: auto; display: block; }
         /* On phones, both inline diagrams reflow to native layouts (see .lm-fc-m / .lm-hw-m)
@@ -538,21 +534,21 @@ function SignalPath() {
         <div className="lm-flow-stage">
           <span className="lm-flow-tag">On the ESP32</span>
           <div className="lm-flow-card">
-            <b>Trigger + mic</b>
-            <span>Wake word or push-to-talk; the INMP441 captures 16&nbsp;kHz mono audio.</span>
+            <b>Trigger and mic</b>
+            <span>Wake word or push-to-talk. The INMP441 captures 16&nbsp;kHz mono audio.</span>
           </div>
         </div>
 
         <div className="lm-flow-link">
-          <span className="lm-flow-pill">stream /upload</span>
+          <span className="lm-flow-pill">stream to /upload</span>
           <i className="lm-flow-ar" aria-hidden="true" />
         </div>
 
         <div className="lm-flow-stage">
-          <span className="lm-flow-tag">FastAPI server · OpenRouter</span>
+          <span className="lm-flow-tag">FastAPI server, OpenRouter</span>
           <div className="lm-flow-card lit">
-            <b>Whisper → DeepSeek → validate</b>
-            <span>Through OpenRouter, Whisper turns speech into text and a DeepSeek model parses it into one JSON command; the server checks that against the schema (retry once, else a safe no-op).</span>
+            <b>Whisper, DeepSeek, validate</b>
+            <span>Whisper turns speech into text and a DeepSeek model parses it into one JSON command. The server checks it against the schema: retry once, else a no-op.</span>
           </div>
         </div>
 
@@ -562,14 +558,14 @@ function SignalPath() {
         </div>
 
         <div className="lm-flow-stage">
-          <span className="lm-flow-tag">Back in the room</span>
+          <span className="lm-flow-tag">In the room</span>
           <div className="lm-flow-card">
             <b>Devices act</b>
-            <span>The LED, RGB, fan, servo and buzzer respond, and the OLED shows the spoken reply.</span>
+            <span>The LED, RGB, fan, servo and buzzer respond, and the OLED shows the reply.</span>
           </div>
         </div>
       </div>
-      <figcaption className="lm-flow-foot">The server also caches the room&apos;s live state and sensor readings, feeds them back to the LLM as context, and logs every call to a dashboard. The board only records and executes; all the intelligence lives on the server.</figcaption>
+      <figcaption className="lm-flow-foot">The server also caches the room&apos;s live state and sensor readings, passes them to the LLM as context and logs every call. The board only records and executes.</figcaption>
     </figure>
   );
 }
@@ -577,7 +573,7 @@ function SignalPath() {
 function CommandFlowchart() {
   return (
     <figure className="lm-dia lm-fc" data-no-zoom>
-      <svg viewBox="0 0 840 445" role="img" aria-label="Command parsing flowchart: speech in any of many languages is transcribed by Whisper, then the text and live sensor context enters the DeepSeek LLM. If the output JSON fails schema validation, the server retries once; still invalid becomes a safe no-op. If valid, the command is routed by type — action for a single device change, sequence for ordered steps with delays, or timer for one change after a countdown.">
+      <svg viewBox="0 0 840 445" role="img" aria-label="Command parsing flowchart. Speech in any of many languages is transcribed by Whisper, then the text and live sensor context go to the DeepSeek LLM. If the output JSON fails schema validation, the server retries once, and if it is still invalid the result is a safe no-op. If valid, the command is routed by type: action for a single device change, sequence for ordered steps with delays, or timer for one change after a countdown.">
         <defs>
           <marker id="lm-fc-arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
             <polygon points="0 0, 8 3, 0 6" fill="var(--hp-sky, #7fa8ff)" fillOpacity="0.7" />
@@ -586,8 +582,8 @@ function CommandFlowchart() {
 
         {/* ─ Input node ─ */}
         <rect className="d-box" x="180" y="16" width="360" height="52" rx="10" />
-        <text className="d-t" x="360" y="38" textAnchor="middle">Transcribed text + sensor context</text>
-        <text className="d-s" x="360" y="56" textAnchor="middle">Whisper transcript + live room snapshot from MQTT cache</text>
+        <text className="d-t" x="360" y="38" textAnchor="middle">Transcribed text and sensor context</text>
+        <text className="d-s" x="360" y="56" textAnchor="middle">Whisper transcript plus a live room snapshot from the MQTT cache</text>
 
         {/* Multilingual annotation on the input */}
         <line className="d-line dash" x1="540" y1="42" x2="586" y2="42" />
@@ -600,8 +596,8 @@ function CommandFlowchart() {
 
         {/* ─ DeepSeek LLM node ─ */}
         <rect className="d-box accent" x="205" y="97" width="310" height="52" rx="10" />
-        <text className="d-t" x="360" y="119" textAnchor="middle">DeepSeek LLM (via OpenRouter)</text>
-        <text className="d-s" x="360" y="137" textAnchor="middle">Parses request into one JSON command</text>
+        <text className="d-t" x="360" y="119" textAnchor="middle">DeepSeek LLM (through OpenRouter)</text>
+        <text className="d-s" x="360" y="137" textAnchor="middle">Parses the request into one JSON command</text>
 
         {/* Arrow: DeepSeek → diamond, with label */}
         <line className="d-line" x1="360" y1="149" x2="360" y2="171" markerEnd="url(#lm-fc-arr)" />
@@ -620,7 +616,7 @@ function CommandFlowchart() {
         {/* ─ Route by type node ─ */}
         <rect className="d-box" x="200" y="287" width="320" height="48" rx="10" />
         <text className="d-t" x="360" y="307" textAnchor="middle">Route by command type</text>
-        <text className="d-s" x="360" y="323" textAnchor="middle">action · sequence · timer</text>
+        <text className="d-s" x="360" y="323" textAnchor="middle">action, sequence or timer</text>
 
         {/* Three branch lines from route box bottom */}
         <path className="d-line" d="M 310 335 L 115 370" markerEnd="url(#lm-fc-arr)" />
@@ -652,7 +648,7 @@ function CommandFlowchart() {
         {/* ─ Retry node ─ */}
         <rect className="d-box" x="560" y="189" width="155" height="52" rx="10" />
         <text className="d-t" x="637" y="211" textAnchor="middle">Retry once</text>
-        <text className="d-s" x="637" y="227" textAnchor="middle">re-prompt LLM</text>
+        <text className="d-s" x="637" y="227" textAnchor="middle">re-prompt the LLM</text>
 
         {/* Fails arrow: retry → no-op */}
         <line className="d-line" x1="637" y1="241" x2="637" y2="269" markerEnd="url(#lm-fc-arr)" />
@@ -667,19 +663,19 @@ function CommandFlowchart() {
       {/* Phone layout: the same flow, reflowed top-to-bottom so nothing shrinks, scrolls, or overlaps */}
       <div className="lm-fc-m">
         <div className="lm-fc-node">
-          <b>Transcribed text + sensor context</b>
-          <span>Whisper transcript + live room snapshot from MQTT cache</span>
+          <b>Transcribed text and sensor context</b>
+          <span>Whisper transcript plus a live room snapshot from the MQTT cache</span>
           <span className="lm-fc-badge">Speaks many languages</span>
         </div>
 
-        <div className="lm-fc-conn"><i>JSON</i></div>
+        <div className="lm-fc-conn" />
 
         <div className="lm-fc-node accent">
-          <b>DeepSeek LLM (via OpenRouter)</b>
+          <b>DeepSeek LLM (through OpenRouter)</b>
           <span>Parses the request into one JSON command</span>
         </div>
 
-        <div className="lm-fc-conn" />
+        <div className="lm-fc-conn"><i>JSON</i></div>
 
         <div className="lm-fc-node dec">
           <b>JSON schema valid?</b>
@@ -704,7 +700,7 @@ function CommandFlowchart() {
 
         <div className="lm-fc-node">
           <b>Route by command type</b>
-          <span>action · sequence · timer</span>
+          <span>action, sequence or timer</span>
         </div>
 
         <div className="lm-fc-conn"><i>by type</i></div>
@@ -716,44 +712,44 @@ function CommandFlowchart() {
         </div>
       </div>
 
-      <figcaption className="lm-dia-cap">How a voice command moves through the parser. Every path ends in one of four outcomes: action, sequence, timer, or a polite refusal that does nothing to the room.</figcaption>
+      <figcaption className="lm-dia-cap">How a voice command moves through the parser. Every path ends in one of four outcomes: action, sequence, timer, or a refusal that takes no action.</figcaption>
     </figure>
   );
 }
 
 function HardwareHub() {
   const left: [string, string, string][] = [
-    ['INMP441 mic', 'I2S microphone', 'G14·23·32'],
-    ['DHT22', 'temp + humidity', 'G4'],
+    ['INMP441 mic', 'I2S microphone', 'G14, 23, 32'],
+    ['DHT22', 'temperature and humidity', 'G4'],
     ['PIR', 'motion', 'G35'],
-    ['LDR module', 'light / dark', 'G34'],
+    ['LDR module', 'light or dark', 'G34'],
     ['PTT button', 'push-to-talk', 'G19'],
   ];
   const right: [string, string, string][] = [
     ['White LED', 'PWM brightness', 'G25'],
     ['NeoPixel', 'WS2812 RGB', 'G27'],
-    ['Fan', 'on / off', 'G26'],
-    ['Servo', '0–180°', 'G13'],
-    ['Buzzer', 'beep + alerts', 'G33'],
+    ['Fan', 'on or off', 'G26'],
+    ['Servo', '0 to 180°', 'G13'],
+    ['Buzzer', 'beeps and alerts', 'G33'],
     ['REC LED', 'recording', 'G17'],
   ];
   const bottom: [string, string, string][] = [
-    ['OLED', 'SSD1306 · 0x3C', 'I2C'],
-    ['DF2301Q', 'wake word · 0x64', 'I2C'],
+    ['OLED', 'SSD1306, 0x3C', 'I2C'],
+    ['DF2301Q', 'wake word, 0x64', 'I2C'],
     ['Nav A', 'page', 'G18'],
     ['Nav B', 'page', 'G16'],
   ];
   return (
     <figure className="lm-dia lm-hw" data-no-zoom>
-      <svg viewBox="0 0 960 600" role="img" aria-label="Wiring map: an ESP32-WROOM at the centre. Left, the sensors and their pins — INMP441 mic on I2S (GPIO 14, 23, 32), DHT22 (GPIO 4), PIR (GPIO 35), LDR (GPIO 34), push-to-talk button (GPIO 19). Right, the outputs — white LED (GPIO 25), NeoPixel (GPIO 27), fan (GPIO 26), servo (GPIO 13), buzzer (GPIO 33), recording LED (GPIO 17). Along the bottom, the shared I2C bus (SDA 21, SCL 22) carries the SSD1306 OLED (0x3C) and the DF2301Q wake-word module (0x64), and two navigation buttons sit on GPIO 18 and 16.">
-        <text className="d-s" x="20" y="26">SENSORS / INPUTS</text>
-        <text className="d-s" x="772" y="26" textAnchor="end">OUTPUTS</text>
-        <text className="d-s" x="20" y="480">I2C BUS · SDA 21 / SCL 22 · + UI BUTTONS</text>
+      <svg viewBox="0 0 960 600" role="img" aria-label="Wiring map with an ESP32-WROOM at the centre. Left, the sensors and their pins: INMP441 mic on I2S (GPIO 14, 23, 32), DHT22 (GPIO 4), PIR (GPIO 35), LDR (GPIO 34), push-to-talk button (GPIO 19). Right, the outputs: white LED (GPIO 25), NeoPixel (GPIO 27), fan (GPIO 26), servo (GPIO 13), buzzer (GPIO 33), recording LED (GPIO 17). Along the bottom, the shared I2C bus (SDA 21, SCL 22) carries the SSD1306 OLED (0x3C) and the DF2301Q wake-word module (0x64), and two navigation buttons sit on GPIO 18 and 16.">
+        <text className="d-s" x="20" y="26">Sensors and inputs</text>
+        <text className="d-s" x="772" y="26" textAnchor="end">Outputs</text>
+        <text className="d-s" x="20" y="480">I2C bus (SDA 21, SCL 22) and UI buttons</text>
 
         {/* ESP32 centre */}
         <rect className="d-box accent" x="392" y="250" width="176" height="118" rx="16" />
         <text className="d-t" x="480" y="298" textAnchor="middle" style={{ fontSize: 17 }}>ESP32</text>
-        <text className="d-s" x="480" y="320" textAnchor="middle">WROOM · MicroPython</text>
+        <text className="d-s" x="480" y="320" textAnchor="middle">WROOM, MicroPython</text>
         <text className="d-s" x="480" y="338" textAnchor="middle">one non-blocking loop</text>
 
         {left.map(([n, s, p], i) => {
@@ -804,10 +800,10 @@ function HardwareHub() {
       <div className="lm-hw-m">
         <div className="lm-hw-core">
           <b>ESP32-WROOM</b>
-          <span>MicroPython · one non-blocking loop</span>
+          <span>MicroPython, one non-blocking loop</span>
         </div>
         <div className="lm-hw-group">
-          <span className="lm-hw-glabel">Sensors / inputs</span>
+          <span className="lm-hw-glabel">Sensors and inputs</span>
           {left.map(([n, s, p]) => (
             <div className="lm-hw-row" key={n}>
               <div><b>{n}</b><span>{s}</span></div>
@@ -825,7 +821,7 @@ function HardwareHub() {
           ))}
         </div>
         <div className="lm-hw-group bus">
-          <span className="lm-hw-glabel">I2C bus · SDA 21 / SCL 22 · UI buttons</span>
+          <span className="lm-hw-glabel">I2C bus (SDA 21, SCL 22) and UI buttons</span>
           {bottom.map(([n, s, p]) => (
             <div className="lm-hw-row" key={n}>
               <div><b>{n}</b><span>{s}</span></div>
@@ -835,7 +831,7 @@ function HardwareHub() {
         </div>
       </div>
 
-      <figcaption className="lm-dia-cap">Every component and the GPIO it lands on (mirrors <code>docs/pinmap.md</code>). The OLED and DF2301Q share one I2C bus.</figcaption>
+      <figcaption className="lm-dia-cap">Every component and the GPIO it uses, from <code>docs/pinmap.md</code>. The OLED and DF2301Q share one I2C bus.</figcaption>
     </figure>
   );
 }

@@ -1,11 +1,12 @@
 'use client';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AnimatePresence, LazyMotion, domAnimation, m, useReducedMotion } from 'framer-motion';
 
 /* ────────────────────────────────────────────────────────────────────────
- * Signal path: the chain a command travels down, and telemetry travels back up
+ * Signal path: commands go left to right, video and telemetry come back.
+ * Facts from the architecture diagram and the parts poster.
  * ──────────────────────────────────────────────────────────────────────── */
-type NodeKey = 'pad' | 'cell' | 'turn' | 'rover';
+type NodeKey = 'pad' | 'server' | 'phones' | 'rover';
 
 type LinkNode = {
   key: NodeKey;
@@ -23,17 +24,17 @@ const PadIcon = () => (
     <path d="M9 5.2c1-.7 2-1 3-1s2 .3 3 1" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
   </svg>
 );
-const CellIcon = () => (
+const ServerIcon = () => (
   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
-    <path d="M4 17v-2.4M8.4 17v-4.8M12.8 17V7.6M17.2 17V4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    <circle cx="19.5" cy="5.5" r="1.6" fill="currentColor" />
+    <rect x="4" y="4" width="16" height="7" rx="2" stroke="currentColor" strokeWidth="1.6" />
+    <rect x="4" y="13" width="16" height="7" rx="2" stroke="currentColor" strokeWidth="1.6" />
+    <path d="M7.5 7.5h2M7.5 16.5h2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
   </svg>
 );
-const TurnIcon = () => (
+const PhoneIcon = () => (
   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
-    <path d="M8 5l-4 4 4 4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M16 19l4-4-4-4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M4 9h7a4 4 0 014 4v1M20 15h-7a4 4 0 01-4-4v-1" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+    <rect x="7" y="3" width="10" height="18" rx="2.2" stroke="currentColor" strokeWidth="1.6" />
+    <path d="M10.5 18h3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
   </svg>
 );
 const RoverIcon = () => (
@@ -47,23 +48,49 @@ const RoverIcon = () => (
 );
 
 const LINK: LinkNode[] = [
-  { key: 'pad', label: 'Xbox controller', sub: 'Operator input', icon: <PadIcon />, blurb: 'Stick and trigger movements are read at the operator end and packaged into small command messages, a few times a second.' },
-  { key: 'cell', label: '5G cellular', sub: 'Carrier network', icon: <CellIcon />, blurb: 'Both ends ride the public 5G network. It is fast enough for live video, but it sits behind carrier-grade NAT, so neither side has a direct address to dial.' },
-  { key: 'turn', label: 'TURN relay', sub: 'NAT traversal', icon: <TurnIcon />, blurb: 'Relays the WebRTC streams and MQTT messages so they punch through cellular NAT, giving the controller and rover a meeting point with low added latency.' },
-  { key: 'rover', label: 'Rover · ESP32', sub: 'Onboard brain', icon: <RoverIcon />, blurb: 'The ESP32 decodes each command into PWM motor and servo output, then answers with three camera feeds and a fast stream of sensor telemetry, about three packets back for every command in.' },
+  {
+    key: 'pad',
+    label: 'Xbox controller',
+    sub: 'Bluetooth to the console',
+    icon: <PadIcon />,
+    blurb: 'The controller pairs with the web console over Bluetooth. The console turns stick and trigger input into movement commands and publishes them over MQTT.',
+  },
+  {
+    key: 'server',
+    label: 'Server',
+    sub: 'MQTT, signalling, TURN',
+    icon: <ServerIcon />,
+    blurb: 'Mosquitto brokers the commands and the telemetry. A Node.js Socket.IO server serves the console and does the WebRTC signalling, and CoTURN relays the video so it works over mobile data.',
+  },
+  {
+    key: 'phones',
+    label: 'Three phones',
+    sub: '5G hotspot and cameras',
+    icon: <PhoneIcon />,
+    blurb: 'Phone 1 is the main 5G hotspot and the front camera. Phone 2 is a second hotspot and the left camera. Phone 3 joins the hotspot and is the right camera. Each sends its view as a WebRTC stream.',
+  },
+  {
+    key: 'rover',
+    label: 'ESP32-S3',
+    sub: 'On the rover',
+    icon: <RoverIcon />,
+    blurb: 'Joins the phone hotspot over Wi-Fi, drives the motor through the MOSFET driver and sends sensor data back over MQTT in three packets at about 10 Hz.',
+  },
 ];
+/* The longest blurb sizes the blurb box, so cycling never reflows the page. */
+const LONGEST_BLURB = LINK.reduce((a, n) => (n.blurb.length > a.blurb.length ? n : a), LINK[0]);
 
 /* ────────────────────────────────────────────────────────────────────────
- * Day / night mode: two captured runs, each with its own footage + telemetry
+ * Day and night runs, each with its own footage and telemetry
  * ──────────────────────────────────────────────────────────────────────── */
 type Mode = 'day' | 'night';
 
-type BrightLevel = 'Dark' | 'Ambient' | 'Bright' | 'vBright';
-const BRIGHT_SCALE: BrightLevel[] = ['Dark', 'Ambient', 'Bright', 'vBright'];
+type BrightLevel = 'Dark' | 'Ambient' | 'Bright' | 'VBright';
+const BRIGHT_SCALE: BrightLevel[] = ['Dark', 'Ambient', 'Bright', 'VBright'];
 
 type TeleBase = { lat: number; lon: number; speed: number; alt: number; temp: number; hum: number; sats: number; bright: BrightLevel; loc: string };
 const TELE: Record<Mode, TeleBase> = {
-  day:   { lat: 1.4614, lon: 103.8405, speed: 2, alt: -12, temp: 30.2, hum: 65, sats: 21, bright: 'vBright', loc: 'Irau Dr' },
+  day:   { lat: 1.4614, lon: 103.8405, speed: 2, alt: -12, temp: 30.2, hum: 65, sats: 21, bright: 'VBright', loc: 'Irau Dr' },
   night: { lat: 1.4602, lon: 103.8359, speed: 3, alt: 4,   temp: 29.2, hum: 67, sats: 26, bright: 'Dark',    loc: 'Sembawang Park' },
 };
 
@@ -73,7 +100,7 @@ const METRICS: Metric[] = [
   { key: 'lon', label: 'Longitude', unit: '°E', dp: 4, jit: 0.0004 },
   { key: 'speed', label: 'Speed', unit: 'km/h', dp: 1, jit: 0.7, min: 0 },
   { key: 'alt', label: 'Altitude', unit: 'm', dp: 0, jit: 1.4, signed: true },
-  { key: 'temp', label: 'Temp', unit: '°C', dp: 1, jit: 0.2 },
+  { key: 'temp', label: 'Temperature', unit: '°C', dp: 1, jit: 0.2 },
   { key: 'hum', label: 'Humidity', unit: '%', dp: 0, jit: 1.2 },
   { key: 'sats', label: 'Satellites', unit: '', dp: 0, jit: 1.6, min: 0 },
 ];
@@ -98,14 +125,14 @@ const baseVals = (b: TeleBase): Record<string, string> =>
   );
 
 /* ────────────────────────────────────────────────────────────────────────
- * Camera feeds: left and right sit about 90 degrees off the centre camera
+ * Camera feeds: one per phone
  * ──────────────────────────────────────────────────────────────────────── */
 type FeedKey = 'left' | 'center' | 'right';
-type Feed = { key: FeedKey; label: string; angle: string; note: string };
+type Feed = { key: FeedKey; label: string; phone: string; note: string };
 const FEEDS: Feed[] = [
-  { key: 'left', label: 'Left', angle: '-90°', note: 'Side camera, turned roughly 90 degrees left of centre to cover the blind spot.' },
-  { key: 'center', label: 'Center', angle: '0°', note: 'Forward driving view, the operator’s primary feed straight down the line of travel.' },
-  { key: 'right', label: 'Right', angle: '+90°', note: 'Side camera, roughly 90 degrees right of centre, mirroring the left.' },
+  { key: 'left', label: 'Left', phone: 'Phone 2', note: 'Phone 2: the second hotspot and the left camera.' },
+  { key: 'center', label: 'Front', phone: 'Phone 1', note: 'Phone 1: the main 5G hotspot and the front camera.' },
+  { key: 'right', label: 'Right', phone: 'Phone 3', note: 'Phone 3: joins the hotspot and is the right camera.' },
 ];
 const camSrc = (k: FeedKey, m: Mode) => `/videos/rover-${k}-${m}.mp4`;
 
@@ -122,9 +149,35 @@ const MoonIcon = () => (
 );
 
 export default function CommandLink() {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = !!useReducedMotion();
   const [mode, setMode] = useState<Mode>('day');
   const base = TELE[mode];
+
+  /* Run only while on screen: auto-advance, telemetry ticks, packet flow and video */
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  const [seen, setSeen] = useState(false);
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        setInView(e.isIntersecting);
+        if (e.isIntersecting) setSeen(true);
+      },
+      { rootMargin: '200px 0px', threshold: 0 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el || !seen) return;
+    el.querySelectorAll('video').forEach((v) => {
+      if (inView && !reduceMotion) v.play().catch(() => {});
+      else v.pause();
+    });
+  }, [inView, seen, reduceMotion, mode]);
 
   /* ── Signal path state ── */
   const [active, setActive] = useState<NodeKey>('pad');
@@ -133,22 +186,21 @@ export default function CommandLink() {
   const idx = LINK.findIndex((n) => n.key === active);
 
   useEffect(() => {
-    if (pinned || reduceMotion) return;
+    if (pinned || reduceMotion || !inView) return;
     const t = setInterval(() => {
       setActive((cur) => {
         const i = LINK.findIndex((n) => n.key === cur);
         return LINK[(i + 1) % LINK.length].key;
       });
-    }, 2600);
+    }, 3200);
     return () => clearInterval(t);
-  }, [pinned, reduceMotion]);
+  }, [pinned, reduceMotion, inView]);
 
   const selectNode = (k: NodeKey) => { setPinned(true); setActive(k); };
 
-  /* ── Telemetry state: jitter around the active mode's base each tick ── */
+  /* ── Telemetry state: jitter around the active run's values each tick ── */
   const [vals, setVals] = useState<Record<string, string>>(() => baseVals(TELE.day));
   const [changed, setChanged] = useState<Record<string, boolean>>({});
-  const [heading, setHeading] = useState(214);
 
   useEffect(() => {
     const apply = () => {
@@ -160,30 +212,20 @@ export default function CommandLink() {
         return next;
       });
     };
+    if (reduceMotion || !inView) {
+      setVals(baseVals(base));
+      return;
+    }
     apply();
-    if (reduceMotion) return;
-    const t = setInterval(() => {
-      apply();
-      setHeading((h) => {
-        let n = h + (Math.random() - 0.5) * 26;
-        if (n < 0) n += 360;
-        if (n >= 360) n -= 360;
-        return n;
-      });
-    }, 1700);
+    const t = setInterval(apply, 1700);
     return () => clearInterval(t);
-  }, [base, reduceMotion]);
+  }, [base, reduceMotion, inView]);
 
   useEffect(() => {
     if (!Object.keys(changed).length) return;
     const t = setTimeout(() => setChanged({}), 650);
     return () => clearTimeout(t);
   }, [changed]);
-
-  const compassLabel = useMemo(() => {
-    const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
-    return dirs[Math.round(heading / 45) % 8];
-  }, [heading]);
 
   const brightIdx = BRIGHT_SCALE.indexOf(base.bright);
 
@@ -193,19 +235,19 @@ export default function CommandLink() {
 
   return (
     <LazyMotion features={domAnimation}>
-    <div className="pj-cl" data-no-zoom data-mode={mode}>
+    <div ref={rootRef} className="pj-cl" data-no-zoom data-mode={mode} data-live={inView ? 'on' : 'off'}>
       <div className="pj-cl-head">
         <div className="pj-cl-head-l">
-          <span className="pj-cl-tag"><i className="pj-cl-tag-dot" />Command Link</span>
-          <span className="pj-cl-head-sub">Live console, reconstructed from the {mode} run</span>
+          <span className="pj-cl-tag"><i className="pj-cl-tag-dot" />Driving console</span>
+          <span className="pj-cl-head-sub">Rebuilt from the {mode} run</span>
         </div>
-        <div className="pj-cl-toggle" role="group" aria-label="Run: day or night">
+        <div className="pj-cl-toggle" role="group" aria-label="Choose the day or night run">
           <span className="pj-cl-toggle-slider" data-mode={mode} aria-hidden="true" />
           <button type="button" className={`pj-cl-toggle-btn${mode === 'day' ? ' is-on' : ''}`} onClick={() => setMode('day')} aria-pressed={mode === 'day'}>
-            <SunIcon /> Day
+            <SunIcon /> Day run
           </button>
           <button type="button" className={`pj-cl-toggle-btn${mode === 'night' ? ' is-on' : ''}`} onClick={() => setMode('night')} aria-pressed={mode === 'night'}>
-            <MoonIcon /> Night
+            <MoonIcon /> Night run
           </button>
         </div>
       </div>
@@ -244,47 +286,30 @@ export default function CommandLink() {
         </div>
         <div className="pj-cl-flow-key" aria-hidden="true">
           <span><i className="dir out" />Commands</span>
-          <span><i className="dir back" />Video &amp; telemetry · 3&times; the rate</span>
+          <span><i className="dir back" />Video and telemetry</span>
         </div>
-        <AnimatePresence mode="wait">
-          <m.p
-            key={node.key}
-            className="pj-cl-blurb"
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <b>{node.label}.</b> {node.blurb}
-          </m.p>
-        </AnimatePresence>
+        <div className="pj-cl-blurb-wrap" aria-live="polite">
+          <p className="pj-cl-blurb pj-cl-sizer" aria-hidden="true"><b>{LONGEST_BLURB.label}.</b> {LONGEST_BLURB.blurb}</p>
+          <AnimatePresence mode="wait">
+            <m.p
+              key={node.key}
+              className="pj-cl-blurb"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <b>{node.label}.</b> {node.blurb}
+            </m.p>
+          </AnimatePresence>
+        </div>
       </div>
 
       <div className="pj-cl-grid2">
         {/* ── 2. Telemetry HUD ── */}
         <div className="pj-cl-block">
-          <span className="pj-cl-label">Telemetry HUD</span>
+          <span className="pj-cl-label">Telemetry</span>
           <div className="pj-cl-hud">
-            <div className="pj-cl-compass" aria-label={`Heading ${Math.round(heading)} degrees, ${compassLabel}`}>
-              <div className="pj-cl-compass-dial">
-                <span className="pj-cl-compass-tick n" />
-                <span className="pj-cl-compass-tick e" />
-                <span className="pj-cl-compass-tick s" />
-                <span className="pj-cl-compass-tick w" />
-                <m.span
-                  className="pj-cl-needle"
-                  animate={{ rotate: heading }}
-                  transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true">
-                    <path d="M12 3l3.6 8L12 21 8.4 11z" fill="currentColor" />
-                    <path d="M12 3l3.6 8L12 11z" fill="rgba(255,255,255,0.92)" />
-                  </svg>
-                </m.span>
-              </div>
-              <span className="pj-cl-compass-read"><b>{Math.round(heading)}°</b> {compassLabel}</span>
-              <span className="pj-cl-compass-cap">Heading · magnetometer</span>
-            </div>
             <ul className="pj-cl-readouts">
               {METRICS.map((m) => (
                 <li key={m.key} className={changed[m.key] ? 'is-tick' : ''}>
@@ -304,7 +329,7 @@ export default function CommandLink() {
                 </span>
               </li>
               <li className="pj-cl-ro-wide">
-                <span className="pj-cl-ro-label">Location · GPS fix</span>
+                <span className="pj-cl-ro-label">GPS fix</span>
                 <span className="pj-cl-ro-val loc">{base.loc}</span>
               </li>
             </ul>
@@ -316,18 +341,20 @@ export default function CommandLink() {
           <span className="pj-cl-label">Camera feeds</span>
           <div className="pj-cl-cams">
             <div className="pj-cl-cam-main">
-              <video
-                key={`main-${primary}-${mode}`}
-                className="pj-cl-cam-vid"
-                autoPlay muted loop playsInline preload="metadata"
-                aria-label={`${primaryFeed.label} camera, ${mode} run`}
-              >
-                <source src={camSrc(primary, mode)} type="video/mp4" />
-              </video>
+              {seen && (
+                <video
+                  key={`main-${primary}-${mode}`}
+                  className="pj-cl-cam-vid"
+                  autoPlay={!reduceMotion} muted loop playsInline preload="metadata"
+                  aria-label={`${primaryFeed.label} camera, ${mode} run`}
+                >
+                  <source src={camSrc(primary, mode)} type="video/mp4" />
+                </video>
+              )}
               <span className="pj-cl-scan" aria-hidden="true" />
               <span className="pj-cl-cam-grad" aria-hidden="true" />
               <span className="pj-cl-live"><i className="pj-cl-live-dot" />LIVE</span>
-              <span className="pj-cl-cam-tag">{primaryFeed.label} · {primaryFeed.angle}</span>
+              <span className="pj-cl-cam-tag">{primaryFeed.label} · {primaryFeed.phone}</span>
               <AnimatePresence mode="wait">
                 <m.span
                   key={primaryFeed.key}
@@ -341,27 +368,29 @@ export default function CommandLink() {
                 </m.span>
               </AnimatePresence>
             </div>
-            <div className="pj-cl-cam-thumbs" role="list" aria-label="Camera feeds, select to promote">
+            <div className="pj-cl-cam-thumbs" role="group" aria-label="Choose the main camera">
               {FEEDS.map((f) => (
                 <button
                   key={f.key}
-                  role="listitem"
+                  type="button"
                   className={`pj-cl-cam-thumb${f.key === primary ? ' is-primary' : ''}`}
                   onClick={() => setPrimary(f.key)}
                   aria-pressed={f.key === primary}
-                  aria-label={`Promote ${f.label} camera (${f.angle}) to the main view`}
+                  aria-label={`Show the ${f.label.toLowerCase()} camera (${f.phone})`}
                 >
-                  <video
-                    key={`thumb-${f.key}-${mode}`}
-                    className="pj-cl-thumb-vid"
-                    autoPlay muted loop playsInline preload="metadata"
-                  >
-                    <source src={camSrc(f.key, mode)} type="video/mp4" />
-                  </video>
+                  {seen && (
+                    <video
+                      key={`thumb-${f.key}-${mode}`}
+                      className="pj-cl-thumb-vid"
+                      autoPlay={!reduceMotion} muted loop playsInline preload="metadata" aria-hidden="true"
+                    >
+                      <source src={camSrc(f.key, mode)} type="video/mp4" />
+                    </video>
+                  )}
                   <span className="pj-cl-scan sm" aria-hidden="true" />
                   <span className="pj-cl-thumb-grad" aria-hidden="true" />
                   <span className="pj-cl-live sm"><i className="pj-cl-live-dot" />LIVE</span>
-                  <span className="pj-cl-thumb-label">{f.label} · {f.angle}</span>
+                  <span className="pj-cl-thumb-label">{f.label}</span>
                 </button>
               ))}
             </div>
@@ -445,10 +474,10 @@ export default function CommandLink() {
           position: absolute; top: 50%; width: 6px; height: 6px; border-radius: 50%;
           transform: translate(-50%, -50%);
         }
-        /* 1 command packet out for every 3 telemetry packets back: same 4.5s crossing,
-           but the rover (back) stream fires three times as often. */
+        /* One command packet out, three telemetry packets back (the ESP32 splits its data into three packets). */
         .pj-cl-pkt.out { background: var(--acc); box-shadow: 0 0 8px color-mix(in srgb, var(--acc) 80%, transparent); animation: pjFlowOut 4.5s linear infinite; }
         .pj-cl-pkt.back { width: 5px; height: 5px; background: rgba(232,232,232,0.6); box-shadow: 0 0 7px rgba(232,232,232,0.4); animation: pjFlowBack 4.5s linear infinite; }
+        .pj-cl[data-live="off"] .pj-cl-pkt { animation-play-state: paused; }
         .pj-cl-pkt.o1 { animation-delay: 0s; }
         .pj-cl-pkt.b1 { animation-delay: 0s; }
         .pj-cl-pkt.b2 { animation-delay: 1.5s; }
@@ -486,29 +515,14 @@ export default function CommandLink() {
         .pj-cl-flow-key i.dir.back { background: rgba(232,232,232,0.45); }
         .pj-cl-flow-key i.dir.back::before { content: ''; position: absolute; left: -1px; top: 50%; width: 0; height: 0; border: 3px solid transparent; border-right-color: rgba(232,232,232,0.45); transform: translateY(-50%); }
 
-        .pj-cl-blurb { font-family: 'dmsans'; font-size: 0.92rem; line-height: 1.62; color: rgba(232,232,232,0.66); margin: 10px 0 0; max-width: 64ch; min-height: 3.4em; }
+        .pj-cl-blurb-wrap { display: grid; margin: 10px 0 0; max-width: 64ch; }
+        .pj-cl-blurb-wrap > * { grid-area: 1 / 1; }
+        .pj-cl-blurb { font-family: 'dmsans'; font-size: 0.92rem; line-height: 1.62; color: rgba(232,232,232,0.66); margin: 0; }
+        .pj-cl-sizer { visibility: hidden; }
         .pj-cl-blurb b { color: #e8e8e8; font-weight: 700; }
 
-        /* ── Telemetry HUD ── */
-        .pj-cl-hud { display: grid; grid-template-columns: auto 1fr; gap: clamp(16px, 2.4vw, 24px); align-items: start; }
-        .pj-cl-compass { display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 6px 4px 0; }
-        .pj-cl-compass-dial {
-          position: relative; width: 78px; height: 78px; border-radius: 50%; display: grid; place-items: center;
-          background: radial-gradient(circle at 50% 42%, rgba(255,255,255,0.05), rgba(255,255,255,0.015) 70%);
-          border: 1px solid rgba(255,255,255,0.13);
-        }
-        .pj-cl-compass-tick { position: absolute; background: rgba(232,232,232,0.34); border-radius: 1px; }
-        .pj-cl-compass-tick.n, .pj-cl-compass-tick.s { width: 2px; height: 8px; left: 50%; transform: translateX(-50%); }
-        .pj-cl-compass-tick.e, .pj-cl-compass-tick.w { height: 2px; width: 8px; top: 50%; transform: translateY(-50%); }
-        .pj-cl-compass-tick.n { top: 5px; background: var(--acc); }
-        .pj-cl-compass-tick.s { bottom: 5px; }
-        .pj-cl-compass-tick.e { right: 5px; }
-        .pj-cl-compass-tick.w { left: 5px; }
-        .pj-cl-needle { display: grid; place-items: center; color: var(--acc); filter: drop-shadow(0 2px 8px color-mix(in srgb, var(--acc) 55%, transparent)); transform-origin: 50% 55%; }
-        .pj-cl-compass-read { font-family: 'oswaldreg'; font-size: 0.94rem; color: #e8e8e8; letter-spacing: 0.01em; }
-        .pj-cl-compass-read b { font-family: 'oswaldbold'; color: var(--acc); }
-        .pj-cl-compass-cap { font-family: 'inter'; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(232,232,232,0.32); text-align: center; }
-
+        /* ── Telemetry ── */
+        .pj-cl-hud { display: block; }
         .pj-cl-readouts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 0; padding: 0; list-style: none; }
         .pj-cl-readouts li {
           display: flex; flex-direction: column; gap: 3px; padding: 9px 11px; border-radius: 11px;
@@ -550,17 +564,15 @@ export default function CommandLink() {
         .pj-cl-scan::after {
           content: ''; position: absolute; left: 0; right: 0; height: 32%;
           background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--acc) 16%, transparent), transparent);
-          animation: pjScan 5.5s ease-in-out infinite;
+          display: none;
         }
-        @keyframes pjScan { 0% { top: -34%; } 50% { top: 102%; } 100% { top: -34%; } }
 
         .pj-cl-live { position: absolute; top: 11px; left: 12px; z-index: 2; display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px 4px 7px; border-radius: 999px;
           background: rgba(0,0,0,0.5); border: 1px solid rgba(255,90,90,0.4);
           font-family: 'inter'; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.14em; color: #ffb3ad;
         }
         .pj-cl-live.sm { font-size: 0.5rem; padding: 3px 6px 3px 5px; top: 7px; left: 7px; gap: 4px; }
-        .pj-cl-live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--live); box-shadow: 0 0 0 0 rgba(255,90,90,0.5); animation: pjLivePulse 1.8s ease-out infinite; }
-        @keyframes pjLivePulse { 0% { box-shadow: 0 0 0 0 rgba(255,90,90,0.55); } 70% { box-shadow: 0 0 0 7px rgba(255,90,90,0); } 100% { box-shadow: 0 0 0 0 rgba(255,90,90,0); } }
+        .pj-cl-live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--live); box-shadow: 0 0 0 3px rgba(255,90,90,0.22); }
 
         .pj-cl-cam-thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
         .pj-cl-cam-thumb {
@@ -577,9 +589,6 @@ export default function CommandLink() {
 
         @media (max-width: 760px) {
           .pj-cl-grid2 { grid-template-columns: 1fr; }
-          .pj-cl-hud { grid-template-columns: 1fr; }
-          .pj-cl-compass { flex-direction: row; justify-content: flex-start; gap: 14px; }
-          .pj-cl-compass-cap { text-align: left; }
         }
         @media (max-width: 600px) {
           .pj-cl-track { grid-template-columns: repeat(2, 1fr); row-gap: 22px; }
@@ -592,8 +601,7 @@ export default function CommandLink() {
           .pj-cl-thumb-label { font-size: 0.58rem; }
         }
         @media (prefers-reduced-motion: reduce) {
-          .pj-cl-pkt, .pj-cl-scan::after, .pj-cl-live-dot { animation: none !important; }
-          .pj-cl-scan::after { display: none; }
+          .pj-cl-pkt { animation: none !important; display: none; }
         }
       `}</style>
     </div>

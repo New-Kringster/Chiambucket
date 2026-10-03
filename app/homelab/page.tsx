@@ -2,15 +2,16 @@ import type { Metadata } from 'next';
 import HomelabClient from './HomelabClient';
 import { SERVICES } from './data';
 
+const description =
+  'Three servers at home running my photo library, file sharing, and the MQTT and TURN servers that Project June and LUMEN use. Hardware, network map, storage, services and live status.';
+
 export const metadata: Metadata = {
-  title: 'HomeLab · Braven Chiam | Self-hosted cloud, networking & infrastructure',
-  description:
-    'A hands-on cloud-engineering, networking and software-design sandbox: a three-node, solar-powered homelab running ~38 self-hosted services behind a segmented UniFi network. The supplemental layer that makes my hardware projects actually work.',
+  title: 'Homelab | Braven Chiam',
+  description,
   alternates: { canonical: '/homelab' },
   openGraph: {
-    title: 'HomeLab · Braven Chiam',
-    description:
-      'Three nodes, a segmented UniFi network, and ~38 self-hosted services. My sandbox for learning cloud engineering, networking and software design.',
+    title: 'Homelab | Braven Chiam',
+    description,
     url: '/homelab',
     type: 'website',
   },
@@ -19,11 +20,10 @@ export const metadata: Metadata = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'TechArticle',
-  headline: 'The Chiambucket HomeLab',
-  description:
-    'A three-node self-hosted homelab used to learn cloud engineering, networking and software design, supporting a portfolio of hardware projects.',
+  headline: 'Homelab',
+  description,
   author: { '@type': 'Person', name: 'Braven Chiam' },
-  about: ['Self-hosting', 'Home networking', 'Cloud engineering', 'Docker', 'Unraid', 'Proxmox', 'UniFi'],
+  about: ['Self-hosting', 'Home networking', 'Docker', 'Unraid', 'Proxmox', 'UniFi'],
   keywords: SERVICES.map((s) => s.name).join(', '),
   mainEntityOfPage: 'https://www.chiambucket.com/homelab',
 };

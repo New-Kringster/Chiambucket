@@ -8,48 +8,48 @@ const tools = [
     img: '/images/pr-icon.webp',
     name: 'Premiere Pro',
     maker: 'Adobe',
-    desc: 'I learned Premiere Pro with Photoshop, but frequent crashes led me to switch to DaVinci Resolve with no regrets.',
-    add: 'It taught me the fundamentals of a timeline, but it mostly lives in my history now.',
+    desc: 'What I learned video editing on. It crashed too often, so I moved to DaVinci Resolve.',
+    add: 'I learned it alongside Photoshop. I no longer use it.',
     chips: ['Video editing', 'Timelines', 'Where I started'],
   },
   {
     img: '/images/il-icon.webp',
     name: 'Illustrator',
     maker: 'Adobe',
-    desc: "Illustrator is a fairly simple tool I use for creating logos or SVGs, but I don't use it as much as Photoshop.",
-    add: 'When something needs to scale cleanly or live as an SVG, this is where it gets drawn.',
+    desc: 'For logos and anything that has to scale cleanly as an SVG. I use it less than Photoshop.',
+    add: 'Logos, icons and other vector work.',
     chips: ['Logos', 'Vector / SVG', 'Icons'],
   },
   {
     img: '/images/fm-icon.webp',
     name: 'Figma',
     maker: 'Figma',
-    desc: 'A highly powerful tool I use to prototype and create designs focused on shapes rather than images.',
-    add: 'Most of my interfaces and posters start as Figma frames before they become code or print.',
+    desc: 'For designs built from shapes rather than photos. Most of my interfaces and posters start as Figma frames.',
+    add: 'I prototype interfaces and lay out posters here before building them in code or sending them to print.',
     chips: ['UI design', 'Prototyping', 'Layout'],
   },
   {
     img: '/images/ps-logo.webp',
     name: 'Photoshop',
     maker: 'Adobe',
-    desc: "I've used Photoshop since 2019, received professional training through my school's media club, and it remains my favorite tool.",
-    add: 'From retouching photos to laying out posters, it is the tool I reach for first.',
+    desc: 'My main tool since 2019. I had formal training through my school media club, and I use it for retouching photos and laying out posters.',
+    add: 'Retouching, compositing and poster layouts.',
     chips: ['Photo editing', 'Posters', 'Compositing'],
   },
   {
     img: '/images/resolve-logo.webp',
     name: 'DaVinci Resolve',
     maker: 'Blackmagic Design',
-    desc: 'I regularly edit my videos using DaVinci, but I rarely post them. However, I have more content planned for the future.',
-    add: 'Editing, colour and export all live in one place, which is exactly why it replaced Premiere for me.',
+    desc: 'I edit my videos here: cutting, colour and export in one program. I rarely post them, but more are planned.',
+    add: 'It replaced Premiere Pro for me because editing, colour and export are in one program.',
     chips: ['Video editing', 'Colour grading', 'Project films'],
   },
   {
     img: '/images/lrc-logo.webp',
     name: 'Lightroom',
     maker: 'Adobe',
-    desc: 'Lightroom provides me with powerful tools to enhance images and recover details from unusable shots.',
-    add: 'It is the last stop for most of my photos, pulling back highlights and shadows a JPEG would have lost.',
+    desc: 'Where most of my photos are finished. I use it to recover highlights, shadows and detail from RAW files that would otherwise be unusable.',
+    add: 'Most photos in the albums below went through Lightroom last.',
     chips: ['Photo editing', 'Colour', 'RAW workflow'],
   },
 ];
@@ -61,7 +61,7 @@ const galleries = [
   { id: 'china',     title: 'China',         albumId: 'LscJWL46nCkW76KiKEY4csiI', galleryUrl: 'https://photos.chiambucket.com/gallery/LscJWL46nCkW76KiKEY4csiI' },
   { id: 'zealand',   title: 'New Zealand',   albumId: 'RgKkSumOaHmpoMKbNxPU-o-0', galleryUrl: 'https://photos.chiambucket.com/gallery/RgKkSumOaHmpoMKbNxPU-o-0' },
   { id: 'hongkong',  title: 'Hong Kong',     albumId: '9cDZmd5tSazcQToprQAzbKKu', galleryUrl: 'https://photos.chiambucket.com/gallery/9cDZmd5tSazcQToprQAzbKKu' },
-  { id: 'general',   title: 'General',       albumId: 'X1sod6pbc0khZPykFISHCjzg', galleryUrl: 'https://photos.chiambucket.com/gallery/RgKkSumOaHmpoMKbNxPU-o-0' },
+  { id: 'general',   title: 'General',       albumId: 'X1sod6pbc0khZPykFISHCjzg', galleryUrl: 'https://photos.chiambucket.com/gallery/X1sod6pbc0khZPykFISHCjzg' },
 ];
 
 export default function PhotographyClient() {
@@ -123,27 +123,31 @@ export default function PhotographyClient() {
         <div className="ph-hero-blur" aria-hidden="true"></div>
         <span className="ct-kicker">Photography</span>
         <h1 className="ct-title">
-          Through a <em>different lens.</em>
+          Photography <em>and design.</em>
         </h1>
         <p className="ct-sub">
-          Design has always been a passion of mine, and I love exploring its many forms, from photography to 3D design. Every frame is a lesson in perspective.
+          Albums from Europe, China, New Zealand and Hong Kong, plus a set of ultrawide 21:9 frames. They are served from a Lychee gallery I host on my homelab. Below them are the programs I edit with.
         </p>
         <div className="ph-hero-btns">
-          <button
+          <a
             className="hp-btn"
-            onClick={() => window.open('https://photos.chiambucket.com', '_blank')}
+            href="https://photos.chiambucket.com"
+            target="_blank"
+            rel="noopener"
           >
-            All Photos
+            All photos
             <svg viewBox="0 0 24 24" fill="none" width="17" height="17" aria-hidden="true">
               <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M17 7H9M17 7V15"/>
             </svg>
-          </button>
-          <button
+          </a>
+          <a
             className="hp-btn hp-btn-ghost"
-            onClick={() => window.open('https://www.youtube.com/@newkringster2564', '_blank')}
+            href="https://www.youtube.com/@newkringster2564"
+            target="_blank"
+            rel="noopener"
           >
-            Videos
-          </button>
+            Videos on YouTube
+          </a>
         </div>
       </section>
 
@@ -153,8 +157,8 @@ export default function PhotographyClient() {
           <div className="section-editorial-header" data-reveal>
             <span className="seh-number">01</span>
             <div className="seh-content">
-              <span className="seh-eyebrow">Creative Stack</span>
-              <span className="seh-title">My Tools</span>
+              <span className="seh-eyebrow">Software</span>
+              <span className="seh-title">What I edit with</span>
             </div>
           </div>
           <div className="hp-cap-grid ph-tools-grid" data-reveal>
@@ -178,7 +182,7 @@ export default function PhotographyClient() {
             })}
           </div>
 
-          {/* Live Figma board — a working file, embedded */}
+          {/* Live Figma board: a working file, embedded */}
           <div className="ph-figma" data-reveal>
             <div className="ph-figma-head">
               <span className="ph-figma-label">Figma board</span>
@@ -191,13 +195,13 @@ export default function PhotographyClient() {
             </div>
             <div className="ph-figma-frame">
               <iframe
-                title="Figma board — Random board"
+                title="Figma board: Random board"
                 src="https://embed.figma.com/design/yRQ5bjI3xm7b5Ovg1svmxt/Random-board?node-id=0-1&embed-host=share"
                 loading="lazy"
                 allowFullScreen
               ></iframe>
             </div>
-            <p className="ph-figma-cap">A working file where interfaces and posters take shape before they become code or print.</p>
+            <p className="ph-figma-cap">A working Figma file where I lay out interfaces and posters before building or printing them.</p>
           </div>
         </div>
       </section>
@@ -208,8 +212,8 @@ export default function PhotographyClient() {
           <div className="section-editorial-header" data-reveal>
             <span className="seh-number">02</span>
             <div className="seh-content">
-              <span className="seh-eyebrow">Albums</span>
-              <span className="seh-title">Browse the galleries</span>
+              <span className="seh-eyebrow">Galleries</span>
+              <span className="seh-title">Albums</span>
             </div>
           </div>
         </div>
@@ -223,7 +227,7 @@ export default function PhotographyClient() {
                   <h2 className="ph-gallery-title">{title}</h2>
                 </div>
                 <a className="ph-gallery-open" href={galleryUrl} target="_blank" rel="noopener" aria-label={`Open ${title} gallery`}>
-                  View album
+                  Open album
                   <svg viewBox="0 0 24 24" fill="none" width="15" height="15" aria-hidden="true">
                     <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M17 7H9M17 7V15" />
                   </svg>

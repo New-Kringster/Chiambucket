@@ -1,6 +1,16 @@
 # Chiambucket — Project Overview
 
-Personal portfolio/personal website for Braven Chiam. Dark-themed, design-forward. The current design language is **"Dark Sensory / Signal Archive"** (July 2026 redesign): every page rides a fixed WebGL shader-gradient field, content sits on frosted "instrument panels", labels read as letterspaced mono HUD readouts, and one warm ember accent is reserved for live/status moments. Built with Next.js and deployed on Vercel.
+Personal portfolio/personal website for Braven Chiam. Dark-themed, design-forward. The current design language is **"Dark Sensory / Signal Archive"** (July 2026 redesign): every page rides a fixed WebGL shader-gradient field, content sits on dark "instrument panels", and one warm ember accent is reserved for live/status moments. Built with Next.js and deployed on Vercel.
+
+**September 2026 clarity + performance pass (branch `tweak/dark-simplify`).** Same design, lighter and plainer. Keep these rules:
+- The shader is a **still frame**: drawn on load, on resize and during the route-change palette crossfade, then it stops. No mouse-follow, no film-grain overlay, no cursor spotlight. Nothing may animate continuously while a page is idle.
+- **No `backdrop-filter` anywhere** (a global rule at the end of `mainstyle.css` forces it off). Panels and the nav use near-solid fills (`--sa-panel-hi/lo`, `--sa-nav-a/b` at ~0.95 alpha). Blur over the fixed background cost a re-render per scroll frame, and Firefox drew those panels see-through.
+- No looping decorative animations (orbs, aura drift, headline glow, badge pulse, scroll hint, word rotators).
+- Labels are plain: `--font-ddt` now points at DM Sans, no wide all-caps tracking, no index numbers in the nav or chapter rail, no `FIG ·` prefix, no bracketed kickers, no `.sa-hud` corner readouts, no Flagship/Highlight tier badges.
+- Copy is direct and factual: no mannered prose, no em dashes in visible text, titles `"<Name> | Braven Chiam"`.
+- The homepage "What I do" section is a table of projects by **hardware / software / design** (`HSD` in `HomeClient.tsx`, `.hp-hsd-*` in `mainstyle.css`); each row opens that project's peek summary.
+- Article loops use `LazyVideo` with posters in `public/images/posters/`.
+The older notes below predate this pass; where they mention frosted blur, HUD readouts, flagship tiers, word rotators or a flowing shader, this pass wins.
 
 ## Stack
 

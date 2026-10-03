@@ -4,13 +4,16 @@ import ArticleScrollSpy from '../../components/ArticleScrollSpy';
 import ArticleLinks from '../../components/ArticleLinks';
 import SafetySequence from './SafetySequence';
 
+const DESCRIPTION =
+  'ELEC-F, a safe freezer storage system built by a team of four: two M5Stack Fire controllers with ToF, PIR and RGB units that sound an alarm when someone is shut inside a walk-in freezer too long.';
+
 export const metadata: Metadata = {
-  title: 'Elec-F: Safe Freezer Storage System — Chiambucket',
-  description: 'Project article: ELEC-F, a freezer safety system built on M5Stack with ToF, PIR and RGB units to keep workers from being trapped in walk-in freezers.',
+  title: 'ELEC-F | Braven Chiam',
+  description: DESCRIPTION,
   alternates: { canonical: 'https://www.chiambucket.com/elecf' },
   openGraph: {
-    title: 'Elec-F: Safe Freezer Storage System — Chiambucket',
-    description: 'A freezer safety system on M5Stack: ToF door sensing, PIR presence detection, and an RGB + buzzer alarm for trapped workers.',
+    title: 'ELEC-F | Braven Chiam',
+    description: 'A freezer safety system on M5Stack: ToF door sensing, PIR presence detection, and an RGB light and buzzer alarm.',
     url: 'https://www.chiambucket.com/elecf',
     type: 'article',
     images: [{ url: '/images/elecf-img.webp' }],
@@ -21,7 +24,7 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Article',
   headline: 'Elec-F: Safe Freezer Storage System',
-  description: 'A freezer safety concept developed for an engineering course. Two M5Stack Fire controllers with ToF, PIR and RGB units detect when a worker is trapped in a walk-in freezer and raise the alarm.',
+  description: DESCRIPTION,
   image: 'https://www.chiambucket.com/images/elecf-img.webp',
   author: { '@type': 'Person', name: 'Braven Chiam', url: 'https://www.chiambucket.com/' },
   publisher: { '@type': 'Person', name: 'Braven Chiam' },
@@ -37,11 +40,11 @@ const Circle = () => (
 const Fwd = () => <img src="/images/fwd-arrow.svg" alt="" />;
 
 const COMPONENTS = [
-  { img: '/images/elecf-img.webp', name: 'M5Stack Fire ×2', role: 'Controller', desc: 'The brains and the screen. One drives the interface and logic, the other extends the build.', dark: true },
-  { img: '/images/elecf-hub-mini.png', name: 'Mini Hub Unit', role: 'Expansion', desc: 'Fans out the Fire’s single port so every sensor and unit has somewhere to plug in.' },
-  { img: '/images/elecf-tof.png', name: 'ToF Sensor', role: 'Door state', desc: 'Time-of-flight distance sensing tells the system whether the freezer door is open or closed.' },
-  { img: '/images/elecf-pir.png', name: 'PIR Sensor', role: 'Presence', desc: 'Reads body heat and movement to know if a person is still inside the room.' },
-  { img: '/images/elecf-rgb.png', name: 'RGB Unit', role: 'Alarm', desc: 'Flashes bright warning light alongside the buzzer when someone is trapped past the limit.' },
+  { img: '/images/elecf-img.webp', name: 'M5Stack Fire ×2', role: 'Controller', desc: 'Runs the timer, reads the sensors and shows the screen. The buzzer is built in.', dark: true },
+  { img: '/images/elecf-hub-mini.png', name: 'Mini Hub unit', role: 'Expansion', desc: 'Splits the Fire’s single port so every sensor can plug in.' },
+  { img: '/images/elecf-tof.png', name: 'ToF sensor', role: 'Door state', desc: 'Measures distance to tell whether the freezer door is open or closed.' },
+  { img: '/images/elecf-pir.png', name: 'PIR sensor', role: 'Presence', desc: 'Picks up body heat and movement to tell whether someone is still inside.' },
+  { img: '/images/elecf-rgb.png', name: 'RGB unit', role: 'Alarm', desc: 'Flashes with the buzzer when someone is inside past the limit.' },
 ];
 
 export default function ElecfPage() {
@@ -57,16 +60,16 @@ export default function ElecfPage() {
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>
           <div className="art-tags">
-            <span className="hp-md-tag school">School Project</span>
+            <span className="hp-md-tag school">School project</span>
             <span className="hp-md-tag personal">Team of 4</span>
           </div>
           <span className="hp-key" style={{ display: 'block', marginBottom: '0.4rem', letterSpacing: '0.2em' }}>ELEC-F</span>
           <h1 className="art-title">Safe Freezer <em>Storage</em> System</h1>
-          <p className="art-lead">A freezer safety system my team and I designed for an engineering course. Walk-in factory freezers can trap the people working inside them. ELEC-F watches the door and the room, and if someone is shut in for too long, it sounds the alarm before the cold turns dangerous.</p>
+          <p className="art-lead">A safe freezer storage system my team of four built for an engineering course. It watches a walk-in freezer’s door and the room inside, and sounds an alarm if someone is shut in for too long.</p>
           <div className="art-toolrow">
             <span className="hp-key">Built with</span>
             <div className="icon-stack">
-              <img src="/images/esp-icon.webp" alt="ESP32 / M5Stack" />
+              <img src="/images/esp-icon.webp" alt="M5Stack" />
               <img src="/images/figma-icon.webp" alt="Figma" />
               <img src="/images/ps-pf-icon.webp" alt="Photoshop" />
               <img src="/images/resolve-icon.webp" alt="DaVinci Resolve" />
@@ -88,14 +91,14 @@ export default function ElecfPage() {
           <div className="art-rail-inner">
             <span className="hp-eyebrow">Chapters</span>
             <nav className="art-chapters article-chapter-wrapper">
-              <a href="#Demo">Demo Video</a>
+              <a href="#Demo">Demo</a>
               <a href="#Problem">The problem</a>
-              <a href="#Objective">What we set out to do</a>
+              <a href="#Objective">Goals</a>
               <a href="#HowItWorks">How it works</a>
-              <a href="#Hardware">The hardware</a>
-              <a href="#Logic">The logic</a>
-              <a href="#Build">The build</a>
-              <a href="#Team">The team</a>
+              <a href="#Hardware">Hardware</a>
+              <a href="#Logic">Logic</a>
+              <a href="#Build">Prototype</a>
+              <a href="#Team">Team</a>
             </nav>
           </div>
         </aside>
@@ -104,11 +107,12 @@ export default function ElecfPage() {
 
           {/* Demo Video */}
           <section id="Demo" className="art-section" data-reveal>
-            <h2>Demo Video</h2>
+            <h2>Demo</h2>
             <div className="art-video">
               <iframe
                 src="https://www.youtube.com/embed/8De2ahk-GPo"
-                title="ELEC-F Safe Freezer Storage System video"
+                title="ELEC-F demo video"
+                loading="lazy"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
@@ -119,63 +123,62 @@ export default function ElecfPage() {
           {/* The problem */}
           <section id="Problem" className="art-section" data-reveal>
             <h2>The problem</h2>
-            <p>As the world moves into the Fourth Industrial Revolution, factories are filling up with electronics and automation. Smart factories chase efficiency, but safety has to keep pace. One risk that often goes unnoticed is the walk-in freezer, where a worker can end up trapped inside.</p>
+            <p>Factories are filling up with automation, and safety has to keep up. One risk that gets overlooked is the walk-in freezer, where a worker can be trapped inside.</p>
             <h3>How it happens</h3>
             <ul>
-              <li>Faulty door mechanisms: worn latches jam, moisture freezes the seals shut, and emergency releases can be broken, missing or frozen over.</li>
-              <li>Lack of awareness: nobody realises a person is still inside, and routine can make experienced workers drop their guard.</li>
+              <li>Faulty doors: worn latches jam, moisture freezes the seals shut, and emergency releases can be broken, missing or frozen over.</li>
+              <li>No one notices: nobody realises a person is still inside, and experienced workers can get careless.</li>
             </ul>
             <h3>Why it is dangerous</h3>
             <ul>
-              <li>Hypothermia: cold exposure brings confusion, then unconsciousness.</li>
+              <li>Hypothermia: cold exposure causes confusion, then unconsciousness.</li>
               <li>Asphyxiation: a sealed freezer can run low on oxygen.</li>
-              <li>Physical injury: panic and escape attempts lead to falls and wounds.</li>
-              <li>Fatal exposure: without a timely rescue, prolonged entrapment can be deadly.</li>
+              <li>Injury: panic and escape attempts lead to falls and wounds.</li>
+              <li>Death: without a timely rescue, a long entrapment can be fatal.</li>
             </ul>
-            <p>There is an emotional cost too. Being trapped triggers intense panic and helplessness, especially for people with cleithrophobia, the fear of being unable to escape. ELEC-F is built to cut that time down and reassure a trapped worker that help is on the way.</p>
+            <p>Being trapped also causes panic, especially for people with cleithrophobia, the fear of being unable to escape. ELEC-F is meant to shorten the time someone is stuck and let them know help is coming.</p>
           </section>
 
           {/* Objective */}
           <section id="Objective" className="art-section" data-reveal>
-            <h2>What we set out to do</h2>
-            <p>The brief was simple to state and harder to solve: make working around factory freezers safer. We set ourselves three goals.</p>
+            <h2>Goals</h2>
             <ul>
-              <li>Build a system that stops workers from being stuck inside a factory freezer.</li>
-              <li>Keep communication and reassurance flowing to anyone who does get trapped.</li>
-              <li>Stay reliable in an environment most electronics hate: sub-zero, damp and sealed.</li>
+              <li>Stop workers from being stuck inside a factory freezer.</li>
+              <li>Keep in contact with anyone who does get trapped and reassure them.</li>
+              <li>Work reliably in a cold, damp, sealed room.</li>
             </ul>
           </section>
 
           {/* How it works */}
           <section id="HowItWorks" className="art-section" data-reveal>
             <h2>How it works</h2>
-            <p>ELEC-F runs on a simple loop. While the door is open, you set a timer on the M5Stack. The moment the door closes, that timer arms. If it runs out while someone is still inside, the alarm fires. Step through it below.</p>
+            <p>While the door is open, you set a time limit on the M5Stack. Closing the door starts the timer. If it runs out while someone is still inside, the alarm goes off.</p>
 
             <SafetySequence />
 
-            <p>Under the hood, four jobs run together:</p>
+            <p>Four parts run together:</p>
             <ul>
-              <li><b>Stopwatch.</b> When the door is open, set a time limit on the M5Stack. Closing the door starts the clock.</li>
-              <li><b>Door sensor.</b> A ToF (time-of-flight) sensor measures distance to tell whether the door is open or closed.</li>
-              <li><b>Human detection.</b> A PIR sensor watches for body heat and movement to know if someone is still in the room.</li>
-              <li><b>Danger alert.</b> If the door stays closed past the limit with a person inside, the RGB unit flashes and the buzzer sounds to alert anyone nearby.</li>
+              <li><b>Timer.</b> Set on the M5Stack while the door is open. Closing the door starts it.</li>
+              <li><b>Door sensor.</b> A time-of-flight (ToF) sensor measures distance to tell whether the door is open or closed.</li>
+              <li><b>Presence sensor.</b> A PIR sensor detects body heat and movement to tell whether someone is still in the room.</li>
+              <li><b>Alarm.</b> If the door stays closed past the limit with someone inside, the RGB unit flashes and the buzzer sounds.</li>
             </ul>
-            <p>We chose ToF and PIR sensors on purpose: both keep working at sub-zero temperatures, which is exactly what a freezer demands.</p>
+            <p>We chose ToF and PIR sensors because both keep working below freezing.</p>
           </section>
 
           {/* Hardware */}
           <section id="Hardware" className="art-section" data-reveal>
-            <h2>The hardware</h2>
-            <p>The whole system is built from M5Stack parts, which made it quick to prototype and easy to swap modules. Two M5Stack Fire controllers act as the brains and the display, with a Mini Hub unit fanning out their single port so every sensor has somewhere to plug in.</p>
+            <h2>Hardware</h2>
+            <p>Everything is M5Stack, which made it quick to prototype and easy to swap modules. Two M5Stack Fire controllers run the logic and the display, and a Mini Hub unit splits the Fire’s single port so every sensor has somewhere to plug in.</p>
             <figure className="art-fig">
-              <img src="/images/elecf-controller-sensors.png" alt="The M5Stack Fire controller wired to the ToF, PIR and RGB units" loading="lazy" />
-              <figcaption>The M5Stack Fire and its sensor modules</figcaption>
+              <img src="/images/elecf-controller-sensors.png" alt="The M5Stack Fire wired to the ToF, PIR and RGB units" loading="lazy" />
+              <figcaption>The M5Stack Fire and its sensor units</figcaption>
             </figure>
 
             <div className="ef-comp-grid" data-no-zoom>
               {COMPONENTS.map((c) => (
                 <div key={c.name} className={`ef-comp${c.dark ? ' dark' : ''}`}>
-                  <div className="ef-comp-ico"><img src={c.img} alt={c.name} loading="lazy" /></div>
+                  <div className="ef-comp-ico"><img src={c.img} alt="" loading="lazy" /></div>
                   <span className="ef-comp-tag">{c.role}</span>
                   <b>{c.name}</b>
                   <span>{c.desc}</span>
@@ -191,9 +194,9 @@ export default function ElecfPage() {
 
           {/* Logic */}
           <section id="Logic" className="art-section" data-reveal>
-            <h2>The logic</h2>
-            <p>Here is the full decision loop the M5Stack runs, from setting the timer to sounding the alarm. The buttons adjust the limit while the door is open; once it closes, the stopwatch takes over and the sensors decide what happens next.</p>
-            <img className="art-diagram" src="/images/elecf-main.avif" alt="ELEC-F software flowchart showing the full decision loop" loading="lazy" />
+            <h2>Logic</h2>
+            <p>The full loop the M5Stack runs. The buttons set the time limit while the door is open. Once it closes, the timer runs and the sensors decide what happens next.</p>
+            <img className="art-diagram" src="/images/elecf-main.avif" alt="ELEC-F software flow chart, from setting the timer to sounding the alarm" loading="lazy" />
             <figure className="art-fig">
               <img className="art-diagram" src="/images/elecf-blockdiagram.avif" alt="ELEC-F system block diagram" loading="lazy" />
               <figcaption>System block diagram</figcaption>
@@ -202,20 +205,20 @@ export default function ElecfPage() {
 
           {/* The build */}
           <section id="Build" className="art-section" data-reveal>
-            <h2>The build</h2>
-            <p>We modelled the freezer and its door out of cardboard so we could test the sensors and the timing end to end before worrying about a finished enclosure. It was rough, but it let us prove the whole loop worked.</p>
+            <h2>Prototype</h2>
+            <p>We made the freezer and its door out of cardboard to test the sensors and the timing end to end before thinking about a proper enclosure.</p>
             <div className="art-grid">
-              <img src="/images/elecf-prototype2.avif" alt="ELEC-F prototype, sensors mounted" loading="lazy" />
-              <img src="/images/elecf-prototype3.avif" alt="ELEC-F prototype, door detail" loading="lazy" />
+              <img src="/images/elecf-prototype2.avif" alt="ELEC-F prototype with the sensors mounted" loading="lazy" />
+              <img src="/images/elecf-prototype3.avif" alt="ELEC-F prototype, the door" loading="lazy" />
             </div>
             <figure className="art-fig">
-              <img src="/images/elecf-poster.avif" alt="The full ELEC-F project poster" loading="lazy" />
-              <figcaption>The full project poster</figcaption>
+              <img src="/images/elecf-poster.avif" alt="The ELEC-F project poster" loading="lazy" />
+              <figcaption>The project poster</figcaption>
             </figure>
             <div className="art-repo">
               <div className="art-repo-text">
                 <strong>ELEC-F on GitHub</strong>
-                <span>The M5Stack code for the door timer, sensor reads and alarm logic.</span>
+                <span>The M5Stack code for the door timer, the sensor reads and the alarm.</span>
               </div>
               <a className="hp-btn" href="https://github.com/New-Kringster/ELEC-F-Safe-Fridge-Concept" target="_blank" rel="noopener">View GitHub Repo <Circle /></a>
             </div>
@@ -223,41 +226,41 @@ export default function ElecfPage() {
 
           {/* Team */}
           <section id="Team" className="art-section" data-reveal>
-            <h2>The team</h2>
+            <h2>Team</h2>
             <div className="art-team">
               <div className="art-team-row">
                 <div className="art-team-id">
                   <div className="art-team-avatar sadiq-profile"></div>
-                  <div><b>Md Sadiq</b><span>Team Leader</span></div>
+                  <div><b>Md Sadiq</b><span>Team lead</span></div>
                 </div>
-                <a className="art-team-link" href="https://www.mdsadiq.cc" target="_blank" rel="noopener">View Profile <Fwd /></a>
+                <a className="art-team-link" href="https://www.mdsadiq.cc" target="_blank" rel="noopener">Profile <Fwd /></a>
               </div>
               <div className="art-team-row">
                 <div className="art-team-id">
                   <div className="art-team-avatar tyr-profile"></div>
-                  <div><b>Tan Yong Rui</b><span>Team Member</span></div>
+                  <div><b>Tan Yong Rui</b><span>Team member</span></div>
                 </div>
-                <a className="art-team-link" href="https://tanyongrui11.framer.website/project/www-pentaclay-com" target="_blank" rel="noopener">View Profile <Fwd /></a>
+                <a className="art-team-link" href="https://tanyongrui11.framer.website/project/www-pentaclay-com" target="_blank" rel="noopener">Profile <Fwd /></a>
               </div>
               <div className="art-team-row">
                 <div className="art-team-id">
                   <div className="art-team-avatar braven-profile"></div>
-                  <div><b>Braven (me)</b><span>Team Member</span></div>
+                  <div><b>Braven (me)</b><span>Team member</span></div>
                 </div>
-                <a className="art-team-link" href="/" target="_blank" rel="noopener">View Profile <Fwd /></a>
+                <a className="art-team-link" href="/" target="_blank" rel="noopener">Profile <Fwd /></a>
               </div>
               <div className="art-team-row">
                 <div className="art-team-id">
                   <div className="art-team-avatar abel-profile"></div>
-                  <div><b>Abel Goh</b><span>Team Member</span></div>
+                  <div><b>Abel Goh</b><span>Team member</span></div>
                 </div>
-                <a className="art-team-link" href="https://frequent-location-124634.framer.app" target="_blank" rel="noopener">View Profile <Fwd /></a>
+                <a className="art-team-link" href="https://frequent-location-124634.framer.app" target="_blank" rel="noopener">Profile <Fwd /></a>
               </div>
             </div>
           </section>
 
           <div className="art-next">
-            <span className="art-next-label">Check out the next article</span>
+            <span className="art-next-label">More projects</span>
             <a href="/#portfolio-items-holder" className="hp-btn">All projects <Circle /></a>
           </div>
 

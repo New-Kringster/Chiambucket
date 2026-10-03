@@ -2,19 +2,19 @@ import type { Metadata } from 'next';
 import HomeClient from './HomeClient';
 
 export const metadata: Metadata = {
-  title: 'Braven Chiam · Chiambucket | Engineer, Designer & Photographer',
-  description: 'Braven Chiam is an engineer who designs. Flagship builds: Project June, a 5G rover streaming three live video feeds, and BeadReader, a private invite-only book reader. Plus custom PCBs, design, photography and a solar-powered homelab.',
-  keywords: 'Braven Chiam, Chiambucket, Project June, 5G rover, BeadReader, book reader app, engineer, designer, photographer, Singapore, ESP32, PCB design, Next.js, homelab, portfolio',
+  title: 'Braven Chiam | Hardware, software and design',
+  description: 'Projects by Braven Chiam, an Electronic and Computer Engineering student at Nanyang Polytechnic: a 5G rover, a private book reader, an off-grid LoRa messenger with his own PCB, a voice-controlled room and more, each split into the hardware, software and design he did.',
+  keywords: 'Braven Chiam, Chiambucket, Project June, 5G rover, BeadReader, LoRA Messenger, ESP32, PCB design, KiCAD, Onshape, Next.js, homelab, photography, Singapore',
   alternates: { canonical: 'https://www.chiambucket.com/' },
   openGraph: {
-    title: 'Braven Chiam · Chiambucket | Engineer, Designer & Photographer',
-    description: 'Flagship builds Project June (a 5G rover) and BeadReader (a private book reader), plus custom PCBs, design, photography and a solar-powered homelab.',
+    title: 'Braven Chiam | Hardware, software and design',
+    description: 'A 5G rover, a private book reader, an off-grid LoRa messenger and more, each split into the hardware, software and design I did.',
     url: 'https://www.chiambucket.com/',
     type: 'website',
   },
   twitter: {
-    title: 'Braven Chiam · Chiambucket',
-    description: 'Flagship builds Project June (a 5G rover) and BeadReader (a private book reader), plus engineering, design, photography and a homelab.',
+    title: 'Braven Chiam',
+    description: 'A 5G rover, a private book reader, an off-grid LoRa messenger and more, each split into hardware, software and design.',
   },
 };
 
@@ -25,7 +25,7 @@ const jsonLd = [
     name: 'Braven Chiam',
     url: 'https://www.chiambucket.com/',
     image: 'https://www.chiambucket.com/images/logo.png',
-    jobTitle: 'Engineer & Designer',
+    jobTitle: 'Electronic and Computer Engineering student',
     email: 'mailto:braven@chiambucket.com',
     address: { '@type': 'PostalAddress', addressLocality: 'Singapore', addressCountry: 'SG' },
     alumniOf: { '@type': 'CollegeOrUniversity', name: 'Nanyang Polytechnic' },
@@ -54,10 +54,10 @@ const jsonLd = [
     '@context': 'https://schema.org',
     '@type': 'CreativeWork',
     name: 'Project June',
-    headline: 'Project June, a 5G rover that streams, senses and steers',
+    headline: 'Project June, a 5G rover',
     url: 'https://www.chiambucket.com/project-june',
     author: { '@type': 'Person', name: 'Braven Chiam' },
-    about: 'A 5G radio-controlled rover with three simultaneous live WebRTC video streams, MQTT telemetry, a full sensor suite and a custom PCB, designed enclosure to firmware in three weeks.',
+    about: 'A 5G rover with three live WebRTC camera feeds, MQTT telemetry, an ESP32-S3 sensor suite, a MOSFET motor driver and a 2S3P battery pack, built in three weeks.',
     keywords: '5G rover, WebRTC, ESP32, MQTT, custom PCB, KiCAD, Onshape, telemetry',
   },
   {

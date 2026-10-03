@@ -2,15 +2,19 @@ import type { Metadata } from 'next';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
 import ArticleScrollSpy from '../../components/ArticleScrollSpy';
 import ArticleLinks from '../../components/ArticleLinks';
+import LazyVideo from '../../components/LazyVideo';
 import DispenseDemo from './DispenseDemo';
 
+const DESCRIPTION =
+  'My first school project at Nanyang Polytechnic: a syrup dispenser made of six 3D-printed parts, run by an Arduino Uno from Python with PyFirmata.';
+
 export const metadata: Metadata = {
-  title: 'Pandus Dispenser — Chiambucket',
-  description: 'A 6-part 3D-printed syrup dispenser powered by an Arduino Uno and driven with PyFirmata, built as a first-year school project at Nanyang Polytechnic.',
+  title: 'Pandus Dispenser | Braven Chiam',
+  description: DESCRIPTION,
   alternates: { canonical: 'https://www.chiambucket.com/pandus' },
   openGraph: {
-    title: 'Pandus Dispenser — Chiambucket',
-    description: 'A 6-part 3D-printed syrup dispenser powered by an Arduino Uno and driven with PyFirmata.',
+    title: 'Pandus Dispenser | Braven Chiam',
+    description: 'A syrup dispenser made of six 3D-printed parts, run by an Arduino Uno with PyFirmata.',
     url: 'https://www.chiambucket.com/pandus',
     type: 'article',
     images: [{ url: '/images/pandusarticle.webp' }],
@@ -21,7 +25,7 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Article',
   headline: 'Pandus Dispenser',
-  description: 'A 6-part 3D-printed syrup dispenser powered by an Arduino Uno and driven with PyFirmata, built as a first-year school project at Nanyang Polytechnic.',
+  description: DESCRIPTION,
   image: 'https://www.chiambucket.com/images/pandusarticle.webp',
   author: { '@type': 'Person', name: 'Braven Chiam', url: 'https://www.chiambucket.com/' },
   publisher: { '@type': 'Person', name: 'Braven Chiam' },
@@ -48,10 +52,10 @@ export default function PandusPage() {
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>
           <div className="art-tags">
-            <span className="hp-md-tag school">School Project</span>
+            <span className="hp-md-tag school">School project</span>
           </div>
           <h1 className="art-title">Pandus <em>Dispenser</em></h1>
-          <p className="art-lead">Pandus was my first school project. It is made up of 6 different 3D-printed components and powered by an Arduino Uno. What started as a water dispenser idea became a syrup dispenser, built entirely from components provided in class plus a few extras I sourced myself.</p>
+          <p className="art-lead">My first school project: a syrup dispenser made of six 3D-printed parts and run by an Arduino Uno. I built it from the parts we were given in class plus a few I bought.</p>
           <div className="art-toolrow">
             <span className="hp-key">Built with</span>
             <div className="icon-stack">
@@ -77,22 +81,23 @@ export default function PandusPage() {
           <div className="art-rail-inner">
             <span className="hp-eyebrow">Chapters</span>
             <nav className="art-chapters article-chapter-wrapper">
-              <a href="#PromotionalVideo">Promotional Video</a>
-              <a href="#ProjectBackground">Project Background</a>
-              <a href="#DesignProcess">Design Process</a>
-              <a href="#ControlnFunction">Control and Function</a>
-              <a href="#Coverimg">Cover Image</a>
+              <a href="#PromotionalVideo">Video</a>
+              <a href="#ProjectBackground">Background</a>
+              <a href="#DesignProcess">Design</a>
+              <a href="#ControlnFunction">Control</a>
+              <a href="#Coverimg">Cover image</a>
             </nav>
           </div>
         </aside>
 
         <div className="art-content">
           <section id="PromotionalVideo" className="art-section" data-reveal>
-            <h2>Promotional Video</h2>
+            <h2>Video</h2>
             <div className="art-video">
               <iframe
                 src="https://www.youtube.com/embed/fIJQzOhCKQU?si=UcWGUds-d79Ghaad"
-                title="Pandus Dispenser promotional video"
+                title="Pandus Dispenser video"
+                loading="lazy"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
@@ -101,55 +106,53 @@ export default function PandusPage() {
           </section>
 
           <section id="ProjectBackground" className="art-section" data-reveal>
-            <h2>Project Background</h2>
-            <p>Pandus was the first major project I undertook as a first-year student at Nanyang Polytechnic. The assignment was open-ended with no specific theme, and we were provided with various components including an Arduino Uno, a 4G servo, LEDs, buttons, sliding switches, an infrared collision detection module, and a bundle of wires. Initially I planned to create a water dispenser, but after discovering that someone else had already chosen that idea, I decided to pivot and develop a syrup dispenser instead.</p>
+            <h2>Background</h2>
+            <p>Pandus was my first major project as a first-year student at Nanyang Polytechnic. The brief was open, with no theme. We were given an Arduino Uno, a 4G servo, LEDs, buttons, sliding switches, an infrared collision detection module and a bundle of wires.</p>
+            <p>I planned a water dispenser, but someone else had already chosen that, so I made a syrup dispenser instead.</p>
             <figure className="art-fig">
-              <img src="/images/pandus-article-img1.webp" alt="Behind the scenes of how part of the video was filmed" loading="lazy" />
-              <figcaption>BTS of how a part of the video was filmed</figcaption>
+              <img src="/images/pandus-article-img1.webp" alt="Filming part of the Pandus video" loading="lazy" />
+              <figcaption>Filming part of the video</figcaption>
             </figure>
           </section>
 
           <section id="DesignProcess" className="art-section" data-reveal>
-            <h2>Design Process</h2>
-            <p>Pandus was designed using Onshape. With limited prior experience, I spent a significant amount of time learning how to use the software effectively. Eventually I created the final design shown below, which I chose to proceed with for the project. Due to time constraints, I was not able to create any prototypes beforehand, so I took a leap of faith and sent the design straight to the 3D printer. Fortunately, everything fit perfectly on the first try. You can view a live preview of the model on Onshape.</p>
-            <img src="/images/pandus2.webp" alt="Pandus 3D model in Onshape" loading="lazy" />
-            <img src="/images/pandus3.webp" alt="Pandus 3D model exploded view" loading="lazy" />
+            <h2>Design</h2>
+            <p>I designed Pandus in Onshape. I had little experience with it, so learning the software took a lot of the time. There was no time left for prototypes, so I sent the final design straight to the 3D printer, and every part fit on the first print.</p>
+            <img src="/images/pandus2.webp" alt="Exploded view of the Pandus model in Onshape" loading="lazy" />
+            <img src="/images/pandus3.webp" alt="The assembled Pandus model in Onshape" loading="lazy" />
             <div className="art-repo">
               <div className="art-repo-text">
-                <strong>Live 3D Model Preview</strong>
-                <span>View the interactive Onshape model of the Pandus dispenser.</span>
+                <strong>3D model</strong>
+                <span>The Pandus model in Onshape, which you can rotate and take apart.</span>
               </div>
               <a className="hp-btn" href="https://cad.onshape.com/documents/5010f3da2be8b0cad10575b0/w/c1baff5b3751dfe2426baad4/e/d042961855d215532e28db65" target="_blank" rel="noopener">View on Onshape <Circle /></a>
             </div>
           </section>
 
           <section id="ControlnFunction" className="art-section" data-reveal>
-            <h2>Control and Function</h2>
-            <p>We were taught to code using Python and utilised the Firmata library to enable communication with the Arduino. Below are examples of the components and flowcharts illustrating how the system functioned. In addition to the components provided, I purchased high-powered LEDs, a DC pump, a relay board, and used a separate power bank to power the high-current components.</p>
-            <p>Here is roughly how a single dispense plays out, from the moment a cup approaches to the door swinging shut again. Pick a level to run it yourself, or let the demo cycle through all three on its own.</p>
+            <h2>Control</h2>
+            <p>We were taught to program the Arduino from Python with the Firmata library. On top of the class parts I bought high-power LEDs, a DC pump and a relay board, and used a separate power bank for the high-current parts.</p>
+            <p>The demo below runs one dispense cycle from the flow chart further down. Pick a level to run it yourself.</p>
 
             <DispenseDemo />
 
-            <img src="/images/pandus4.webp" alt="Component diagram" loading="lazy" />
-            <img src="/images/pandus5.webp" alt="System flowchart part 1" loading="lazy" />
-            <img src="/images/pandus6.webp" alt="System flowchart part 2" loading="lazy" />
-            <img src="/images/pandus7.webp" alt="System flowchart part 3" loading="lazy" />
+            <img src="/images/pandus4.webp" alt="Flow chart: the infrared sensor opens the servo and lights the LED, select sets the level, confirm runs the pump for 3, 4 or 5 seconds" loading="lazy" />
+            <img src="/images/pandus5.webp" alt="Circuit diagram: Arduino Uno, servo, infrared sensor, relays, DC pump, high-power LED, buzzer, buttons and indicator LEDs" loading="lazy" />
+            <img src="/images/pandus6.webp" alt="The wiring inside Pandus: relay board, buttons and indicator LEDs" loading="lazy" />
+            <img src="/images/pandus7.webp" alt="The breadboard, buzzer and Arduino Uno inside Pandus" loading="lazy" />
           </section>
 
           <section id="Coverimg" className="art-section" data-reveal>
-            <h2>Cover Image</h2>
-            <p>I was especially proud of how the cover image turned out. I captured four separate photos of Pandus under different lighting conditions and blended them together in Photoshop to create the final composition.</p>
+            <h2>Cover image</h2>
+            <p>I photographed Pandus four times under different lighting and blended the four shots in Photoshop to make the cover.</p>
             <figure className="art-fig">
-              <video autoPlay loop muted playsInline>
-                <source src="/images/pandus7.webm" type="video/webm" />
-                <source src="/images/pandus7.mp4" type="video/mp4" />
-              </video>
-              <figcaption>An animation showing how it was created</figcaption>
+              <LazyVideo webm="/images/pandus7.webm" mp4="/images/pandus7.mp4" poster="/images/posters/pandus7.webp" />
+              <figcaption>How the four photos combine into the cover</figcaption>
             </figure>
           </section>
 
           <div className="art-next">
-            <span className="art-next-label">Check out the next article</span>
+            <span className="art-next-label">More projects</span>
             <a href="/#portfolio-items-holder" className="hp-btn">All projects <Circle /></a>
           </div>
         </div>

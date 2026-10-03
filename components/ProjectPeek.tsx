@@ -67,12 +67,12 @@ export function PeekModalContent({ id }: { id: string }) {
   switch (id) {
     case 'proj-june': return (
       <>
-        {hero('/images/ProjJuneBanner1.webp', 'Project June rover', ['Flagship', 'Personal Project'], 'highlight')}
+        {hero('/images/ProjJuneBanner1.webp', 'Project June rover', ['Personal Project'], 'highlight')}
         <div className="hp-rd-body">
           <h2 className="hp-md-title">Project June</h2>
-          <p className="hp-md-meta">3 Weeks · High Difficulty · Self-Learnt · 3D Design · Cellular · WebRTC · MQTT</p>
-          <p className="hp-rd-lead">A 5G radio-controlled vehicle I designed end to end in three weeks, from the Onshape chassis to the firmware. It streams three live cameras, carries a full sensor suite, and drives from an Xbox controller anywhere with signal.</p>
-          <div className="hp-md-video"><iframe src="https://www.youtube.com/embed/1nbiYCAtGPA" title="Project June" frameBorder={0} allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe></div>
+          <p className="hp-md-meta">3 Weeks · Self-Learnt · 3D Design · Cellular · WebRTC · MQTT</p>
+          <p className="hp-rd-lead">A 5G rover I built in three weeks. It streams three live cameras, carries a full sensor suite, and drives from an Xbox controller anywhere with signal.</p>
+          <div className="hp-md-video"><iframe src="https://www.youtube.com/embed/MnkJsx-nwoE" title="Project June" frameBorder={0} allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe></div>
           {chapter('01', 'Three live video streams', <><p>Three cameras stream live over WebRTC, routed through a TURN server so the feeds punch through cellular NAT with low latency.</p><img className="hp-rd-fig" src="/images/ProjJune13.webp" alt="Project June cameras" loading="lazy" /></>)}
           {chapter('02', 'Control and telemetry', <p>MQTT carries control and telemetry over a Mosquitto broker, with custom PWM motor control and servo steering driven from an Xbox controller.</p>)}
           {chapter('03', 'A full sensor suite', <><p>Neo8M GPS, gyroscope, accelerometer, magnetometer, barometer, ultrasonic distance sensor, DHT11, and a TEMT6000 light sensor.</p><img className="hp-rd-fig" src="/images/ProjJuneArchi.webp" alt="System architecture" loading="lazy" /></>)}
@@ -82,10 +82,10 @@ export function PeekModalContent({ id }: { id: string }) {
     );
     case 'proj-lora': return (
       <>
-        {hero('/images/borlocator-pf-context.webp', 'LoRA Messenger', ['Highlights', 'Personal Project'], 'highlight')}
+        {hero('/images/borlocator-pf-context.webp', 'LoRA Messenger', ['Personal Project'], 'highlight')}
         <div className="hp-rd-body">
           <h2 className="hp-md-title">LoRA Messenger</h2>
-          <p className="hp-md-meta">3 Months · High Difficulty · Self-Learnt · 3D Design · PCB Design</p>
+          <p className="hp-md-meta">3 Months · Self-Learnt · 3D Design · PCB Design</p>
           <p className="hp-rd-lead">A pair of handheld ESP32 messengers that talk to each other off-grid: text over long-range LoRa and two-way voice over ESP-NOW.</p>
           {chapter('01', 'Two radios, two jobs', <><p>LoRa carries text over long range, while ESP-NOW carries low-latency two-way voice. Programmed on PlatformIO with the Arduino framework.</p><img className="hp-rd-fig" src="/images/Brolocator5.webp" alt="LoRA Messenger internals" loading="lazy" /></>)}
           {chapter('02', 'A custom PCB, reflowed by hand', <><p>I designed the board in KiCAD and reflow-soldered the SMD components myself. A TP4056 circuit handles charging.</p><img className="hp-rd-fig" src="/images/Brolocator10.webp" alt="Custom PCB" loading="lazy" /></>)}
@@ -96,7 +96,7 @@ export function PeekModalContent({ id }: { id: string }) {
     );
     case 'proj-lumen': return (
       <>
-        {hero('/images/lumen-pf-context.webp', 'LUMEN voice assistant', ['Highlights', 'School Project'], 'highlight')}
+        {hero('/images/lumen-pf-context.webp', 'LUMEN voice assistant', ['School Project'], 'highlight')}
         <div className="hp-rd-body">
           <h2 className="hp-md-title">LUMEN</h2>
           <p className="hp-md-meta">NYP IoT Programming · ESP32 · MicroPython · Whisper · DeepSeek · MQTT</p>
@@ -111,7 +111,7 @@ export function PeekModalContent({ id }: { id: string }) {
     );
     case 'proj-beadreader': return (
       <>
-        {hero('/images/beadreader-pf-context.webp', 'BeadReader private book reader', ['Flagship', 'Personal Project'], 'highlight')}
+        {hero('/images/beadreader-pf-context.webp', 'BeadReader private book reader', ['Personal Project'], 'highlight')}
         <div className="hp-rd-body">
           <h2 className="hp-md-title">BeadReader</h2>
           <p className="hp-md-meta">Web App · Next.js · Supabase · Cloudflare R2 · Tailwind v4 · Self-Learnt</p>
@@ -128,12 +128,12 @@ export function PeekModalContent({ id }: { id: string }) {
         {hero('/images/Ema-pf-context.webp', 'EMA Smart Home System', ['School Project'], 'school')}
         <div className="hp-rd-body">
           <h2 className="hp-md-title">EMA Smart Home System</h2>
-          <p className="hp-md-meta">3 Months · High Difficulty · School Group Project · Python · WebSocket · Spline 3D</p>
-          <p className="hp-rd-lead">A five-node smart-home system built with my team. Each node owns a job, and a central controller ties them together behind a live 3D web dashboard.</p>
+          <p className="hp-md-meta">3 Months · School Group Project · Python · WebSocket · Spline 3D</p>
+          <p className="hp-rd-lead">A smart home my team of five built for a module on sustainable living, graded A. Four BeagleBone nodes report to a SocketIO server behind a live 3D dashboard.</p>
           <div className="hp-md-video"><iframe src="https://www.youtube.com/embed/PFhsRaakJAs" title="EMA Smart Home" frameBorder={0} allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe></div>
-          {chapter('01', 'Five nodes, one job each', <><p>Climate, bathroom, kitchen (energy and flame), and intrusion detection. Each node has its own buzzer for local alerts.</p><img className="hp-rd-fig" src="/images/csdp2.webp" alt="EMA sensor node" loading="lazy" /></>)}
-          {chapter('02', 'A controller that coordinates', <><p>BeagleBone Black Wireless with a MikroBus cape collects sensor data over SocketIO and hosts the Flask dashboard.</p><img className="hp-rd-fig" src="/images/csdp6.webp" alt="EMA central controller" loading="lazy" /></>)}
-          {chapter('03', 'A live 3D dashboard', <><p>The frontend shows live data on an interactive Spline 3D map of the home, so the whole system&apos;s state is readable at a glance.</p><img className="hp-rd-fig" src="/images/Cdyspstart.webp" alt="EMA 3D dashboard" loading="lazy" /></>)}
+          {chapter('01', 'Four nodes, one job each', <><p>Climate, bathroom, kitchen (fridge energy and a fire alarm) and intrusion. Each BeagleBone Black Wireless carries MikroBUS sensor modules.</p><img className="hp-rd-fig" src="/images/csdp7.webp" alt="The kitchen node hardware" loading="lazy" /></>)}
+          {chapter('02', 'One server for all of them', <><p>Every node connects to a SocketIO web server, which hosts the dashboard and sounds the fire alarm on every node at once.</p><img className="hp-rd-fig" src="/images/csdp9.webp" alt="How each part of the system connects" loading="lazy" /></>)}
+          {chapter('03', 'A live 3D dashboard', <><p>The dashboard shows live data on a Spline 3D model of the house. I designed the UI in Figma.</p><img className="hp-rd-fig" src="/images/Cdyspstart.webp" alt="EMA 3D dashboard" loading="lazy" /></>)}
           {cta('Try it or read the write-up', 'A live demo of the dashboard, plus the full project article.', 'Live demo', 'https://csdpdemo.chiambucket.com', { label: 'Read the article', url: '/csdp' })}
         </div>
       </>
@@ -143,12 +143,12 @@ export function PeekModalContent({ id }: { id: string }) {
         {hero('/images/pandusarticle.webp', 'Pandus Dispenser', ['School Project'], 'school')}
         <div className="hp-rd-body">
           <h2 className="hp-md-title">Pandus Dispenser</h2>
-          <p className="hp-md-meta">1 Month · Medium Difficulty · First School Project · 3D Design · PyFirmata</p>
-          <p className="hp-rd-lead">My very first school project: a six-part 3D-printed water dispenser that taught me how to bring mechanical design, electronics and code together.</p>
+          <p className="hp-md-meta">1 Month · First School Project · 3D Design · PyFirmata</p>
+          <p className="hp-rd-lead">My first school project: a six-part 3D-printed syrup dispenser. Every part fit on the first print.</p>
           <div className="hp-md-video"><iframe src="https://www.youtube.com/embed/fIJQzOhCKQU" title="Pandus Dispenser" frameBorder={0} allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe></div>
-          {chapter('01', 'What it does', <><p>Three selectable water levels, automatic wake on approach, a self-closing door, and a high-brightness LED to light the cup.</p><img className="hp-rd-fig" src="/images/pandus2.webp" alt="Pandus in use" loading="lazy" /></>)}
-          {chapter('02', 'Control and components', <><p>An Arduino Uno R3 driven with PyFirmata coordinates a servo, LEDs, relays, buttons, a peristaltic pump and an infrared distance sensor.</p><img className="hp-rd-fig" src="/images/pandus5.webp" alt="Pandus internals" loading="lazy" /></>)}
-          {cta('The first one always teaches the most', "The full build and what I'd do differently now.", 'Read the full article', '/pandus')}
+          {chapter('01', 'What it does', <><p>Three cup sizes, wake on approach, a servo door and a high-power LED to light the cup.</p><img className="hp-rd-fig" src="/images/pandus2.webp" alt="The Pandus model in Onshape" loading="lazy" /></>)}
+          {chapter('02', 'Control and components', <><p>An Arduino Uno R3 driven with PyFirmata runs a servo, LEDs, a relay board, buttons, a DC pump and an infrared collision detection module.</p><img className="hp-rd-fig" src="/images/pandus5.webp" alt="The Pandus flowchart" loading="lazy" /></>)}
+          {cta('The full build', "The parts, the flowcharts and the Onshape model.", 'Read the full article', '/pandus')}
         </div>
       </>
     );
@@ -251,7 +251,7 @@ function PeekItem({ id, first, index }: { id: string; first: boolean; index: num
     <div className="hp-rd-feed-item" ref={ref}>
       {!first && (
         <div className="hp-rd-feed-sep" aria-hidden="true">
-          <span>NEXT · {TITLES[id] ?? `0${index + 1}`}</span>
+          <span>Next: {TITLES[id] ?? `Project ${index + 1}`}</span>
         </div>
       )}
       {seen ? <PeekModalContent id={id} /> : <div className="hp-rd-feed-skel" />}
@@ -291,7 +291,7 @@ export function PeekFeed({ startId, exclude }: { startId: string; exclude?: stri
           {order.slice(1).map((id, i) => (
             <PeekItem key={id} id={id} index={i + 1} first={false} />
           ))}
-          <div className="hp-rd-feed-end" aria-hidden="true"><span>END OF FEED</span></div>
+          <div className="hp-rd-feed-end" aria-hidden="true"><span>That&apos;s every project</span></div>
         </>
       )}
     </div>

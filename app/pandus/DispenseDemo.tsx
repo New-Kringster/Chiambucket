@@ -2,114 +2,128 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, LazyMotion, domAnimation, m, useReducedMotion } from 'framer-motion';
 
-type Level = 'small' | 'medium' | 'large';
-type Phase = 'idle' | 'wake' | 'light' | 'pour' | 'done';
+/* One dispense cycle, following the flow chart in the write-up:
+   IR module triggered, servo to 180°, high-power LED on, level 1;
+   select steps the level (indicator LEDs); confirm runs the DC pump
+   for 3, 4 or 5 seconds; everything off. */
+
+type Level = 1 | 2 | 3;
+type Phase = 'idle' | 'wake' | 'select' | 'pour' | 'done';
+type Led = 'red' | 'yellow' | 'green';
 
 const SPRING = [0.16, 1, 0.3, 1] as const;
 
-const LEVELS: Record<Level, { label: string; short: string; fill: number; ml: string; pourMs: number }> = {
-  small: { label: 'Small', short: 'S', fill: 0.34, ml: '~120 ml', pourMs: 1500 },
-  medium: { label: 'Medium', short: 'M', fill: 0.6, ml: '~200 ml', pourMs: 2200 },
-  large: { label: 'Large', short: 'L', fill: 0.86, ml: '~280 ml', pourMs: 3000 },
+const LEVELS: Record<Level, { label: string; fill: number; pumpS: number; leds: Led[]; ledText: string }> = {
+  1: { label: 'Level 1', fill: 0.45, pumpS: 3, leds: ['red'], ledText: 'red' },
+  2: { label: 'Level 2', fill: 0.65, pumpS: 4, leds: ['red', 'yellow'], ledText: 'red and yellow' },
+  3: { label: 'Level 3', fill: 0.86, pumpS: 5, leds: ['red', 'yellow', 'green'], ledText: 'red, yellow and green' },
 };
-const LEVEL_ORDER: Level[] = ['small', 'medium', 'large'];
+const LEVEL_ORDER: Level[] = [1, 2, 3];
+const ALL_LEDS: Led[] = ['red', 'yellow', 'green'];
 
 const PHASES: { key: Phase; label: string; blurb: string }[] = [
-  { key: 'idle', label: 'Idle', blurb: 'Resting. The IR distance sensor watches the space in front of the spout for an approaching cup.' },
-  { key: 'wake', label: 'Wake', blurb: 'A cup breaks the beam. The Arduino wakes the relay and servo, and the door slides back to uncover the level buttons.' },
-  { key: 'light', label: 'Light', blurb: 'The high-brightness LED switches on, casting a warm pool of light over the cup so you can see it fill.' },
-  { key: 'pour', label: 'Pour', blurb: 'The relay drives the peristaltic pump. Water rises toward the level you picked, with a gentle surface wobble.' },
-  { key: 'done', label: 'Done', blurb: 'Pump stops, the self-closing door swings shut over the buttons, and the dispenser settles back to idle.' },
+  { key: 'idle', label: 'Waiting', blurb: 'Waiting for the infrared collision detection module to detect a cup.' },
+  { key: 'wake', label: 'Cup in', blurb: 'A cup triggers the infrared module. The servo turns to 180° and opens the door over the buttons, the high-power LED turns on and the level resets to 1.' },
+  { key: 'select', label: 'Select', blurb: 'The select button steps through levels 1, 2 and 3. The indicator LEDs show the level: red, red and yellow, or all three.' },
+  { key: 'pour', label: 'Pour', blurb: 'The confirm button switches the DC pump on through the relay for 3, 4 or 5 seconds, depending on the level.' },
+  { key: 'done', label: 'Done', blurb: 'The pump stops and everything turns off until the next cup.' },
 ];
-const PHASE_DURATIONS: Record<Phase, number> = { idle: 1700, wake: 1100, light: 1000, pour: 0, done: 1900 };
+const phaseText = (p: Phase, l: Level) =>
+  (PHASES.find((x) => x.key === p)?.blurb ?? '') + (p === 'select' ? ` Now on level ${l}: ${LEVELS[l].ledText}.` : '');
+/* Longest text any step can show: reserves the height so steps never reflow the page */
+const LONGEST_BLURB = PHASES.flatMap((p) => LEVEL_ORDER.map((l) => phaseText(p.key, l))).reduce((a, t) => (t.length > a.length ? t : a), '');
+const PHASE_DURATIONS: Record<Phase, number> = { idle: 1800, wake: 1500, select: 1700, pour: 0, done: 2000 };
 
-type CompKey = 'ir' | 'pump' | 'door' | 'led';
+type CompKey = 'ir' | 'servo' | 'led' | 'pump';
 const COMPONENTS: { key: CompKey; label: string; full: string }[] = [
-  { key: 'ir', label: 'IR sensor', full: 'Infrared distance sensor' },
-  { key: 'pump', label: 'Pump', full: 'Peristaltic pump + relay' },
-  { key: 'door', label: 'Door', full: 'Servo-driven door over the buttons' },
-  { key: 'led', label: 'LED', full: 'High-brightness cup light' },
+  { key: 'ir', label: 'IR module', full: 'Infrared collision detection module' },
+  { key: 'servo', label: 'Door', full: 'Servo door over the buttons' },
+  { key: 'led', label: 'LED', full: 'High-power LED over the cup' },
+  { key: 'pump', label: 'Pump', full: 'DC pump, switched by a relay' },
 ];
-/* Which components are "live" (lit) during each phase, and in what state */
+/* Each component's colour state and its label during each phase */
 type CompState = 'off' | 'standby' | 'active' | 'done';
-const COMP_STATE: Record<Phase, Record<CompKey, CompState>> = {
-  idle: { ir: 'active', pump: 'off', door: 'done', led: 'off' },
-  wake: { ir: 'active', pump: 'standby', door: 'standby', led: 'off' },
-  light: { ir: 'standby', pump: 'standby', door: 'standby', led: 'active' },
-  pour: { ir: 'standby', pump: 'active', door: 'standby', led: 'active' },
-  done: { ir: 'standby', pump: 'off', door: 'done', led: 'off' },
+const COMP_STATE: Record<Phase, Record<CompKey, [CompState, string]>> = {
+  idle: { ir: ['active', 'Watching'], servo: ['done', 'Closed'], led: ['off', 'Off'], pump: ['off', 'Off'] },
+  wake: { ir: ['active', 'Triggered'], servo: ['active', 'Open'], led: ['active', 'On'], pump: ['off', 'Off'] },
+  select: { ir: ['standby', 'Triggered'], servo: ['active', 'Open'], led: ['active', 'On'], pump: ['standby', 'Off'] },
+  pour: { ir: ['standby', 'Triggered'], servo: ['active', 'Open'], led: ['active', 'On'], pump: ['active', 'Running'] },
+  done: { ir: ['active', 'Watching'], servo: ['done', 'Closed'], led: ['off', 'Off'], pump: ['off', 'Off'] },
 };
 
-function useAutoCycle(running: boolean, level: Level, onAdvance: () => void, phase: Phase) {
-  const cb = useRef(onAdvance);
-  cb.current = onAdvance;
-  useEffect(() => {
-    if (!running) return;
-    const ms = phase === 'pour' ? LEVELS[level].pourMs : PHASE_DURATIONS[phase];
-    const t = setTimeout(() => cb.current(), ms);
-    return () => clearTimeout(t);
-  }, [running, phase, level]);
-}
-
 export default function DispenseDemo() {
-  // useReducedMotion() reads `null` during SSR / the first paint (matchMedia isn't available yet)
-  // and a real boolean once mounted. Coercing to a plain boolean keeps the very first client render
-  // identical to the server-rendered markup (both "false"), so React never has to reconcile a
-  // different tree shape on hydration; the preference then "settles in" a tick later, which is
-  // invisible because nothing has animated yet.
+  // false on the server and the first client render, so hydration matches
   const reduceMotion = !!useReducedMotion();
-  const [level, setLevel] = useState<Level>('medium');
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  const [level, setLevel] = useState<Level>(2);
   const [phase, setPhase] = useState<Phase>('idle');
   const [auto, setAuto] = useState(true);
   const [cycle, setCycle] = useState(0);
 
   const phaseIndex = PHASES.findIndex((p) => p.key === phase);
-  const meta = PHASES[phaseIndex];
   const lv = LEVELS[level];
   const comp = COMP_STATE[phase];
-  const filling = phase === 'pour' || phase === 'done';
+  const ledOn = comp.led[0] === 'active';
+  const pouring = phase === 'pour';
+  const filling = pouring || phase === 'done';
   const fillTarget = filling ? lv.fill : 0;
-  const doorOpen = phase === 'wake' || phase === 'light' || phase === 'pour'; // door slides off the buttons mid-cycle
+  const doorOpen = phase === 'wake' || phase === 'select' || phase === 'pour';
+  const ledsLit: Led[] = phase === 'select' || phase === 'pour' ? lv.leds : phase === 'wake' ? ['red'] : [];
   const instant = reduceMotion ? 0 : undefined; // framer-motion treats `duration: 0` as a snap, no tween
+  const live = inView && !reduceMotion;
 
-  const advance = useCallback(() => {
-    setPhase((p) => {
-      const idx = PHASES.findIndex((x) => x.key === p);
-      if (idx >= PHASES.length - 1) {
-        setCycle((c) => c + 1);
-        return 'idle';
-      }
-      return PHASES[idx + 1].key;
-    });
+  // Only run while on screen
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.15 });
+    io.observe(el);
+    return () => io.disconnect();
   }, []);
 
-  // Auto-pilot: cycles through phases and rotates the chosen level, until a visitor presses one.
-  // Reduced motion gets no autoplay loop at all, just the resting idle frame, per platform preference.
+  // Auto-demo rotates the level each cycle until a visitor picks one
   useEffect(() => {
-    if (reduceMotion || !auto) return;
-    if (phase !== 'idle') return;
-    setLevel(LEVEL_ORDER[cycle % LEVEL_ORDER.length]);
+    if (reduceMotion || !auto || phase !== 'idle') return;
+    setLevel(LEVEL_ORDER[(cycle + 1) % LEVEL_ORDER.length]);
   }, [reduceMotion, auto, phase, cycle]);
 
-  useAutoCycle(!reduceMotion && (auto || phase !== 'idle'), level, advance, phase);
+  // Step timer: runs while in view, for the auto-demo or a manual run in progress
+  const running = live && (auto || phase !== 'idle');
+  useEffect(() => {
+    if (!running) return;
+    const ms = phase === 'pour' ? lv.pumpS * 1000 : PHASE_DURATIONS[phase];
+    const t = setTimeout(() => {
+      if (phase === 'done') {
+        setCycle((c) => c + 1);
+        setPhase('idle');
+      } else {
+        setPhase(PHASES[PHASES.findIndex((x) => x.key === phase) + 1].key);
+      }
+    }, ms);
+    return () => clearTimeout(t);
+  }, [running, phase, lv.pumpS]);
 
   const pick = useCallback((l: Level) => {
     setAuto(false);
     setLevel(l);
-    // Reduced motion: jump straight to the resting "done" frame at the chosen level (a manual
-    // trigger, not a loop) instead of stepping through the animated wake/light/pour sequence.
+    // Reduced motion: show the finished frame instead of stepping through the cycle
     setPhase(reduceMotion ? 'done' : 'wake');
   }, [reduceMotion]);
 
-  const restart = phase === 'done';
+  const status = reduceMotion
+    ? `${lv.label} · ${lv.pumpS} s pump`
+    : auto
+      ? `Running on its own · ${lv.label}`
+      : `Your pick · ${lv.label}`;
 
   return (
     <LazyMotion features={domAnimation}>
-    <div className={`pd-dd pd-dd-${phase}`} data-no-zoom>
+    <div ref={rootRef} className={`pd-dd pd-dd-${phase}`} data-no-zoom data-live={live ? 'on' : 'off'}>
       <div className="pd-dd-glass">
         <div className="pd-dd-glow" aria-hidden="true" />
 
-        {/* IR beam, sweeps when waking */}
+        {/* IR beam, sweeps when a cup arrives */}
         <div className="pd-dd-beam-track" aria-hidden="true">
           <AnimatePresence>
             {phase === 'wake' && (
@@ -125,20 +139,24 @@ export default function DispenseDemo() {
         </div>
 
         <div className="pd-dd-machine">
-          {/* Dispenser head: body, status LED, the self-closing door over the control buttons, open spout below */}
+          {/* Dispenser head: body, high-power LED, the servo door over the panel, spout below */}
           <div className="pd-dd-head">
             <span className="pd-dd-head-vent" aria-hidden="true" />
             <m.span
               className="pd-dd-head-led"
               aria-hidden="true"
-              animate={{ opacity: comp.led === 'active' ? 1 : 0.16, boxShadow: comp.led === 'active' ? '0 0 14px 3px rgba(255,207,138,0.7)' : '0 0 0 0 rgba(255,207,138,0)' }}
+              animate={{ opacity: ledOn ? 1 : 0.16, boxShadow: ledOn ? '0 0 14px 3px rgba(255,207,138,0.7)' : '0 0 0 0 rgba(255,207,138,0)' }}
               transition={{ duration: instant ?? 0.4, ease: SPRING }}
             />
             <div className="pd-dd-panel">
               <span className="pd-dd-btns" aria-hidden="true">
-                {LEVEL_ORDER.map((l) => (
-                  <span key={l} className={`pd-dd-pbtn${doorOpen && l === level ? ' is-pressed' : ''}`} />
-                ))}
+                <span className="pd-dd-inds">
+                  {ALL_LEDS.map((c) => (
+                    <i key={c} className={`pd-dd-ind ${c}${ledsLit.includes(c) ? ' on' : ''}`} />
+                  ))}
+                </span>
+                <span className={`pd-dd-pbtn${phase === 'select' ? ' is-pressed' : ''}`} />
+                <span className={`pd-dd-pbtn${phase === 'pour' ? ' is-pressed' : ''}`} />
               </span>
               <m.span
                 className="pd-dd-door"
@@ -155,7 +173,7 @@ export default function DispenseDemo() {
           {/* Pour stream bridging head and cup */}
           <div className="pd-dd-stream-track" aria-hidden="true">
             <AnimatePresence>
-              {phase === 'pour' && (
+              {pouring && (
                 <m.span
                   className="pd-dd-stream"
                   initial={{ opacity: 0, scaleY: 0.3 }}
@@ -167,27 +185,27 @@ export default function DispenseDemo() {
             </AnimatePresence>
           </div>
 
-          {/* LED glow pool over the dispensing area */}
+          {/* High-power LED light over the cup */}
           <m.div
             className="pd-dd-led-pool"
             aria-hidden="true"
-            animate={{ opacity: comp.led === 'active' ? 1 : 0, scale: comp.led === 'active' ? 1 : 0.8 }}
+            animate={{ opacity: ledOn ? 1 : 0, scale: ledOn ? 1 : 0.8 }}
             transition={{ duration: instant ?? 0.6, ease: SPRING }}
           />
 
           {/* The cup, sitting in the dispensing area */}
-          <div className="pd-dd-cup" role="img" aria-label={`Cup in the dispensing area, ${phase === 'idle' ? 'empty, waiting' : phase === 'done' ? `filled to the ${lv.label.toLowerCase()} level, door closing` : `filling toward the ${lv.label.toLowerCase()} level`}`}>
+          <div className="pd-dd-cup" role="img" aria-label={`Cup under the spout, ${phase === 'idle' ? 'empty, waiting' : phase === 'done' ? `filled at ${lv.label.toLowerCase()}` : pouring ? `filling at ${lv.label.toLowerCase()}` : 'empty'}`}>
             <span className="pd-dd-cup-rim" aria-hidden="true" />
             <m.div
               className="pd-dd-water"
               animate={{ height: `${fillTarget * 100}%` }}
-              transition={{ duration: instant ?? (filling && phase === 'pour' ? lv.pourMs / 1000 : 0.5), ease: filling && phase === 'pour' ? 'easeInOut' : SPRING }}
+              transition={{ duration: instant ?? (pouring ? lv.pumpS : 0.5), ease: pouring ? 'linear' : SPRING }}
             >
               <m.span
                 className="pd-dd-wobble"
                 aria-hidden="true"
-                animate={!reduceMotion && phase === 'pour' ? { scaleY: [1, 1.35, 0.85, 1.18, 1], scaleX: [1, 0.97, 1.02, 0.99, 1] } : { scaleY: 1, scaleX: 1 }}
-                transition={!reduceMotion && phase === 'pour' ? { duration: 1.6, repeat: Infinity, ease: 'easeInOut' } : { duration: instant ?? 0.4 }}
+                animate={live && pouring ? { scaleY: [1, 1.35, 0.85, 1.18, 1], scaleX: [1, 0.97, 1.02, 0.99, 1] } : { scaleY: 1, scaleX: 1 }}
+                transition={live && pouring ? { duration: 1.6, repeat: Infinity, ease: 'easeInOut' } : { duration: instant ?? 0.4 }}
               />
               <span className="pd-dd-shine" aria-hidden="true" />
             </m.div>
@@ -199,32 +217,31 @@ export default function DispenseDemo() {
 
       <div className="pd-dd-side">
         <div className="pd-dd-headrow">
-          <span className="pd-dd-eyebrow">
-            {reduceMotion ? 'Pick a level' : auto ? `Auto-demo · cycle ${cycle + 1}` : 'Your pick'} · {lv.label} ({lv.ml})
-          </span>
+          <span className="pd-dd-eyebrow">{status}</span>
           {!reduceMotion && !auto && (
-            <button className="pd-dd-resume" onClick={() => { setAuto(true); setPhase('idle'); }}>
-              <RefreshGlyph /> Auto-demo
+            <button type="button" className="pd-dd-resume" onClick={() => { setAuto(true); setPhase('idle'); }}>
+              <RefreshGlyph /> Run on its own
             </button>
           )}
         </div>
 
-        <div className="pd-dd-levels" role="group" aria-label="Choose a dispense level">
+        <div className="pd-dd-levels" role="group" aria-label="Choose a level">
           {LEVEL_ORDER.map((l) => (
             <button
               key={l}
+              type="button"
               className={`pd-dd-level${l === level ? ' is-active' : ''}`}
               onClick={() => pick(l)}
               aria-pressed={l === level}
             >
-              <span className="pd-dd-level-glyph">{LEVELS[l].short}</span>
-              <span className="pd-dd-level-text"><b>{LEVELS[l].label}</b>{LEVELS[l].ml}</span>
+              <span className="pd-dd-level-glyph">{l}</span>
+              <span className="pd-dd-level-text"><b>{LEVELS[l].label}</b>{LEVELS[l].pumpS} s pump</span>
             </button>
           ))}
         </div>
 
         {/* Phase rail: a horizontal thread the cycle travels along */}
-        <div className="pd-dd-rail" role="status" aria-live="polite">
+        <div className="pd-dd-rail" aria-label="Dispense cycle">
           <div className="pd-dd-rail-track" aria-hidden="true">
             <m.div
               className="pd-dd-rail-fill"
@@ -234,7 +251,7 @@ export default function DispenseDemo() {
           </div>
           <div className="pd-dd-rail-steps">
             {PHASES.map((p, n) => (
-              <span key={p.key} className={`pd-dd-rail-step${n <= phaseIndex ? ' is-lit' : ''}${n === phaseIndex ? ' is-current' : ''}`}>
+              <span key={p.key} className={`pd-dd-rail-step${n <= phaseIndex ? ' is-lit' : ''}${n === phaseIndex ? ' is-current' : ''}`} aria-current={n === phaseIndex ? 'step' : undefined}>
                 <span className="pd-dd-rail-dot" />
                 <span className="pd-dd-rail-label">{p.label}</span>
               </span>
@@ -242,41 +259,44 @@ export default function DispenseDemo() {
           </div>
         </div>
 
-        <AnimatePresence mode="wait">
-          <m.p
-            key={phase}
-            className="pd-dd-desc"
-            initial={reduceMotion ? false : { opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: instant ?? 0.32, ease: SPRING }}
-          >
-            {meta.blurb}
-          </m.p>
-        </AnimatePresence>
+        <div className="pd-dd-desc-wrap" role="status" aria-live="polite">
+          <p className="pd-dd-desc pd-dd-sizer" aria-hidden="true">{LONGEST_BLURB}</p>
+          <AnimatePresence mode="wait">
+            <m.p
+              key={phase}
+              className="pd-dd-desc"
+              initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: instant ?? 0.32, ease: SPRING }}
+            >
+              {phaseText(phase, level)}
+            </m.p>
+          </AnimatePresence>
+        </div>
 
-        {restart && (
-          <button className="pd-dd-again" onClick={() => pick(level)}>
-            Pour another <ArrowGlyph />
-          </button>
-        )}
+        <div className="pd-dd-again-slot">
+          {phase === 'done' && !auto && (
+            <button type="button" className="pd-dd-again" onClick={() => pick(level)}>
+              Pour another <ArrowGlyph />
+            </button>
+          )}
+        </div>
 
         {/* Mini schematic: signal line through the four components */}
         <div className="pd-dd-schema" aria-label="Component status">
           <span className="pd-dd-schema-line" aria-hidden="true">
             <m.span
               className="pd-dd-schema-pulse"
-              animate={!reduceMotion && phase !== 'idle' ? { left: ['0%', '100%'] } : { left: '0%', opacity: reduceMotion && phase !== 'idle' ? 1 : undefined }}
-              transition={!reduceMotion && phase !== 'idle' ? { duration: 1.4, repeat: Infinity, ease: 'linear' } : { duration: instant ?? 0.3 }}
+              animate={live && phase !== 'idle' ? { left: ['0%', '100%'] } : { left: '0%', opacity: reduceMotion && phase !== 'idle' ? 1 : undefined }}
+              transition={live && phase !== 'idle' ? { duration: 1.4, repeat: Infinity, ease: 'linear' } : { duration: instant ?? 0.3 }}
             />
           </span>
           {COMPONENTS.map((c) => (
-            <div key={c.key} className={`pd-dd-node st-${comp[c.key]}`} title={c.full}>
+            <div key={c.key} className={`pd-dd-node st-${comp[c.key][0]}`} title={c.full}>
               <span className="pd-dd-node-dot" />
               <span className="pd-dd-node-label">{c.label}</span>
-              <span className="pd-dd-node-state">
-                {comp[c.key] === 'active' ? 'Active' : comp[c.key] === 'standby' ? 'Standby' : comp[c.key] === 'done' ? 'Closed' : 'Off'}
-              </span>
+              <span className="pd-dd-node-state">{comp[c.key][1]}</span>
             </div>
           ))}
         </div>
@@ -308,7 +328,7 @@ function PdStyles() {
   return (
     <style>{`
       .pd-dd {
-        --water: #5fb7e8; --water-deep: #2f86c4; --warm: #ffcf8a;
+        --water: #e0a24a; --water-deep: #a3601c; --warm: #ffcf8a; /* syrup */
         display: grid; grid-template-columns: 0.78fr 1.22fr; gap: clamp(22px, 3.4vw, 44px);
         align-items: stretch; margin: 1.5rem 0 0.6rem;
         padding: clamp(20px, 3vw, 32px); border-radius: 22px;
@@ -329,7 +349,7 @@ function PdStyles() {
         background: radial-gradient(46% 40% at 50% 70%, color-mix(in srgb, var(--hp-sky) 16%, transparent), transparent 72%);
         opacity: 0.6; transition: opacity 0.6s ease;
       }
-      .pd-dd-pour .pd-dd-glow, .pd-dd-light .pd-dd-glow { opacity: 1; }
+      .pd-dd-pour .pd-dd-glow, .pd-dd-select .pd-dd-glow { opacity: 1; }
 
       /* IR beam sweeps low, where the cup approaches the dispensing area */
       .pd-dd-beam-track { position: absolute; bottom: 27%; left: 12%; right: 12%; height: 2px; pointer-events: none; z-index: 2; }
@@ -365,7 +385,13 @@ function PdStyles() {
         border: 1px solid rgba(255,255,255,0.12);
         display: grid; place-items: center;
       }
-      .pd-dd-btns { display: inline-flex; gap: 9px; }
+      .pd-dd-btns { display: inline-flex; align-items: center; gap: 7px; }
+      /* Indicator LEDs: red, yellow, green show the level */
+      .pd-dd-inds { display: inline-flex; gap: 3px; margin-right: 2px; }
+      .pd-dd-ind { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.14); transition: background 0.3s ease, box-shadow 0.3s ease; }
+      .pd-dd-ind.red.on { background: #ff6a5c; box-shadow: 0 0 6px 1px rgba(255,106,92,0.6); }
+      .pd-dd-ind.yellow.on { background: #f5cf7e; box-shadow: 0 0 6px 1px rgba(245,207,126,0.6); }
+      .pd-dd-ind.green.on { background: #6fd6a8; box-shadow: 0 0 6px 1px rgba(111,214,168,0.6); }
       .pd-dd-pbtn {
         width: 13px; height: 13px; border-radius: 50%;
         background: radial-gradient(circle at 50% 35%, rgba(255,255,255,0.3), rgba(255,255,255,0.08));
@@ -403,7 +429,7 @@ function PdStyles() {
       .pd-dd-stream-track { position: relative; height: 30px; width: 8px; display: flex; justify-content: center; z-index: 2; }
       .pd-dd-stream {
         position: absolute; top: 0; width: 5px; height: 30px; transform-origin: top center; border-radius: 999px;
-        background: linear-gradient(180deg, color-mix(in srgb, var(--hp-sky) 65%, transparent), var(--water));
+        background: linear-gradient(180deg, color-mix(in srgb, var(--water) 65%, transparent), var(--water));
         box-shadow: 0 0 10px 1px color-mix(in srgb, var(--water) 50%, transparent);
       }
 
@@ -452,7 +478,7 @@ function PdStyles() {
 
       /* ---- side column ---- */
       .pd-dd-side { display: flex; flex-direction: column; min-width: 0; }
-      .pd-dd-headrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 0.85rem; }
+      .pd-dd-headrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 0.85rem; min-height: 34px; } /* reserves the resume button's height */
       .pd-dd-eyebrow {
         font-family: 'inter'; font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase;
         color: var(--hp-sky); font-weight: 600;
@@ -504,9 +530,14 @@ function PdStyles() {
       .pd-dd-rail-step.is-lit .pd-dd-rail-label { color: rgba(232,232,232,0.7); }
       .pd-dd-rail-step.is-current .pd-dd-rail-label { color: #fff; font-weight: 700; }
 
-      .pd-dd-desc { font-family: 'dmsans'; font-size: 0.92rem; line-height: 1.62; color: rgba(232,232,232,0.66); margin: 0 0 1.05rem; max-width: 54ch; min-height: 2.9em; }
+      .pd-dd-desc-wrap { display: grid; margin: 0 0 0.7rem; max-width: 54ch; }
+      .pd-dd-desc-wrap > * { grid-area: 1 / 1; }
+      .pd-dd-desc { font-family: 'dmsans'; font-size: 0.92rem; line-height: 1.62; color: rgba(232,232,232,0.66); margin: 0; }
+      .pd-dd-sizer { visibility: hidden; }
+      /* Fixed slot, so the button appearing never moves the schematic */
+      .pd-dd-again-slot { min-height: 40px; margin-bottom: 0.4rem; }
       .pd-dd-again {
-        align-self: flex-start; display: inline-flex; align-items: center; gap: 7px; cursor: pointer; margin-bottom: 1.1rem; margin-top: -0.4rem;
+        display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
         font-family: 'dmsans'; font-weight: 600; font-size: 0.86rem; color: #fff;
         padding: 9px 16px; border-radius: 999px;
         background: color-mix(in srgb, var(--hp-blue) 22%, transparent); border: 1px solid color-mix(in srgb, var(--hp-sky) 42%, transparent);
@@ -557,6 +588,7 @@ function PdStyles() {
         .pd-dd-rail-label { display: none; }
         .pd-dd-rail-steps { padding: 0 2px; }
       }
+      .pd-dd[data-live="off"] .pd-dd-node-dot { animation-play-state: paused; }
       @media (prefers-reduced-motion: reduce) {
         .pd-dd-node.st-active .pd-dd-node-dot { animation: none; }
       }

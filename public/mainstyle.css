@@ -3747,3 +3747,109 @@ html.sensory-active .sa-hud span:nth-child(4) { animation-delay: 0.66s; }
 @media (prefers-reduced-motion: reduce) {
   html.sensory-active .sa-hud span { animation: none; opacity: 1; }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   CLARITY + PERFORMANCE PASS (2026-09)
+   Same design, lighter to run and plainer to read:
+   - No backdrop-filter anywhere. Blurring over a fixed full-screen
+     background re-renders on every scroll frame, and Firefox drew these
+     panels see-through. Panels and the nav get near-solid fills instead.
+   - No looping decorative animation (orbs, aura drift, headline glow,
+     badge pulse, scroll hint, sparkle border). The shader is a still frame.
+   - Labels drop the monospace HUD face and the wide all-caps tracking;
+     no index numbers in the nav or chapter rail, no "FIG ·" prefix.
+   ═══════════════════════════════════════════════════════════════ */
+*, *::before, *::after {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+html.sensory-active {
+  --font-ddt: 'dmsans', system-ui, sans-serif;
+  --sa-panel-hi: rgba(36,29,21,0.94);
+  --sa-panel-lo: rgba(22,17,12,0.96);
+  --sa-nav-a: rgba(19,15,10,0.97);
+  --sa-nav-b: rgba(29,23,16,0.97);
+  --sa-btn: rgba(37,29,20,0.95);
+}
+html.sensory-active[data-theme="indigo"],
+html.sensory-active[data-theme="datacenter"] {
+  --sa-panel-hi: rgba(21,25,38,0.94);
+  --sa-panel-lo: rgba(10,12,21,0.96);
+  --sa-nav-a: rgba(9,11,18,0.97);
+  --sa-nav-b: rgba(13,16,26,0.97);
+  --sa-btn: rgba(17,21,34,0.95);
+}
+html.sensory-active .hp-btn { background: rgba(var(--sa-accent),0.08) !important; }
+.hp-modal-backdrop { background: rgba(0,0,0,0.86) !important; }
+
+/* stop the loops */
+.hero-headline-text,
+.hp-hero::before, .hp-hero::after,
+.hp-hero-aura, .hp-hero-kicker, .hp-spot-badge svg,
+.button-hero .dots_border, .button-hero .dots_border::before,
+.button-hero .sparkle .path,
+.abm-bg::before, .abm-bg::after, .hp-homelab-band::before {
+  animation: none !important;
+}
+.hp-scroll { display: none !important; }
+/* the cursor spotlight followed the pointer with a full-page repaint */
+body::before { display: none !important; }
+
+/* plainer labels */
+html.sensory-active .hp-eyebrow, html.sensory-active .seh-eyebrow, html.sensory-active .peh-eyebrow {
+  letter-spacing: 0.08em; }
+html.sensory-active .hp-key {
+  text-transform: none; letter-spacing: 0.02em !important; font-size: 0.78rem !important; }
+html.sensory-active .nav-closed #navitem li:not(#Nav-Item-5) a {
+  text-transform: none; letter-spacing: 0.01em; font-size: 0.92rem !important; }
+html.sensory-active .nav-closed #navitem li:not(#Nav-Item-5) a::before { content: none; }
+html.sensory-active .nav-closed .navitem li { padding-left: 28px !important; }
+html.sensory-active .art-back { text-transform: none; letter-spacing: 0.02em; font-size: 0.86rem; }
+html.sensory-active .art-link { text-transform: none; letter-spacing: 0.02em; font-size: 0.84rem; }
+html.sensory-active .art-chapters a { text-transform: none; letter-spacing: 0.01em; font-size: 0.84rem; }
+html.sensory-active .art-chapters a.sub { font-size: 0.78rem; }
+html.sensory-active .art-chapters a::before,
+html.sensory-active .art-chapters a.sub::before { content: none; }
+html.sensory-active .art-fig figcaption, html.sensory-active .art-cap {
+  text-transform: none; letter-spacing: 0.01em; font-size: 0.8rem; }
+html.sensory-active .art-fig figcaption::before, html.sensory-active .art-cap::before { content: none; }
+
+/* ── What I do: projects by hardware / software / design (HomeClient HSD) ── */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.hp-hsd {
+  border-radius: 18px; overflow: hidden;
+  background: linear-gradient(180deg, var(--sa-panel-hi, rgba(36,29,21,0.94)), var(--sa-panel-lo, rgba(22,17,12,0.96)));
+  border: 1px solid var(--sa-hairline, rgba(255,255,255,0.08));
+}
+.hp-hsd-row {
+  display: grid; grid-template-columns: 1.1fr 1.5fr 1.5fr 1.3fr; gap: 20px;
+  padding: 16px 24px; border-top: 1px solid rgba(var(--sa-accent, 224,168,102),0.1);
+  transition: background-color 0.2s ease;
+}
+.hp-hsd-row:first-child { border-top: 0; }
+.hp-hsd-row:not(.hp-hsd-head):hover { background: rgba(var(--sa-accent, 224,168,102),0.05); }
+.hp-hsd-head { padding-top: 14px; padding-bottom: 12px; }
+.hp-hsd-head span { font-family: 'dmsans'; font-size: 0.8rem; letter-spacing: 0.04em; color: rgba(var(--sa-accent, 224,168,102),0.8); }
+.hp-hsd-name { display: flex; flex-direction: column; gap: 3px; align-items: flex-start; }
+.hp-hsd-name button {
+  font-family: 'oswaldbold'; font-size: 1.15rem; letter-spacing: 0; color: #f1ede6; text-align: left;
+  background: none; border: 0; padding: 0; cursor: pointer; transition: color 0.2s ease;
+}
+.hp-hsd-name button::after { content: ''; position: absolute; inset: 0; }
+.hp-hsd-row { position: relative; }
+.hp-hsd-name button:hover, .hp-hsd-row:hover .hp-hsd-name button { color: rgb(var(--sa-accent, 224,168,102)); }
+.hp-hsd-name button:focus-visible { outline: none; }
+.hp-hsd-row:has(button:focus-visible) { outline: 2px solid rgba(var(--sa-accent, 224,168,102),0.8); outline-offset: -2px; }
+.hp-hsd-name small { font-family: 'dmsans'; font-size: 0.78rem; color: rgba(232,226,216,0.5); }
+.hp-hsd-cell { font-family: 'dmsans'; font-size: 0.9rem; line-height: 1.5; color: rgba(236,232,224,0.74); }
+.hp-hsd-cell i { display: none; }
+.hp-hsd-cell.is-empty::before { content: ''; display: block; width: 14px; height: 1px; margin-top: 11px; background: rgba(232,226,216,0.3); }
+@media (max-width: 900px) {
+  .hp-hsd-head { display: none; }
+  .hp-hsd-row { grid-template-columns: 1fr; gap: 6px; padding: 16px 18px; }
+  .hp-hsd-row:nth-child(2) { border-top: 0; }
+  .hp-hsd-name { margin-bottom: 4px; }
+  .hp-hsd-cell { display: grid; grid-template-columns: 78px 1fr; gap: 10px; }
+  .hp-hsd-cell i { display: block; font-family: 'dmsans'; font-style: normal; font-size: 0.78rem; line-height: 1.7; color: rgba(var(--sa-accent, 224,168,102),0.8); }
+  .hp-hsd-cell.is-empty { display: none; }
+}
