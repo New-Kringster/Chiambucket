@@ -11,12 +11,12 @@ export default function ClientEffects() {
     document.documentElement.setAttribute('data-theme', themeForPath(pathname));
   }, [pathname]);
 
-  // One-time effect: nav scroll glow
+  // One-time effect: once the page scrolls, the nav logo gets its own chip
   useEffect(() => {
 
     const onScroll = () => {
-      const holder = document.querySelector('.nav-holder');
-      if (holder) holder.classList.toggle('nav-scrolled', window.scrollY > 60);
+      const nav = document.querySelector('.pnav');
+      if (nav) nav.classList.toggle('is-scrolled', window.scrollY > 60);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
 

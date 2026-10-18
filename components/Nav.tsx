@@ -1,28 +1,40 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import './nav.css';
 
 const PORTFOLIO_ID = 'portfolio-items-holder';
 
+const LINKS = [
+  { href: '/', label: 'Home' },
+  { href: '/photography', label: 'Photography' },
+  { href: '/homelab', label: 'HomeLab' },
+  { href: '/contact', label: 'Contact' },
+];
+
+/*
+  The nav is a row of separate small pieces rather than one long bar: the logo
+  on its own, a segmented pill of pages (the current page is the light inner
+  pill), and a "View my work" pill on the right. On phones the page pill folds
+  into a round menu button that opens a small dropdown. Styles: components/nav.css.
+*/
 export default function Nav() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const toggle = () => setOpen((v) => !v);
-  /* Picking a destination closes the menu. Same-page anchors (Portfolio, View my
-     work) never unmount this component, so it has to be closed explicitly. */
+  const menuRef = useRef<HTMLButtonElement>(null);
+  const sheetRef = useRef<HTMLDivElement>(null);
   const close = () => setOpen(false);
 
-  /* Already on the homepage, scroll to the section directly. Leaving it to the
+  const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
+
+  /* Already on the homepage, scroll to the projects directly. Leaving it to the
      href would do nothing on a repeat click, because the URL still carries
      #portfolio-items-holder from last time and the router sees no change. */
-  const goToPortfolio = (e?: React.MouseEvent) => {
+  const goToPortfolio = (e: React.MouseEvent) => {
     close();
-    if (pathname !== '/') {
-      if (!e) window.location.href = `/#${PORTFOLIO_ID}`;
-      return;
-    }
-    e?.preventDefault();
+    if (pathname !== '/') return;
+    e.preventDefault();
     const target = document.getElementById(PORTFOLIO_ID);
     if (!target) return;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -30,57 +42,74 @@ export default function Nav() {
     window.history.replaceState(null, '', `/#${PORTFOLIO_ID}`);
   };
 
+  // The phone menu closes on Escape (focus returns to its button) or a tap outside it.
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { setOpen(false); menuRef.current?.focus(); }
+    };
+    const onPointer = (e: PointerEvent) => {
+      const t = e.target as Node;
+      if (!sheetRef.current?.contains(t) && !menuRef.current?.contains(t)) setOpen(false);
+    };
     document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
+    document.addEventListener('pointerdown', onPointer);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('pointerdown', onPointer);
+    };
   }, [open]);
 
-  const itemClass = open ? 'Nav-Menu-Items-Open' : 'Nav-Menu-Items';
+  // A route change always closes the menu.
+  useEffect(() => { setOpen(false); }, [pathname]);
+
+  const links = (onClick?: () => void) =>
+    LINKS.map((l) => (
+      <Link
+        key={l.href}
+        href={l.href}
+        className={`pnav-item${isActive(l.href) ? ' is-active' : ''}`}
+        aria-current={isActive(l.href) ? 'page' : undefined}
+        onClick={onClick}
+      >
+        {l.label}
+      </Link>
+    ));
 
   return (
-    <div className="nav-holder" id="nav-holder">
-      <nav className={open ? 'nav-open' : 'nav-closed'} id="nav">
-        <Link href="/" className="logo" onClick={close}>
-          <img src="/images/logo.webp" alt="Chiambucket logo" />
-        </Link>
-        <ul className={open ? 'navitem-open' : 'navitem'} id="navitem">
-          <li className={itemClass} id="Nav-Item-2">
-            <Link href="/photography" onClick={close}>Photography</Link>
-          </li>
-          <li className={itemClass} id="Nav-Item-3">
-            <Link href="/homelab" onClick={close}>HomeLab</Link>
-          </li>
-          <li className={itemClass} id="Nav-Item-4">
-            <Link href={`/#${PORTFOLIO_ID}`} onClick={goToPortfolio}>Portfolio</Link>
-          </li>
-          <li className={itemClass} id="Nav-Item-45">
-            <Link href="/contact" onClick={close}>Contact</Link>
-          </li>
-          <li className={itemClass} id="Nav-Item-5">
-            <button
-              className="button-hero"
-              onClick={() => goToPortfolio()}
-            >
-              <div className="dots_border"></div>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="sparkle">
-                <path className="path" strokeLinejoin="round" strokeLinecap="round" stroke="black" fill="black" d="M14.187 8.096L15 5.25L15.813 8.096C16.0231 8.83114 16.4171 9.50062 16.9577 10.0413C17.4984 10.5819 18.1679 10.9759 18.903 11.186L21.75 12L18.904 12.813C18.1689 13.0231 17.4994 13.4171 16.9587 13.9577C16.4181 14.4984 16.0241 15.1679 15.814 15.903L15 18.75L14.187 15.904C13.9769 15.1689 13.5829 14.4994 13.0423 13.9587C12.5016 13.4181 11.8321 13.0241 11.097 12.814L8.25 12L11.096 11.187C11.8311 10.9769 12.5006 10.5829 13.0413 10.0423C13.5819 9.50162 13.9759 8.83214 14.186 8.097L14.187 8.096Z"></path>
-                <path className="path" strokeLinejoin="round" strokeLinecap="round" stroke="black" fill="black" d="M6 14.25L5.741 15.285C5.59267 15.8785 5.28579 16.4206 4.85319 16.8532C4.42059 17.2858 3.87853 17.5927 3.285 17.741L2.25 18L3.285 18.259C3.87853 18.4073 4.42059 18.7142 4.85319 19.1468C5.28579 19.5794 5.59267 20.1215 5.741 20.715L6 21.75L6.259 20.715C6.40725 20.1216 6.71398 19.5796 7.14639 19.147C7.5788 18.7144 8.12065 18.4075 8.714 18.259L9.75 18L8.714 17.741C8.12065 17.5925 7.5788 17.2856 7.14639 16.853C6.71398 16.4204 6.40725 15.8784 6.259 15.285L6 14.25Z"></path>
-                <path className="path" strokeLinejoin="round" strokeLinecap="round" stroke="black" fill="black" d="M6.5 4L6.303 4.5915C6.24777 4.75718 6.15472 4.90774 6.03123 5.03123C5.90774 5.15472 5.75718 5.24777 5.5915 5.303L5 5.5L5.5915 5.697C5.75718 5.75223 5.90774 5.84528 6.03123 5.96877C6.15472 6.09226 6.24777 6.24282 6.303 6.4085L6.5 7L6.697 6.4085C6.75223 6.24282 6.84528 6.09226 6.96877 5.96877C7.09226 5.84528 7.24282 5.75223 7.4085 5.697L8 5.5L7.4085 5.303C7.24282 5.24777 7.09226 5.15472 6.96877 5.03123C6.84528 4.90774 6.75223 4.75718 6.697 4.5915L6.5 4Z"></path>
-              </svg>
-              <span className="text_button">View my work</span>
-            </button>
-          </li>
-        </ul>
-        <label className="hamburger">
-          <input type="checkbox" onChange={toggle} checked={open} readOnly />
-          <svg viewBox="0 0 32 32">
-            <path className="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"></path>
-            <path className="line" d="M7 16 27 16"></path>
-          </svg>
-        </label>
+    <header className="pnav">
+      <Link href="/" className="pnav-logo" onClick={close}>
+        <img src="/images/logo.webp" alt="Chiambucket home" />
+      </Link>
+
+      <nav className="pnav-pill pnav-links" aria-label="Main">
+        {links()}
       </nav>
-    </div>
+
+      <div className="pnav-right">
+        <Link href={`/#${PORTFOLIO_ID}`} className="pnav-pill pnav-cta" onClick={goToPortfolio}>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M14.2 8.1 15 5.25l.8 2.85a4 4 0 0 0 2.9 2.9l2.85.8-2.85.8a4 4 0 0 0-2.9 2.9L15 18.75l-.8-2.85a4 4 0 0 0-2.9-2.9L8.25 12l2.85-.8a4 4 0 0 0 3.1-3.1ZM6 14.25l.26 1.04a3 3 0 0 0 2.2 2.2L9.75 18l-1.04.26a3 3 0 0 0-2.2 2.2L6 21.75l-.26-1.04a3 3 0 0 0-2.2-2.2L2.25 18l1.04-.26a3 3 0 0 0 2.2-2.2L6 14.25ZM6.5 4l.2.6a1 1 0 0 0 .7.7l.6.2-.6.2a1 1 0 0 0-.7.7l-.2.6-.2-.6a1 1 0 0 0-.7-.7L5 5.5l.6-.2a1 1 0 0 0 .7-.7L6.5 4Z" />
+          </svg>
+          View my work
+        </Link>
+        <button
+          ref={menuRef}
+          type="button"
+          className={`pnav-circle pnav-menu${open ? ' is-open' : ''}`}
+          aria-expanded={open}
+          aria-controls="pnav-sheet"
+          aria-label={open ? 'Close menu' : 'Open menu'}
+          onClick={() => setOpen((v) => !v)}
+        >
+          <span aria-hidden="true" />
+          <span aria-hidden="true" />
+        </button>
+      </div>
+
+      <div ref={sheetRef} id="pnav-sheet" className={`pnav-sheet${open ? ' is-open' : ''}`}>
+        <nav aria-label="Main (menu)">{links(close)}</nav>
+      </div>
+    </header>
   );
 }

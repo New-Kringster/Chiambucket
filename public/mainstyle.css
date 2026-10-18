@@ -379,165 +379,6 @@ html {
 
 }
 
-.nav-holder {
-    position: fixed;
-    display: flex;
-    justify-content: center;
-    z-index: 999;
-    width: 100vw;
-
-}
-.nav-closed {
-    display: flex;
-    justify-content: space-between;
-    padding: 15px 10px 15px 40px;
-    border-radius: 500px;
-    width: 70vw;
-    z-index: 1;
-    margin: 0 auto;
-    align-items: center;
-    margin-top: 30px;
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    background: linear-gradient(90deg, rgba(17,17,17,0.75) 0%, rgba(28,28,28,0.75) 36%);
-    border: 1px solid rgba(255, 255, 255, 0.125);
-    height: 40px;
-    animation: 500ms ease FloatDown;
-    box-shadow: 7px 7px 25px -4px rgba(0,0,0,0.68);
-}
-.nav-open {
-  animation: 200ms ease pillEnlarge;
-    display: flex;
-    justify-content: space-between;
-    padding: 15px 40px 15px 40px;
-    border-radius: 30px;
-    height: 90svh;
-    width: 70vw;
-    z-index: 2;
-    margin: 0 auto;
-    align-items: center;
-    margin-top: 30px;
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    background: linear-gradient(90deg, rgba(17,17,17,0.75) 0%, rgba(28,28,28,0.75) 36%);
-    border: 1px solid rgba(255, 255, 255, 0.125);
-    flex-direction: column;
-    box-shadow: 7px 7px 25px -4px rgba(0,0,0,0.68);
-}
-@keyframes pillEnlarge {
-  0% {
-    height: 50px;
-    border-radius: 500px;
-  }
-  20% {
-    border-radius: 30px;
-  }
-  100% {
-    height: 90vh;
-    flex-direction: column;
-  }
-}
-.Nav-Menu-Items-Open {
-  display: flex;
-  padding-left: 0;
-  padding-bottom: 5vh;
-  font-size: 1.25em;
-}
-
-
-
-/* Hamburger Button */
-.hamburger {
-  display: none !important;
-}
-.hamburger {
-  cursor: pointer;
-}
-
-.hamburger input {
-  display: none;
-}
-
-.hamburger svg {
-  /* The size of the SVG defines the overall size */
-  height: 3em;
-  /* Define the transition for transforming the SVG */
-  transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.line {
-  fill: none;
-  stroke: white;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 3;
-  /* Define the transition for transforming the Stroke */
-  transition: stroke-dasharray 600ms cubic-bezier(0.4, 0, 0.2, 1),
-              stroke-dashoffset 600ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.line-top-bottom {
-  stroke-dasharray: 12 63;
-}
-
-.hamburger input:checked + svg {
-  transform: rotate(-45deg);
-}
-
-.hamburger input:checked + svg .line-top-bottom {
-  stroke-dasharray: 20 300;
-  stroke-dashoffset: -32.42;
-}
-
-
-.logo {
-    width: 70px;
-}
-
-.logo img {
-    width: 90%;
-}
-
-.navitem {
-    display: flex;
-    list-style: none;
-}
-
-.navitem li {
-  opacity: 90%;
-  text-align: center;
-}
-
-.navitem li:hover {
-  transform: scale(1.04);
-  opacity: 100%;
-  transition: 180ms ease;
-}
-
-.navitem-open {
-  display: flex;
-  list-style: none;
-  align-items: center;
-  flex-direction: column;
-  opacity: 90%;
-  animation: ease 400ms FloatDown;
-}
-
-.navitem li {
-    padding-left: 50px;
-    display: flex;
-    align-items: center;
-}
-
-.navitem li a {
-    color: #e8e8e8;
-    font-size: 1.5em;
-}
-
-.navitem-open li a {
-  color: #e8e8e8;
-  font-size: 1.5em;
-}
 
 
 
@@ -1487,22 +1328,6 @@ html {
 
 /* Media Qurey */
 @media only screen and (max-width: 1235px) {
-    .Nav-Menu-Items {
-      display: none !important;
-    }
-
-    .navitem li {
-      padding-left: 0;
-    }
-    
-    .hamburger {
-      display: flex !important;
-    }
-    .nav-closed {
-      height: 35px;
-      margin-top: 10px;
-      padding: 15px 40px;
-    }
     .footer {
       flex-direction: column;
       gap: 30px;
@@ -1708,13 +1533,6 @@ body::before {
   animation: 600ms cubic-bezier(0.16,1,0.3,1) FloatDown;
 }
 
-/* ── Nav link hover color ── */
-.navitem li a {
-  transition: color 260ms ease;
-}
-.navitem li:hover a {
-  color: #8babff;
-}
 
 /* ── abm-key category label → editorial tag ── */
 
@@ -1726,12 +1544,6 @@ body::before {
               0 -1px 0 rgba(255,255,255,0.08);
 }
 
-/* ── nav pill: subtle glow on scroll (class added via JS) ── */
-.nav-scrolled .nav-closed {
-  box-shadow: 7px 7px 25px -4px rgba(0,0,0,0.68),
-              0 0 30px rgba(var(--sa-accent),0.12);
-  border-color: rgba(255,255,255,0.18);
-}
 
 /* ── Index section: animated glow on the vertical border ── */
 
@@ -2502,11 +2314,6 @@ html[data-theme="paper"] {
 /* ── Anchor offsets so jumped-to sections clear the fixed nav ── */
 #portfolio-items-holder, #photolink, #about { scroll-margin-top: 120px; }
 
-/* ───────────────────────  NAV polish  ──────────────────── */
-.nav-holder.nav-scrolled .nav-closed {
-  background: linear-gradient(90deg, rgba(12,12,13,0.86) 0%, rgba(22,22,24,0.86) 36%);
-  box-shadow: 7px 7px 25px -4px rgba(0,0,0,0.72), 0 0 0 1px rgba(var(--sa-accent),0.14);
-}
 
 /* ───────────────────────  RESPONSIVE  ──────────────────── */
 @media only screen and (max-width: 1000px) {
@@ -3457,8 +3264,6 @@ html.sensory-active {
      field); /contact + /homelab override these back to cool navy below. */
   --sa-panel-hi: rgba(42,34,25,0.52);   /* frosted instrument panel (warm) */
   --sa-panel-lo: rgba(22,17,12,0.62);
-  --sa-nav-a: rgba(19,15,10,0.8);       /* nav / command-bar surface */
-  --sa-nav-b: rgba(31,24,16,0.8);
   --sa-btn: rgba(37,29,20,0.68);        /* button-hero (sparkle CTA) fill */
   --sa-hairline: rgba(var(--sa-accent),0.1);
   --hp-glass: rgba(214,190,150,0.03);
@@ -3472,8 +3277,6 @@ html.sensory-active[data-theme="indigo"],
 html.sensory-active[data-theme="datacenter"] {
   --sa-panel-hi: rgba(23,27,41,0.5);
   --sa-panel-lo: rgba(9,11,20,0.6);
-  --sa-nav-a: rgba(9,11,18,0.76);
-  --sa-nav-b: rgba(13,16,26,0.76);
   --sa-btn: rgba(17,21,34,0.68);
   --hp-glass: rgba(150,170,220,0.03);
   background: #030408;
@@ -3563,28 +3366,7 @@ html.sensory-active .sa-live { color: rgba(var(--sa-ember),0.9) !important; }
 html.sensory-active .sa-live-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%;
   background: rgba(var(--sa-ember),0.95); box-shadow: 0 0 10px rgba(var(--sa-ember),0.7); }
 
-/* ══════════ Nav → console command bar ══════════ */
-html.sensory-active .nav-closed {
-  border-radius: 15px !important; width: 84vw !important; max-width: 1200px;
-  padding: 14px 18px 14px 30px !important;
-  background: linear-gradient(90deg, var(--sa-nav-a), var(--sa-nav-b)) !important;
-  border: 1px solid rgba(var(--sa-accent),0.2) !important;
-  box-shadow: 0 16px 46px -18px rgba(0,0,0,0.78), inset 0 1px 0 rgba(196,210,255,0.06) !important; position: relative; }
-html.sensory-active .nav-open {
-  background: linear-gradient(180deg, var(--sa-nav-b), var(--sa-nav-a)) !important;
-  border: 1px solid rgba(var(--sa-accent),0.16) !important; }
-html.sensory-active .nav-closed .navitem li { padding-left: 36px !important; }
-html.sensory-active .nav-closed .navitem li:hover { transform: none !important; }
-html.sensory-active .nav-closed #navitem { counter-reset: navx; }
-html.sensory-active .nav-closed #navitem li:not(#Nav-Item-5) a {
-  font-family: var(--font-ddt) !important; text-transform: uppercase; letter-spacing: 0.16em;
-  font-size: 0.74rem !important; color: rgba(224,231,248,0.84) !important; position: relative; }
-html.sensory-active .nav-closed #navitem li:not(#Nav-Item-5) a::before {
-  counter-increment: navx; content: '0' counter(navx); margin-right: 8px; font-size: 0.56rem; color: rgba(var(--sa-accent),0.65); }
-html.sensory-active .nav-closed #navitem li:not(#Nav-Item-5) a::after {
-  content: ''; position: absolute; left: 0; right: 0; bottom: -7px; height: 1px; background: rgba(var(--sa-accent),0.9);
-  transform: scaleX(0); transform-origin: left; transition: transform .32s cubic-bezier(0.16,1,0.3,1); }
-html.sensory-active .nav-closed #navitem li:not(#Nav-Item-5) a:hover::after { transform: scaleX(1); }
+/* ══════════ Sparkle button (hero) ══════════ */
 html.sensory-active .button-hero { --black-700: var(--sa-btn) !important; --border_radius: 11px !important; }
 html.sensory-active .button-hero::before { box-shadow: inset 0 0.5px rgba(196,210,255,0.35), 0 6px 16px -6px rgba(0,0,0,0.7), 0 0 0 1px rgba(var(--sa-accent),0.3) !important; }
 /* background-image is killed too: the stock button ships three violet radial
@@ -3767,16 +3549,12 @@ html.sensory-active {
   --font-ddt: 'dmsans', system-ui, sans-serif;
   --sa-panel-hi: rgba(36,29,21,0.94);
   --sa-panel-lo: rgba(22,17,12,0.96);
-  --sa-nav-a: rgba(19,15,10,0.97);
-  --sa-nav-b: rgba(29,23,16,0.97);
   --sa-btn: rgba(37,29,20,0.95);
 }
 html.sensory-active[data-theme="indigo"],
 html.sensory-active[data-theme="datacenter"] {
   --sa-panel-hi: rgba(21,25,38,0.94);
   --sa-panel-lo: rgba(10,12,21,0.96);
-  --sa-nav-a: rgba(9,11,18,0.97);
-  --sa-nav-b: rgba(13,16,26,0.97);
   --sa-btn: rgba(17,21,34,0.95);
 }
 html.sensory-active .hp-btn { background: rgba(var(--sa-accent),0.08) !important; }
@@ -3800,10 +3578,6 @@ html.sensory-active .hp-eyebrow, html.sensory-active .seh-eyebrow, html.sensory-
   letter-spacing: 0.08em; }
 html.sensory-active .hp-key {
   text-transform: none; letter-spacing: 0.02em !important; font-size: 0.78rem !important; }
-html.sensory-active .nav-closed #navitem li:not(#Nav-Item-5) a {
-  text-transform: none; letter-spacing: 0.01em; font-size: 0.92rem !important; }
-html.sensory-active .nav-closed #navitem li:not(#Nav-Item-5) a::before { content: none; }
-html.sensory-active .nav-closed .navitem li { padding-left: 28px !important; }
 html.sensory-active .art-back { text-transform: none; letter-spacing: 0.02em; font-size: 0.86rem; }
 html.sensory-active .art-link { text-transform: none; letter-spacing: 0.02em; font-size: 0.84rem; }
 html.sensory-active .art-chapters a { text-transform: none; letter-spacing: 0.01em; font-size: 0.84rem; }

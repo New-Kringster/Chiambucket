@@ -1,0 +1,205 @@
+/* ═══════════════════════════════════════════════════════════════
+   NAV (components/Nav.tsx): separate small pieces instead of one bar.
+   Logo on its own · a segmented pill of pages · a "View my work" pill.
+   Phones swap the page pill for a round menu button and a dropdown.
+   Colours come from --nv-* tokens: warm dark by default, cool on the
+   indigo/datacenter routes, pine-on-sky on the sunlit homepage.
+   ═══════════════════════════════════════════════════════════════ */
+
+.pnav {
+  --nv-pill: rgba(26, 21, 15, 0.96);
+  --nv-border: rgba(255, 238, 214, 0.1);
+  --nv-text: rgba(243, 237, 226, 0.72);
+  --nv-text-hi: #f6f1e7;
+  --nv-hover: rgba(255, 245, 230, 0.08);
+  --nv-active: #f3ede2;
+  --nv-active-text: #17120c;
+  --nv-shadow: 0 10px 26px -14px rgba(0, 0, 0, 0.85);
+  --nv-logo-filter: none;
+
+  position: fixed;
+  top: 16px;
+  left: clamp(14px, 3vw, 32px);
+  right: clamp(14px, 3vw, 32px);
+  z-index: 999;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  /* the gaps between the pieces let clicks through to the page */
+  pointer-events: none;
+}
+.pnav > *, .pnav-right > * { pointer-events: auto; }
+/* set on the links themselves: a global `a` rule would otherwise win over inheritance */
+.pnav-item, .pnav-cta { font-family: 'dmsans', system-ui, sans-serif; }
+
+html[data-theme="indigo"] .pnav,
+html[data-theme="datacenter"] .pnav {
+  --nv-pill: rgba(13, 16, 27, 0.96);
+  --nv-border: rgba(200, 214, 255, 0.1);
+  --nv-text: rgba(226, 233, 255, 0.72);
+  --nv-text-hi: #eef2ff;
+  --nv-hover: rgba(226, 233, 255, 0.08);
+  --nv-active: #eef2ff;
+  --nv-active-text: #0b0e18;
+}
+html[data-theme="sunlit"] .pnav {
+  --nv-pill: #1f2b1c;
+  --nv-border: rgba(31, 43, 28, 0.2);
+  --nv-text: rgba(246, 244, 226, 0.76);
+  --nv-text-hi: #fbfaf1;
+  --nv-hover: rgba(246, 244, 226, 0.1);
+  --nv-active: #fbfaf1;
+  --nv-active-text: #1f2b1c;
+  --nv-shadow: 0 8px 20px -10px rgba(31, 43, 28, 0.55);
+  --nv-logo-filter: brightness(0);
+}
+
+/* ── Logo: bare at the top of the page, on its own chip once you scroll ── */
+.pnav-logo {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 12px;
+  margin-left: -12px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.pnav-logo img { height: 28px; width: auto; display: block; filter: var(--nv-logo-filter); transition: filter 0.25s ease; }
+.pnav.is-scrolled .pnav-logo {
+  background: var(--nv-pill);
+  border-color: var(--nv-border);
+  box-shadow: var(--nv-shadow);
+}
+.pnav.is-scrolled .pnav-logo img { filter: none; }
+
+/* ── Pills ── */
+.pnav-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  background: var(--nv-pill);
+  border: 1px solid var(--nv-border);
+  box-shadow: var(--nv-shadow);
+}
+.pnav-links { padding: 3px; gap: 2px; }
+
+.pnav-item {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 15px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--nv-text);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.2s ease, background-color 0.2s ease, transform 0.15s ease;
+}
+.pnav-item:hover { color: var(--nv-text-hi); background: var(--nv-hover); }
+.pnav-item:active { transform: scale(0.96); }
+.pnav-item.is-active,
+.pnav-item.is-active:hover {
+  background: var(--nv-active);
+  color: var(--nv-active-text);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+
+/* ── Right side: View my work + (phones) menu ── */
+.pnav-right {
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.pnav-cta {
+  gap: 8px;
+  padding: 0 18px 0 15px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--nv-text-hi);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 0.15s ease, background-color 0.2s ease;
+}
+.pnav-cta svg { width: 15px; height: 15px; fill: currentColor; flex-shrink: 0; }
+.pnav-cta:hover { background: color-mix(in srgb, var(--nv-pill) 88%, var(--nv-text-hi)); }
+.pnav-cta:active { transform: scale(0.97); }
+
+.pnav-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--nv-pill);
+  border: 1px solid var(--nv-border);
+  box-shadow: var(--nv-shadow);
+  color: var(--nv-text-hi);
+  cursor: pointer;
+  padding: 0;
+}
+.pnav-menu { display: none; position: relative; }
+.pnav-menu span {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.pnav-menu span:first-child { top: 15px; }
+.pnav-menu span:last-child { top: 21px; }
+.pnav-menu.is-open span:first-child { transform: translateY(3px) rotate(45deg); }
+.pnav-menu.is-open span:last-child { transform: translateY(-3px) rotate(-45deg); }
+.pnav-menu:active { transform: scale(0.95); }
+
+.pnav-logo:focus-visible, .pnav-item:focus-visible, .pnav-cta:focus-visible, .pnav-circle:focus-visible {
+  outline: 2px solid var(--nv-active);
+  outline-offset: 2px;
+}
+html[data-theme="sunlit"] .pnav-logo:focus-visible { outline-color: var(--nv-pill); }
+
+/* ── Phone dropdown ── */
+.pnav-sheet {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(260px, calc(100vw - 28px));
+  padding: 6px;
+  box-sizing: border-box;
+  border-radius: 22px;
+  background: var(--nv-pill);
+  border: 1px solid var(--nv-border);
+  box-shadow: var(--nv-shadow), 0 24px 48px -24px rgba(0, 0, 0, 0.5);
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  transform-origin: top right;
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0.18s;
+}
+.pnav-sheet.is-open {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+  transition-delay: 0s;
+}
+.pnav-sheet nav { display: grid; gap: 2px; }
+.pnav-sheet .pnav-item { height: 44px; padding: 0 16px; font-size: 0.95rem; }
+
+@media (max-width: 760px) {
+  .pnav { top: 12px; grid-template-columns: 1fr auto; }
+  .pnav-links { display: none; }
+  .pnav-menu { display: inline-block; }
+}
+@media (min-width: 761px) {
+  .pnav-sheet { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pnav-sheet, .pnav-menu span, .pnav-item, .pnav-cta { transition: none; }
+}
