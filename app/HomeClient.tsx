@@ -1,46 +1,19 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Script from 'next/script';
 import InfoModal, { type InfoItem } from '../components/InfoModal';
 import LazyVideo from '../components/LazyVideo';
 import { PeekFeed } from '../components/ProjectPeek';
 import SunlitScene from '../components/SunlitScene';
+import PosterHero from './PosterHero';
 import './sunlit.css';
 
-/* Capability cards (Projects section) → detail pop-ups. Content drawn from the real builds. */
-const CAPABILITIES: InfoItem[] = [
-  { eyebrow: 'Capability', title: 'Microcontrollers & Firmware',
-    blurb: 'I write firmware in C and C++ for ESP32 and Arduino boards with PlatformIO.',
-    points: ['ESP32-S3 firmware for Project June and ESP32 firmware for the LoRA Messenger', 'PWM motor control, servo steering and sensor drivers', 'MicroPython on an ESP32 for LUMEN, streaming audio with about 10 KB of peak memory'],
-    chips: ['ESP32', 'Arduino', 'ATmega328', 'PlatformIO', 'C / C++'] },
-  { eyebrow: 'Capability', title: 'PCB Design',
-    blurb: 'I draw the schematic and lay out the board in KiCAD, then solder the SMD parts myself.',
-    points: ['The LoRA Messenger’s custom board, reflowed at home', 'A from-scratch recreation of my school’s ATmega328 dev board', 'Schematic capture, footprint sourcing and respins'],
-    chips: ['KiCAD', 'EAGLE', 'SMD reflow', 'Schematic capture'] },
-  { eyebrow: 'Capability', title: 'Wireless Comms',
-    blurb: 'LoRa for range, ESP-NOW for quick local links, MQTT for telemetry and WebRTC for live video over cellular.',
-    points: ['Three live WebRTC camera streams over 5G on Project June', 'Long-range text on LoRa and two-way voice on ESP-NOW', 'MQTT telemetry brokered through my homelab'],
-    chips: ['LoRa', 'ESP-NOW', 'MQTT', 'WebRTC', 'SocketIO', '5G'] },
-  { eyebrow: 'Capability', title: '3D & CAD',
-    blurb: 'I model enclosures and parts in Onshape, render in Blender, and 3D print until the fit is right.',
-    points: ['The LoRA Messenger’s handheld case', 'The six-part Pandus dispenser body, which fit on the first print', 'Concept renders for pitches and posters'],
-    chips: ['Onshape', 'Blender', '3D printing', 'Enclosure design'] },
-  { eyebrow: 'Capability', title: 'Design & Media',
-    blurb: 'Interfaces in Figma and Spline, posters in Photoshop, and project videos in DaVinci Resolve.',
-    points: ['UI and dashboards in Figma, often with Spline 3D scenes', 'Posters and graphics in Photoshop', 'Project films cut and graded in DaVinci Resolve'],
-    chips: ['Figma', 'Photoshop', 'DaVinci Resolve', 'Premiere Pro', 'Spline 3D'] },
-  { eyebrow: 'Capability', title: 'Infrastructure',
-    blurb: 'A self-hosted homelab on Unraid, Proxmox and Docker, behind Nginx and a segmented UniFi network.',
-    points: ['Self-hosted services behind Nginx Proxy Manager and CrowdSec', 'A WireGuard and Tailscale mesh to reach home from anywhere', 'coturn and MQTT that back real hardware projects'],
-    chips: ['Proxmox', 'Docker', 'Nginx', 'Tailscale', 'Wireguard', 'Unifi'],
-    link: { label: 'Explore the HomeLab', url: '/homelab' } },
-];
-
-/* About-bento tiles → detail pop-ups (intro / engineering / microcontrollers / powerpoint). */
+/* About bento tiles → detail pop-ups. Each skill tile lists where it was used;
+   every fact comes from a project write-up on this site. */
 const TILE_INTRO: InfoItem = {
   eyebrow: 'Hello',
   title: "Hi, I'm Braven",
-  blurb: "I'm a 19-year-old Electronic and Computer Engineering student at Nanyang Polytechnic in Singapore. I started by taking apart a broken radio to see how it worked. Now I build rovers, circuit boards, web apps and the homelab they run on.",
+  blurb: "I'm a third-year Electronic and Computer Engineering student at Nanyang Polytechnic in Singapore. I started by taking apart a broken radio to see how it worked. Now I build rovers, circuit boards, web apps and the homelab they run on.",
   add: "Most projects need hardware, software and design, and I like doing all three myself.",
   links: [
     { label: 'Get in touch', url: '/contact' },
@@ -48,42 +21,80 @@ const TILE_INTRO: InfoItem = {
   ],
 };
 
-const TILE_ENGINEERING: InfoItem = {
-  eyebrow: 'Engineering',
-  title: 'Circuits, firmware and 3D CAD',
-  blurb: "I design circuit boards in KiCAD, write firmware in C and C++ with PlatformIO, and model enclosures in Onshape to 3D print. I also design the interface when a project has one.",
-  add: "The render on the card is from my Kauli concept, made in Blender. Below is the live dashboard I designed for the EMA smart home.",
-  media: '/images/Cdyspstart.webp',
-  links: [
-    { label: 'EMA smart-home UI', url: '/csdp' },
-  ],
+const SKILL_HARDWARE: InfoItem = {
+  eyebrow: 'Hardware',
+  title: 'Circuit boards',
+  blurb: 'I draw the schematic and lay out the board in KiCAD, then solder the parts myself, including SMD parts reflowed at home.',
+  points: ['The LoRA Messenger board, my first PCB', 'A from-scratch recreation of my school’s ATmega328 dev board', 'Motor drivers, battery packs and sensor wiring for Project June'],
+  chips: ['KiCAD', 'EAGLE', 'SMD reflow', 'Schematic capture'],
+  links: [{ label: 'LoRA Messenger', url: '/brolocator' }],
 };
 
-const TILE_MICRO: InfoItem = {
-  eyebrow: 'The brains of the build',
+const SKILL_FIRMWARE: InfoItem = {
+  eyebrow: 'Firmware',
   title: 'Microcontrollers I build with',
-  blurb: "Most of my builds run on a microcontroller. I write the firmware in C and C++ with PlatformIO and pick the board to suit the project.",
+  blurb: 'Most of my builds run on a microcontroller. I write the firmware in C and C++ with PlatformIO, or MicroPython when it suits, and pick the board to suit the project.',
   points: [
     'ESP32, my default for anything wireless, with WiFi, ESP-NOW and plenty of headroom',
     'Arduino Uno and the ATmega328 for simpler, well-supported builds',
     'M5Stack Fire when I need a screen, buttons and modules in a hurry',
     'BeagleBone Black as a Linux brain coordinating a larger system',
   ],
-  chips: ['ESP32', 'Arduino', 'ATmega328', 'M5Stack', 'BeagleBone', 'PlatformIO', 'C / C++'],
+  chips: ['ESP32', 'Arduino', 'ATmega328', 'M5Stack', 'BeagleBone', 'PlatformIO', 'C / C++', 'MicroPython'],
   links: [
-    { label: 'Project June (ESP32)', url: '/project-june' },
-    { label: 'LoRA Messenger (ESP32)', url: '/brolocator' },
+    { label: 'Project June (ESP32-S3)', url: '/project-june' },
+    { label: 'LUMEN (MicroPython)', url: '/lumen' },
     { label: 'ELEC-F (M5Stack)', url: '/elecf' },
   ],
 };
 
-const TILE_PPT: InfoItem = {
-  eyebrow: 'Slides',
-  title: 'Slides for school pitches',
-  blurb: "I design the decks for my school presentations: one idea per slide, large type and real photos, with the detail in what I say.",
-  links: [
-    { label: 'Download the slides (.pptx)', url: 'https://content.chiambucket.com/downloadable/CPB1v4.pptx' },
+const SKILL_SOFTWARE: InfoItem = {
+  eyebrow: 'Software',
+  title: 'Web apps and servers',
+  blurb: 'The software side of my projects: web apps in Next.js and TypeScript, and small Python servers in Docker.',
+  points: [
+    'BeadReader, a private book reader on Next.js, Supabase Postgres and Cloudflare R2, with its access rules enforced in SQL',
+    'LUMEN, a FastAPI server in Docker that turns speech into room commands with Whisper and DeepSeek',
+    'Project June, three live WebRTC video streams through my own TURN server',
+    'This site, built in Next.js and hosted on Vercel',
   ],
+  chips: ['Next.js', 'TypeScript', 'Supabase', 'Postgres', 'Python', 'FastAPI', 'Docker'],
+  links: [{ label: 'BeadReader', url: '/beadreader' }, { label: 'LUMEN', url: '/lumen' }],
+};
+
+const SKILL_WIRELESS: InfoItem = {
+  eyebrow: 'Wireless',
+  title: 'Radios and live links',
+  blurb: 'LoRa for range, ESP-NOW for quick local links, MQTT for telemetry and WebRTC for live video over cellular.',
+  points: ['Three live WebRTC camera streams over 5G on Project June', 'Long-range text on LoRa and two-way voice on ESP-NOW', 'MQTT telemetry brokered through my homelab'],
+  chips: ['LoRa', 'ESP-NOW', 'MQTT', 'WebRTC', 'SocketIO', '5G'],
+};
+
+const SKILL_INFRA: InfoItem = {
+  eyebrow: 'Infrastructure',
+  title: 'A homelab of my own',
+  blurb: 'A self-hosted homelab on Unraid, Proxmox and Docker, behind Nginx and a segmented UniFi network.',
+  points: ['Self-hosted services behind Nginx Proxy Manager and CrowdSec', 'A WireGuard and Tailscale mesh to reach home from anywhere', 'coturn and MQTT that back real hardware projects'],
+  chips: ['Unraid', 'Proxmox', 'Docker', 'Nginx', 'Tailscale', 'WireGuard', 'UniFi'],
+  link: { label: 'Explore the HomeLab', url: '/homelab' },
+};
+
+const SKILL_CAD: InfoItem = {
+  eyebrow: '3D and CAD',
+  title: 'Enclosures that fit',
+  blurb: 'I model enclosures and parts in Onshape, render in Blender, and 3D print until the fit is right.',
+  points: ['The LoRA Messenger’s handheld case', 'The six-part Pandus dispenser body, which fit on the first print', 'Concept renders for pitches and posters'],
+  chips: ['Onshape', 'Blender', '3D printing', 'Enclosure design'],
+};
+
+const SKILL_DESIGN: InfoItem = {
+  eyebrow: 'Design',
+  title: 'Interfaces, posters and film',
+  blurb: 'Interfaces in Figma and Spline, posters in Photoshop, and a video for each build cut in DaVinci Resolve.',
+  points: ['The Project June operator console and the EMA smart-home dashboard', 'The ELEC-F project poster', 'Project films cut and graded in DaVinci Resolve'],
+  chips: ['Figma', 'Spline', 'Photoshop', 'DaVinci Resolve', 'Premiere Pro'],
+  media: '/images/Cdyspstart.webp',
+  links: [{ label: 'EMA smart-home UI', url: '/csdp' }],
 };
 
 /* People I've built school projects with, drawn from the ELEC-F and EMA team rolls. */
@@ -112,105 +123,11 @@ const SR = () => <svg aria-hidden="true"><use href="#icon-search" /></svg>;
 const ST = () => <svg aria-hidden="true"><use href="#icon-star" /></svg>;
 const CRWN = () => <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2.4 18.2h19.2l-1.5-9.4-5.4 3.9L12 4.8 9.3 12.7 3.9 8.8z" /></svg>;
 
-/* ── Design Tools 3D coverflow carousel ── */
-const TOOL_RING = [
-  { src: '/images/photoshop-icon-dark.webp', name: 'Photoshop' },
-  { src: '/images/figma-icon-dark.webp', name: 'Figma' },
-  { src: '/images/davinci-icon-dark.webp', name: 'DaVinci Resolve' },
-  { src: '/images/premier-icon-dark.webp', name: 'Premiere Pro' },
-  { src: '/images/spline-icon-dark.webp', name: 'Spline' },
-  { src: '/images/powerpoint-icon-dark.webp', name: 'PowerPoint' },
-];
-
-function ToolCarousel() {
-  const [active, setActive] = useState(0);
-  const [reduced, setReduced] = useState(false);
-  const n = TOOL_RING.length;
-
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setReduced(mq.matches);
-    const onChange = () => setReduced(mq.matches);
-    mq.addEventListener?.('change', onChange);
-    return () => mq.removeEventListener?.('change', onChange);
-  }, []);
-
-  // Rotate only while the tile is on screen, so an idle page does no work.
-  const rootRef = useRef<HTMLDivElement | null>(null);
-  const [onScreen, setOnScreen] = useState(false);
-  useEffect(() => {
-    const el = rootRef.current;
-    if (!el) return;
-    const io = new IntersectionObserver(([e]) => setOnScreen(e.isIntersecting));
-    io.observe(el);
-    return () => io.disconnect();
-  }, [reduced]);
-
-  useEffect(() => {
-    if (reduced || !onScreen) return;
-    const id = setInterval(() => setActive((a) => (a + 1) % n), 2200);
-    return () => clearInterval(id);
-  }, [reduced, onScreen, n]);
-
-  // Shortest signed offset of slot i from the active slot, e.g. for n=6: -2..3 → wrapped to -3..2
-  const offsetOf = (i: number) => {
-    let d = i - active;
-    if (d > n / 2) d -= n;
-    if (d < -n / 2) d += n;
-    return d;
-  };
-
-  if (reduced) {
-    // Static fanned/tilted arrangement, no motion.
-    return (
-      <div className="hp-tcar hp-tcar-static" aria-label="Design tools: Photoshop, Figma, DaVinci Resolve, Premiere Pro, Spline, PowerPoint">
-        <div className="hp-tcar-stage">
-          {TOOL_RING.map((tool, i) => {
-            const d = offsetOf(i);
-            return (
-              <div className="hp-tcar-chip" key={tool.name}
-                style={{ transform: `translateX(${d * 38}px) rotate(${d * 6}deg)`, zIndex: 10 - Math.abs(d), opacity: Math.abs(d) > 2 ? 0 : 1 }}>
-                <img src={tool.src} alt={tool.name} loading="lazy" />
-              </div>
-            );
-          })}
-        </div>
-        <span className="hp-tcar-label">{TOOL_RING[active].name}</span>
-      </div>
-    );
-  }
-
-  return (
-    <div className="hp-tcar" ref={rootRef} aria-label={`Design tools carousel, currently showing ${TOOL_RING[active].name}`}>
-      <div className="hp-tcar-stage">
-        <div className="hp-tcar-ring">
-          {TOOL_RING.map((tool, i) => {
-            const d = offsetOf(i);
-            const ad = Math.abs(d);
-            const style: React.CSSProperties = {
-              transform: `translateX(${d * 64}px) translateZ(${-ad * 78}px) rotateY(${d * -34}deg) scale(${1 - ad * 0.16})`,
-              opacity: ad > 2 ? 0 : 1 - ad * 0.32,
-              zIndex: 10 - ad,
-            };
-            return (
-              <div className={`hp-tcar-chip${d === 0 ? ' is-active' : ''}`} key={tool.name} style={style} aria-hidden={d !== 0}>
-                <img src={tool.src} alt={tool.name} loading="lazy" />
-              </div>
-            );
-          })}
-        </div>
-      </div>
-      <span className="hp-tcar-label" aria-live="polite">{TOOL_RING[active].name}</span>
-    </div>
-  );
-}
-
 export default function HomeClient() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalAnimOpen, setModalAnimOpen] = useState(false);
   const [activeProject, setActiveProject] = useState<string | null>(null);
   const [projectsExpanded, setProjectsExpanded] = useState(false); // mobile-only collapse
-  const [openCap, setOpenCap] = useState<InfoItem | null>(null); // capability detail modal
   const [openTile, setOpenTile] = useState<InfoItem | null>(null); // about-bento tile detail modal
 
   /* ── Modal ── */
@@ -396,34 +313,6 @@ export default function HomeClient() {
 
         {/* ═══════ DARK SENSORY, homepage-specific retuning ═══════ */}
         <style>{`
-          /* ── Hero: let the backdrop show through ── */
-          html.sensory-active .hp-hero-grid { display: none; }
-          html.sensory-active .hp-hero::before, html.sensory-active .hp-hero::after { opacity: 0.2; }
-          html.sensory-active .hp-hero-kicker { font-family: var(--font-ddt); letter-spacing: 0.08em; font-size: 0.82rem; color: rgba(226,212,190,0.6); }
-          html.sensory-active .hp-hero-sub { color: rgba(222,229,248,0.68); }
-          /* brutalist terminal headline: condensed caps riding the light plume */
-          html.sensory-active .hp-hero-title { text-transform: uppercase; letter-spacing: 0.015em; }
-          /* the accent words catch the light source */
-          html.sensory-active .hp-hero-title em { text-shadow: 0 0 34px rgba(var(--sa-accent),0.35); }
-          /* "New" topper pill → terminal status chip */
-          html.sensory-active .hero-topper {
-            background: rgba(9,12,20,0.55) !important; border: 1px solid rgba(var(--sa-accent),0.28) !important;
-            -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
-          html.sensory-active .hero-topper-content {
-            font-family: var(--font-ddt) !important; text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.66rem !important; }
-          /* NEW chip: solid ember with dark type, so it reads as a badge rather than a whisper */
-          html.sensory-active .hero-topper-new-tag {
-            font-family: var(--font-ddt) !important; text-transform: uppercase; letter-spacing: 0.1em;
-            font-weight: 700;
-            background: rgb(var(--sa-ember)) !important; color: #17100b !important;
-            border: 1px solid rgba(255,146,105,0.9) !important;
-            box-shadow: 0 2px 12px -2px rgba(var(--sa-ember),0.55); }
-          html.sensory-active .hp-scroll { font-family: var(--font-ddt); text-transform: uppercase; letter-spacing: 0.24em; font-size: 0.56rem; color: rgba(214,200,180,0.5); }
-
-          /* ── Cards: homepage-only detail on top of the global panel language ── */
-          html.sensory-active .hp-cap-card h4 { color: rgba(var(--sa-accent),0.92); }
-          html.sensory-active .hp-cap-card { padding: 24px 22px 22px !important; }
-
           /* Spotlight + homelab stat readouts */
           html.sensory-active .hp-spot-stat b { color: #f2e8d8; }
           html.sensory-active .hp-spot-stat span, html.sensory-active .hp-homelab-stat span {
@@ -450,80 +339,98 @@ export default function HomeClient() {
           /* The flagship spotlight badge stays the premium gold crown (see .hp-spot-badge). */
         `}</style>
 
-        {/* ── HERO ── */}
-        <header className="hp-hero">
-          <div className="hp-hero-aura"></div>
-          <div className="hp-hero-grid"></div>
-          <a className="hero-topper" href="/beadreader">
-            <div className="hero-topper-new-tag">New</div>
-            <div className="hero-topper-content">BeadReader</div>
-            <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" className="hero-topper-arrow"><path fill="#E8E8E8" d="M338.752 104.704a64 64 0 000 90.496l316.8 316.8-316.8 316.8a64 64 0 0090.496 90.496l362.048-362.048a64 64 0 000-90.496L429.248 104.704a64 64 0 00-90.496 0z"/></svg>
-          </a>
-          <div className="hp-hero-kicker">Braven Chiam, Singapore</div>
-          <h1 className="hp-hero-title hero-headline-text">
-            Hardware, software <em>and design.</em>
-          </h1>
-          <p className="hp-hero-sub">I&apos;m a third-year Electronic and Computer Engineering student at Nanyang Polytechnic. I design circuit boards, write the software that runs on them, and model the cases they go in.</p>
-          <div className="hp-hero-cta">
-            <button className="hp-btn" onClick={() => { document.getElementById('portfolio-items-holder')?.scrollIntoView({ behavior: 'smooth' }); }}>View my work</button>
-            <a className="hp-btn hp-btn-ghost" href="/contact">Get in touch <AC /></a>
-          </div>
-          <div className="hp-scroll"><span className="hp-mouse"><span></span></span>Scroll</div>
-        </header>
+        {/* ── HERO: a typographic poster over the field ── */}
+        <PosterHero />
 
-        {/* ── ABOUT BENTO ── */}
+        {/* ── ABOUT BENTO: who I am and what I can build ── */}
         <section className="abm-bg hp-band" id="about">
           <div className="hp-section">
             <div className="section-editorial-header" data-reveal>
-              <span className="seh-number">01</span>
               <div className="seh-content"><span className="seh-eyebrow">About</span><span className="seh-title">What I work with</span></div>
             </div>
             <div className="hp-bento">
               {/* Intro */}
               <div className="hp-tile hp-tile-intro hp-clickable" data-reveal role="button" tabIndex={0} onClick={() => setOpenTile(TILE_INTRO)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(TILE_INTRO); } }}>
                 <span className="hp-tile-go"><AU /></span>
-                <img className="hp-wave" src="/images/wave.webp" alt="Waving hand" />
                 <a className="hp-blink" id="sukuna-blink" href="https://www.pinterest.com/pin/665547651180427494/" onClick={(e) => e.stopPropagation()} aria-label="A little friend"></a>
+                <span className="hp-key">About</span>
+                <dl className="hp-facts">
+                  <div><dt>Studying</dt><dd>Electronic and Computer Engineering, year 3</dd></div>
+                  <div><dt>At</dt><dd>Nanyang Polytechnic, Singapore</dd></div>
+                  <div><dt>Builds</dt><dd>Hardware, software and design, end to end</dd></div>
+                </dl>
                 <h3 className="hp-tile-h">Hi, I&apos;m Braven.</h3>
-                <p className="hp-tile-p">Electronic and Computer Engineering student in Singapore. Most of what I know about building things I taught myself through these projects.</p>
+                <p className="hp-tile-p">I design circuit boards, write the software that runs on them, and model the cases they go in. Most of it I taught myself through these projects.</p>
               </div>
-              {/* Engineering */}
-              <div className="hp-tile hp-tile-eng hp-clickable" data-reveal data-delay="1" role="button" tabIndex={0} onClick={() => setOpenTile(TILE_ENGINEERING)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(TILE_ENGINEERING); } }}>
+              {/* Hardware */}
+              <div className="hp-tile hp-tile-hw hp-clickable" data-reveal data-delay="1" role="button" tabIndex={0} onClick={() => setOpenTile(SKILL_HARDWARE)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(SKILL_HARDWARE); } }}>
                 <span className="hp-tile-go"><AU /></span>
-                <div className="hp-tile-media"><img src="/images/abm-engineering.webp" alt="" /></div>
-                <span className="hp-key">Engineering</span>
-                <h3 className="hp-tile-h">Circuits, firmware<br />and 3D CAD.</h3>
-                <p className="hp-tile-p">Custom PCBs in KiCAD, firmware in PlatformIO, enclosures in Onshape.</p>
-              </div>
-              {/* Microcontrollers */}
-              <div className="hp-tile hp-tile-micro hp-clickable" data-reveal data-delay="2" role="button" tabIndex={0} onClick={() => setOpenTile(TILE_MICRO)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(TILE_MICRO); } }}>
-                <span className="hp-tile-go"><AU /></span>
-                <span className="hp-key">Microcontrollers</span>
-                <div className="hp-iconrow">
-                  <img src="/images/microchip-icon.webp" alt="Microchip" /><img src="/images/esp-icon.webp" alt="ESP32" /><img src="/images/PlatformIO-icon.webp" alt="PlatformIO" /><img src="/images/arduino-icon.webp" alt="Arduino" />
+                <div className="hp-tile-copy">
+                  <span className="hp-key">Hardware</span>
+                  <h3 className="hp-tile-h">Circuit boards, designed and soldered.</h3>
+                  <p className="hp-tile-p">Schematics and layouts in KiCAD, then SMD parts reflowed and soldered at home.</p>
+                  <div className="hp-chips"><span>KiCAD</span><span>EAGLE</span><span>SMD reflow</span></div>
                 </div>
-                <h3 className="hp-tile-h">ESP32, Arduino, ATmega328 and PlatformIO.</h3>
+                <img className="hp-tile-photo-inset" src="/images/Brolocator13.webp" alt="The LoRA Messenger circuit board, lit up in my hand" loading="lazy" />
               </div>
-              {/* DaVinci */}
-              <div className="hp-tile hp-media-tile hp-tile-davinci hp-clickable" data-reveal role="link" tabIndex={0} onClick={() => window.open('https://www.youtube.com/@newkringster2564', '_blank')} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}>
+              {/* Firmware */}
+              <div className="hp-tile hp-tile-fw hp-clickable" data-reveal data-delay="2" role="button" tabIndex={0} onClick={() => setOpenTile(SKILL_FIRMWARE)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(SKILL_FIRMWARE); } }}>
+                <span className="hp-tile-go"><AU /></span>
+                <span className="hp-key">Firmware</span>
+                <div className="hp-iconrow">
+                  <img src="/images/esp-icon.webp" alt="ESP32" /><img src="/images/arduino-icon.webp" alt="Arduino" /><img src="/images/microchip-icon.webp" alt="Microchip ATmega328" /><img src="/images/PlatformIO-icon.webp" alt="PlatformIO" />
+                </div>
+                <h3 className="hp-tile-h">ESP32, Arduino and the ATmega328, in C, C++ and MicroPython.</h3>
+              </div>
+              {/* Software */}
+              <div className="hp-tile hp-tile-sw hp-clickable" data-reveal role="button" tabIndex={0} onClick={() => setOpenTile(SKILL_SOFTWARE)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(SKILL_SOFTWARE); } }}>
+                <span className="hp-tile-go"><AU /></span>
+                <span className="hp-key">Software</span>
+                <div className="hp-iconrow hp-iconrow-sm">
+                  <img src="/images/nextjs-icon.webp" alt="Next.js" /><img src="/images/typescript-icon.webp" alt="TypeScript" /><img src="/images/supabase-icon.webp" alt="Supabase" /><img src="/images/python-icon.webp" alt="Python" /><img src="/images/docker-icon.webp" alt="Docker" />
+                </div>
+                <h3 className="hp-tile-h">Web apps and servers.</h3>
+                <p className="hp-tile-p">BeadReader on Next.js and Supabase, and the FastAPI server behind LUMEN.</p>
+              </div>
+              {/* Wireless */}
+              <div className="hp-tile hp-tile-rf hp-clickable" data-reveal data-delay="1" role="button" tabIndex={0} onClick={() => setOpenTile(SKILL_WIRELESS)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(SKILL_WIRELESS); } }}>
+                <span className="hp-tile-go"><AU /></span>
+                <span className="hp-key">Wireless</span>
+                <h3 className="hp-tile-h">Radios and live links.</h3>
+                <p className="hp-tile-p">LoRa for range, ESP-NOW for quick local links, MQTT for telemetry and WebRTC over 5G for live video.</p>
+                <div className="hp-chips"><span>LoRa</span><span>ESP-NOW</span><span>MQTT</span><span>WebRTC</span><span>5G</span></div>
+              </div>
+              {/* Infrastructure */}
+              <div className="hp-tile hp-tile-infra hp-clickable" data-reveal data-delay="2" role="button" tabIndex={0} onClick={() => setOpenTile(SKILL_INFRA)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(SKILL_INFRA); } }}>
+                <span className="hp-tile-go"><AU /></span>
+                <img className="hp-tile-device" src="/images/abm-udm.webp" alt="" loading="lazy" />
+                <span className="hp-key">Infrastructure</span>
+                <h3 className="hp-tile-h">A homelab of my own.</h3>
+                <p className="hp-tile-p">Three servers at home run my photo library, files, and the MQTT and TURN servers my projects use.</p>
+                <div className="hp-chips"><span>Unraid</span><span>Docker</span><span>Tailscale</span><span>UniFi</span></div>
+              </div>
+              {/* 3D and CAD */}
+              <div className="hp-tile hp-tile-cad hp-clickable" data-reveal role="button" tabIndex={0} onClick={() => setOpenTile(SKILL_CAD)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(SKILL_CAD); } }}>
+                <span className="hp-tile-go"><AU /></span>
+                <img className="hp-tile-render" src="/images/lora-case-cut.webp" alt="The LoRA Messenger case, modelled in Onshape" loading="lazy" />
+                <span className="hp-key">3D and CAD</span>
+                <h3 className="hp-tile-h">Enclosures that fit.</h3>
+                <p className="hp-tile-p">Modelled in Onshape, rendered in Blender, printed until the fit is right.</p>
+              </div>
+              {/* Design */}
+              <div className="hp-tile hp-tile-design hp-clickable" data-reveal data-delay="1" role="button" tabIndex={0} onClick={() => setOpenTile(SKILL_DESIGN)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(SKILL_DESIGN); } }}>
+                <span className="hp-tile-go"><AU /></span>
+                <span className="hp-key">Design</span>
+                <div className="hp-figma-stack"><img className="back" src="/images/ELECF.webp" alt="" /><img className="mid" src="/images/Dashboard.webp" alt="" /><img className="front" src="/images/Cdyspstart.webp" alt="" /></div>
+                <h3 className="hp-tile-h">Interfaces and posters.</h3>
+                <p className="hp-tile-p">The Project June console, the EMA dashboard and the ELEC-F poster, in Figma, Spline and Photoshop.</p>
+              </div>
+              {/* Video */}
+              <div className="hp-tile hp-media-tile hp-tile-davinci hp-clickable" data-reveal data-delay="2" role="link" tabIndex={0} onClick={() => window.open('https://www.youtube.com/@newkringster2564', '_blank')} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}>
                 <span className="hp-tile-go"><AU /></span>
                 <LazyVideo webm="/images/Davinci-showcase.webm" mp4="/images/Davinci-showcase.mp4" poster="/images/Davinci-showcase-poster.webp" />
                 <div className="hp-media-scrim"></div>
-                <div className="hp-media-body"><span className="hp-key">DaVinci Resolve</span><h3 className="hp-tile-h">Project videos.</h3><p className="hp-tile-p">I film and edit the demo video for each build.</p></div>
-              </div>
-              {/* Figma */}
-              <div className="hp-tile hp-tile-figma hp-clickable" data-reveal data-delay="1" role="link" tabIndex={0} onClick={() => { window.location.href = '/photography'; }} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}>
-                <span className="hp-tile-go"><AU /></span>
-                <span className="hp-key">Figma</span>
-                <div className="hp-figma-stack"><img className="back" src="/images/ELECF.webp" alt="" /><img className="mid" src="/images/Dashboard.webp" alt="" /><img className="front" src="/images/Cdyspstart.webp" alt="" /></div>
-                <div><h3 className="hp-tile-h">Interfaces and posters.</h3><p className="hp-tile-p">The Project June console, the EMA dashboard and the ELEC-F poster.</p></div>
-              </div>
-              {/* Design Tools */}
-              <div className="hp-tile hp-tile-tools hp-clickable" data-reveal data-delay="2" role="link" tabIndex={0} onClick={() => { window.location.href = '#capabilities'; }} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}>
-                <span className="hp-tile-go"><AU /></span>
-                <span className="hp-key">Design Tools</span>
-                <ToolCarousel />
-                <p className="hp-tile-p">Photoshop, Figma, DaVinci Resolve, Premiere Pro, Spline and PowerPoint.</p>
+                <div className="hp-media-body"><span className="hp-key">Video</span><h3 className="hp-tile-h">A film for every build.</h3><p className="hp-tile-p">Shot and edited in DaVinci Resolve.</p></div>
               </div>
               {/* Photography */}
               <div className="hp-tile hp-media-tile hp-tile-photo hp-clickable" data-reveal role="link" tabIndex={0} onClick={() => { window.location.href = '#photolink'; }} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}>
@@ -531,13 +438,6 @@ export default function HomeClient() {
                 <img src="/images/abm-lr.webp" alt="Photography" />
                 <div className="hp-media-scrim"></div>
                 <div className="hp-media-body"><span className="hp-key">Photography</span><h3 className="hp-tile-h">Travel photos.</h3><p className="hp-tile-p">Europe, China, New Zealand and Hong Kong.</p></div>
-              </div>
-              {/* PowerPoint */}
-              <div className="hp-tile hp-tile-ppt hp-clickable" data-reveal data-delay="1" role="button" tabIndex={0} onClick={() => setOpenTile(TILE_PPT)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(TILE_PPT); } }}>
-                <span className="hp-tile-go"><AU /></span>
-                <span className="hp-key">PowerPoint</span>
-                <div className="hp-ppt-media"><LazyVideo webm="/images/CPB1v4.webm" mp4="/images/CPB1v4.mp4" poster="/images/CPB1v4-poster.webp" /></div>
-                <h3 className="hp-tile-h" style={{ fontSize: '1.25rem' }}>Slides for school pitches.</h3>
               </div>
             </div>
           </div>
@@ -547,7 +447,6 @@ export default function HomeClient() {
         <section className="hp-band hp-projects-band" id="portfolio-items-holder">
           <div className="hp-section">
             <div className="portfolio-editorial-header" data-reveal>
-              <div className="peh-number">02</div>
               <div className="peh-content">
                 <div className="peh-eyebrow">Selected Work</div>
                 <h2 className="peh-title">Projects</h2>
@@ -601,27 +500,6 @@ export default function HomeClient() {
                 </div>
               </div>
             </article>
-
-            {/* Capabilities */}
-            <div className="hp-cap" id="capabilities" data-reveal>
-              <div className="hp-cap-intro">
-                <span className="hp-eyebrow">Capabilities</span>
-                <h3 className="hp-cap-h">Skills, and where I used them.</h3>
-                <p className="hp-cap-p">Open a card to see the projects behind each one.</p>
-              </div>
-              <div className="hp-cap-grid">
-                {CAPABILITIES.map((cap) => (
-                  <div key={cap.title} className="hp-cap-card" role="button" tabIndex={0}
-                    aria-label={`${cap.title} details`}
-                    onClick={() => setOpenCap(cap)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenCap(cap); } }}>
-                    <span className="hp-cap-plus" aria-hidden="true">+</span>
-                    <h4>{cap.title}</h4>
-                    <div className="hp-cap-chips">{cap.chips!.map((c) => <span key={c}>{c}</span>)}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
 
             <div className="hp-pf-lead" data-reveal>
               <h3>All projects</h3><span>Search or filter, then open a card for a summary.</span>
@@ -952,7 +830,6 @@ export default function HomeClient() {
         <section className="hp-band hp-photo-band">
           <div className="hp-section">
             <div className="section-editorial-header" data-reveal>
-              <span className="seh-number">03</span>
               <div className="seh-content"><span className="seh-eyebrow">Gallery</span><span className="seh-title">Photography</span></div>
             </div>
             <div className="hp-albums" data-reveal role="tablist" aria-label="Photo albums">
@@ -999,84 +876,7 @@ export default function HomeClient() {
         </div>
       </div>
 
-      <InfoModal item={openCap} onClose={() => setOpenCap(null)} />
       <InfoModal item={openTile} onClose={() => setOpenTile(null)} />
-
-      {/* Scoped styles: Design Tools 3D coverflow carousel */}
-      <style>{`
-        .hp-tcar { position: relative; display: flex; flex-direction: column; align-items: center; gap: 0.6rem; margin: 0.2rem 0; }
-        .hp-tcar-stage {
-          position: relative;
-          width: 100%;
-          height: 132px;
-          display: grid;
-          place-items: center;
-          perspective: 900px;
-          perspective-origin: 50% 45%;
-        }
-        .hp-tcar-ring {
-          position: relative;
-          width: 100%;
-          height: 100%;
-          transform-style: preserve-3d;
-          transform: rotateX(7deg) rotate(-3deg);
-          display: grid;
-          place-items: center;
-        }
-        .hp-tcar-chip {
-          position: absolute;
-          width: 60px; height: 60px;
-          display: grid; place-items: center;
-          box-sizing: border-box;
-          border-radius: 15px;
-          background: linear-gradient(158deg, rgba(255,255,255,0.085), rgba(255,255,255,0.02));
-          border: 1px solid rgba(255,255,255,0.10);
-          box-shadow: inset 0 1px 0 rgba(255,255,255,0.09), 0 8px 18px -10px rgba(0,0,0,0.75);
-          transition: transform 0.7s cubic-bezier(0.16,1,0.3,1), opacity 0.7s cubic-bezier(0.16,1,0.3,1), border-color 0.5s ease, box-shadow 0.5s ease;
-          will-change: transform, opacity;
-        }
-        .hp-tcar-chip img { width: 30px; height: 30px; object-fit: contain; display: block; }
-        .hp-tcar-chip.is-active {
-          border-color: color-mix(in srgb, var(--hp-indigo) 55%, transparent);
-          background: linear-gradient(158deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04));
-          box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 16px 34px -12px color-mix(in srgb, var(--hp-blue) 65%, transparent);
-        }
-        .hp-tcar-label {
-          font-family: 'inter';
-          font-size: 0.66rem;
-          font-weight: 600;
-          letter-spacing: 0.16em;
-          text-transform: uppercase;
-          color: var(--hp-sky);
-          opacity: 0.85;
-          transition: opacity 0.4s ease;
-        }
-        /* Static fallback for prefers-reduced-motion: a fanned, tilted arrangement, no auto-advance */
-        .hp-tcar-static .hp-tcar-stage { perspective: none; }
-        .hp-tcar-static .hp-tcar-chip {
-          width: 52px; height: 52px;
-          transition: none;
-        }
-        .hp-tcar-static .hp-tcar-chip img { width: 26px; height: 26px; }
-        .hp-tcar-static .hp-tcar-chip.is-active {
-          border-color: color-mix(in srgb, var(--hp-indigo) 50%, transparent);
-        }
-
-        @media (max-width: 1000px) {
-          .hp-tcar-stage { height: 116px; }
-          .hp-tcar-chip { width: 54px; height: 54px; }
-          .hp-tcar-chip img { width: 27px; height: 27px; }
-        }
-        @media (max-width: 480px) {
-          .hp-tcar-stage { height: 104px; perspective: 700px; }
-          .hp-tcar-chip { width: 48px; height: 48px; border-radius: 13px; }
-          .hp-tcar-chip img { width: 24px; height: 24px; }
-          .hp-tcar-label { font-size: 0.6rem; letter-spacing: 0.13em; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .hp-tcar-chip { transition: none; }
-        }
-      `}</style>
     </>
   );
 }

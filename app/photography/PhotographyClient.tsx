@@ -153,7 +153,6 @@ export default function PhotographyClient() {
       <section className="hp-band">
         <div className="hp-section">
           <div className="section-editorial-header" data-reveal>
-            <span className="seh-number">01</span>
             <div className="seh-content">
               <span className="seh-eyebrow">Software</span>
               <span className="seh-title">What I edit with</span>
@@ -208,7 +207,6 @@ export default function PhotographyClient() {
       <section className="hp-band" style={{ paddingTop: 0 }}>
         <div className="hp-section">
           <div className="section-editorial-header" data-reveal>
-            <span className="seh-number">02</span>
             <div className="seh-content">
               <span className="seh-eyebrow">Galleries</span>
               <span className="seh-title">Albums</span>

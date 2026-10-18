@@ -2,12 +2,18 @@
 import { useEffect, useRef } from 'react';
 
 /*
-  SunlitScene — the homepage background for the "sunlit" theme: a sage sky with
-  the sun in the top-right corner, faint rays, a few soft clouds and a field of
-  painted grass along the bottom of the screen. The sky gradient and sun glow are
-  CSS; clouds, rays and grass are painted once onto two canvases from a fixed
-  seed (and again only when the viewport size changes), so nothing runs while
-  the page is idle or scrolling. Styles live in app/sunlit.css (.sl-*).
+  SunlitScene — the homepage background for the "sunlit" theme, painted like a
+  pastel poster: a sage sky with soft pastel washes and brush strokes, the sun
+  in the top-right corner with faint rays, drifting clouds, and a field of
+  grass along the bottom of the screen.
+
+  Each part is its own layer so it can move on the compositor alone: clouds
+  drift, the rays shimmer, the sun's glow breathes and the field sways. All of
+  it is painted once from a fixed seed (again only on resize) and animated by
+  CSS transforms and opacity. Motion runs only while html.sl-alive is set,
+  which this component does while the hero or the closing section is on
+  screen, so the glass cards over the rest of the page are not re-blurred on
+  every frame. Styles live in app/sunlit.css (.sl-*).
 */
 
 type Ctx = CanvasRenderingContext2D;
@@ -47,7 +53,7 @@ function softLayer(w: number, h: number, scale: number) {
 // The sun sits just past the top-right corner.
 const sunAt = (w: number, h: number) => ({ x: w * 0.97, y: -h * 0.005 });
 
-/* ---------------- Sky: haze, clouds, beams, rays, grain ---------------- */
+/* ---------------- Sky: haze, brush strokes, beams, grain ---------------- */
 
 function puff(ctx: Ctx, x: number, y: number, r: number, rgb: string, alpha: number) {
   const g = ctx.createRadialGradient(x, y, 0, x, y, r);
@@ -58,58 +64,6 @@ function puff(ctx: Ctx, x: number, y: number, r: number, rgb: string, alpha: num
   ctx.beginPath();
   ctx.arc(x, y, r, 0, Math.PI * 2);
   ctx.fill();
-}
-
-// One fair-weather cloud: round lobes with a flat base, shaded from a warm lit
-// top to a sage underside, then softened by rendering it small.
-function cloud(target: Ctx, rand: Rand, cx: number, cy: number, w: number, h: number, strength: number) {
-  const W = w * 1.4;
-  const H = h * 2.6;
-  const { canvas, ctx: c } = softLayer(W, H, 0.07);
-  const ox = W / 2;
-  const base = H * 0.8;
-
-  const lobes = Math.round(9 + (w / h) * 2.2);
-  c.fillStyle = '#000';
-  for (let i = 0; i < lobes; i++) {
-    // Spaced along the width so none float off alone; largest in the middle for the dome.
-    const u = -0.42 + (0.84 * (i + rand() * 0.8)) / lobes;
-    const edge = 1 - Math.min(1, Math.abs(u) * 2);
-    const r = h * (0.28 + 0.62 * edge) * between(rand, 0.75, 1.15);
-    c.beginPath();
-    c.arc(ox + u * w, base - r * between(rand, 0.35, 0.75) - edge * h * 0.25, r, 0, Math.PI * 2);
-    c.fill();
-  }
-  c.clearRect(0, base + h * 0.15, W, H);
-
-  c.globalCompositeOperation = 'source-in';
-  const shade = c.createLinearGradient(0, base - h * 1.3, 0, base);
-  shade.addColorStop(0, '#fbfaef');
-  shade.addColorStop(0.5, '#eeeedb');
-  shade.addColorStop(0.85, '#cdd4ba');
-  shade.addColorStop(1, '#b9c5a9');
-  c.fillStyle = shade;
-  c.fillRect(0, 0, W, H);
-
-  // Brighter rims on the sun side, a little volume underneath.
-  c.globalCompositeOperation = 'source-atop';
-  for (let i = 0; i < lobes; i++) {
-    puff(c, ox + between(rand, -0.2, 0.5) * w, base - h * between(rand, 0.6, 1.2), h * between(rand, 0.25, 0.5), '255,255,248', 0.5);
-    puff(c, ox + between(rand, -0.45, 0.3) * w, base - h * between(rand, 0.05, 0.35), h * between(rand, 0.2, 0.4), '170,186,154', 0.3);
-  }
-
-  // Fade the underside out so it reads flat without a hard edge.
-  c.globalCompositeOperation = 'destination-out';
-  const under = c.createLinearGradient(0, base - h * 0.5, 0, base + h * 0.15);
-  under.addColorStop(0, 'rgba(0,0,0,0)');
-  under.addColorStop(0.6, 'rgba(0,0,0,0.45)');
-  under.addColorStop(1, 'rgba(0,0,0,1)');
-  c.fillStyle = under;
-  c.fillRect(0, base - h * 0.5, W, h * 0.65);
-
-  target.globalAlpha = strength;
-  target.drawImage(canvas, cx - ox, cy - base, W, H);
-  target.globalAlpha = 1;
 }
 
 // Wedge-shaped beam from the sun. It fades in after `gap` and out towards its end.
@@ -139,7 +93,28 @@ function beam(
   ctx.fill();
 }
 
-// A fine, static grain tile. It breaks up 8-bit banding in the soft gradients.
+// A long, soft brush stroke: thick in the middle, tapering to both ends.
+function stroke(ctx: Ctx, x: number, y: number, len: number, thick: number, tilt: number, rgb: string, alpha: number) {
+  const g = ctx.createLinearGradient(x, y, x + len, y);
+  g.addColorStop(0, `rgba(${rgb},0)`);
+  g.addColorStop(0.3, `rgba(${rgb},${alpha})`);
+  g.addColorStop(0.7, `rgba(${rgb},${alpha})`);
+  g.addColorStop(1, `rgba(${rgb},0)`);
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(tilt);
+  ctx.translate(-x, -y);
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.quadraticCurveTo(x + len * 0.5, y - thick, x + len, y);
+  ctx.quadraticCurveTo(x + len * 0.5, y + thick * 0.6, x, y);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+// A fine, static grain tile: film texture, and it breaks up 8-bit banding.
 function grainPattern(ctx: Ctx, rand: Rand) {
   const tile = document.createElement('canvas');
   tile.width = tile.height = 96;
@@ -148,7 +123,7 @@ function grainPattern(ctx: Ctx, rand: Rand) {
   for (let i = 0; i < img.data.length; i += 4) {
     const light = rand() < 0.5;
     img.data[i] = img.data[i + 1] = img.data[i + 2] = light ? 255 : 40;
-    img.data[i + 3] = Math.round(rand() * 6);
+    img.data[i + 3] = Math.round(rand() * 10);
   }
   t.putImageData(img, 0, 0);
   return ctx.createPattern(tile, 'repeat')!;
@@ -160,7 +135,6 @@ function drawSky(canvas: HTMLCanvasElement, w: number, h: number, dpr: number) {
   const rand = seeded(20261018);
   const sun = sunAt(w, h);
   const reach = Math.hypot(w, h);
-  const unit = Math.min(w, h * 1.15);
 
   const { canvas: soft, ctx: s } = softLayer(w, h, 0.5);
 
@@ -171,15 +145,17 @@ function drawSky(canvas: HTMLCanvasElement, w: number, h: number, dpr: number) {
     puff(s, sun.x + Math.cos(a) * d, sun.y + Math.sin(a) * d, between(rand, 0.04, 0.1) * reach, '250,248,228', between(rand, 0.05, 0.12));
   }
 
-  // A bank top left, one drifting mid right, and a long flat one on the horizon.
-  const clouds = [
-    { x: 0.16, y: 0.15, w: 0.64, h: 0.11, k: 0.6 },
-    { x: 0.75, y: 0.45, w: 0.42, h: 0.075, k: 0.48 },
-    { x: 0.5, y: 0.715, w: 0.95, h: 0.04, k: 0.32 },
-  ];
-  for (const c of clouds) cloud(s, rand, c.x * w, c.y * h, c.w * unit, c.h * unit, c.k);
+  // Pastel brushwork, as if the sky were painted: long soft strokes, more of
+  // them low in the sky where the light is warmest.
+  const tints = ['247,226,196', '236,214,206', '214,224,230', '244,240,214', '226,232,206'];
+  for (let i = 0; i < Math.round(14 + w / 90); i++) {
+    const y = h * Math.pow(rand(), 0.7) * 0.74;
+    const len = w * between(rand, 0.25, 0.75);
+    const x = between(rand, -0.2, 1) * w - len * 0.3;
+    stroke(s, x, y, len, h * between(rand, 0.02, 0.06), between(rand, -0.14, 0.1), pick(rand, tints), between(rand, 0.05, 0.12));
+  }
 
-  // Broad, faint beams that pass over the clouds.
+  // Broad, faint beams.
   s.globalCompositeOperation = 'screen';
   for (let i = 0; i < 7; i++) {
     const angle = between(rand, Math.PI * 0.58, Math.PI * 0.97);
@@ -191,8 +167,18 @@ function drawSky(canvas: HTMLCanvasElement, w: number, h: number, dpr: number) {
   ctx.imageSmoothingQuality = 'high';
   ctx.drawImage(soft, 0, 0, w, h);
 
-  // Thin rays: faint, uneven, starting at different distances from the sun.
-  ctx.globalCompositeOperation = 'screen';
+  ctx.fillStyle = grainPattern(ctx, rand);
+  ctx.fillRect(0, 0, w, h);
+}
+
+// Thin rays on their own layer, so they can shimmer: faint, uneven, and
+// starting at different distances from the sun.
+function drawRays(canvas: HTMLCanvasElement, w: number, h: number, dpr: number) {
+  const ctx = prepare(canvas, w, h, dpr);
+  ctx.clearRect(0, 0, w, h);
+  const rand = seeded(7071);
+  const sun = sunAt(w, h);
+  const reach = Math.hypot(w, h);
   for (let i = 0; i < 17; i++) {
     const angle = between(rand, Math.PI * 0.57, Math.PI * 0.99);
     const length = reach * between(rand, 0.3, 0.8);
@@ -202,10 +188,73 @@ function drawSky(canvas: HTMLCanvasElement, w: number, h: number, dpr: number) {
     beam(ctx, sun, angle, length, gap, 0.4, width * 3.5, '252,250,232', alpha * 0.4);
     beam(ctx, sun, angle, length, gap, 0.2, width, '255,253,240', alpha);
   }
-  ctx.globalCompositeOperation = 'source-over';
+}
 
-  ctx.fillStyle = grainPattern(ctx, rand);
-  ctx.fillRect(0, 0, w, h);
+/* ---------------- Clouds ---------------- */
+
+/* Where the clouds sit (centre x/y as a fraction of the screen, size as a
+   fraction of the shorter side), how bright they are, and how they drift. */
+const CLOUDS = [
+  { x: 0.16, y: 0.15, w: 0.64, h: 0.11, k: 0.62, drift: 4, secs: 70 },
+  { x: 0.75, y: 0.45, w: 0.42, h: 0.075, k: 0.5, drift: 6, secs: 92 },
+  { x: 0.42, y: 0.32, w: 0.28, h: 0.05, k: 0.34, drift: 7, secs: 58 },
+  { x: 0.5, y: 0.715, w: 0.95, h: 0.04, k: 0.34, drift: 2.5, secs: 120 },
+];
+
+/* One fair-weather cloud on its own canvas: round lobes with a flat base,
+   shaded from a warm lit top to a sage underside. It is painted at a modest
+   resolution and softened by a CSS blur, which stays smooth at any pixel
+   density (the old version was upscaled from a few pixels and looked blocky
+   on phones). */
+function paintCloud(canvas: HTMLCanvasElement, cw: number, ch: number, rand: Rand) {
+  const scale = 0.5;
+  canvas.width = Math.max(2, Math.round(cw * scale));
+  canvas.height = Math.max(2, Math.round(ch * scale));
+  const c = canvas.getContext('2d')!;
+  c.setTransform(scale, 0, 0, scale, 0, 0);
+  const w = cw / 1.4;
+  const h = ch / 2.6;
+  const ox = cw / 2;
+  const base = ch * 0.8;
+
+  const lobes = Math.round(9 + (w / h) * 2.2);
+  c.fillStyle = '#000';
+  for (let i = 0; i < lobes; i++) {
+    // Spaced along the width so none float off alone; largest in the middle for the dome.
+    const u = -0.42 + (0.84 * (i + rand() * 0.8)) / lobes;
+    const edge = 1 - Math.min(1, Math.abs(u) * 2);
+    const r = h * (0.28 + 0.62 * edge) * between(rand, 0.75, 1.15);
+    c.beginPath();
+    c.arc(ox + u * w, base - r * between(rand, 0.35, 0.75) - edge * h * 0.25, r, 0, Math.PI * 2);
+    c.fill();
+  }
+  c.clearRect(0, base + h * 0.15, cw, ch);
+
+  c.globalCompositeOperation = 'source-in';
+  const shade = c.createLinearGradient(0, base - h * 1.3, 0, base);
+  shade.addColorStop(0, '#fcfbf1');
+  shade.addColorStop(0.5, '#f0efdd');
+  shade.addColorStop(0.85, '#d3d8bf');
+  shade.addColorStop(1, '#bfc9ad');
+  c.fillStyle = shade;
+  c.fillRect(0, 0, cw, ch);
+
+  // Brighter rims on the sun side, a little volume underneath.
+  c.globalCompositeOperation = 'source-atop';
+  for (let i = 0; i < lobes; i++) {
+    puff(c, ox + between(rand, -0.2, 0.5) * w, base - h * between(rand, 0.6, 1.2), h * between(rand, 0.25, 0.5), '255,255,248', 0.5);
+    puff(c, ox + between(rand, -0.45, 0.3) * w, base - h * between(rand, 0.05, 0.35), h * between(rand, 0.2, 0.4), '176,190,160', 0.28);
+  }
+
+  // Fade the underside out so it reads flat without a hard edge.
+  c.globalCompositeOperation = 'destination-out';
+  const under = c.createLinearGradient(0, base - h * 0.5, 0, base + h * 0.15);
+  under.addColorStop(0, 'rgba(0,0,0,0)');
+  under.addColorStop(0.6, 'rgba(0,0,0,0.45)');
+  under.addColorStop(1, 'rgba(0,0,0,1)');
+  c.fillStyle = under;
+  c.fillRect(0, base - h * 0.5, cw, h * 0.65);
+  c.globalCompositeOperation = 'source-over';
 }
 
 /* ---------------- Grass ---------------- */
@@ -347,16 +396,20 @@ function drawGrass(canvas: HTMLCanvasElement, w: number, h: number, dpr: number)
   ctx.fillRect(0, h - band * 0.45, w, band * 0.45);
 }
 
+
 export default function SunlitScene() {
   const sceneRef = useRef<HTMLDivElement>(null);
   const skyRef = useRef<HTMLCanvasElement>(null);
+  const raysRef = useRef<HTMLCanvasElement>(null);
   const grassRef = useRef<HTMLCanvasElement>(null);
+  const cloudRefs = useRef<(HTMLCanvasElement | null)[]>([]);
 
   useEffect(() => {
     const scene = sceneRef.current;
     const sky = skyRef.current;
+    const rays = raysRef.current;
     const grass = grassRef.current;
-    if (!scene || !sky || !grass) return;
+    if (!scene || !sky || !rays || !grass) return;
 
     let drawnW = 0;
     let drawnH = 0;
@@ -369,7 +422,24 @@ export default function SunlitScene() {
       drawnH = h;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       drawSky(sky, w, h, dpr);
+      drawRays(rays, w, h, dpr);
       drawGrass(grass, w, h, dpr);
+
+      const unit = Math.min(w, h * 1.15);
+      const rand = seeded(5150);
+      CLOUDS.forEach((c, i) => {
+        const el = cloudRefs.current[i];
+        if (!el) return;
+        const cw = c.w * unit * 1.4;
+        const ch = c.h * unit * 2.6;
+        el.style.width = `${cw}px`;
+        el.style.height = `${ch}px`;
+        el.style.left = `${c.x * w - cw / 2}px`;
+        el.style.top = `${c.y * h - ch * 0.8}px`;
+        el.style.opacity = String(c.k);
+        el.style.filter = `blur(${Math.max(2, c.h * unit * 0.07).toFixed(1)}px)`;
+        paintCloud(el, cw, ch, rand);
+      });
       scene.classList.add('is-drawn');
     };
     draw();
@@ -380,18 +450,48 @@ export default function SunlitScene() {
       timer = window.setTimeout(draw, 160);
     };
     window.addEventListener('resize', onResize);
+
+    // Motion runs only while the poster hero or the closing section is in view.
+    const root = document.documentElement;
+    const watched = ['.slp', '.hp-cta'].map((s) => document.querySelector(s)).filter(Boolean) as Element[];
+    const showing = new Set<Element>();
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) showing.add(e.target);
+        else showing.delete(e.target);
+      }
+      root.classList.toggle('sl-alive', showing.size > 0);
+    });
+    watched.forEach((el) => io.observe(el));
+
     return () => {
       window.clearTimeout(timer);
       window.removeEventListener('resize', onResize);
+      io.disconnect();
+      root.classList.remove('sl-alive');
     };
   }, []);
 
   return (
     <div className="sl-scene" ref={sceneRef} aria-hidden="true">
       <div className="sl-sky" />
+      <div className="sl-wash" />
       <canvas className="sl-sky-canvas" ref={skyRef} />
+      <div className="sl-clouds">
+        {CLOUDS.map((c, i) => (
+          <canvas
+            key={i}
+            className="sl-cloud"
+            ref={(el) => { cloudRefs.current[i] = el; }}
+            style={{ '--drift': `${c.drift}vw`, '--secs': `${c.secs}s`, '--delay': `${-c.secs * (i * 0.37 % 1)}s` } as React.CSSProperties}
+          />
+        ))}
+      </div>
+      <canvas className="sl-rays" ref={raysRef} />
       <div className="sl-sun-bloom" />
-      <canvas className="sl-grass-canvas" ref={grassRef} />
+      <div className="sl-grass">
+        <canvas className="sl-grass-canvas" ref={grassRef} />
+      </div>
     </div>
   );
 }
