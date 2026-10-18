@@ -110,14 +110,14 @@ html.sensory-active[data-theme="sunlit"] {
 html.sensory-active[data-theme="sunlit"] {
 
   /* ── Panels: glass over the field ── */
-  & .hp-disc, & .hp-cap-card, & .hp-collab-card, & .hp-pf-card, & .hp-spot-card,
-  & .hp-spotlight, & .hp-tile, & .hp-hsd {
+  & .hp-cap-card, & .hp-collab-card, & .hp-pf-card, & .hp-spot-card,
+  & .hp-spotlight, & .hp-tile {
     background: var(--gl-fill) !important;
     -webkit-backdrop-filter: var(--gl-blur) !important; backdrop-filter: var(--gl-blur) !important;
     border: 1px solid var(--gl-border) !important;
     box-shadow: var(--gl-rim), var(--gl-drop) !important;
   }
-  & .hp-disc:hover, & .hp-cap-card:hover, & .hp-collab-card:hover, & .hp-pf-card:hover,
+  & .hp-cap-card:hover, & .hp-collab-card:hover, & .hp-pf-card:hover,
   & .hp-spot-card:hover, & .hp-tile:hover {
     border-color: rgba(255, 255, 255, 0.85) !important;
     box-shadow: var(--gl-rim), inset 0 0 0 1px rgba(255, 255, 255, 0.25), var(--gl-drop-hi) !important;
@@ -133,7 +133,7 @@ html.sensory-active[data-theme="sunlit"] {
   & .hp-key { color: var(--sl-label) !important; }
 
   /* ── Headings: the white-to-grey gradient becomes pine-to-olive ── */
-  & .seh-title, & .peh-title, & .hp-band-intro h2, & .hp-homelab-h, & .hp-spot-title,
+  & .seh-title, & .peh-title, & .hp-homelab-h, & .hp-spot-title,
   & .hp-cap-h, & .hp-tile-h {
     background: linear-gradient(92deg, #1f2b1c 0%, #4c5a3c 100%);
     -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
@@ -170,14 +170,6 @@ html.sensory-active[data-theme="sunlit"] {
   & .hp-hero-title em { text-shadow: none; }
   & .hp-hero-sub { color: var(--sl-ink-soft); }
   & .hp-scroll { color: var(--sl-ink-dim); }
-
-  /* ── What I do table ── */
-  & .hp-hsd-head span { color: var(--sl-label); }
-  & .hp-hsd-row { border-top-color: rgba(255, 255, 255, 0.5); }
-  & .hp-hsd-row:not(.hp-hsd-head):hover { background: rgba(255, 255, 255, 0.22); }
-  & .hp-hsd-name button { color: var(--sl-ink); }
-  & .hp-hsd-name small { color: var(--sl-ink-dim); }
-  & .hp-hsd-cell { color: var(--sl-ink-soft); }
 
   /* ── About bento ── */
   & .hp-tile-p { color: var(--sl-ink-dim); }
@@ -338,7 +330,7 @@ html.sensory-active[data-theme="sunlit"] {
 /* Buttons and pills inside a glass card: a translucent fill and no blur of their
    own. A blur nested in another blur only sees the card's tint, so it turns grey. */
 html.sensory-active[data-theme="sunlit"] {
-  & :is(.hp-spotlight, .hp-tile, .hp-pf-card, .hp-collab-card, .hp-cap-card, .hp-hsd) :is(.hp-btn, .hp-pf-view) {
+  & :is(.hp-spotlight, .hp-tile, .hp-pf-card, .hp-collab-card, .hp-cap-card) :is(.hp-btn, .hp-pf-view) {
     -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
   & :is(.hp-spotlight, .hp-tile, .hp-pf-card, .hp-collab-card, .hp-cap-card) .hp-btn.hp-btn-ghost {
     background: rgba(255, 255, 255, 0.55) !important; border-color: rgba(255, 255, 255, 0.85) !important; }
@@ -352,8 +344,8 @@ html.sensory-active[data-theme="sunlit"] {
    at each rim. html.lg-refract is set by the head script in app/layout.tsx. */
 @media (prefers-reduced-transparency: no-preference) {
   html.lg-refract.sensory-active[data-theme="sunlit"] {
-    & .hp-disc, & .hp-cap-card, & .hp-collab-card, & .hp-pf-card:not(.is-soon), & .hp-spot-card,
-    & .hp-spotlight, & .hp-tile, & .hp-hsd, & .footer {
+    & .hp-cap-card, & .hp-collab-card, & .hp-pf-card:not(.is-soon), & .hp-spot-card,
+    & .hp-spotlight, & .hp-tile, & .footer {
       -webkit-backdrop-filter: var(--gl-refract) !important; backdrop-filter: var(--gl-refract) !important; }
     & .hp-btn:not(:is(.hp-spotlight, .hp-tile, .hp-pf-card, .hp-collab-card, .hp-cap-card) .hp-btn),
     & .hero-topper, & .hp-pf-search-wrap, & .hp-pf-filter, & .hp-album-link {
@@ -364,8 +356,8 @@ html.sensory-active[data-theme="sunlit"] {
 /* "Reduce transparency" (macOS/iOS and others): solid frosted panels, no blur or bending */
 @media (prefers-reduced-transparency: reduce) {
   html.sensory-active[data-theme="sunlit"] {
-    & .hp-disc, & .hp-cap-card, & .hp-collab-card, & .hp-pf-card, & .hp-spot-card, & .hp-spotlight,
-    & .hp-tile, & .hp-hsd, & .footer, & .hero-topper, & .hp-pf-search-wrap, & .hp-pf-filter:not(.is-active),
+    & .hp-cap-card, & .hp-collab-card, & .hp-pf-card, & .hp-spot-card, & .hp-spotlight,
+    & .hp-tile, & .footer, & .hero-topper, & .hp-pf-search-wrap, & .hp-pf-filter:not(.is-active),
     & .hp-album-link:not(.is-active), & .hp-btn.hp-btn-ghost, & .im-panel, & .hp-modal-panel {
       background: rgba(248, 249, 243, 0.97) !important;
       -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }

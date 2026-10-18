@@ -1845,66 +1845,6 @@ html[data-theme="paper"] {
 .hp-mouse span { width: 3px; height: 7px; border-radius: 2px; background: rgba(255,255,255,0.6); animation: hpScroll 1.6s ease-in-out infinite; }
 @keyframes hpScroll { 0% { opacity: 0; transform: translateY(-3px); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(9px); } }
 
-/* ────────────────────  WHAT I DO / DISCIPLINES  ──────────────────── */
-.hp-band-intro { text-align: center; max-width: 680px; margin: 0 auto clamp(34px, 5vw, 56px); }
-.hp-band-intro h2 {
-  font-family: 'oswaldbold';
-  font-size: clamp(1.7rem, 4vw, 2.6rem);
-  letter-spacing: -0.015em;
-  line-height: 1.12;
-  margin-top: 0.7rem;
-  background: linear-gradient(92deg, #FFF 0%, #9a9a9a 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.hp-band-intro p { font-family: 'dmsans'; color: var(--hp-ink-dim); line-height: 1.62; margin-top: 0.85rem; font-size: 1rem; }
-
-.hp-disciplines { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
-/* "What I do" pillars: deliberately richer than the flat .hp-cap cards —
-   a gradient numeral, baked-in corner glow, signature top edge and a pill CTA. */
-.hp-disc {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 30px 24px 24px;
-  border-radius: 22px;
-  background:
-    radial-gradient(135% 100% at 0% 0%, color-mix(in srgb, var(--hp-blue) 20%, transparent), transparent 52%),
-    linear-gradient(168deg, rgba(255,255,255,0.055), rgba(255,255,255,0.012));
-  border: 1px solid color-mix(in srgb, var(--hp-indigo) 26%, var(--hp-line));
-  box-shadow: 0 20px 44px -30px color-mix(in srgb, var(--hp-blue) 70%, transparent), inset 0 1px 0 rgba(255,255,255,0.09);
-  overflow: hidden;
-  text-align: left;
-  isolation: isolate;
-  transition: transform 0.42s cubic-bezier(0.16,1,0.3,1), border-color 0.42s ease, box-shadow 0.42s ease;
-}
-.hp-disc::after {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, var(--hp-blue), var(--hp-indigo) 52%, transparent);
-  opacity: 0.9;
-}
-.hp-disc::before {
-  content: ''; position: absolute; inset: 0; z-index: -1;
-  background: radial-gradient(circle at 26% -12%, color-mix(in srgb, var(--hp-blue) 34%, transparent), transparent 58%);
-  opacity: 0; transition: opacity 0.42s ease;
-}
-.hp-disc:hover { transform: translateY(-6px); border-color: color-mix(in srgb, var(--hp-indigo) 55%, transparent);
-  box-shadow: 0 32px 64px -28px color-mix(in srgb, var(--hp-blue) 78%, transparent), inset 0 1px 0 rgba(255,255,255,0.13); }
-.hp-disc:hover::before { opacity: 1; }
-.hp-disc-num { position: relative; font-family: 'oswaldbold'; font-size: 2.5rem; line-height: 0.85; letter-spacing: -0.02em;
-  background: linear-gradient(145deg, var(--hp-sky), var(--hp-indigo)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
-.hp-disc-title { position: relative; font-family: 'oswaldbold'; font-size: 1.62rem; color: #f4f4f4; letter-spacing: -0.01em; line-height: 1.04; }
-.hp-disc-desc { position: relative; font-family: 'dmsans'; font-size: 0.86rem; line-height: 1.58; color: rgba(232,232,232,0.62); flex: 1; }
-.hp-disc-link { position: relative; align-self: flex-start; margin-top: 2px; font-family: 'inter'; font-size: 0.74rem; font-weight: 600; color: var(--hp-sky);
-  display: inline-flex; align-items: center; gap: 7px; padding: 7px 14px; border-radius: 999px;
-  background: color-mix(in srgb, var(--hp-sky) 11%, transparent); border: 1px solid color-mix(in srgb, var(--hp-sky) 34%, transparent);
-  transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease, gap 0.25s ease; }
-.hp-disc:hover .hp-disc-link { background: color-mix(in srgb, var(--hp-sky) 20%, transparent); border-color: color-mix(in srgb, var(--hp-sky) 52%, transparent); color: #fff; gap: 10px; }
-.hp-disc-link svg { width: 13px; height: 13px; transition: transform 0.3s ease; }
-.hp-disc:hover .hp-disc-link svg { transform: translateX(3px); }
-
 /* ────────────────────────  BENTO (About)  ──────────────────────── */
 .hp-bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 18px; grid-auto-rows: minmax(186px, auto); }
 .hp-tile {
@@ -2116,7 +2056,6 @@ html[data-theme="paper"] {
 
 /* ───────────────────────  RESPONSIVE  ──────────────────── */
 @media only screen and (max-width: 1000px) {
-  .hp-disciplines { grid-template-columns: repeat(2, 1fr); }
   .hp-bento { grid-template-columns: repeat(2, 1fr); }
   .hp-bento .hp-tile { grid-column: span 1 !important; grid-row: auto !important; }
   .hp-tile-intro, .hp-tile-photo { grid-column: span 2 !important; }
@@ -2133,7 +2072,6 @@ html[data-theme="paper"] {
 @media only screen and (max-width: 560px) {
   .hp-hero { padding-top: 132px; padding-bottom: 124px; }
   .hp-scroll { bottom: 18px; gap: 7px; }
-  .hp-disciplines { grid-template-columns: 1fr; }
   .hp-bento { grid-template-columns: 1fr; }
   .hp-bento .hp-tile, .hp-tile-intro, .hp-tile-photo { grid-column: span 1 !important; }
   .hp-tile-intro { min-height: 300px; }
@@ -2166,7 +2104,7 @@ html[data-theme="paper"] {
 .hp-hero .hero-topper-new-tag { color: #ffffff; }
 
 /* ── Fix Oswald gradient headings clipping descenders (g/y/p) ── */
-.hp-hero-title, .hp-tile-h, .hp-homelab-h, .hp-band-intro h2,
+.hp-hero-title, .hp-tile-h, .hp-homelab-h,
 .hp-cta h2, .seh-title, .peh-title, .hp-pf-name, .hp-md-title {
   line-height: 1.12;
   padding-bottom: 0.1em;
@@ -3123,7 +3061,7 @@ html.sensory-active .section-editorial-header, html.sensory-active .portfolio-ed
   padding-bottom: 20px; }
 
 /* ── Frosted instrument panels (cards everywhere) ── */
-html.sensory-active .hp-disc, html.sensory-active .hp-cap-card, html.sensory-active .hp-collab-card,
+html.sensory-active .hp-cap-card, html.sensory-active .hp-collab-card,
 html.sensory-active .hp-pf-card, html.sensory-active .hp-spot-card, html.sensory-active .hp-spotlight,
 html.sensory-active .ph-tool-card, html.sensory-active .cr-card,
 html.sensory-active .art-repo, html.sensory-active .art-team-row {
@@ -3132,7 +3070,7 @@ html.sensory-active .art-repo, html.sensory-active .art-team-row {
   border: 1px solid var(--sa-hairline) !important;
   box-shadow: inset 0 1px 0 rgba(196,210,255,0.07), 0 24px 60px -30px rgba(0,0,0,0.85) !important;
 }
-html.sensory-active .hp-disc:hover, html.sensory-active .hp-cap-card:hover, html.sensory-active .hp-collab-card:hover,
+html.sensory-active .hp-cap-card:hover, html.sensory-active .hp-collab-card:hover,
 html.sensory-active .hp-pf-card:hover, html.sensory-active .hp-spot-card:hover,
 html.sensory-active .ph-tool-card:hover, html.sensory-active .cr-card:hover, html.sensory-active .art-team-row:hover {
   border-color: rgba(var(--sa-accent),0.3) !important;
@@ -3373,46 +3311,6 @@ html.sensory-active .art-chapters a.sub::before { content: none; }
 html.sensory-active .art-fig figcaption, html.sensory-active .art-cap {
   text-transform: none; letter-spacing: 0.01em; font-size: 0.8rem; }
 html.sensory-active .art-fig figcaption::before, html.sensory-active .art-cap::before { content: none; }
-
-/* ── What I do: projects by hardware / software / design (HomeClient HSD) ── */
-.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-.hp-hsd {
-  border-radius: 18px; overflow: hidden;
-  background: linear-gradient(180deg, var(--sa-panel-hi, rgba(36,29,21,0.94)), var(--sa-panel-lo, rgba(22,17,12,0.96)));
-  border: 1px solid var(--sa-hairline, rgba(255,255,255,0.08));
-}
-.hp-hsd-row {
-  display: grid; grid-template-columns: 1.1fr 1.5fr 1.5fr 1.3fr; gap: 20px;
-  padding: 16px 24px; border-top: 1px solid rgba(var(--sa-accent, 224,168,102),0.1);
-  transition: background-color 0.2s ease;
-}
-.hp-hsd-row:first-child { border-top: 0; }
-.hp-hsd-row:not(.hp-hsd-head):hover { background: rgba(var(--sa-accent, 224,168,102),0.05); }
-.hp-hsd-head { padding-top: 14px; padding-bottom: 12px; }
-.hp-hsd-head span { font-family: 'dmsans'; font-size: 0.8rem; letter-spacing: 0.04em; color: rgba(var(--sa-accent, 224,168,102),0.8); }
-.hp-hsd-name { display: flex; flex-direction: column; gap: 3px; align-items: flex-start; }
-.hp-hsd-name button {
-  font-family: 'oswaldbold'; font-size: 1.15rem; letter-spacing: 0; color: #f1ede6; text-align: left;
-  background: none; border: 0; padding: 0; cursor: pointer; transition: color 0.2s ease;
-}
-.hp-hsd-name button::after { content: ''; position: absolute; inset: 0; }
-.hp-hsd-row { position: relative; }
-.hp-hsd-name button:hover, .hp-hsd-row:hover .hp-hsd-name button { color: rgb(var(--sa-accent, 224,168,102)); }
-.hp-hsd-name button:focus-visible { outline: none; }
-.hp-hsd-row:has(button:focus-visible) { outline: 2px solid rgba(var(--sa-accent, 224,168,102),0.8); outline-offset: -2px; }
-.hp-hsd-name small { font-family: 'dmsans'; font-size: 0.78rem; color: rgba(232,226,216,0.5); }
-.hp-hsd-cell { font-family: 'dmsans'; font-size: 0.9rem; line-height: 1.5; color: rgba(236,232,224,0.74); }
-.hp-hsd-cell i { display: none; }
-.hp-hsd-cell.is-empty::before { content: ''; display: block; width: 14px; height: 1px; margin-top: 11px; background: rgba(232,226,216,0.3); }
-@media (max-width: 900px) {
-  .hp-hsd-head { display: none; }
-  .hp-hsd-row { grid-template-columns: 1fr; gap: 6px; padding: 16px 18px; }
-  .hp-hsd-row:nth-child(2) { border-top: 0; }
-  .hp-hsd-name { margin-bottom: 4px; }
-  .hp-hsd-cell { display: grid; grid-template-columns: 78px 1fr; gap: 10px; }
-  .hp-hsd-cell i { display: block; font-family: 'dmsans'; font-style: normal; font-size: 0.78rem; line-height: 1.7; color: rgba(var(--sa-accent, 224,168,102),0.8); }
-  .hp-hsd-cell.is-empty { display: none; }
-}
 
 /* ═══════════════════════════════════════════════════════════════
    BACKDROP (2026-10): replaces the WebGL field (components/Backdrop.tsx)

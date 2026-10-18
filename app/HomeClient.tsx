@@ -104,39 +104,6 @@ const COLLABORATORS: Collab[] = [
   { name: 'Abel Goh', role: 'Team member on ELEC-F', img: '/images/abel-goh.webp', fit: 'cover', profile: 'https://frequent-location-124634.framer.app', projects: [{ label: 'ELEC-F', url: '/elecf' }] },
 ];
 
-/* What I did on each project, by discipline. null = no work in that discipline.
-   Facts from the write-ups. Rows open the project's peek summary. */
-const HSD: { id: string; name: string; kind: string; hw: string | null; sw: string | null; de: string | null }[] = [
-  { id: 'proj-june', name: 'Project June', kind: 'Personal, 3 weeks',
-    hw: 'ESP32-S3 with GPS, IMU and more sensors, a MOSFET motor driver and a 2S3P battery pack I built, three phones for 5G and cameras',
-    sw: 'Three WebRTC video streams through a TURN server, MQTT telemetry, Xbox controller input',
-    de: 'Operator console in Figma with a Spline 3D model of the rover' },
-  { id: 'proj-beadreader', name: 'BeadReader', kind: 'Personal',
-    hw: null,
-    sw: 'Next.js, Supabase Postgres, Cloudflare R2, my own cookie auth, a content gate enforced in SQL',
-    de: 'Reading themes, live presence rings, a reading stats page' },
-  { id: 'proj-lora', name: 'LoRA Messenger', kind: 'Personal, 3 months',
-    hw: 'My first PCB, laid out in KiCAD and soldered by hand: ESP32, LoRa radio, two displays, LiPo',
-    sw: 'PlatformIO firmware for LoRa text, ESP-NOW voice and a range-test mode',
-    de: 'A 3D-printed case modelled in Onshape' },
-  { id: 'proj-lumen', name: 'LUMEN', kind: 'School, IoT module',
-    hw: 'ESP32-WROOM with an I2S microphone, DHT22, PIR, light sensor, NeoPixel, fan, servo and OLED',
-    sw: 'MicroPython, a FastAPI server in Docker, Whisper and DeepSeek through OpenRouter, MQTT',
-    de: null },
-  { id: 'proj-ema', name: 'EMA Smart Home', kind: 'School, team of 5',
-    hw: 'Four BeagleBone Black Wireless boards with MikroBUS sensor modules',
-    sw: 'A SocketIO server that hosts the dashboard and sounds the fire alarm on every node',
-    de: 'Dashboard UI in Figma and a live 3D house in Spline' },
-  { id: 'proj-elecf', name: 'ELEC-F', kind: 'School, team of 4',
-    hw: 'Two M5Stack Fire controllers, a ToF door sensor, a PIR presence sensor, an RGB light and a buzzer',
-    sw: 'Timer and alarm logic on the M5Stack',
-    de: 'The cardboard freezer prototype and the project poster' },
-  { id: 'proj-pandus', name: 'Pandus Dispenser', kind: 'School, my first project',
-    hw: 'Arduino Uno, a DC pump on a relay, a servo, an infrared sensor and high-power LEDs',
-    sw: 'Python with PyFirmata',
-    de: 'A six-part body modelled in Onshape that fit on the first print' },
-];
-
 /* ── Shared icon helpers ── */
 const AC = () => <svg aria-hidden="true"><use href="#icon-arrow-circle" /></svg>;
 const CR = () => <svg aria-hidden="true"><use href="#icon-chevron-right" /></svg>;
@@ -454,10 +421,7 @@ export default function HomeClient() {
           html.sensory-active .hp-scroll { font-family: var(--font-ddt); text-transform: uppercase; letter-spacing: 0.24em; font-size: 0.56rem; color: rgba(214,200,180,0.5); }
 
           /* ── Cards: homepage-only detail on top of the global panel language ── */
-          html.sensory-active .hp-disc::after { opacity: 0.7; }
           html.sensory-active .hp-cap-card h4 { color: rgba(var(--sa-accent),0.92); }
-          html.sensory-active .hp-disc-num { font-family: var(--font-ddt); }
-          html.sensory-active .hp-disc { padding: 30px 26px 24px !important; }
           html.sensory-active .hp-cap-card { padding: 24px 22px 22px !important; }
 
           /* Spotlight + homelab stat readouts */
@@ -506,39 +470,6 @@ export default function HomeClient() {
           </div>
           <div className="hp-scroll"><span className="hp-mouse"><span></span></span>Scroll</div>
         </header>
-
-        {/* ── HARDWARE / SOFTWARE / DESIGN ── */}
-        <section className="hp-band" id="what-i-do">
-          <div className="hp-section">
-            <div className="hp-band-intro" data-reveal>
-              <span className="hp-eyebrow">What I do</span>
-              <h2>What I did on each project.</h2>
-              <p>Split into hardware, software and design. Most builds use all three. Select a row for a short summary.</p>
-            </div>
-            <div className="hp-hsd" role="table" aria-label="Projects by hardware, software and design" data-reveal>
-              <div className="hp-hsd-row hp-hsd-head" role="row">
-                <span role="columnheader">Project</span>
-                <span role="columnheader">Hardware</span>
-                <span role="columnheader">Software</span>
-                <span role="columnheader">Design</span>
-              </div>
-              {HSD.map((p) => (
-                <div key={p.id} className="hp-hsd-row" role="row">
-                  <span className="hp-hsd-name" role="rowheader">
-                    <button type="button" onClick={() => openProject(p.id)}>{p.name}</button>
-                    <small>{p.kind}</small>
-                  </span>
-                  {(['hw', 'sw', 'de'] as const).map((k) => (
-                    <span key={k} role="cell" className={`hp-hsd-cell${p[k] ? '' : ' is-empty'}`}>
-                      <i aria-hidden="true">{k === 'hw' ? 'Hardware' : k === 'sw' ? 'Software' : 'Design'}</i>
-                      {p[k] ?? <span className="sr-only">None</span>}
-                    </span>
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* ── ABOUT BENTO ── */}
         <section className="abm-bg hp-band" id="about">
