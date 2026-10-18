@@ -1,5 +1,8 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import HomeClient from './HomeClient';
+
+// The phone browser bar matches the sunlit sky instead of the site-wide black.
+export const viewport: Viewport = { themeColor: '#a2b69a' };
 
 export const metadata: Metadata = {
   title: 'Braven Chiam | Hardware, software and design',

@@ -4,6 +4,8 @@ import Script from 'next/script';
 import InfoModal, { type InfoItem } from '../components/InfoModal';
 import LazyVideo from '../components/LazyVideo';
 import { PeekFeed } from '../components/ProjectPeek';
+import SunlitScene from '../components/SunlitScene';
+import './sunlit.css';
 
 /* Capability cards (Projects section) → detail pop-ups. Content drawn from the real builds. */
 const CAPABILITIES: InfoItem[] = [
@@ -408,6 +410,7 @@ export default function HomeClient() {
 
   return (
     <>
+      <SunlitScene />
       <Script src="https://photos.chiambucket.com/embed/lychee-embed.js?v=1.0.0" strategy="afterInteractive" onLoad={initLychee} />
 
       {/* SVG symbol definitions */}

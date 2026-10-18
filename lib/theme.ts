@@ -10,10 +10,12 @@
 
    The site-wide default is now the warm "paper" theme (honey / amber /
    chestnut). Only two routes keep a distinct cool palette: /contact and
-   /homelab. Every other route (home, articles, photography, credits, …)
-   falls through to "paper".
+   /homelab. The homepage uses "sunlit" (a light theme over the painted
+   field in components/SunlitScene.tsx, styled by app/sunlit.css). Every
+   other route (articles, photography, credits, …) falls through to "paper".
    ──────────────────────────────────────────────────────────────── */
 export const THEME_MAP: Record<string, string> = {
+  '/': 'sunlit',
   '/contact': 'indigo',
   '/homelab': 'datacenter',
 };

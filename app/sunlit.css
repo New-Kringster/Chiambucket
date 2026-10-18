@@ -1,0 +1,328 @@
+/* ═══════════════════════════════════════════════════════════════
+   SUNLIT (homepage theme, October 2026, branch task/sunlit-home)
+   The homepage rides a painted sunlit field (components/SunlitScene.tsx):
+   sage sky, sun top right, soft clouds, grass along the bottom. Same layout
+   and components as the dark design; only colours and surfaces change:
+   panels become warm cream paper, text becomes dark pine ink, and the honey
+   accent becomes the deep gold of the grass.
+   Every rule is scoped to html[data-theme="sunlit"] (set for "/" in
+   lib/theme.ts), so nothing here reaches other routes even after a
+   client-side navigation keeps this stylesheet loaded.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Tokens ── */
+html.sensory-active[data-theme="sunlit"] {
+  --sl-sky: #9ab396;
+  --sl-ink: #1f2b1c;
+  --sl-ink-soft: #3a4734;
+  --sl-ink-dim: rgba(31, 43, 28, 0.62);
+  --sl-pine: #2b3b27;
+  --sl-pine-hi: #3a4e34;
+  --sl-cream: #f6f4e2;
+  --sl-paper: rgba(251, 250, 241, 0.95);
+  --sl-paper-lo: rgba(244, 242, 227, 0.95);
+  --sl-line: rgba(31, 43, 28, 0.11);
+  --sl-gold: #8a701e;         /* text-safe gold on cream */
+  --sl-shadow: 0 1px 2px rgba(60, 64, 30, 0.08), 0 14px 34px -18px rgba(52, 60, 26, 0.38);
+
+  --sa-accent: 138, 112, 30;
+  --sa-panel-hi: var(--sl-paper);
+  --sa-panel-lo: var(--sl-paper-lo);
+  --sa-nav-a: #fbfaf1;
+  --sa-nav-b: #f6f4e6;
+  --sa-btn: var(--sl-pine);
+  --sa-hairline: var(--sl-line);
+  --hp-glass: rgba(251, 250, 241, 0.6);
+  --hp-line: var(--sl-line);
+  --hp-ink: var(--sl-ink);
+  --hp-ink-dim: var(--sl-ink-dim);
+  --hp-blue: #8a701e; --hp-blue-deep: #5c4a12;
+  --hp-indigo: #8a701e; --hp-sky: #6f5a14;
+  --em-grad: linear-gradient(102deg, #6f5a14, #9a7d22);
+  --title-grad: linear-gradient(102deg, #5c4a12 0%, #8a701e 55%, #a3852a 100%);
+  --orb-edge: rgba(31, 43, 28, 0.22);
+  background: var(--sl-sky);
+  color-scheme: light;
+}
+
+/* ── The scene ── */
+.sl-scene {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100lvh;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.sl-scene > * { position: absolute; inset: 0; width: 100%; height: 100%; }
+.sl-sky {
+  background:
+    radial-gradient(circle 100vmax at 97% 0%,
+      #fdfcf2 0%, #eeedd8 5%, #e2e1c4 10%, #d2d4b2 17%, #c2c9a7 24%, #b2bfa0 32%,
+      rgba(166, 184, 155, 0.5) 40%, rgba(154, 179, 150, 0) 52%),
+    linear-gradient(180deg, #a2b69a 0%, #9db498 40%, #9ab396 100%);
+}
+.sl-sun-bloom {
+  background: radial-gradient(circle 42vmax at 97% 0%,
+    rgba(255, 253, 238, 0.85) 0%, rgba(253, 250, 230, 0.45) 22%,
+    rgba(250, 247, 224, 0.12) 55%, rgba(250, 247, 224, 0) 100%);
+  mix-blend-mode: screen;
+}
+.sl-sky-canvas, .sl-grass-canvas { opacity: 0; transition: opacity 0.9s ease-out; }
+.sl-scene.is-drawn .sl-sky-canvas, .sl-scene.is-drawn .sl-grass-canvas { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .sl-sky-canvas, .sl-grass-canvas { transition: none; }
+}
+
+html.sensory-active[data-theme="sunlit"] {
+  /* The dark static backdrop gives way to the scene. */
+  & .sa-backdrop { display: none; }
+  & ::selection { background: rgba(214, 191, 104, 0.45); color: var(--sl-ink); }
+  & body { color: var(--sl-ink); }
+}
+
+/* ═══════ Surfaces and type on the sunlit field ═══════
+   The dark design's rules are mostly `html.sensory-active .x` (often
+   !important); prefixing [data-theme="sunlit"] outranks them. */
+html.sensory-active[data-theme="sunlit"] {
+
+  /* ── Panels: cream paper with a soft olive shadow ── */
+  & .hp-disc, & .hp-cap-card, & .hp-collab-card, & .hp-pf-card, & .hp-spot-card,
+  & .hp-spotlight, & .hp-tile, & .hp-hsd {
+    background: linear-gradient(180deg, var(--sl-paper), var(--sl-paper-lo)) !important;
+    border: 1px solid var(--sl-line) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), var(--sl-shadow) !important;
+  }
+  & .hp-disc:hover, & .hp-cap-card:hover, & .hp-collab-card:hover, & .hp-pf-card:hover,
+  & .hp-spot-card:hover, & .hp-tile:hover {
+    border-color: rgba(var(--sa-accent), 0.4) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 2px 4px rgba(60, 64, 30, 0.08),
+      0 22px 44px -20px rgba(52, 60, 26, 0.45) !important;
+  }
+  & .hp-band + .hp-band::before {
+    background: linear-gradient(90deg, transparent, rgba(31, 43, 28, 0.06) 18%, rgba(31, 43, 28, 0.22) 50%, rgba(31, 43, 28, 0.06) 82%, transparent);
+  }
+
+  /* ── Labels ── */
+  & .hp-eyebrow, & .seh-eyebrow, & .peh-eyebrow { color: #4a3d0e; }
+  & .hp-eyebrow::before, & .seh-eyebrow::before, & .peh-eyebrow::before {
+    background: linear-gradient(90deg, transparent, rgba(var(--sa-accent), 0.9)); }
+  & .hp-key { color: #6b5714 !important; }
+
+  /* ── Headings: the white-to-grey gradient becomes pine-to-olive ── */
+  & .seh-title, & .peh-title, & .hp-band-intro h2, & .hp-homelab-h, & .hp-spot-title,
+  & .hp-cap-h, & .hp-tile-h {
+    background: linear-gradient(92deg, #1f2b1c 0%, #4c5a3c 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  & .seh-number, & .peh-number { color: rgba(31, 43, 28, 0.05); -webkit-text-stroke: 1px rgba(31, 43, 28, 0.28); }
+  & .section-editorial-header, & .portfolio-editorial-header {
+    background: linear-gradient(90deg, rgba(31, 43, 28, 0.28), rgba(31, 43, 28, 0.06) 42%, transparent 82%) left bottom / 100% 1px no-repeat; }
+  & .peh-description, & .seh-description { color: var(--sl-ink-dim); }
+
+  /* ── Nav: a cream command bar ── */
+  & .nav-closed {
+    border-color: var(--sl-line) !important;
+    box-shadow: 0 1px 2px rgba(60, 64, 30, 0.08), 0 16px 36px -20px rgba(52, 60, 26, 0.5) !important; }
+  & .nav-open { border-color: var(--sl-line) !important; }
+  & .nav-closed #navitem li:not(#Nav-Item-5) a,
+  & .nav-open #navitem li a { color: var(--sl-ink-soft) !important; }
+  & .nav-closed #navitem li:not(#Nav-Item-5) a:hover { color: var(--sl-ink) !important; }
+  & .logo img { filter: brightness(0); opacity: 0.82; }
+  & .hamburger .line { stroke: var(--sl-ink); }
+
+  /* ── The sparkle button: pine with cream type ── */
+  & .button-hero::before {
+    box-shadow: inset 0 0.5px rgba(255, 255, 240, 0.3), 0 6px 16px -6px rgba(31, 43, 28, 0.5), 0 0 0 1px rgba(31, 43, 28, 0.2) !important; }
+  & .button-hero::after { background-color: rgba(214, 191, 104, 0.45) !important; }
+  & .button-hero .text_button { color: var(--sl-cream) !important; }
+  & .button-hero .sparkle { color: var(--sl-cream) !important; }
+  & .button-hero .sparkle .path { fill: var(--sl-cream) !important; stroke: var(--sl-cream) !important; }
+
+  /* ── Buttons: primary pine, ghost cream ── */
+  & .hp-btn {
+    background: var(--sl-pine) !important; border: 1px solid var(--sl-pine) !important;
+    color: var(--sl-cream) !important;
+    box-shadow: 0 1px 0 rgba(255, 255, 240, 0.16) inset, 0 8px 18px -10px rgba(31, 43, 28, 0.6) !important; }
+  & .hp-btn:hover { background: var(--sl-pine-hi) !important; border-color: var(--sl-pine-hi) !important; }
+  & .hp-btn.hp-btn-ghost {
+    background: rgba(251, 250, 241, 0.78) !important; border: 1px solid rgba(31, 43, 28, 0.18) !important;
+    color: var(--sl-ink) !important; box-shadow: 0 6px 16px -12px rgba(31, 43, 28, 0.5) !important; }
+  & .hp-btn.hp-btn-ghost:hover { background: rgba(251, 250, 241, 0.96) !important; border-color: rgba(var(--sa-accent), 0.55) !important; }
+  & .hp-btn svg { color: currentColor; }
+  /* the hero pairs the pine sparkle button with a cream one */
+  & .hp-hero-cta .hp-btn {
+    background: rgba(251, 250, 241, 0.86) !important; border: 1px solid rgba(31, 43, 28, 0.18) !important;
+    color: var(--sl-ink) !important; box-shadow: 0 8px 18px -12px rgba(31, 43, 28, 0.55) !important; }
+  & .hp-hero-cta .hp-btn:hover { background: rgba(251, 250, 241, 0.98) !important; border-color: rgba(var(--sa-accent), 0.55) !important; }
+
+  /* ── Hero ── */
+  & .hero-topper {
+    background: rgba(251, 250, 241, 0.82) !important; border: 1px solid rgba(31, 43, 28, 0.14) !important;
+    box-shadow: 0 6px 16px -10px rgba(31, 43, 28, 0.45) !important; }
+  & .hp-hero .hero-topper-content { color: var(--sl-ink) !important; }
+  & .hero-topper-arrow path { fill: var(--sl-ink); }
+  & .hp-hero-kicker {
+    background: none; -webkit-text-fill-color: currentColor; animation: none;
+    color: #4a3d0e; }
+  & .hp-hero-title { color: var(--sl-ink); }
+  & .hp-hero-title em { text-shadow: none; }
+  & .hp-hero-sub { color: var(--sl-ink-soft); }
+  & .hp-scroll { color: var(--sl-ink-dim); }
+
+  /* ── What I do table ── */
+  & .hp-hsd-head span { color: #6b5714; }
+  & .hp-hsd-row { border-top-color: rgba(31, 43, 28, 0.08); }
+  & .hp-hsd-row:not(.hp-hsd-head):hover { background: rgba(214, 191, 104, 0.14); }
+  & .hp-hsd-name button { color: var(--sl-ink); }
+  & .hp-hsd-name small { color: var(--sl-ink-dim); }
+  & .hp-hsd-cell { color: var(--sl-ink-soft); }
+
+  /* ── About bento ── */
+  & .hp-tile-p { color: var(--sl-ink-dim); }
+  /* media tiles keep light type over their photo or video */
+  & .hp-media-tile .hp-tile-p { color: rgba(246, 244, 226, 0.86); }
+  & .hp-media-tile .hp-tile-h {
+    background: none; -webkit-text-fill-color: #fbfaf1; color: #fbfaf1; }
+  & .hp-media-tile .hp-key { color: rgba(246, 236, 200, 0.9) !important; }
+
+  /* ── Spotlights ── */
+  & .hp-spot-lead { color: var(--sl-ink-soft); }
+  & .hp-spot-stat b { color: var(--sl-ink); }
+  & .hp-spot-stat span, & .hp-homelab-stat span { color: var(--sl-ink-dim); }
+  & .hp-spot-tags span {
+    color: #4a3d0e; background: rgba(214, 191, 104, 0.16); border-color: rgba(138, 112, 30, 0.3); }
+
+  /* ── Capabilities ── */
+  & .hp-cap-card h4 { color: #6b5714; }
+  & .hp-cap-chips span {
+    color: var(--sl-ink-soft); background: rgba(31, 43, 28, 0.04); border-color: rgba(31, 43, 28, 0.12); }
+
+  /* ── Projects toolbar ── */
+  & .hp-pf-lead span { color: var(--sl-ink-dim); }
+  & .hp-pf-search-wrap, & .hp-pf-filter, & .hp-album-link {
+    background: rgba(251, 250, 241, 0.72) !important; border: 1px solid rgba(31, 43, 28, 0.14) !important;
+    color: var(--sl-ink-soft); }
+  & .hp-pf-filter:hover, & .hp-album-link:hover { color: var(--sl-ink); background: rgba(251, 250, 241, 0.95) !important; }
+  & .hp-pf-filter.is-active, & .hp-album-link.is-active {
+    background: var(--sl-pine) !important; border-color: var(--sl-pine) !important; color: var(--sl-cream) !important;
+    box-shadow: 0 8px 18px -10px rgba(31, 43, 28, 0.6); }
+  & .hp-pf-search { color: var(--sl-ink); }
+  & .hp-pf-search::placeholder { color: rgba(31, 43, 28, 0.5); }
+  & .hp-pf-search-wrap svg { color: rgba(31, 43, 28, 0.5); }
+
+  /* ── Project cards ── */
+  & .hp-pf-name { color: var(--sl-ink); }
+  & .hp-pf-blurb { color: var(--sl-ink-dim); }
+  & .hp-pf-view { color: var(--sl-ink); background: rgba(31, 43, 28, 0.05); border-color: rgba(31, 43, 28, 0.16); }
+  & .hp-pf-view:hover { color: var(--sl-ink); background: rgba(214, 191, 104, 0.3); border-color: rgba(var(--sa-accent), 0.5); }
+  & .hp-pf-card.is-compact .hp-pf-thumb::after { background: none; }
+  & .hp-pf-card.is-soon {
+    background: linear-gradient(180deg, rgba(236, 236, 228, 0.92), rgba(226, 227, 218, 0.92)) !important;
+    border-color: rgba(31, 43, 28, 0.08) !important; }
+  & .hp-pf-card.is-soon:hover { border-color: rgba(31, 43, 28, 0.14) !important; box-shadow: var(--sl-shadow) !important; }
+  & .hp-pf-card.is-soon .hp-pf-name { color: rgba(31, 43, 28, 0.6); }
+  & .hp-pf-card.is-soon .hp-pf-blurb { color: rgba(31, 43, 28, 0.5); }
+  & .hp-pf-soon { color: rgba(31, 43, 28, 0.55); border-color: rgba(31, 43, 28, 0.25); }
+  & .hp-pf-showmore-wrap::before {
+    background: linear-gradient(to bottom, rgba(154, 179, 150, 0) 0%, rgba(154, 179, 150, 0.85) 62%, rgba(154, 179, 150, 0.97) 100%) !important; }
+
+  /* ── Collaborators ── */
+  & .hp-collab-h { color: var(--sl-ink); }
+  & .hp-collab-p { color: var(--sl-ink-soft); }
+  & .hp-collab-name { color: var(--sl-ink); }
+  & .hp-collab-role { color: var(--sl-ink-dim); }
+  & .hp-collab-proj { color: #4a3d0e; background: rgba(214, 191, 104, 0.16); border-color: rgba(138, 112, 30, 0.3); }
+  & .hp-collab-proj:hover { color: var(--sl-ink); background: rgba(214, 191, 104, 0.32); }
+
+  /* ── HomeLab ── */
+  & .hp-homelab-text p, & .hp-homelab-p { color: var(--sl-ink-soft); }
+  & .hp-homelab-stat b { color: var(--sl-ink); }
+  & .hp-stack-label, & .hp-exp-chip span { color: var(--sl-ink-dim); }
+  & .hp-stack-more { color: var(--sl-ink-dim); }
+
+  /* ── Photography ── */
+  & .photo-main-ver .expand {
+    background: linear-gradient(180deg, rgba(154, 179, 150, 0) 0%, rgba(154, 179, 150, 0.6) 55%, rgba(154, 179, 150, 0.98) 100%) !important; }
+  & .photo-main-ver .expand button { color: var(--sl-ink); background-color: rgba(251, 250, 241, 0.8); }
+  & .photo-main-ver .expand button:hover { color: var(--sl-ink); background-color: rgba(251, 250, 241, 0.98); }
+  & .photography-box h1 {
+    background: linear-gradient(92deg, #1f2b1c 0%, #4c5a3c 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+
+  /* ── Call to action ── */
+  & .hp-cta h2 { color: var(--sl-ink); }
+  & .hp-cta p { color: var(--sl-ink-soft); }
+  /* the address is one long word; on phones it shrinks to fit instead of running off the edge */
+  & .hp-cta h2 em { display: inline-block; max-width: 100%; font-size: min(1em, 7.2vw); }
+
+  /* ── Footer: sits on the grass, so it gets its own paper strip ── */
+  & .footer {
+    background: linear-gradient(180deg, rgba(251, 250, 241, 0.9), rgba(244, 242, 227, 0.94)) !important;
+    border-top: 1px solid var(--sl-line) !important; }
+  & .footer::before { display: none; }
+  & .footer::after { color: rgba(31, 43, 28, 0.45); }
+  & .footer-left-text { color: var(--sl-ink-dim); }
+  & .footer-left-img { filter: brightness(0); opacity: 0.75; }
+  & .footer-center { box-shadow: var(--sl-shadow) !important; }
+  & .footer-center .btn svg { filter: brightness(0) invert(0.3); }
+  & .footer-right-text { color: var(--sl-ink-dim); }
+  & .footer-right-text button { color: #6b5714; }
+}
+
+/* ═══════ Pop-ups: the info cards and the project reader become cream paper ═══════ */
+html.sensory-active[data-theme="sunlit"] {
+  & .im-scrim { background: rgba(38, 50, 34, 0.5); }
+  & .hp-modal-backdrop { background: rgba(38, 50, 34, 0.62) !important; }
+  & .im-panel, & .hp-modal-panel {
+    background: linear-gradient(180deg, #fbfaf1, #f3f1e3) !important;
+    border: 1px solid rgba(31, 43, 28, 0.12) !important;
+    box-shadow: 0 2px 6px rgba(31, 43, 28, 0.08), 0 40px 90px -36px rgba(31, 43, 28, 0.6) !important; }
+  & .im-x, & .hp-modal-close { background: rgba(31, 43, 28, 0.06); border-color: rgba(31, 43, 28, 0.14); color: var(--sl-ink); }
+  & .im-x:hover, & .hp-modal-close:hover { background: rgba(31, 43, 28, 0.12); }
+  & .im-eyebrow { color: #6b5714; }
+  & .im-title, & .hp-md-title { color: var(--sl-ink); }
+  & .im-blurb { color: var(--sl-ink-soft); }
+  & .im-add { color: var(--sl-ink-dim); }
+  & .im-points li { color: var(--sl-ink-soft); }
+  & .im-points li svg { color: #8a701e; }
+  & .im-chips span { color: #4a3d0e; background: rgba(214, 191, 104, 0.16); border-color: rgba(138, 112, 30, 0.3); }
+  & .im-media { border-color: rgba(31, 43, 28, 0.12); }
+
+  & .hp-md-meta { color: var(--sl-ink-dim); }
+  & .hp-md-video { border-color: rgba(31, 43, 28, 0.12); }
+  & .hp-rd-lead { color: var(--sl-ink-soft); }
+  & .hp-rd-chapter { border-top-color: rgba(31, 43, 28, 0.1); }
+  & .hp-rd-ch-num { color: #8a701e; }
+  & .hp-rd-ch-body h4 { color: var(--sl-ink); }
+  & .hp-rd-ch-body p { color: var(--sl-ink-soft); }
+  & .hp-rd-fig { border-color: rgba(31, 43, 28, 0.1); }
+  & .hp-rd-cta { background: linear-gradient(135deg, rgba(214, 191, 104, 0.24), rgba(214, 191, 104, 0.1)); border-color: rgba(138, 112, 30, 0.3); }
+  & .hp-rd-cta-text strong { color: var(--sl-ink); }
+  & .hp-rd-cta-text span { color: var(--sl-ink-dim); }
+  & .hp-rd-feed-sep::before, & .hp-rd-feed-sep::after {
+    background: linear-gradient(90deg, transparent, rgba(31, 43, 28, 0.25), transparent); }
+  & .hp-rd-feed-sep span { color: #6b5714; }
+  & .hp-rd-feed-skel { background: rgba(31, 43, 28, 0.04); border-color: rgba(31, 43, 28, 0.08); }
+  & .hp-rd-feed-end { border-top-color: rgba(31, 43, 28, 0.1); }
+  & .hp-rd-feed-end span { color: var(--sl-ink-dim); }
+}
+
+/* ═══════ The grass follows the page ═══════
+   It sinks out of view as you scroll past the hero, so the middle of the page
+   sits in open sky, and rises again for the closing "Email me" section.
+   Scroll-linked CSS only (no script, nothing runs while idle). Browsers
+   without scroll timelines, and reduced-motion users, keep the grass still. */
+@keyframes sl-grass-sink { from { translate: 0 0; } to { translate: 0 32%; } }
+@keyframes sl-grass-rise { from { transform: translateY(0); } to { transform: translateY(-32%); } }
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    html[data-theme="sunlit"] .sl-grass-canvas {
+      animation: sl-grass-sink linear both, sl-grass-rise linear both;
+      animation-timeline: scroll(root), scroll(root);
+      animation-range: 0 75vh, calc(100% - 115vh) calc(100% - 25vh);
+    }
+  }
+}
