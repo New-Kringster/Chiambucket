@@ -88,9 +88,6 @@ export default function Nav() {
 
       <div className="pnav-right">
         <Link href={`/#${PORTFOLIO_ID}`} className="pnav-pill pnav-cta" onClick={goToPortfolio}>
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M14.2 8.1 15 5.25l.8 2.85a4 4 0 0 0 2.9 2.9l2.85.8-2.85.8a4 4 0 0 0-2.9 2.9L15 18.75l-.8-2.85a4 4 0 0 0-2.9-2.9L8.25 12l2.85-.8a4 4 0 0 0 3.1-3.1ZM6 14.25l.26 1.04a3 3 0 0 0 2.2 2.2L9.75 18l-1.04.26a3 3 0 0 0-2.2 2.2L6 21.75l-.26-1.04a3 3 0 0 0-2.2-2.2L2.25 18l1.04-.26a3 3 0 0 0 2.2-2.2L6 14.25ZM6.5 4l.2.6a1 1 0 0 0 .7.7l.6.2-.6.2a1 1 0 0 0-.7.7l-.2.6-.2-.6a1 1 0 0 0-.7-.7L5 5.5l.6-.2a1 1 0 0 0 .7-.7L6.5 4Z" />
-          </svg>
           View my work
         </Link>
         <button

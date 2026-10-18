@@ -362,8 +362,6 @@ a {
 
 /* ── Utility: portfolio card summary header ── */
 
-/* ── Utility: sparkle icon in summary headers ── */
-
 /* ── Utility: dual-button row in portfolio cards ── */
 
 html {
@@ -495,205 +493,6 @@ html {
 
 
 
-/* Hero Button item */
-.button-hero {
-    --black-700: hsla(0 0% 12% / 1);
-    --border_radius: 9999px;
-    --transtion: 0.3s ease-in-out;
-    --offset: 2px;
-  
-    cursor: pointer;
-    position: relative;
-  
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  
-    transform-origin: center;
-  
-    padding: 0.8rem 1.8rem;
-    background-color: transparent;
-  
-    border: none;
-    border-radius: var(--border_radius);
-    transform: scale(calc(1 + (var(--active, 0) * 0.1)));
-  
-    transition: transform var(--transtion);
-  }
-  
-  .button-hero::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  
-    width: 100%;
-    height: 100%;
-    background-color: var(--black-700);
-  
-    border-radius: var(--border_radius);
-    box-shadow: inset 0 0.5px hsl(0, 0%, 100%), inset 0 -1px 2px 0 hsl(0, 0%, 0%),
-      0px 4px 10px -4px hsla(0 0% 0% / calc(1 - var(--active, 0))),
-      0 0 0 calc(var(--active, 0) * 0.375rem) hsl(260 97% 50% / 0.75);
-  
-    transition: all var(--transtion);
-    z-index: 0;
-  }
-  
-  .button-hero::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  
-    width: 100%;
-    height: 100%;
-    background-color: hsla(260 97% 61% / 0.75);
-    background-image: radial-gradient(
-        at 51% 89%,
-        hsla(266, 45%, 74%, 1) 0px,
-        transparent 50%
-      ),
-      radial-gradient(at 100% 100%, hsla(266, 36%, 60%, 1) 0px, transparent 50%),
-      radial-gradient(at 22% 91%, hsla(266, 36%, 60%, 1) 0px, transparent 50%);
-    background-position: top;
-  
-    opacity: var(--active, 0);
-    border-radius: var(--border_radius);
-    transition: opacity var(--transtion);
-    z-index: 2;
-  }
-  
-  .button-hero:is(:hover, :focus-visible) {
-    --active: 1;
-  }
-  .button-hero:active {
-    transform: scale(1);
-  }
-  
-  .button-hero .dots_border {
-    --size_border: calc(100% + 2px);
-  
-    overflow: hidden;
-  
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  
-    width: var(--size_border);
-    height: var(--size_border);
-    background-color: transparent;
-  
-    border-radius: var(--border_radius);
-    z-index: -10;
-  }
-  
-  .button-hero .dots_border::before {
-    content: "";
-    position: absolute;
-    top: 30%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    transform-origin: left;
-    transform: rotate(0deg);
-  
-    width: 100%;
-    height: 2rem;
-    background-color: white;
-  
-    mask: linear-gradient(transparent 0%, white 120%);
-    animation: rotate 2s linear infinite;
-  }
-
-  .button-hero-main .dots_border::before {
-  content: "";
-  position: absolute;
-  top: 30%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  transform-origin: left;
-  transform: rotate(0deg);
-
-  width: 0;
-  height: 2rem;
-  background-color: white;
-
-  mask: linear-gradient(transparent 0%, white 120%);
-  animation: rotate 2s linear infinite;
-  }
-  
-  @keyframes rotate {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  
-  .button-hero .sparkle {
-    position: relative;
-    z-index: 10;
-
-    width: 1.75rem;
-    color: hsl(0, 0%, 100%);
-  }
-  
-  .button-hero .sparkle .path {
-    fill: currentColor;
-    stroke: currentColor;
-  
-    transform-origin: center;
-  
-    color: hsl(0, 0%, 100%);
-  }
-  
-  .button-hero:is(:hover, :focus) .sparkle .path {
-    animation: path 1.5s linear 0.5s infinite;
-  }
-  
-  .button-hero .sparkle .path:nth-child(1) {
-    --scale_path_1: 1.2;
-  }
-  .button-hero .sparkle .path:nth-child(2) {
-    --scale_path_2: 1.2;
-  }
-  .button-hero .sparkle .path:nth-child(3) {
-    --scale_path_3: 1.2;
-  }
-  
-  @keyframes path {
-    0%,
-    34%,
-    71%,
-    100% {
-      transform: scale(1);
-    }
-    17% {
-      transform: scale(var(--scale_path_1, 1));
-    }
-    49% {
-      transform: scale(var(--scale_path_2, 1));
-    }
-    83% {
-      transform: scale(var(--scale_path_3, 1));
-    }
-  }
-  
-  .button-hero .text_button {
-    position: relative;
-    z-index: 10;
-  
-    background-image: linear-gradient(
-      90deg,
-      hsla(0 0% 100% / 1) 0%,
-      hsla(0 0% 100% / var(--active, 0)) 120%
-    );
-    background-clip: text;
-  
-    font-size: 1rem;
-    color: transparent;
-  }
 
 
 /* Footer */
@@ -3264,7 +3063,7 @@ html.sensory-active {
      field); /contact + /homelab override these back to cool navy below. */
   --sa-panel-hi: rgba(42,34,25,0.52);   /* frosted instrument panel (warm) */
   --sa-panel-lo: rgba(22,17,12,0.62);
-  --sa-btn: rgba(37,29,20,0.68);        /* button-hero (sparkle CTA) fill */
+  --sa-btn: rgba(37,29,20,0.68);        /* solid button fill */
   --sa-hairline: rgba(var(--sa-accent),0.1);
   --hp-glass: rgba(214,190,150,0.03);
   --hp-line: rgba(var(--sa-accent),0.08);
@@ -3365,17 +3164,6 @@ html.sensory-active .sa-hud .sa-hud-em { color: rgba(206,220,255,0.66); }
 html.sensory-active .sa-live { color: rgba(var(--sa-ember),0.9) !important; }
 html.sensory-active .sa-live-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%;
   background: rgba(var(--sa-ember),0.95); box-shadow: 0 0 10px rgba(var(--sa-ember),0.7); }
-
-/* ══════════ Sparkle button (hero) ══════════ */
-html.sensory-active .button-hero { --black-700: var(--sa-btn) !important; --border_radius: 11px !important; }
-html.sensory-active .button-hero::before { box-shadow: inset 0 0.5px rgba(196,210,255,0.35), 0 6px 16px -6px rgba(0,0,0,0.7), 0 0 0 1px rgba(var(--sa-accent),0.3) !important; }
-/* background-image is killed too: the stock button ships three violet radial
-   gradients that only show on hover, which read as purple against this palette */
-html.sensory-active .button-hero::after { background-color: rgba(var(--sa-accent),0.42) !important; background-image: none !important; }
-html.sensory-active .button-hero .dots_border { display: none !important; }
-html.sensory-active .button-hero .text_button { color: #e2e9ff !important; }
-html.sensory-active .button-hero .sparkle { color: #dfe7ff !important; }
-html.sensory-active .button-hero .sparkle .path { fill: #dfe7ff !important; stroke: #dfe7ff !important; }
 
 /* ══════════ Footer → instrument panel ══════════ */
 html.sensory-active .footer {
@@ -3564,8 +3352,6 @@ html.sensory-active .hp-btn { background: rgba(var(--sa-accent),0.08) !important
 .hero-headline-text,
 .hp-hero::before, .hp-hero::after,
 .hp-hero-aura, .hp-hero-kicker, .hp-spot-badge svg,
-.button-hero .dots_border, .button-hero .dots_border::before,
-.button-hero .sparkle .path,
 .abm-bg::before, .abm-bg::after, .hp-homelab-band::before {
   animation: none !important;
 }

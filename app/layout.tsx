@@ -7,6 +7,7 @@ import Footer from '../components/Footer';
 import ClientEffects from '../components/ClientEffects';
 import ArticleLightbox from '../components/ArticleLightbox';
 import Backdrop from '../components/Backdrop';
+import GlassDefs from '../components/GlassDefs';
 import { THEME_MAP } from '../lib/theme';
 
 export const viewport: Viewport = {
@@ -32,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Set the per-page accent theme before paint to avoid a colour flash */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){var m=${JSON.stringify(THEME_MAP)};var p=location.pathname;if(p.length>1&&p.slice(-1)==='/')p=p.slice(0,-1);var d=document.documentElement;d.setAttribute('data-theme',m[p]||'paper');d.classList.add('sensory-active');})();`,
+            __html: `(function(){var m=${JSON.stringify(THEME_MAP)};var p=location.pathname;if(p.length>1&&p.slice(-1)==='/')p=p.slice(0,-1);var d=document.documentElement;d.setAttribute('data-theme',m[p]||'paper');d.classList.add('sensory-active');var u=navigator.userAgentData;if(u&&u.brands&&u.brands.some(function(b){return /Chrom/.test(b.brand)}))d.classList.add('lg-refract');})();`,
           }}
         />
         <link rel="stylesheet" href="/mainstyle.css" />
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ClientEffects />
         <ArticleLightbox />
         <Backdrop />
+        <GlassDefs />
         <Nav />
         {children}
         <Footer />
