@@ -103,11 +103,13 @@ html.sensory-active[data-theme="sunlit"] {
 .sl-rays { mix-blend-mode: screen; transform-origin: 97% 0%; }
 .sl-scene > .sl-clouds { overflow: hidden; }
 .sl-cloud { position: absolute; will-change: transform; }
-.sl-scene > .sl-grass { overflow: visible; }
-.sl-grass-canvas { position: absolute; inset: 0; width: 100%; height: 100%; transform-origin: 50% 100%; }
+/* SunlitScene sets the field's opacity and translate inline as you scroll */
+.sl-scene > .sl-grass { overflow: visible; will-change: opacity, translate; }
+/* a little wider than the screen, so the sway never opens a gap at the edges */
+.sl-grass-canvas { position: absolute; top: 0; left: -3%; width: 106%; height: 100%; transform-origin: 50% 100%; }
 
-.sl-sky-canvas, .sl-clouds, .sl-rays, .sl-grass { opacity: 0; transition: opacity 0.9s ease-out; }
-.sl-scene.is-drawn :is(.sl-sky-canvas, .sl-clouds, .sl-rays, .sl-grass) { opacity: 1; }
+.sl-sky-canvas, .sl-clouds, .sl-rays, .sl-grass-canvas { opacity: 0; transition: opacity 0.9s ease-out; }
+.sl-scene.is-drawn :is(.sl-sky-canvas, .sl-clouds, .sl-rays, .sl-grass-canvas) { opacity: 1; }
 
 /* ── The living poster: gentle motion, only while html.sl-alive ── */
 @keyframes sl-drift { from { transform: translateX(calc(var(--drift) * -1)); } to { transform: translateX(var(--drift)); } }
@@ -123,7 +125,7 @@ html.sensory-active[data-theme="sunlit"] {
   html.sl-alive :is(.sl-cloud, .sl-rays, .sl-sun-bloom, .sl-grass-canvas) { animation-play-state: running; }
 }
 @media (prefers-reduced-motion: reduce) {
-  :is(.sl-sky-canvas, .sl-clouds, .sl-rays, .sl-grass) { transition: none; }
+  :is(.sl-sky-canvas, .sl-clouds, .sl-rays, .sl-grass-canvas) { transition: none; }
 }
 
 html.sensory-active[data-theme="sunlit"] {
@@ -331,23 +333,6 @@ html.sensory-active[data-theme="sunlit"] {
   & .hp-rd-feed-skel { background: rgba(31, 43, 28, 0.04); border-color: rgba(31, 43, 28, 0.08); }
   & .hp-rd-feed-end { border-top-color: rgba(31, 43, 28, 0.1); }
   & .hp-rd-feed-end span { color: var(--sl-ink-dim); }
-}
-
-/* ═══════ The grass follows the page ═══════
-   It sinks out of view as you scroll past the hero, so the middle of the page
-   sits in open sky, and rises again for the closing "Email me" section.
-   Scroll-linked CSS only (no script, nothing runs while idle). Browsers
-   without scroll timelines, and reduced-motion users, keep the grass still. */
-@keyframes sl-grass-sink { from { translate: 0 0; } to { translate: 0 32%; } }
-@keyframes sl-grass-rise { from { transform: translateY(0); } to { transform: translateY(-32%); } }
-@supports (animation-timeline: scroll()) {
-  @media (prefers-reduced-motion: no-preference) {
-    html[data-theme="sunlit"] .sl-scene > .sl-grass {
-      animation: sl-grass-sink linear both, sl-grass-rise linear both;
-      animation-timeline: scroll(root), scroll(root);
-      animation-range: 0 75vh, calc(100% - 115vh) calc(100% - 25vh);
-    }
-  }
 }
 
 /* Buttons and pills inside a glass card: a translucent fill and no blur of their

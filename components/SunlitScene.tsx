@@ -451,8 +451,38 @@ export default function SunlitScene() {
     };
     window.addEventListener('resize', onResize);
 
-    // Motion runs only while the poster hero or the closing section is in view.
+    // As you scroll past the hero the field drifts down and dissolves into the
+    // haze, so the middle of the page sits in open sky; it comes back for the
+    // closing section. Two composited properties, written at most once a frame.
     const root = document.documentElement;
+    const field = grass.parentElement as HTMLElement;
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let frame = 0;
+    const place = () => {
+      frame = 0;
+      if (still.matches) {
+        field.style.opacity = '';
+        field.style.translate = '';
+        return;
+      }
+      const vh = window.innerHeight;
+      const y = window.scrollY;
+      const end = root.scrollHeight - vh;
+      const away = Math.min(1, Math.max(0, y / (vh * 0.85)));
+      const back = Math.min(1, Math.max(0, (y - (end - vh * 1.1)) / (vh * 0.9)));
+      const t = Math.max(0, away - back);
+      const gone = t * t * (3 - 2 * t);
+      field.style.opacity = gone >= 1 ? '0' : (1 - gone).toFixed(3);
+      field.style.translate = `0 ${(gone * 12).toFixed(2)}%`;
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(place);
+    };
+    place();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+
+    // Motion runs only while the poster hero or the closing section is in view.
     const watched = ['.slp', '.hp-cta'].map((s) => document.querySelector(s)).filter(Boolean) as Element[];
     const showing = new Set<Element>();
     const io = new IntersectionObserver((entries) => {
@@ -467,6 +497,9 @@ export default function SunlitScene() {
     return () => {
       window.clearTimeout(timer);
       window.removeEventListener('resize', onResize);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      cancelAnimationFrame(frame);
       io.disconnect();
       root.classList.remove('sl-alive');
     };
