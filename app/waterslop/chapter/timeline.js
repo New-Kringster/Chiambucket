@@ -66,9 +66,9 @@ export const components = [
   },
   {
     id: "camera",
-    title: "OV2640 at 120° FOV",
+    title: "OV2640 at 160° FOV",
     eyebrow: "CAMERA",
-    body: "I chose the OV2640 with a 120° field-of-view lens for close-up imaging. The wide lens lets the camera sit close to the meter while keeping the whole dial in focus and in frame.",
+    body: "I chose the OV2640 with a 160° field-of-view lens for close-up imaging. The wide lens lets the camera sit about 4 cm from the meter while keeping the whole dial in focus and in frame.",
     ref: "J2",
     focus: [-1.48, 3.12, -9.3],
     rotation: [0.08, Math.PI + 0.16, -0.04],

@@ -753,6 +753,23 @@ export default function HomeClient() {
                 </div>
               </article>
 
+              {/* WaterSlop */}
+              <article id="proj-waterslop" className="hp-pf-card" data-article="/waterslop" data-type="school" data-highlight="1" data-search="waterslop water meter reader ocr drumnet esp32 s3 ov2640 camera lorawan neural network cnn kicad pcb onshape enclosure nyp school highlight">
+                <div className="hp-pf-thumb">
+                  <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
+                  <span className="hp-pf-type school">School</span><span className="hp-pf-star"><ST />Highlight</span>
+                  <img src="/images/waterslop-pf-context.webp" alt="WaterSlop water meter reader" loading="lazy" />
+                </div>
+                <div className="hp-pf-info">
+                  <h3 className="hp-pf-name">WaterSlop</h3>
+                  <p className="hp-pf-blurb">A battery-powered OCR water meter reader: a 693K-parameter DrumNet pipeline on an ESP32-S3 reads the drums and reports over LoRaWAN. Custom KiCad PCB and 3D-printed shell.</p>
+                  <div className="hp-pf-foot">
+                    <div className="icon-stack"><img src="/images/esp-icon.webp" alt="" /><img src="/images/Kicad-icon.webp" alt="" /><img src="/images/onshape-icon.webp" alt="" /><img src="/images/PlatformIO-icon.webp" alt="" /></div>
+                    <button className="hp-pf-view" onClick={() => { window.location.href = '/waterslop'; }}>Read article <AU /></button>
+                  </div>
+                </div>
+              </article>
+
               {/* LUMEN */}
               <article id="proj-lumen" className="hp-pf-card" data-article="/lumen" data-type="school" data-highlight="1" data-search="lumen esp32 voice assistant wake word whisper deepseek llm mqtt fastapi micropython inmp441 microphone smart room iot nyp school highlight">
                 <div className="hp-pf-thumb">

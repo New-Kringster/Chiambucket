@@ -12,10 +12,10 @@ export default function ArticleScrollSpy() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             navLinks.forEach((link) => link.classList.remove('article-chapter-selected'));
-            const active = document.querySelector(
+            const actives = document.querySelectorAll(
               `.article-chapter-wrapper a[href="#${entry.target.id}"]`
             );
-            if (active) active.classList.add('article-chapter-selected');
+            actives.forEach((a) => a.classList.add('article-chapter-selected'));
           }
         });
       },
