@@ -20,6 +20,7 @@
 - [Photography](https://www.chiambucket.com/photography): galleries including Highlights, Europe, China, New Zealand, Hong Kong, 21:9 and General.
 - [HomeLab](https://www.chiambucket.com/homelab): A three-node self-hosted homelab used as a hands-on cloud-engineering, networking and software-design sandbox that supports Braven's hardware projects. NewMain (Unraid) plus a Proxmox PXE cluster (CaCa always on, Adell on demand) run around 38 services behind a segmented UniFi network with VLANs and WPA3-Enterprise RADIUS auth. Services include Immich, Nginx Proxy Manager with CrowdSec, Lychee, Pingvin Share, PairDrop, Fireshare, Tailscale, Shadowsocks, UpStat, Paperless-NGX, coturn and Mosquitto.
 - [Credits](https://www.chiambucket.com/credits): colophon. The site was designed and built with Claude Opus 4 (Anthropic) and is hosted on Vercel.
+- [Braven's Scale of AI use](https://www.chiambucket.com/ai-use): how Braven uses AI, and the four-level scale (L1 little use, L2 average use, L3 heavy use, L4 entirely AI generated) that labels how much of each project was made with AI tools.
 
 ## Projects
 
