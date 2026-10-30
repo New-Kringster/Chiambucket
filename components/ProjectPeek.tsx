@@ -22,7 +22,7 @@ export const PEEK_ORDER: string[] = [
 
 const TITLES: Record<string, string> = {
   'proj-june': 'Project June', 'proj-lora': 'LoRA Messenger', 'proj-lumen': 'LUMEN',
-  'proj-beadreader': 'BeadReader', 'proj-waterslop': 'WaterSlop',
+  'proj-beadreader': 'BeadReader', 'proj-waterslop': 'OCR Reader',
   'proj-ema': 'EMA Smart Home', 'proj-pandus': 'Pandus Dispenser', 'proj-elecf': 'ELEC-F Concept',
   'proj-kauli': 'Kauli Concept', 'proj-sol': 'Series One Light', 'proj-copyboard': 'Copy Board',
   'proj-webdev': 'Web Development', 'proj-mc': 'Minecraft Live Map',
@@ -111,15 +111,15 @@ export function PeekModalContent({ id }: { id: string }) {
     );
     case 'proj-waterslop': return (
       <>
-        {hero('/images/waterslop-pf-context.webp', 'WaterSlop: a water meter register seen through the reader\u2019s camera', ['Highlights', 'School Project'], 'highlight')}
+        {hero('/images/waterslop-pf-context.webp', 'OCR Reader: a water meter register seen through the reader\u2019s camera', ['Highlights', 'School Project'], 'highlight')}
         <div className="hp-rd-body">
-          <h2 className="hp-md-title">WaterSlop</h2>
+          <h2 className="hp-md-title">OCR Reader</h2>
           <p className="hp-md-meta">NYP ECE · ESP32-S3 · OV2640 · DrumNet · LoRaWAN · KiCad · Onshape</p>
           <p className="hp-rd-lead">A low-cost, battery-powered camera that mounts over a mechanical water meter and reads the drums with a 693K-parameter neural network running entirely on an ESP32-S3, then sends the number home over LoRaWAN.</p>
           {chapter('01', 'DrumNet, on the chip', <><p>A spotter finds the digit window, a refiner pins its edges by averaging feature-map columns and rows, and three readers vote on every drum, carry rule included. All INT8, about 2 seconds per reading.</p><img className="hp-rd-fig" src="/images/waterslop/dia-vote.webp" alt="The DrumNet ensemble vote and reading" loading="lazy" /></>)}
           {chapter('02', 'Trained by six agents', <><p>MeterSim renders labelled meters, SimGen2 fakes the camera, and six AI agents booked a scheduler for the GPU and the Jetson rig, running 24/7 over Tailscale and T3 Code.</p><img className="hp-rd-fig" src="/images/waterslop/metersim-designs.webp" alt="The nine meter designs in MeterSim" loading="lazy" /></>)}
           {chapter('03', 'A board, a shell, a 9-hour reflow', <><p>A 4-layer KiCad PCB with battery management, LoRa and PWM LEDs, assembled by hand, debugged under a microscope, and housed in a toolless 3D-printed enclosure and meter adapter.</p><img className="hp-rd-fig" src="/images/waterslop/pcb-3d-top.webp" alt="3D render of the Prototype V2 board" loading="lazy" /></>)}
-          {cta('Walk the whole pipeline', 'An interactive, step-by-step DrumNet run, the 3D board tour and the full report.', 'Read the full article', '/waterslop')}
+          {cta('Walk the whole pipeline', 'A scroll-driven story: the DrumNet run step by step, the 3D board tour, a ConfigKing simulator and the full report.', 'Read the full article', '/waterslop')}
         </div>
       </>
     );

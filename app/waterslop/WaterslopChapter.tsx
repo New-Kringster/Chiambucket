@@ -6,15 +6,15 @@ import { mountChapter } from './chapter/chapter.js';
 import './chapter/chapter.css';
 import './waterslop.css';
 
-// Rendered on the server too, so the component notes are in the HTML.
-const markup = chapterMarkup();
+// Rendered on the server too, so the component notes are in the HTML. The
+// exported chapter numbers itself V; in this article it is chapter XI.
+const markup = chapterMarkup().replace('Chapter - V', 'Chapter - XI').replace('Chapter V:', 'Chapter XI:').replace('WaterSlop PCB', 'OCR Reader PCB');
 
 export default function WaterslopChapter() {
   const root = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = root.current;
     if (!el) return;
-    const html = document.documentElement;
     // Keep the chapter's top-anchored titles clear of the fixed site nav.
     const nav = document.querySelector<HTMLElement>('.nav-holder');
     const inset = () => el.style.setProperty('--ws-top-inset', `${nav?.offsetHeight ?? 0}px`);
@@ -23,8 +23,8 @@ export default function WaterslopChapter() {
     if (nav) navSize.observe(nav);
     const unmount = mountChapter(el, {
       assetBase: '/waterslop/',
-      // The stage is opaque while pinned; pause the site shader field behind it.
-      onCover: (covered: boolean) => html.toggleAttribute('data-sensory-paused', covered),
+      // The whole article pauses the site shader field (PageFx); nothing to toggle here.
+      onCover: () => {},
     });
     return () => {
       navSize.disconnect();

@@ -1,0 +1,218 @@
+/* Story stages for the OCR Reader article. Positions, faces and sizes mirror
+   chapter/chapter.css (the 3D PCB chapter) so every chapter reads as one film:
+   the visual on the left, the copy at 60 % / 17 %, the chapter label top-left,
+   a Next button bottom-right. */
+.ws-story { position: relative; background: var(--bg); }
+.ws-stage-pin { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; isolation: isolate; background: var(--bg); --pic-h: calc(100svh - 30svh); --pic-w: 54%; }
+.ws-stage-chapter { position: absolute; z-index: 4; top: max(4.5%, calc(var(--ws-nav, 0px) + 18px)); left: 3.5%; font-family: var(--serif); font-size: clamp(14px, 1.5vw, 30px); color: var(--ink); display: flex; gap: 0.6em; align-items: baseline; }
+.ws-stage-chapter span { font: 500 clamp(10px, 0.78vw, 16px)/1.4 var(--sans); letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+
+/* Frames stack in the stage; only the active one is visible. */
+.ws-frame { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity 0.42s ease, visibility 0s linear 0.42s; }
+.ws-frame[data-state="active"] { opacity: 1; visibility: visible; transition: opacity 0.42s ease 0.12s, visibility 0s; }
+.ws-visual { position: absolute; top: calc(var(--ws-nav, 0px) + 7svh); left: 4%; width: var(--pic-w); height: calc(100svh - var(--ws-nav, 0px) - 14svh); display: flex; align-items: center; justify-content: center; }
+.ws-pic { position: relative; display: inline-block; max-width: 100%; max-height: 100%; transform: translateY(10px); transition: transform 0.6s cubic-bezier(.2,.7,.2,1); }
+.ws-frame[data-state="active"] .ws-pic { transform: none; }
+.ws-pic > img, .ws-pic > picture > img { display: block; width: auto; height: auto; max-width: 100%; max-height: calc(100svh - var(--ws-nav, 0px) - 14svh); border: 1px solid var(--line); border-radius: 4px; background: #121110; cursor: zoom-in; }
+.ws-pic > img.plate { background: #f4f2ee; }
+.ws-pic > img.light { background: #f2eee7; }
+.ws-pic > svg { display: block; max-width: 100%; height: auto; }
+
+/* Pointers: a hairline from the thing to its name, drawn in when the frame lands. */
+.ws-pointers { position: absolute; inset: 0; pointer-events: none; }
+.ws-pointers svg { position: absolute; inset: 0; overflow: visible; }
+.ws-pointers line { stroke: var(--ink); stroke-width: 1; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 0.5s ease calc(0.35s + var(--i, 0) * 0.12s); }
+.ws-pointers circle { fill: var(--ink); stroke: var(--bg); stroke-width: 1.5; opacity: 0; transition: opacity 0.3s ease calc(0.3s + var(--i, 0) * 0.12s); }
+.ws-frame[data-state="active"] .ws-pointers line { stroke-dashoffset: 0; }
+.ws-frame[data-state="active"] .ws-pointers circle { opacity: 1; }
+.ws-ptr-label { position: absolute; transform: translate(6px, -50%); white-space: nowrap; font: 500 12.5px/1.3 var(--sans); letter-spacing: 0.01em; color: var(--hi); background: #181716d9; border: 1px solid #d8cbb833; padding: 4px 8px; border-radius: 3px; opacity: 0; transition: opacity 0.3s ease calc(0.7s + var(--i, 0) * 0.12s); max-width: 220px; }
+.ws-ptr-label.l { transform: translate(calc(-100% - 6px), -50%); }
+.ws-frame[data-state="active"] .ws-ptr-label { opacity: 1; }
+.ws-ptr-n { display: none; position: absolute; transform: translate(-50%, -50%); width: 18px; height: 18px; border-radius: 50%; background: var(--ink); color: var(--bg); font: 600 10px/18px var(--sans); font-style: normal; text-align: center; box-shadow: 0 0 0 2px var(--bg); opacity: 0; transition: opacity 0.3s ease calc(0.3s + var(--i, 0) * 0.1s); }
+.ws-frame[data-state="active"] .ws-ptr-n { opacity: 1; }
+.ws-ptr-legend { display: none; margin: 0 0 0.6em; padding: 0; list-style: none; columns: 2; column-gap: 14px; }
+.ws-ptr-legend li { break-inside: avoid; display: flex; gap: 6px; align-items: baseline; font: 400 11.5px/1.35 var(--sans); color: var(--muted); margin-bottom: 3px; }
+.ws-ptr-legend li i { flex: 0 0 auto; width: 15px; height: 15px; border-radius: 50%; background: var(--ink); color: var(--bg); font: 600 9px/15px var(--sans); font-style: normal; text-align: center; transform: translateY(-1px); }
+
+/* Copy: the chapter's component-copy block. */
+.ws-copy { position: absolute; top: 17%; left: 60%; width: 34%; z-index: 5; transform: translateY(12px); transition: transform 0.5s cubic-bezier(.2,.7,.2,1); }
+.ws-frame[data-state="active"] .ws-copy { transform: none; }
+.ws-copy .ws-eyebrow { font: 600 clamp(10px, 0.78vw, 18px)/1.4 var(--sans); letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin: 0 0 0.75em; }
+.ws-copy h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(28px, 3.4vw, 76px); line-height: 1.06; letter-spacing: -0.025em; margin: 0 0 0.42em; text-wrap: balance; color: var(--ink); }
+.ws-copy-body { font-family: var(--sans); font-size: clamp(15px, 1.12vw, 25px); line-height: 1.62; color: var(--body); text-wrap: pretty; max-width: 40ch; }
+.ws-copy-body p { margin: 0 0 0.75em; }
+.ws-copy-body p:last-child { margin-bottom: 0; }
+.ws-copy-body b, .ws-copy-body strong { color: var(--ink); font-weight: 600; }
+.ws-copy-body .ws-note { font-size: 0.86em; color: var(--muted); }
+.ws-copy-body ul { margin: 0.4em 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.ws-copy-body li { position: relative; padding-left: 18px; }
+.ws-copy-body li::before { content: ''; position: absolute; left: 2px; top: 0.7em; width: 5px; height: 5px; background: var(--ink); transform: rotate(45deg); }
+.ws-copy-body .ws-kv2 { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin-top: 0.8em; font-size: 0.9em; }
+.ws-copy-body .ws-kv2 b { font: 600 0.78em/1.5 var(--sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); padding-top: 0.2em; }
+
+/* Wide frames: the visual spans the stage and the copy sits under it, like the chapter's power inspector. */
+.ws-frame.wide .ws-visual { left: 4%; width: 92%; height: calc(100svh - var(--ws-nav, 0px) - 40svh); top: calc(var(--ws-nav, 0px) + 7svh); align-items: flex-start; }
+.ws-frame.wide .ws-pic { max-height: 100%; }
+.ws-frame.wide .ws-pic > img { max-height: calc(100svh - var(--ws-nav, 0px) - 40svh); }
+.ws-frame.wide .ws-copy { top: auto; bottom: 7svh; left: 4%; width: 92%; display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr); gap: 0 clamp(20px, 4vw, 60px); align-items: start; }
+.ws-frame.wide .ws-copy h2 { font-size: clamp(24px, 2.6vw, 54px); margin-bottom: 0; }
+.ws-frame.wide .ws-copy .ws-eyebrow { grid-column: 1 / -1; margin-bottom: 0.4em; }
+.ws-frame.wide .ws-copy-body { max-width: 72ch; font-size: clamp(14px, 1.02vw, 21px); }
+
+/* The page's link and button colour rules outrank a lone class; filled controls restate theirs. */
+.ws-page a.ws-btn, .ws-page button.ws-next { color: var(--btn-ink); }
+.ws-page a.ws-btn.ghost { color: var(--ink); }
+.ws-page a.ws-btn.ghost:hover { color: var(--hi); }
+
+/* Progress and Next, the chapter's own controls. */
+.ws-stage-dots { position: absolute; z-index: 10; left: 3.5%; bottom: max(28px, env(safe-area-inset-bottom)); display: flex; gap: 3px; width: min(32vw, 420px); }
+.ws-stage-dots button { flex: 1; height: 2px; border: 0; padding: 0; background: #d8cbb833; cursor: pointer; transition: background 0.2s; }
+.ws-stage-dots button.done { background: #d8cbb875; }
+.ws-stage-dots button.on { background: var(--ink); }
+.ws-stage-dots button:hover { background: var(--hi); }
+.ws-next { position: absolute; z-index: 10; right: max(3.5vw, env(safe-area-inset-right)); bottom: max(20px, env(safe-area-inset-bottom)); display: flex; align-items: center; gap: 9px; min-height: 44px; padding: 0 14px; border: 1px solid var(--btn); border-radius: 4px; background: var(--btn); color: var(--btn-ink); font: 500 12px var(--sans); transition: background 160ms, border-color 160ms; }
+.ws-next:hover { background: var(--hi); border-color: var(--hi); }
+
+/* Visual kinds */
+.ws-pair { display: flex; gap: 8px; align-items: center; justify-content: center; max-width: calc(54vw - 24px); }
+.ws-pair img { width: auto; height: auto; max-width: calc(27vw - 20px); max-height: calc(100svh - var(--ws-nav, 0px) - 14svh); object-fit: contain; border: 1px solid var(--line); border-radius: 4px; background: #121110; cursor: zoom-in; }
+.ws-pair.plate img { background: #f4f2ee; }
+.ws-trio-v { display: grid; grid-template-columns: repeat(3, auto); gap: 10px; align-items: start; justify-content: center; }
+.ws-trio-v figure { margin: 0; display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.ws-trio-v img { height: calc(100svh - var(--ws-nav, 0px) - 22svh); width: auto; max-width: 100%; border: 1px solid var(--line); border-radius: 4px; background: #121110; cursor: zoom-in; }
+.ws-trio-v figcaption { font: 500 12px/1.3 var(--sans); color: var(--muted); }
+/* a table as a visual */
+.ws-tablewrap { max-width: calc(92vw - 8px); max-height: calc(100svh - var(--ws-nav, 0px) - 40svh); overflow: auto; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); scrollbar-width: thin; }
+.ws-tablewrap .ws-table { font-size: clamp(11px, 0.86vw, 15px); }
+.ws-tablewrap .ws-table th, .ws-tablewrap .ws-table td { padding: 8px 12px 8px 0; }
+.ws-tablewrap .ws-battery { min-width: 1100px; }
+.ws-table .hl, .ws-table tr.hl th, .ws-table tr.hl td { color: var(--hi); background: #d8cbb814; }
+.ws-table tr.hl th:first-child { box-shadow: inset 3px 0 0 var(--ink); padding-left: 10px; }
+.ws-table thead th.hl { color: var(--hi); box-shadow: inset 0 -2px 0 var(--ink); }
+.ws-table tr.dim td, .ws-table tr.dim th { color: #7d766e; }
+.ws-table thead th.dim, .ws-table td.dim { color: #7d766e; }
+/* a 2-up schematic + its place on the board */
+.ws-sch { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: stretch; max-width: 100%; }
+.ws-sch img { height: calc(100svh - var(--ws-nav, 0px) - 22svh); width: auto; max-width: 100%; object-fit: contain; border: 1px solid var(--line); border-radius: 4px; background: #f4f2ee; cursor: zoom-in; }
+.ws-sch img.loc { background: #0e0d0c; }
+/* the capture-mode zoom: the frame's progress (--p) zooms into the digits */
+.ws-zoom { position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 4px; background: #121110; max-width: calc(54vw - 24px); }
+.ws-zoom img { display: block; width: 100%; height: auto; max-height: calc(100svh - var(--ws-nav, 0px) - 14svh); object-fit: contain; transform-origin: var(--ox, 57%) var(--oy, 41%); transform: scale(calc(1 + var(--p, 0) * var(--zoom, 2.6))); will-change: transform; cursor: default; }
+.ws-zoom-cap { position: absolute; left: 10px; bottom: 10px; display: flex; flex-direction: column; gap: 2px; padding: 6px 10px; background: #181716d9; border: 1px solid #d8cbb833; border-radius: 3px; }
+.ws-zoom-cap b { font-family: var(--serif); font-weight: 400; font-size: 15px; color: var(--ink); }
+.ws-zoom-cap span { font: 400 11.5px/1.3 var(--sans); color: var(--muted); }
+/* small widget stages inside a frame (DrumNet, ReadCycle) */
+.ws-pic > .ws-wstage { width: min(calc(54vw - 24px), calc((100svh - var(--ws-nav, 0px) - 14svh) * var(--ar, 1.85))); background: var(--blue-bg); background-image: radial-gradient(#58789980 0.65px, transparent 0.8px); background-size: 12px 12px; border: 1px solid #d8cbb833; border-radius: 4px; overflow: hidden; }
+.ws-pic > .ws-wstage > svg { display: block; width: 100%; height: auto; }
+/* a boxed list of facts under the visual (used by the DrumNet frames) */
+.ws-copy-body .ws-facts { margin-top: 14px; }
+.ws-copy-body .ws-fact { font-size: 0.86em; }
+
+/* Flow: the firmware-era data path, five cards with hairline arrows */
+.ws-flow-v { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; width: min(100%, 980px); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.ws-flow-v > div { padding: 16px 14px 18px 0; display: flex; flex-direction: column; gap: 6px; position: relative; }
+.ws-flow-v > div + div { padding-left: 16px; border-left: 1px dotted var(--line-strong); }
+.ws-flow-v b { font-family: var(--serif); font-weight: 400; font-size: clamp(15px, 1.2vw, 20px); color: var(--ink); }
+.ws-flow-v i { font-style: normal; font: 600 10px/1.4 var(--sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.ws-flow-v span { font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+.ws-flow-v > div.lit b { color: var(--hi); }
+
+/* Specs on the brief: hairline rows */
+.ws-spec-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; width: min(100%, 760px); border-top: 1px solid var(--line); }
+.ws-spec-list div { padding: 12px 0 13px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; }
+.ws-spec-list b { font-family: var(--serif); font-weight: 400; font-size: clamp(15px, 1.25vw, 21px); color: var(--ink); }
+.ws-spec-list span { font-size: clamp(12px, 0.9vw, 15px); line-height: 1.5; color: var(--muted); }
+.ws-spec-list div.on b { color: var(--hi); }
+
+/* Agent loop and agents list as visuals */
+.ws-loop-v { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; width: min(100%, 820px); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.ws-loop-v > div { padding: 14px 14px 16px 0; display: flex; flex-direction: column; gap: 8px; font-size: clamp(13px, 1vw, 17px); line-height: 1.4; color: var(--body); border-bottom: 1px solid var(--line); }
+.ws-loop-v > div:nth-child(3n+2), .ws-loop-v > div:nth-child(3n) { padding-left: 14px; border-left: 1px dotted var(--line-strong); }
+.ws-loop-v > div:nth-last-child(-n+3) { border-bottom: 0; }
+.ws-loop-v > div > i { font-style: normal; font-family: var(--serif); font-size: 1.05em; color: var(--muted); }
+.ws-loop-v > div.on { color: var(--hi); }
+.ws-loop-v > div.on > i { color: var(--hi); }
+.ws-agents-v { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; width: min(100%, 820px); border-top: 1px solid var(--line); }
+.ws-agents-v > div { padding: 11px 0 12px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 3px; }
+.ws-agents-v b { font-family: var(--serif); font-weight: 400; font-size: clamp(15px, 1.2vw, 20px); color: var(--ink); }
+.ws-agents-v i { font-style: normal; font: 600 10px/1.4 var(--sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.ws-agents-v span { font-size: clamp(12px, 0.9vw, 14.5px); line-height: 1.5; color: var(--body); }
+.ws-agents-v > div.dim { opacity: 0.45; }
+
+/* The BOM as a visual */
+.ws-bom-v { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 28px; width: min(100%, 900px); }
+.ws-bom-v > div > b { display: block; font: 600 10.5px/1.4 var(--sans); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+.ws-bom-v ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+.ws-bom-v li { position: relative; padding-left: 16px; font-size: clamp(12px, 0.92vw, 15px); line-height: 1.45; color: var(--body); }
+.ws-bom-v li::before { content: ''; position: absolute; left: 2px; top: 0.62em; width: 4px; height: 4px; background: var(--ink); transform: rotate(45deg); }
+
+/* A number that matters, shown big (the quantisation speed-up, accuracy) */
+.ws-bignum { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0 24px; width: min(100%, 760px); border-top: 1px solid var(--line); }
+.ws-bignum > div { padding: 16px 0 18px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; }
+.ws-bignum b { font-family: var(--serif); font-weight: 400; font-size: clamp(40px, 5vw, 96px); line-height: 1; letter-spacing: -0.03em; color: var(--ink); }
+.ws-bignum b.red { color: #ff6666; }
+.ws-bignum span { font: 500 clamp(11px, 0.85vw, 15px)/1.4 var(--sans); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.ws-bignum small { font-size: clamp(12px, 0.9vw, 15px); color: var(--body); line-height: 1.5; }
+
+/* Between stories: the hero already matches; the report block is plain. */
+.ws-plain { position: relative; z-index: 2; background: var(--bg); padding: clamp(50px, 8vw, 110px) 0; }
+
+@media (max-width: 900px) {
+  .ws-stage-pin { --pic-w: 92%; }
+  .ws-stage-chapter { font-size: 15px; left: 5%; top: calc(var(--ws-nav, 0px) + 12px); }
+  .ws-stage-chapter span { display: none; }
+  .ws-visual { left: 4%; width: 92%; top: calc(var(--ws-nav, 0px) + 44px); height: calc(44svh - var(--ws-nav, 0px) - 28px); }
+  .ws-pic > img, .ws-pic > picture > img, .ws-pair img { max-height: calc(45svh - var(--ws-nav, 0px) - 20px); }
+  .ws-trio-v img, .ws-sch img { height: calc(45svh - var(--ws-nav, 0px) - 44px); }
+  .ws-zoom img { max-height: calc(45svh - var(--ws-nav, 0px) - 20px); }
+  .ws-pic > .ws-wstage { width: min(92vw, calc((45svh - var(--ws-nav, 0px) - 20px) * var(--ar, 1.85))); }
+  .ws-pair { max-width: 92vw; }
+  .ws-pair img { max-width: calc(46vw - 8px); }
+  .ws-zoom { max-width: 92vw; }
+  .ws-copy { top: 49%; left: 5%; width: 90%; }
+  .ws-copy h2 { font-size: clamp(22px, 7vw, 34px); margin-bottom: 0.4em; }
+  .ws-copy-body { font-size: 14.5px; line-height: 1.55; max-width: none; }
+  .ws-copy .ws-eyebrow { font-size: 10px; margin-bottom: 0.6em; }
+  .ws-frame.wide .ws-visual { height: calc(42svh - var(--ws-nav, 0px) - 20px); width: 92%; }
+  .ws-frame.wide .ws-pic > img { max-height: calc(42svh - var(--ws-nav, 0px) - 20px); }
+  .ws-frame.wide .ws-copy { top: 48%; bottom: auto; left: 5%; width: 90%; display: block; }
+  .ws-frame.wide .ws-copy h2 { font-size: clamp(20px, 6vw, 30px); margin-bottom: 0.4em; }
+  .ws-frame.wide .ws-copy-body { font-size: 13.5px; }
+  .ws-tablewrap { max-height: calc(42svh - var(--ws-nav, 0px) - 20px); }
+  .ws-pointers svg, .ws-ptr-label { display: none; }
+  .ws-ptr-n { display: block; }
+  .ws-ptr-legend { display: block; }
+  .ws-stage-dots { left: 5%; bottom: 30px; width: 42vw; }
+  .ws-next { bottom: 16px; }
+  .ws-flow-v { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .ws-flow-v > div { padding: 8px 6px 8px 0; gap: 3px; }
+  .ws-flow-v > div + div { padding-left: 8px; }
+  .ws-flow-v span { display: none; }
+  .ws-flow-v b { font-size: 12px; }
+  .ws-spec-list { grid-template-columns: 1fr 1fr; gap: 0 14px; }
+  .ws-spec-list div { padding: 7px 0 8px; gap: 2px; }
+  .ws-spec-list span { display: none; }
+  .ws-spec-list b { font-size: 13.5px; }
+  .ws-loop-v > div { padding: 8px 8px 9px 0; font-size: 12px; gap: 3px; }
+  .ws-agents-v { grid-template-columns: 1fr 1fr; gap: 0 12px; }
+  .ws-agents-v > div { padding: 6px 0 7px; }
+  .ws-agents-v span { display: none; }
+  .ws-agents-v b { font-size: 13px; }
+  .ws-agents-v i { font-size: 9px; }
+  .ws-bom-v { grid-template-columns: 1fr 1fr; gap: 6px 14px; }
+  .ws-bom-v li { font-size: 11px; line-height: 1.35; }
+  .ws-bom-v > div > b { font-size: 9.5px; margin-bottom: 4px; padding-bottom: 4px; }
+  .ws-bignum b { font-size: 36px; }
+  .ws-bignum > div { padding: 10px 0 11px; }
+  .ws-bignum small { font-size: 12px; }
+  .ws-copy-body ul { gap: 3px; }
+}
+@media (max-width: 900px) and (max-height: 700px) {
+  .ws-copy { top: 50%; }
+  .ws-copy-body { font-size: 13px; line-height: 1.45; }
+  .ws-copy h2 { font-size: clamp(20px, 6vw, 28px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ws-frame, .ws-pic, .ws-copy, .ws-pointers line, .ws-pointers circle, .ws-ptr-label { transition: none !important; }
+  .ws-zoom img { transform: scale(calc(1 + var(--zoom, 2.6))); }
+}

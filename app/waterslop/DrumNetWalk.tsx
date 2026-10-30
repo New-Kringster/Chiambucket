@@ -1,12 +1,15 @@
 'use client';
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
-import { AnimatePresence, LazyMotion, domAnimation, m } from 'framer-motion';
+import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
+import { LazyMotion, domAnimation, m } from 'framer-motion';
 import { DN } from './drumnet-data';
+import Story, { useFrame, type Frame } from './Story';
 
-/* DrumNetWalk: steps through one real DrumNet V10 run, from the 800 x 600 capture
-   to the final reading. Every map, score and box comes from the same run the report
-   figures were drawn from (drumnet-data.ts). The stage is one 1000 x 540 SVG so it
-   scales to any width without reflow; the readout below has a fixed reserve. */
+/* DrumNetStory: the DrumNet chapter. Three frames introduce the problem and the
+   three-stage pipeline, then one real DrumNet V10 run is played forward one
+   operation at a time, from the 800 x 600 capture to the final reading, driven by
+   the reader's scrolling. Every map, score and box comes from the same run the
+   report figures were drawn from (drumnet-data.ts). Each step draws on one
+   1000 x 540 SVG stage so it scales to any width. */
 
 const A = '/images/waterslop/dn/';
 const RED = '#ff6666';
@@ -732,20 +735,11 @@ function AverageAnim({ mode, reduced }: { mode: 'col' | 'row'; reduced: boolean 
   );
 }
 
-const STAGES = ['Capture', 'Spotter', 'Refiner', 'Cut', 'Reader', 'Vote'];
-const ROMANS = ['I', 'II', 'III', 'IV', 'V', 'VI'];
-const LONGEST = STEPS.reduce((a, s) => (s.caption.length > a.length ? s.caption : a), '');
-const STEP_MS = 5200;
-const LONG_STEPS: Record<string, number> = { colavg: 7600, rowavg: 5600, cut: 6200 };
 
-export default function DrumNetWalk() {
-  const [i, setI] = useState(0);
-  const [auto, setAuto] = useState(true);
-  const [inView, setInView] = useState(false);
+/* One step's stage. The squash animations restart when the frame becomes active. */
+function StepVisual({ step }: { step: Step }) {
+  const { active } = useFrame();
   const [reduced, setReduced] = useState(false);
-  const [run, setRun] = useState(0);
-  const rootRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
     const set = () => setReduced(mq.matches);
@@ -753,85 +747,95 @@ export default function DrumNetWalk() {
     mq.addEventListener('change', set);
     return () => mq.removeEventListener('change', set);
   }, []);
-  useEffect(() => {
-    const el = rootRef.current;
-    if (!el) return;
-    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.25 });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-  useEffect(() => {
-    if (!auto || !inView) return;
-    const t = setTimeout(() => setI((p) => (p + 1) % STEPS.length), LONG_STEPS[STEPS[i].id] ?? STEP_MS);
-    return () => clearTimeout(t);
-  }, [auto, inView, i, run]);
-
-  const go = (n: number) => { setAuto(false); setI(((n % STEPS.length) + STEPS.length) % STEPS.length); setRun((r) => r + 1); };
-  const step = STEPS[i];
-  const stageIdx = STAGES.indexOf(step.stage);
-  const visual = useMemo(() => step.draw(reduced), [step, reduced]);
-
   return (
     <LazyMotion features={domAnimation}>
-      <div ref={rootRef} className="ws-panel dn" data-no-zoom>
-        <div className="ws-panel-head">
-          <div className="ws-tabs" role="tablist" aria-label="Pipeline stage">
-            {STAGES.map((s, k) => {
-              const first = STEPS.findIndex((x) => x.stage === s);
-              return (
-                <button key={s} type="button" role="tab" aria-selected={k === stageIdx} className={`ws-tab${k === stageIdx ? ' on' : k < stageIdx ? ' done' : ''}`} onClick={() => go(first)}>
-                  <span className="n">{ROMANS[k]}</span>{s}
-                </button>
-              );
-            })}
-          </div>
-          <button type="button" className={`ws-play${auto ? ' on' : ''}`} onClick={() => { setAuto((a) => !a); setRun((r) => r + 1); }} aria-pressed={auto}>
-            <span className="dot" aria-hidden="true" />{auto ? 'Playing' : 'Paused'}
-          </button>
-        </div>
-
-        <div className="ws-stage dn-stage">
-          <AnimatePresence mode="wait" initial={false}>
-            <m.svg key={step.id + run} viewBox="0 0 1000 540" className="dn-svg" role="img" aria-label={step.title} initial={reduced ? false : { opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
-              {visual}
-            </m.svg>
-          </AnimatePresence>
-        </div>
-        <div className="ws-progress" aria-hidden="true">
-          {STEPS.map((s, k) => <button key={s.id} type="button" tabIndex={-1} className={k === i ? 'on' : undefined} onClick={() => go(k)} title={s.title} />)}
-        </div>
-
-        <div className="dn-read">
-          <div className="dn-read-top">
-            <span className="ws-eyebrow">{step.stage} · step {i + 1} of {STEPS.length}</span>
-            <div className="ws-arrows">
-              <button type="button" className="ws-arrow" onClick={() => go(i - 1)} aria-label="Previous step">←</button>
-              <button type="button" className="ws-arrow" onClick={() => go(i + 1)} aria-label="Next step">→</button>
-            </div>
-          </div>
-          <h4 className="ws-wtitle">{step.title}</h4>
-          <div className="dn-cap-wrap">
-            <p className="ws-wcap dn-cap-sizer" aria-hidden="true">{LONGEST}</p>
-            <p className="ws-wcap">{step.caption}</p>
-          </div>
-          <div className="ws-facts">
-            {step.facts.map(([k, v]) => <span key={k} className="ws-fact"><b>{k}</b>{v}</span>)}
-          </div>
-        </div>
-
+      <div className="ws-wstage dn-stage" style={{ ['--ar' as string]: 1000 / 540 }} data-no-zoom>
+        <svg key={active ? 'live' : 'still'} viewBox="0 0 1000 540" className="dn-svg" role="img" aria-label={step.title}>
+          {step.draw(reduced || !active)}
+        </svg>
         <style>{`
           .dn-svg { display: block; width: 100%; height: auto; aspect-ratio: 1000 / 540; }
-          .dn-read { padding: 16px 16px 18px; }
-          .dn-read-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-          .dn-cap-wrap { display: grid; }
-          .dn-cap-wrap > p { grid-area: 1 / 1; }
-          .dn-cap-sizer { visibility: hidden; pointer-events: none; }
           .dn-col { transform-box: view-box; }
           @keyframes dn-squash { from { transform: translate(0,0) scale(1,1); } 55% { transform: translate(0,0) scale(1,1); } to { transform: translate(var(--tx), var(--ty)) scale(var(--sx), var(--sy)); } }
           @keyframes dn-appear { from { opacity: 0; } to { opacity: 1; } }
-          @media (max-width: 640px) { .dn-read { padding: 12px 12px 14px; } }
         `}</style>
       </div>
     </LazyMotion>
   );
+}
+
+const I = '/images/waterslop/';
+const INTRO: Frame[] = [
+  {
+    id: 'half-rolled', eyebrow: 'The problem', title: 'Half-rolled drums',
+    body: <p>OCR is a relatively solved problem, with plenty of models to choose from. What complicates this application is that water meter drums have an in-between state when transitioning from one value to another, known as half-rolled drums, which makes it significantly harder to guess the true value of that drum.</p>,
+    visual: <img src={I + 'half-rolled.webp'} alt="A MeterSim register reading 0000697 where the last drum is caught between a 7 and an 8" className="light" loading="lazy" decoding="async" />,
+    pointers: [{ at: [91, 50], label: 'caught between 7 and 8', side: 'l' }],
+  },
+  {
+    id: 'window', eyebrow: 'The problem', title: 'Finding the digit window',
+    body: <p>The second hurdle was locating the meter&rsquo;s digit window, then cutting out each digit correctly, before feeding it to the OCR model. DrumNet&rsquo;s architecture is built around solving these two problems step by step.</p>,
+    visual: <img src={I + 'windownet-early.webp'} alt="Eight Itron drum-window crops with red outer boxes and green drum splits from an early WindowNet" loading="lazy" decoding="async" />,
+    pointers: [{ at: [12, 40], label: 'the window found', side: 'r', to: [20, 12] }, { at: [62, 60], label: 'each drum cut', to: [70, 88] }],
+  },
+  {
+    id: 'arch', eyebrow: 'Network architecture', title: 'Three stages, 693K parameters',
+    body: (
+      <>
+        <p>DrumNet V10 is a 693K-parameter, 3-stage CNN pipeline: the Spotter network, the Edge refiner network and the Reader network. The Spotter and the Refiner are known collectively as WindowNet; its job is to find the location of the drums on the meter and cut them out. The cut-out images are then passed to the reader network, which makes the final prediction.</p>
+        <p className="ws-note">WindowNet runs during setup and stores the Region Of Interest; standard readings reuse it. A low-confidence reading reruns DrumNet with WindowNet as a recovery mode.</p>
+      </>
+    ),
+    visual: (
+      <div className="ws-trio-v">
+        <figure><img src={I + 'dia-spotter.webp'} alt="The DetNet spotter diagram" loading="lazy" decoding="async" /><figcaption>Spotter (DetNet)</figcaption></figure>
+        <figure><img src={I + 'dia-refiner.webp'} alt="The RefNet refiner diagram" loading="lazy" decoding="async" /><figcaption>Refiner (RefNet)</figcaption></figure>
+        <figure><img src={I + 'dia-reader.webp'} alt="A single DrumNet reader diagram" loading="lazy" decoding="async" /><figcaption>Reader × 3</figcaption></figure>
+      </div>
+    ),
+  },
+];
+
+const FRAMES: Frame[] = [
+  ...INTRO,
+  ...STEPS.map((st, k) => ({
+    id: st.id,
+    eyebrow: `${st.stage} · step ${k + 1} of ${STEPS.length}`,
+    title: st.title,
+    body: (
+      <>
+        <p>{st.caption}</p>
+        <div className="ws-facts">{st.facts.map(([a, b]) => <span key={a} className="ws-fact"><b>{a}</b>{b}</span>)}</div>
+      </>
+    ),
+    visual: <StepVisual step={st} />,
+  })),
+  {
+    id: 'summary', eyebrow: 'DrumNet V10', title: 'Where it stands',
+    body: <p>The visualisations are from an image of a meter type WindowNet had never seen before. It was therefore unable to correctly identify the ROI; the results are promising and show conceptually how WindowNet works, but the window used from the cut stage onwards was drawn by hand.</p>,
+    wide: true,
+    visual: (
+      <div className="ws-tablewrap">
+        <table className="ws-table ws-kv">
+          <tbody>
+            {[
+              ['Parameters', '693K (DrumNet ~620K + WindowNet ~73K)'],
+              ['Size on board', '~920 KB (DrumNet 636 KB int8 + WindowNet ~285 KB)'],
+              ['Read time', '~2.1 s (with WindowNet)'],
+              ['Training data', 'DrumNet reader: 197,204 images. WindowNet: 12,000 simulator photos + ~5,300 real-meter photos'],
+              ['Training time (DrumNet only)', '~6 h on an RTX 3080 laptop (fine-tuned from V9b); WindowNet not counted'],
+              ['Accuracy: full pipeline', '56 % (808 / 1,440)'],
+              ['Accuracy: training fit (DrumNet only)', '99.8 %'],
+              ['Accuracy: pooled test set (DrumNet only)', '93.2 % (538 / 577)'],
+              ['Accuracy: on board (DrumNet only)', '85.8 %'],
+            ].map(([k, v]) => <tr key={k} className={k.startsWith('Accuracy: full') ? 'hl' : undefined}><th scope="row">{k}</th><td>{v}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+    ),
+  },
+];
+
+export default function DrumNetStory({ chapter }: { chapter: string }) {
+  return <Story id="drumnet" chapter={chapter} title="DrumNet" frames={FRAMES} per={0.85} />;
 }
