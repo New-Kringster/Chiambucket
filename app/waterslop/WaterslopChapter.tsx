@@ -34,8 +34,12 @@ export default function WaterslopChapter({ numeral = 'XI' }: { numeral?: string 
 }
 
 /* The exported chapter ends with a 'Component notes and sources' block and a skip
-   link to it; the article keeps the chapter to the animation. */
+   link to it; the article keeps the chapter to the animation. The notes block is
+   not removed, though: at the last stop the chapter's Next button scrolls it into
+   view, so it stays as an empty, invisible anchor at the chapter's end, and Next
+   carries the reader on to the section after the chapter. With display: none,
+   Next had nowhere to go and did nothing. */
 export function WaterslopChapterStyle() {
   /* Its top-anchored titles clear the fixed site nav: PageFx measures the nav as --ws-nav. */
-  return <style>{`.ws-chapter #reading, .ws-chapter .skip { display: none; } .ws-chapter { --ws-top-inset: var(--ws-nav, 0px); }`}</style>;
+  return <style>{`.ws-chapter .skip { display: none; } .ws-pcb .ws-chapter #reading { display: block; height: 0; margin: 0; padding: 0; border: 0; overflow: hidden; visibility: hidden; } .ws-chapter { --ws-top-inset: var(--ws-nav, 0px); }`}</style>;
 }
