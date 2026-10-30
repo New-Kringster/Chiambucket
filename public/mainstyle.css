@@ -3246,8 +3246,9 @@ html.sensory-active .hp-pf-card.is-soon:hover {
    (84 x 94: the level, then its words), linking to that level on /ai-use.
    On a project image it sits in the top-right corner, like a rating on a
    game box, above the peek overlay; in a tag or action row it sits beside
-   the tags. The label's small line needs about 72px of height to stay
-   legible, so only the compact cards go smaller.
+   the tags. On wider screens the label is about 72px tall so its small
+   line stays legible; on phones it is scaled down to about 46px so it does
+   not crowd the pictures, and its level and first line still read.
    ========================================================= */
 .ai-mark { --ai-h: 72px; position: relative; z-index: 5; display: inline-flex; flex: none; align-self: center; line-height: 0; border-radius: 9px;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -3267,8 +3268,13 @@ html.sensory-active .hp-pf-card.is-soon:hover {
 /* OCR Reader hero: under the lead, on the lead's left edge (the copy column is right-aligned) */
 .ws-hero-copy > .ai-mark { --ai-h: 76px; align-self: flex-end; margin: 2.6vh calc(min(100%, 440px) - var(--ai-h) * 84 / 94) 0 0; }
 @media (max-width: 560px) {
+  .ai-mark { --ai-h: 46px; border-radius: 6px; }
+  .hp-pf-thumb > .ai-mark { top: 9px; right: 9px; }
+  .hp-pf-card.is-compact .hp-pf-thumb > .ai-mark { --ai-h: 38px; top: 6px; right: 6px; border-radius: 5px; }
   /* the spotlight badges are long on a phone, so the label moves to the bottom corner */
-  .hp-spot-media > .ai-mark { --ai-h: 60px; top: auto; bottom: 10px; right: 10px; }
-  .art-tags .ai-mark, .ws-hero-copy > .ai-mark { --ai-h: 68px; }
+  .hp-spot-media > .ai-mark { --ai-h: 46px; top: auto; bottom: 9px; right: 9px; }
+  .hp-rd-hero-tags .ai-mark { --ai-h: 44px; }
+  .art-tags .ai-mark, .ws-hero-copy > .ai-mark { --ai-h: 50px; }
+  .ai-mark img, .hp-pf-thumb .ai-mark img, .hp-spot-media .ai-mark img, .hp-rd-hero .ai-mark img { filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.4)); }
 }
 @media (prefers-reduced-motion: reduce) { .ai-mark { transition: none; } .ai-mark:hover { transform: none; } }
