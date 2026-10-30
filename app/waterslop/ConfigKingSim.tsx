@@ -1,14 +1,19 @@
 'use client';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useFrame } from './Story';
 
 /* ConfigKingSim: the Cardputer's 240 x 135 screen, drawn the way the firmware
-   draws it. The drawing primitives are ported from cardputer-setup/src/ui.cpp
-   (pills, boxed fields, menu rows, popups, battery and signal glyphs, the shared
-   viewport transform) and the screens from app.cpp (home, find, the seven wizard
-   steps, Read, Configure, More, About). The reader on the other end of the BLE
-   link is simulated: a blank reader the first time, a configured one after Finish.
-   Values are the ones in the report's screenshots and the DrumNet run. */
+   draws it, inside a drawing of the Cardputer itself. The drawing primitives are
+   ported from cardputer-setup/src/ui.cpp (pills, boxed fields, menu rows, popups,
+   battery and signal glyphs, the shared viewport transform) and the screens from
+   app.cpp (home, find, the seven wizard steps, Read, Configure, More, About).
+   The reader on the other end of the BLE link is simulated: a blank reader the
+   first time, a configured one after Finish. Values are the ones in the report's
+   screenshots and the DrumNet run.
+
+   Everything drawn that the firmware reacts to is also a touch target: menu rows,
+   fields and their arrows, the key pills in the hints, popup buttons. The picture
+   pans by dragging. The keyboard works once the reader has clicked the device. */
 
 const W = 240, H = 135, BAR_H = 13, FOOT_H = 13;
 const C = { BG: '#000000', FG: '#ffffff', DIM: '#9ca29c', MUTE: '#4a4d4a', LINE: '#292c29', ACC: '#ffa600', OK: '#29ff21', BAD: '#ff5152', WARN: '#ffd700', SEL: '#182439', BAR: '#101821', RED_TINT: '#630000', PILL: '#393c39', FRAME: '#6b6d6b', POP: '#080808', CELL: '#181c18' };
@@ -126,6 +131,20 @@ function preset(scene: SimScene): Sim {
   }
 }
 
+/* ── touch targets, collected while drawing ── */
+export type Key = { ch?: string; enter?: boolean; esc?: boolean; del?: boolean; fn?: boolean; tab?: boolean; up?: boolean; down?: boolean; left?: boolean; right?: boolean };
+type Hit = Rect & { key?: Key; pre?: (s: Sim) => Sim };
+let HITS: Hit[] = [];
+const hit = (h: Hit) => { HITS.push(h); };
+const pillKey = (name: string): Key | null => {
+  switch (name) {
+    case 'Enter': return { enter: true }; case 'Esc': return { esc: true }; case 'Tab': return { tab: true };
+    case 'UD': return { down: true }; case 'LR': return { right: true };
+    case 'L': return { left: true }; case 'R': return { right: true }; case 'U': return { up: true }; case 'D': return { down: true };
+    default: return name.length === 1 ? { ch: name } : null;
+  }
+};
+
 /* ── drawing (ui.cpp) ── */
 type Ctx = CanvasRenderingContext2D;
 function text(g: Ctx, x: number, y: number, s: string, color = C.FG) { g.font = FONT; g.fillStyle = color; g.textBaseline = 'top'; g.fillText(s, x, y - 1); }
@@ -158,13 +177,21 @@ function pill(g: Ctx, x: number, y: number, key: string) {
   if (key === 'L') arrowL(g, ax, ay, C.FG); else if (key === 'R') arrowR(g, ax, ay, C.FG); else if (key === 'U') arrowU(g, ax, ay, C.FG); else if (key === 'D') arrowD(g, ax, ay, C.FG);
   else if (key === 'LR') { arrowL(g, ax, ay, C.FG); arrowR(g, ax + 8, ay, C.FG); } else if (key === 'UD') { arrowU(g, ax, ay, C.FG); arrowD(g, ax + 7, ay, C.FG); }
   else text(g, x + 4, y + 2, key, C.FG);
+  const k = pillKey(key);
+  if (k) hit({ x: x - 2, y: y - 3, w: w + 4, h: h + 6, key: k });
   return x + w;
 }
 function hintsAt(g: Ctx, x: number, y: number, spec: string) {
   let i = 0;
   while (i < spec.length) {
     if (spec[i] === '[') { const e = spec.indexOf(']', i); if (e < 0) break; x = pill(g, x, y, spec.slice(i + 1, e)) + 2; i = e + 1; }
-    else { let e = spec.indexOf('[', i); if (e < 0) e = spec.length; const t = spec.slice(i, e); text(g, x, y + 2, t, C.DIM); x += textW(g, t); i = e; }
+    else {
+      let e = spec.indexOf('[', i); if (e < 0) e = spec.length;
+      const t = spec.slice(i, e); text(g, x, y + 2, t, C.DIM);
+      // the word after a pill is part of its target
+      const last = HITS[HITS.length - 1]; if (last && last.y <= y && last.y + last.h >= y) last.w += textW(g, t.trimEnd());
+      x += textW(g, t); i = e;
+    }
   }
 }
 function hints(g: Ctx, spec: string) { rect(g, 0, H - FOOT_H, W, FOOT_H, C.BG, true); hintsAt(g, 2, H - FOOT_H + 1, spec); }
@@ -186,22 +213,29 @@ function topBar(g: Ctx, ic: string, left: string, centre: string, level: number,
   textRight(g, W - 24, 3, `${level}%`, C.DIM);
   battery(g, W - 22, 3, level, false);
 }
-function field(g: Ctx, x: number, y: number, w: number, ic: string, label: string, value: string, focused: boolean, arrows: boolean, valueColor = C.FG, boxX = 0) {
+/* A field. Tapping an unfocused field focuses it; tapping a focused field with
+   arrows changes it (left half down, right half up), without arrows it edits. */
+function field(g: Ctx, x: number, y: number, w: number, ic: string, label: string, value: string, focused: boolean, arrows: boolean, valueColor = C.FG, boxX = 0, focus?: (s: Sim) => Sim) {
   icon(g, x, y + 1, ic, focused ? C.FG : C.DIM);
   text(g, x + 15, y + 3, label, focused ? C.FG : C.DIM);
   const bx = boxX > 0 ? boxX : x + 15 + textW(g, label) + 6, bw = w - (bx - x) - (arrows ? 8 : 0);
   rrect(g, bx, y, bw, 14, 3, focused ? C.ACC : C.LINE, false);
   text(g, bx + 5, y + 3, value, focused ? valueColor : valueColor === C.FG ? C.DIM : valueColor);
   if (focused && arrows) { arrowL(g, bx - 7, y + 4, C.ACC); arrowR(g, bx + bw + 3, y + 4, C.ACC); }
+  if (focused && arrows) { hit({ x: x, y: y - 2, w: bx - x + bw / 2, h: 18, key: { left: true } }); hit({ x: bx + bw / 2, y: y - 2, w: w - (bx + bw / 2 - x) + 10, h: 18, key: { right: true } }); }
+  else if (focused) hit({ x, y: y - 2, w, h: 18, key: { enter: true } });
+  else if (focus) hit({ x, y: y - 2, w, h: 18, pre: focus });
 }
-function menuRow(g: Ctx, y: number, ic: string, label: string, selected: boolean, right?: string) {
+function menuRow(g: Ctx, y: number, ic: string, label: string, selected: boolean, index: number, right?: string) {
   if (selected) rrect(g, 2, y - 2, W - 4, 15, 4, C.SEL, true);
   icon(g, 8, y, ic, selected ? C.ACC : C.DIM);
   text(g, 24, y + 2, label, selected ? C.FG : C.DIM);
   if (right) textRight(g, W - 8, y + 2, right, C.DIM);
   if (selected) arrowR(g, W - 12, y + 2, C.ACC);
+  hit({ x: 2, y: y - 2, w: W - 4, h: 16, key: { enter: true }, pre: (s) => ({ ...s, menuIndex: index }) });
 }
 function popup(g: Ctx, title: string, lines: string[], hintSpec: string, ic = 'info') {
+  HITS = [];   // a popup takes every tap
   const n = lines.length, pw = 220, ph = 24 + n * 11 + 18, px = (W - pw) / 2, py = Math.floor((H - ph) / 2) - 2;
   rrect(g, px, py, pw, ph, 5, C.POP, true); rrect(g, px, py, pw, ph, 5, C.ACC, false);
   icon(g, px + 7, py + 5, ic, C.ACC); text(g, px + 22, py + 7, title, C.FG);
@@ -217,14 +251,19 @@ function loadPhoto(cb: () => void) {
   photoWaiters.push(cb);
   if (!photo) { photo = new Image(); photo.src = PHOTO; photo.onload = () => { photoWaiters.splice(0).forEach((f) => f()); }; }
 }
-function viewportImage(g: Ctx, v: Vp, has: boolean) {
+/* How bright the picture looks for the camera settings, relative to the
+   settings the real frame was taken with (exposure 312, gain 3, LED 35 %). */
+const brightness = (rv: RV) => Math.min(2.6, Math.max(0.08, Math.pow(rv.exposure / 312, 0.6) * (1 + (rv.gain - 3) * 0.12) * Math.pow(Math.max(1, rv.ledDuty) / 35, 0.45)));
+function viewportImage(g: Ctx, v: Vp, has: boolean, bright: number) {
   rect(g, v.view.x, v.view.y, v.view.w, v.view.h, C.POP, true);
   if (!has || !photo || !photo.complete || !photo.naturalWidth) return false;
   g.save(); g.beginPath(); g.rect(v.view.x, v.view.y, v.view.w, v.view.h); g.clip();
   const k = photo.naturalWidth / FRAME_W;
   const sx = v.px * k, sy = v.py * k, sw = (v.view.w / v.zoom) * k, sh = (v.view.h / v.zoom) * k;
   g.imageSmoothingEnabled = true;
+  if (Math.abs(bright - 1) > 0.02) g.filter = `brightness(${bright.toFixed(3)})`;
   g.drawImage(photo, sx, sy, sw, sh, v.view.x, v.view.y, v.view.w, v.view.h);
+  g.filter = 'none';
   g.restore();
   return true;
 }
@@ -260,8 +299,11 @@ const moreMenu = (p: Phase) => ['Radio test', 'Reader info', 'About', ...(p === 
 const configureMenu = ['Name and interval', 'Drum layout', 'Camera', 'Read window'];
 const rssiBars = (rssi: number) => rssi > -70 ? 4 : rssi > -90 ? 3 : rssi > -105 ? 2 : 1;
 const saveOrNext = (s: Sim) => s.wizMode === 'edit' ? 'save' : 'next';
+/* the screens that show the reader's picture, so a drag pans it */
+const hasViewport = (s: Sim) => s.screen === 'wizard' && (s.step === 2 || s.step === 3 || s.step === 4) && s.popup.kind === 'none';
 
 function render(g: Ctx, s: Sim, now: number) {
+  HITS = [];
   rect(g, 0, 0, W, H, C.BG, true);
   const connected = s.phase !== 'disconnected';
   const centre = s.screen === 'wizard' ? (s.wizMode === 'setup' ? `${s.step + 1}/7` : s.wizMode === 'edit' ? 'edit' : '') : s.screen === 'about' ? 'about' : s.screen === 'scan' ? 'find' : '';
@@ -269,13 +311,14 @@ function render(g: Ctx, s: Sim, now: number) {
   const menuScreen = (items: string[], title: string, hint: string) => {
     text(g, 6, BAR_H + 3, title, C.DIM);
     const rowH = items.length > 4 ? 16 : 18;
-    items.forEach((it, i) => menuRow(g, BAR_H + 15 + i * rowH, menuIcon[it] ?? 'info', it, i === s.menuIndex));
+    items.forEach((it, i) => menuRow(g, BAR_H + 15 + i * rowH, menuIcon[it] ?? 'info', it, i === s.menuIndex, i));
     hints(g, hint);
   };
   const stepTitle = () => { icon(g, 4, BAR_H + 2, STEP_ICONS[s.step], C.ACC); text(g, 19, BAR_H + 4, STEP_TITLES[s.step], C.FG); };
-  const infoButton = (x: number, y: number, focused: boolean) => { if (focused) rrect(g, x, y, 15, 15, 4, C.SEL, true); rrect(g, x, y, 15, 15, 4, focused ? C.ACC : C.LINE, false); icon(g, x + 2, y + 2, 'info', focused ? C.ACC : C.DIM); };
+  const infoButton = (x: number, y: number, focused: boolean) => { if (focused) rrect(g, x, y, 15, 15, 4, C.SEL, true); rrect(g, x, y, 15, 15, 4, focused ? C.ACC : C.LINE, false); icon(g, x + 2, y + 2, 'info', focused ? C.ACC : C.DIM); hit({ x: x - 3, y: y - 3, w: 21, h: 21, key: { ch: 'i' } }); };
+  const bright = brightness(s.rv);
   const drawFrame = (overlayBox: boolean) => {
-    if (!viewportImage(g, s.vp, s.hasFrame)) text(g, s.vp.view.x + 8, s.vp.view.y + s.vp.view.h / 2 - 4, 'no picture', C.DIM);
+    if (!viewportImage(g, s.vp, s.hasFrame, bright)) text(g, s.vp.view.x + 8, s.vp.view.y + s.vp.view.h / 2 - 4, 'no picture', C.DIM);
     if (overlayBox && s.rv.roi.w > 0) viewportBox(g, s.vp, s.rv.roi, s.rv.integers, s.rv.fractions, C.OK, true);
     viewportFrame(g, s.vp);
   };
@@ -284,7 +327,7 @@ function render(g: Ctx, s: Sim, now: number) {
       if (s.phase === 'disconnected') {
         textBig(g, 6, BAR_H + 4, 'ConfigKing', C.FG);
         text(g, 6, BAR_H + 22, s.scanning ? 'Looking for readers nearby' : 'Water meter reader setup', C.DIM);
-        homeMenu(s.phase).forEach((it, i) => menuRow(g, BAR_H + 40 + i * 22, menuIcon[it], it, i === s.menuIndex));
+        homeMenu(s.phase).forEach((it, i) => menuRow(g, BAR_H + 40 + i * 22, menuIcon[it], it, i === s.menuIndex, i));
         hints(g, '[UD] move  [Enter] select');
       } else menuScreen(homeMenu(s.phase), s.phase === 'unfinished' ? 'Setup not finished' : 'Configured reader', '[Enter] select  [i] info  [Esc] leave');
       break;
@@ -299,6 +342,7 @@ function render(g: Ctx, s: Sim, now: number) {
         if (sel) rrect(g, 2, y - 2, W - 4, 15, 4, C.SEL, true);
         icon(g, 8, y, 'reader', sel ? C.ACC : C.DIM); text(g, 24, y + 2, r.name, sel ? C.FG : C.DIM); text(g, 90, y + 2, r.state ? 'configured' : 'blank', C.DIM);
         signalBars(g, W - 44, y - 1, 4, sel ? C.FG : C.DIM); textRight(g, W - 6, y + 2, String(r.rssi), C.DIM);
+        hit({ x: 2, y: y - 2, w: W - 4, h: 16, key: { enter: true }, pre: (st) => ({ ...st, scanIndex: i }) });
       });
       hints(g, '[Enter] connect  [r] rescan  [Esc] back');
       break;
@@ -338,8 +382,8 @@ function render(g: Ctx, s: Sim, now: number) {
       switch (s.step) {
         case 0: {
           stepTitle(); infoButton(W - 22, BAR_H + 1, s.fieldIndex === 2);
-          field(g, 6, BAR_H + 24, 200, 'tag', 'Name', s.editing ? s.editBuf + '_' : s.rv.name, s.fieldIndex === 0, false, C.FG, 62);
-          field(g, 6, BAR_H + 48, 200, 'clock', 'Every', `${s.rv.intervalS} s`, s.fieldIndex === 1, true, C.FG, 62);
+          field(g, 6, BAR_H + 24, 200, 'tag', 'Name', s.editing ? s.editBuf + '_' : s.rv.name, s.fieldIndex === 0, false, C.FG, 62, (st) => ({ ...st, fieldIndex: 0 }));
+          field(g, 6, BAR_H + 48, 200, 'clock', 'Every', `${s.rv.intervalS} s`, s.fieldIndex === 1, true, C.FG, 62, (st) => ({ ...st, fieldIndex: 1 }));
           if (s.editing) hints(g, 'type a name  [Enter] done  [Esc] cancel');
           else if (s.fieldIndex === 0) hints(g, '[Enter] edit  [UD] field  [Esc] back');
           else if (s.fieldIndex === 1) hints(g, `[LR] change  [UD] field  [Enter] ${saveOrNext(s)}`);
@@ -348,8 +392,8 @@ function render(g: Ctx, s: Sim, now: number) {
         }
         case 1: {
           stepTitle();
-          field(g, 6, BAR_H + 22, 150, 'drums', 'Whole', String(s.rv.integers), s.fieldIndex === 0, true);
-          field(g, 6, BAR_H + 44, 150, 'drums', 'Decimal', String(s.rv.fractions), s.fieldIndex === 1, true, C.BAD);
+          field(g, 6, BAR_H + 22, 150, 'drums', 'Whole', String(s.rv.integers), s.fieldIndex === 0, true, C.FG, 0, (st) => ({ ...st, fieldIndex: 0 }));
+          field(g, 6, BAR_H + 44, 150, 'drums', 'Decimal', String(s.rv.fractions), s.fieldIndex === 1, true, C.BAD, 0, (st) => ({ ...st, fieldIndex: 1 }));
           const n = s.rv.integers + s.rv.fractions, cw = 14, x0 = 6, y0 = BAR_H + 68;
           const ex = layoutExample(s.rv.integers, s.rv.fractions).replace('.', '');
           for (let i = 0; i < n; i++) {
@@ -365,10 +409,11 @@ function render(g: Ctx, s: Sim, now: number) {
           drawFrame(false);
           const cx = 154, cw = W - cx - 4;
           icon(g, cx, BAR_H + 2, 'camera', C.ACC); text(g, cx + 15, BAR_H + 4, 'Camera', C.FG);
-          field(g, cx, BAR_H + 18, cw, 'exposure', '', String(s.rv.exposure), s.camCtl === 'Exposure', true);
-          field(g, cx, BAR_H + 36, cw, 'gain', '', String(s.rv.gain), s.camCtl === 'Gain', true);
-          field(g, cx, BAR_H + 54, cw, 'led', '', `${s.rv.ledDuty}%`, s.camCtl === 'LED', true);
+          field(g, cx, BAR_H + 18, cw, 'exposure', '', String(s.rv.exposure), s.camCtl === 'Exposure', true, C.FG, 0, (st) => ({ ...st, camCtl: 'Exposure' }));
+          field(g, cx, BAR_H + 36, cw, 'gain', '', String(s.rv.gain), s.camCtl === 'Gain', true, C.FG, 0, (st) => ({ ...st, camCtl: 'Gain' }));
+          field(g, cx, BAR_H + 54, cw, 'led', '', `${s.rv.ledDuty}%`, s.camCtl === 'LED', true, C.FG, 0, (st) => ({ ...st, camCtl: 'LED' }));
           icon(g, cx, BAR_H + 73, 'pan', s.camCtl === 'Pan' ? C.ACC : C.DIM); text(g, cx + 15, BAR_H + 75, 'Pan', s.camCtl === 'Pan' ? C.FG : C.DIM);
+          hit({ x: cx, y: BAR_H + 70, w: cw, h: 16, pre: (st) => ({ ...st, camCtl: 'Pan' }) });
           if (s.camCtl === 'Pan') { arrowL(g, cx + 40, BAR_H + 76, C.ACC); arrowR(g, cx + 48, BAR_H + 76, C.ACC); arrowU(g, cx + 58, BAR_H + 75, C.ACC); arrowD(g, cx + 67, BAR_H + 76, C.ACC); }
           let x = pill(g, cx, BAR_H + 87, 'Tab'); text(g, x + 3, BAR_H + 89, 'next ctl', C.DIM);
           x = pill(g, cx, BAR_H + 99, 'Enter'); text(g, x + 3, BAR_H + 101, saveOrNext(s), C.DIM);
@@ -393,7 +438,7 @@ function render(g: Ctx, s: Sim, now: number) {
         }
         case 4: {
           const r = s.read;
-          if (!viewportImage(g, s.vp, s.hasFrame)) text(g, s.vp.view.x + 8, s.vp.view.y + s.vp.view.h / 2 - 4, s.busy === 'read' ? 'reading...' : 'no picture', C.DIM);
+          if (!viewportImage(g, s.vp, s.hasFrame, bright)) text(g, s.vp.view.x + 8, s.vp.view.y + s.vp.view.h / 2 - 4, s.busy === 'read' ? 'reading...' : 'no picture', C.DIM);
           if (r && r.box.w > 0) viewportBox(g, s.vp, r.box, s.rv.integers, s.rv.fractions, r.status === 0 ? C.OK : r.status === 1 ? C.WARN : C.BAD, s.digitView === 0);
           if (r && s.digitView > 0) { const sr = screenRect(s.vp, drumRect(r.box, r.digits.length, s.digitView - 1)); g.save(); g.beginPath(); g.rect(s.vp.view.x, s.vp.view.y, s.vp.view.w, s.vp.view.h); g.clip(); rect(g, sr.x - 1, sr.y - 1, sr.w + 2, sr.h + 2, C.ACC, false); g.restore(); }
           viewportFrame(g, s.vp);
@@ -450,10 +495,11 @@ function render(g: Ctx, s: Sim, now: number) {
             const [ic, label, value, color] = rows[i + s.reviewScroll], y = y0 + i * dy;
             icon(g, 6, y - 1, ic, C.DIM); text(g, 21, y, label, C.DIM); text(g, 66, y, value.slice(0, 28), color);
           }
-          if (s.reviewScroll > 0) arrowU(g, W - 10, y0, C.DIM);
-          if (s.reviewScroll + visible < rows.length) arrowD(g, W - 10, y0 + (visible - 1) * dy, C.DIM);
+          if (s.reviewScroll > 0) { arrowU(g, W - 10, y0, C.DIM); hit({ x: W - 20, y: y0 - 6, w: 20, h: 16, key: { up: true } }); }
+          if (s.reviewScroll + visible < rows.length) { arrowD(g, W - 10, y0 + (visible - 1) * dy, C.DIM); hit({ x: W - 20, y: y0 + (visible - 1) * dy - 6, w: 20, h: 16, key: { down: true } }); }
           const by = H - FOOT_H - 16;
           rrect(g, 4, by, W - 8, 14, 4, C.ACC, true); icon(g, 10, by + 1, 'flag', C.BG); text(g, 26, by + 3, 'Finish: commit and start the reader', C.BG);
+          hit({ x: 4, y: by - 2, w: W - 8, h: 18, key: { enter: true } });
           hints(g, '[Enter] finish  [UD] scroll  [Esc] back');
           break;
         }
@@ -467,7 +513,6 @@ function render(g: Ctx, s: Sim, now: number) {
 }
 
 /* ── keys (app.cpp key half) ── */
-export type Key = { ch?: string; enter?: boolean; esc?: boolean; del?: boolean; fn?: boolean; tab?: boolean; up?: boolean; down?: boolean; left?: boolean; right?: boolean };
 type Later = (ms: number, kind: string, then: (s: Sim) => Sim) => void;
 
 const infoIdentity = (s: Sim): Sim => ({ ...s, popup: { kind: 'info', title: 'Reader details', icon: 'reader', hints: '[Esc] close', lines: [`DevEUI ${s.rv.devEui}`, `Firmware ${s.rv.fw}  ${s.rv.model}`, s.rv.configured ? 'Configured reader' : 'Blank reader, first setup', `App key ${s.rv.keySet ? 'loaded' : 'missing'}`, `Interval ${s.rv.intervalS} s  layout ${s.rv.integers}+${s.rv.fractions}`] } });
@@ -478,7 +523,7 @@ const confirm = (s: Sim, kind: Confirm, title: string, body: string): Sim => ({ 
 const goHome = (s: Sim): Sim => ({ ...s, screen: 'home', popup: { kind: 'none' }, phase: 'disconnected', menuIndex: 0, editing: false, hasFrame: false, read: null, radio: { tested: false, ok: false, ack: false }, dismissed: false });
 const goConnectedHome = (s: Sim): Sim => ({ ...s, screen: 'home', popup: { kind: 'none' }, menuIndex: 0, editing: false });
 function enterStep(s: Sim, step: Step, later: Later): Sim {
-  let n: Sim = { ...s, step, fieldIndex: 0, editing: false, reviewScroll: 0, digitView: 0, lastErr: '' };
+  const n: Sim = { ...s, step, fieldIndex: 0, editing: false, reviewScroll: 0, digitView: 0, lastErr: '' };
   if (step === 2) { n.camCtl = 'Pan'; n.vp = fitFrame({ ...n.vp, view: SIDE_VIEW }); if (!n.hasFrame) later(500, 'capture', (x) => ({ ...x, hasFrame: true, vp: fitFrame({ ...x.vp, view: SIDE_VIEW }) })); }
   if (step === 3) {
     n.roiMode = 'Move box'; n.vp = { ...n.vp, view: FULL_VIEW };
@@ -706,14 +751,53 @@ function wizardKey(s: Sim, k: Key, later: Later): Sim {
   return s;
 }
 
-/* ── the component ── */
-const KEYS: Array<[string, Key, string?]> = [
-  ['↑', { up: true }, 'Up'], ['↓', { down: true }, 'Down'], ['←', { left: true }, 'Left'], ['→', { right: true }, 'Right'],
-  ['Enter', { enter: true }], ['Esc', { esc: true }], ['Tab', { tab: true }], ['+', { ch: '+' }, 'Zoom in'], ['−', { ch: '-' }, 'Zoom out'],
-  ['i', { ch: 'i' }, 'Info'], ['p', { ch: 'p' }, 'Preset / refresh'], ['f', { ch: 'f' }, 'Find window'], ['d', { ch: 'd' }, 'Digit'], ['r', { ch: 'r' }, 'Read again'], ['t', { ch: 't' }, 'Radio test'], ['s', { ch: 's' }, 'Sound'],
+/* ── the Cardputer ── */
+/* The keyboard as printed on the device, four rows of fourteen. The firmware
+   reads the ` keycap as Esc and, with fn, ; . , / as the arrows; the drawing
+   prints those as the keys' second legends and sends them directly. */
+type KeyCap = { id: string; cap: string; sub?: string; key: Key | 'fn' | 'none'; w?: number };
+const ROWS: KeyCap[][] = [
+  [{ id: '`', cap: '`', sub: 'esc', key: { esc: true } }, ...'1234567890'.split('').map((c) => ({ id: c, cap: c, key: { ch: c } })), { id: '_', cap: '_', key: { ch: '_' } }, { id: '=', cap: '=', key: { ch: '=' } }, { id: 'del', cap: 'del', key: { del: true } }],
+  [{ id: 'tab', cap: 'tab', key: { tab: true } }, ...'qwertyuiop'.split('').map((c) => ({ id: c, cap: c, key: { ch: c } })), { id: '[', cap: '[', key: { ch: '[' } }, { id: ']', cap: ']', key: { ch: ']' } }, { id: '\\', cap: '\\', key: { ch: '\\' } }],
+  [{ id: 'fn', cap: 'fn', key: 'fn' }, { id: 'shift', cap: 'shift', key: 'none' }, ...'asdfghjkl'.split('').map((c) => ({ id: c, cap: c, key: { ch: c } })), { id: ';', cap: ';', sub: '↑', key: { up: true } }, { id: "'", cap: "'", key: { ch: "'" } }, { id: 'enter', cap: 'enter', key: { enter: true } }],
+  [{ id: 'ctrl', cap: 'ctrl', key: 'none' }, { id: 'opt', cap: 'opt', key: 'none' }, { id: 'alt', cap: 'alt', key: 'none' }, ...'zxcvbnm'.split('').map((c) => ({ id: c, cap: c, key: { ch: c } })), { id: ',', cap: ',', sub: '←', key: { left: true } }, { id: '.', cap: '.', sub: '↓', key: { down: true } }, { id: '/', cap: '/', sub: '→', key: { right: true } }, { id: 'space', cap: 'space', key: { ch: ' ' } }],
+];
+/* the physical key that lights up for a key event */
+const capFor = (k: Key, raw?: string): string => k.esc ? '`' : k.enter ? 'enter' : k.tab ? 'tab' : k.del ? 'del' : k.up ? ';' : k.down ? '.' : k.left ? ',' : k.right ? '/' : raw && raw.length === 1 ? raw.toLowerCase() : '';
+
+/* The big keys beside the device: a cross of arrows, the three keys every
+   screen uses, and the letters that do something, each with its job. */
+const CLUSTER: Array<{ id: string; cap: string; sub?: string; key: Key; cls: string }> = [
+  { id: 'up', cap: '↑', key: { up: true }, cls: 'u' }, { id: 'left', cap: '←', key: { left: true }, cls: 'l' }, { id: 'down', cap: '↓', key: { down: true }, cls: 'd' }, { id: 'right', cap: '→', key: { right: true }, cls: 'r' },
+];
+const SHORTCUTS: Array<{ cap: string; sub: string; key: Key }> = [
+  { cap: 'Enter', sub: 'select', key: { enter: true } }, { cap: 'Esc', sub: 'back', key: { esc: true } }, { cap: 'Tab', sub: 'next control', key: { tab: true } },
+  { cap: '+', sub: 'zoom in', key: { ch: '+' } }, { cap: '−', sub: 'zoom out', key: { ch: '-' } }, { cap: 'i', sub: 'info', key: { ch: 'i' } }, { cap: 'p', sub: 'preset, refresh', key: { ch: 'p' } },
+  { cap: 'f', sub: 'find window', key: { ch: 'f' } }, { cap: 'd', sub: 'next digit', key: { ch: 'd' } }, { cap: 'r', sub: 'read again', key: { ch: 'r' } }, { cap: 't', sub: 'radio test', key: { ch: 't' } },
 ];
 
-export default function ConfigKingSim({ scene = 'free', keys = true, className }: { scene?: SimScene; keys?: boolean; className?: string }) {
+function Body() {
+  // the device body: a Cardputer seen straight on, drawn in the page's own line
+  return (
+    <svg className="ck-body" viewBox="0 0 1000 640" aria-hidden="true">
+      <defs>
+        <linearGradient id="ck-shell" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#30302f" /><stop offset="1" stopColor="#161615" /></linearGradient>
+        <linearGradient id="ck-bez" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#0b0b0b" /><stop offset="1" stopColor="#040404" /></linearGradient>
+      </defs>
+      <rect x="1" y="1" width="998" height="638" rx="30" fill="url(#ck-shell)" stroke="#4a4846" />
+      <rect x="6" y="6" width="988" height="628" rx="26" fill="none" stroke="#ffffff10" />
+      <rect x="138" y="30" width="724" height="414" rx="12" fill="url(#ck-bez)" stroke="#3a3a3a" />
+      <text x="40" y="58" fontSize="17" fontWeight="700" fill="#e0582b" fontFamily="Manrope, Arial, sans-serif" letterSpacing="2">M5STACK</text>
+      <text x="40" y="78" fontSize="12" fill="#8a8580" fontFamily="Manrope, Arial, sans-serif" letterSpacing="1.5">CARDPUTER</text>
+      <text x="960" y="58" fontSize="12" fill="#8a8580" fontFamily="Manrope, Arial, sans-serif" textAnchor="end" letterSpacing="1.5">ConfigKing</text>
+      <circle cx="40" cy="420" r="6" fill="#111" stroke="#4a4846" />
+      <circle cx="960" cy="420" r="6" fill="#111" stroke="#4a4846" />
+      <rect x="30" y="456" width="940" height="170" rx="10" fill="#1d1d1c" stroke="#ffffff0a" />
+    </svg>
+  );
+}
+
+export default function ConfigKingSim({ scene = 'free', keys = true, className, large = false }: { scene?: SimScene; keys?: boolean; className?: string; large?: boolean }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const box = useRef<HTMLDivElement>(null);
   const [sim, setSim] = useState<Sim>(() => preset(scene));
@@ -721,9 +805,14 @@ export default function ConfigKingSim({ scene = 'free', keys = true, className }
   simRef.current = sim;
   const timers = useRef<number[]>([]);
   const { active } = useFrame();
+  const [armed, setArmed] = useState(false);
+  const [lit, setLit] = useState<string>('');
+  const [fnHeld, setFnHeld] = useState(false);
+  const litTimer = useRef(0);
 
   // A scripted scene replaces the state; the operator takes over from there.
   useEffect(() => { timers.current.forEach(clearTimeout); timers.current = []; setSim(preset(scene)); }, [scene]);
+  useEffect(() => { if (!active) setArmed(false); }, [active]);
 
   // Every state change goes through `apply`: the transition may schedule a
   // delayed reply from the reader (a connect, a read, a radio test), during
@@ -773,26 +862,174 @@ export default function ConfigKingSim({ scene = 'free', keys = true, className }
     return () => clearInterval(t);
   }, [sim.screen, sim.scanning]);
 
-  const press = useCallback((k: Key) => apply((s, later) => applyKey(s, k, later)), [apply]);
-  const onKeyDown = (e: React.KeyboardEvent) => {
+  const flash = useCallback((id: string) => {
+    if (!id) return;
+    setLit(id); window.clearTimeout(litTimer.current);
+    litTimer.current = window.setTimeout(() => setLit(''), 160);
+  }, []);
+  const press = useCallback((k: Key, raw?: string) => {
+    const withFn = fnHeld && (k.up || k.down || k.left || k.right) ? { ...k, fn: true } : k;
+    if (fnHeld) setFnHeld(false);
+    flash(capFor(k, raw));
+    apply((s, later) => applyKey(s, withFn, later));
+  }, [apply, fnHeld, flash]);
+
+  // The reader's own keyboard, once they have clicked the device (so the page
+  // keeps its arrow keys until then). Shift makes the arrow steps ×10, like fn.
+  useEffect(() => {
+    if (!keys || !active || !armed) return;
     const map: Record<string, Key> = { ArrowUp: { up: true }, ArrowDown: { down: true }, ArrowLeft: { left: true }, ArrowRight: { right: true }, Enter: { enter: true }, Escape: { esc: true }, Tab: { tab: true }, Backspace: { del: true } };
-    let k = map[e.key];
-    if (!k && e.key.length === 1 && !e.metaKey && !e.ctrlKey && !e.altKey) k = { ch: e.key };
-    if (!k) return;
-    e.preventDefault();
-    press({ ...k, fn: e.shiftKey && Boolean(k.up || k.down || k.left || k.right) });
+    const h = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+      let k = map[e.key];
+      if (!k && e.key.length === 1 && !e.metaKey && !e.ctrlKey && !e.altKey) k = { ch: e.key };
+      if (!k) return;
+      e.preventDefault();
+      press({ ...k, fn: e.shiftKey && Boolean(k.up || k.down || k.left || k.right) }, e.key);
+    };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
+  }, [keys, active, armed, press]);
+
+  // The screen is a touch screen: taps hit what is drawn, drags pan the picture.
+  const drag = useRef<{ x: number; y: number; moved: boolean; id: number } | null>(null);
+  const toScreen = (e: React.PointerEvent) => {
+    const r = canvas.current!.getBoundingClientRect();
+    return { x: ((e.clientX - r.left) / r.width) * W, y: ((e.clientY - r.top) / r.height) * H };
+  };
+  const onDown = (e: React.PointerEvent) => {
+    if (!keys) return;
+    setArmed(true);
+    const p = toScreen(e);
+    drag.current = { x: p.x, y: p.y, moved: false, id: e.pointerId };
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  };
+  const onMove = (e: React.PointerEvent) => {
+    const d = drag.current; if (!d || d.id !== e.pointerId) return;
+    const p = toScreen(e);
+    const dx = p.x - d.x, dy = p.y - d.y;
+    if (!d.moved && Math.hypot(dx, dy) < 2.5) return;
+    d.moved = true;
+    const s = simRef.current;
+    if (hasViewport(s)) {
+      const v = s.vp;
+      if (d.x >= v.view.x && d.x <= v.view.x + v.view.w && d.y >= v.view.y && d.y <= v.view.y + v.view.h) {
+        apply((st) => ({ ...st, vp: panBy(st.vp, -dx, -dy) }));
+        d.x = p.x; d.y = p.y;
+      }
+    }
+  };
+  const onUp = (e: React.PointerEvent) => {
+    const d = drag.current; if (!d || d.id !== e.pointerId) return;
+    drag.current = null;
+    if (d.moved) return;
+    const p = toScreen(e);
+    for (let i = HITS.length - 1; i >= 0; i--) {
+      const h = HITS[i];
+      if (p.x >= h.x && p.x <= h.x + h.w && p.y >= h.y && p.y <= h.y + h.h) {
+        if (h.key) flash(capFor(h.key, h.key.ch));
+        apply((s, later) => { const s2 = h.pre ? h.pre(s) : s; return h.key ? applyKey(s2, h.key, later) : s2; });
+        return;
+      }
+    }
+  };
+
+  const capClick = (k: KeyCap) => {
+    setArmed(true);
+    if (k.key === 'fn') { setFnHeld((f) => !f); return; }
+    if (k.key === 'none') { flash(k.id); return; }
+    press(k.key, k.cap);
   };
 
   return (
-    <div ref={box} className={`ck${className ? ` ${className}` : ''}`} data-no-zoom>
-      <div className="ck-device" tabIndex={0} role="application" aria-label="ConfigKing simulator. Use the arrow keys, Enter, Escape and Tab." onKeyDown={onKeyDown} onClick={() => box.current?.querySelector<HTMLElement>('.ck-device')?.focus()}>
-        <canvas ref={canvas} className="ck-screen" width={W * 3} height={H * 3} aria-hidden="true" />
+    <div ref={box} className={`ck${large ? ' ck-large' : ''}${keys ? ' ck-live' : ''}${className ? ` ${className}` : ''}`} data-no-zoom>
+      <div className="ck-dev" role="application" aria-label="ConfigKing simulator on a Cardputer. Click the screen or the keys, then use the arrow keys, Enter, Escape and Tab." tabIndex={keys ? 0 : -1} onFocus={() => { if (keys) setArmed(true); }}>
+        <Body />
+        <div className="ck-screenwrap">
+          <canvas ref={canvas} className="ck-screen" width={W * 3} height={H * 3} aria-hidden="true" onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={() => { drag.current = null; }} />
+          {keys && !armed && <div className="ck-hint" aria-hidden="true"><span>Tap the screen or a key to take over</span></div>}
+        </div>
+        <div className="ck-kb" aria-label="Cardputer keyboard">
+          {ROWS.map((row, r) => (
+            <div key={r} className="ck-kbrow">
+              {row.map((k) => (
+                <button key={k.id} type="button" tabIndex={-1} className={`ck-cap${lit === k.id ? ' lit' : ''}${k.key === 'fn' && fnHeld ? ' held' : ''}`} onClick={() => capClick(k)} aria-label={k.sub ? `${k.cap}, ${k.sub}` : k.cap}>
+                  <span>{k.cap}</span>{k.sub && <small>{k.sub}</small>}
+                </button>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
       {keys && (
-        <div className="ck-keys" aria-label="Keys">
-          {KEYS.map(([label, k, title]) => <button key={label} type="button" title={title ?? label} onClick={() => press(k)}>{label}</button>)}
+        <div className="ck-cluster" aria-label="Keys">
+          <div className="ck-dpad">
+            {CLUSTER.map((k) => <button key={k.id} type="button" className={`ck-key ${k.cls}${lit === capFor(k.key) ? ' lit' : ''}`} onClick={() => { setArmed(true); press(k.key); }} aria-label={k.id}>{k.cap}</button>)}
+          </div>
+          <div className="ck-short">
+            {SHORTCUTS.map((k) => <button key={k.cap} type="button" className={`ck-key${lit === capFor(k.key, k.key.ch) ? ' lit' : ''}`} onClick={() => { setArmed(true); press(k.key, k.key.ch); }}><b>{k.cap}</b><small>{k.sub}</small></button>)}
+          </div>
+          <p className="ck-tip">Shift with an arrow moves ×10. Drag the picture to pan it.</p>
         </div>
       )}
     </div>
   );
 }
+
+/* The device alone, for the chapter's cover: the discovery popup on screen. */
+export function CardputerCover() {
+  return <ConfigKingSim scene="nearby" keys={false} className="ck-cover" />;
+}
+
+export const CK_STYLE = `
+  .ck { display: flex; gap: clamp(14px, 1.6vw, 28px); align-items: center; justify-content: center; width: min(var(--vw, 48vw), calc((100svh - var(--ws-nav, 0px) - 22svh) * 1.56)); }
+  .ck.ck-live { width: min(92vw, calc((100svh - var(--ws-nav, 0px) - 26svh) * 2.05)); }
+  .ck-dev { position: relative; flex: 1 1 0; width: 100%; min-width: 0; aspect-ratio: 1000 / 640; container-type: inline-size; outline: none; border-radius: 3cqw; }
+  .ck-dev:focus-visible { box-shadow: 0 0 0 1px var(--ink, #d8cbb8); }
+  .ck-body { position: absolute; inset: 0; width: 100%; height: 100%; display: block; filter: drop-shadow(0 30px 40px #000a); }
+  .ck-screenwrap { position: absolute; left: 14.8%; top: 5.9%; width: 70.4%; height: 62.3%; border-radius: 0.6cqw; overflow: hidden; }
+  .ck-screen { display: block; width: 100%; height: 100%; background: #000; touch-action: none; cursor: default; }
+  .ck-live .ck-screen { cursor: pointer; }
+  .ck-hint { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; padding: 0 0 2cqw; pointer-events: none; background: linear-gradient(to top, #000000b0, transparent 45%); }
+  .ck-hint span { font: 500 1.5cqw/1.3 Manrope, Arial, sans-serif; color: #fff0db; letter-spacing: 0.04em; background: #181716e6; border: 1px solid #d8cbb84d; padding: 0.6cqw 1.2cqw; border-radius: 0.4cqw; }
+  .ck-kb { position: absolute; left: 3.6%; top: 72%; width: 92.8%; height: 25.6%; display: grid; grid-template-rows: repeat(4, 1fr); gap: 0.6cqw; padding: 0.8cqw; }
+  .ck-kbrow { display: grid; grid-template-columns: repeat(14, 1fr); gap: 0.6cqw; }
+  .ck-cap { position: relative; min-width: 0; padding: 0; border: 1px solid #4a4846; border-top-color: #5c5a57; border-radius: 0.5cqw; background: linear-gradient(#3a3a3c, #2a2a2b); color: #e6e0d6; font: 500 1.45cqw/1 Manrope, Arial, sans-serif; cursor: pointer; transition: background 0.1s, transform 0.08s; -webkit-tap-highlight-color: transparent; }
+  .ck-cap span { display: block; padding-top: 0.2cqw; }
+  .ck-cap small { position: absolute; top: 0.3cqw; right: 0.5cqw; font-size: 0.95cqw; color: #ffa600; }
+  .ck-cap:hover { background: linear-gradient(#4a4a4c, #383839); }
+  .ck-cap:active, .ck-cap.lit { background: #d8cbb8; color: #181716; transform: translateY(1px); }
+  .ck-cap.lit small { color: #181716; }
+  .ck-cap.held { background: #ffa600; color: #181716; }
+  .ck.ck-cover { width: 100%; }
+  .ck-cover .ck-kb .ck-cap { pointer-events: none; }
+  .ck-cover .ck-screen { pointer-events: none; }
+  /* the big keys */
+  .ck-cluster { flex: 0 0 auto; display: flex; flex-direction: column; gap: 14px; width: clamp(150px, 15vw, 230px); }
+  .ck-dpad { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: 1fr 1fr; gap: 5px; width: 100%; max-width: 160px; margin: 0 auto; }
+  .ck-dpad .u { grid-column: 2; grid-row: 1; } .ck-dpad .l { grid-column: 1; grid-row: 2; } .ck-dpad .d { grid-column: 2; grid-row: 2; } .ck-dpad .r { grid-column: 3; grid-row: 2; }
+  .ck-key { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 42px; padding: 6px 4px; border: 1px solid #d8cbb875; border-radius: 5px; background: #d8cbb80d; color: var(--ink, #d8cbb8); font: 500 16px/1 Manrope, Arial, sans-serif; cursor: pointer; transition: background 0.12s, color 0.12s, transform 0.08s; -webkit-tap-highlight-color: transparent; }
+  .ck-key b { font-weight: 500; font-size: 15px; }
+  .ck-key small { font: 400 9.5px/1.2 Manrope, Arial, sans-serif; color: #ada496; letter-spacing: 0.02em; }
+  .ck-key:hover { background: #d8cbb822; color: #fff0db; }
+  .ck-key:active, .ck-key.lit { background: #eee4d5; color: #28231e; transform: translateY(1px); }
+  .ck-key.lit small, .ck-key:active small { color: #28231e; }
+  .ck-short { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+  .ck-short .ck-key { min-height: 44px; }
+  .ck-tip { margin: 0; font: 400 11px/1.4 Manrope, Arial, sans-serif; color: #7d766e; text-align: center; }
+  @media (max-width: 900px) {
+    .ck, .ck.ck-live { width: 92vw; flex-direction: column; gap: 12px; align-items: stretch; }
+    .ck.ck-cover { width: 100%; }
+    .ck-dev { flex: 0 0 auto; width: 100%; }
+    .ck-cluster { width: 100%; flex-direction: row; flex-wrap: nowrap; justify-content: center; align-items: center; gap: 10px; }
+    .ck-dpad { flex: 0 0 auto; width: 108px; margin: 0; gap: 3px; }
+    .ck-dpad .ck-key { min-height: 32px; font-size: 14px; padding: 2px; }
+    .ck-short { flex: 1 1 auto; grid-template-columns: repeat(4, 1fr); gap: 3px; }
+    .ck-short .ck-key { min-height: 32px; padding: 3px 2px; gap: 0; }
+    .ck-short .ck-key b { font-size: 12px; }
+    .ck-short .ck-key small { font-size: 8px; }
+    .ck-tip { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .ck-cap, .ck-key { transition: none; } }
+`;

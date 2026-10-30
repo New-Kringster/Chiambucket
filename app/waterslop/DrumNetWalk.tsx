@@ -2,7 +2,7 @@
 import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
 import { LazyMotion, domAnimation, m } from 'framer-motion';
 import { DN } from './drumnet-data';
-import Story, { useFrame, type Frame } from './Story';
+import Story, { Cover, Plate, useFrame, type Frame } from './Story';
 
 /* DrumNetStory: the DrumNet chapter. Three frames introduce the problem and the
    three-stage pipeline, then one real DrumNet V10 run is played forward one
@@ -837,5 +837,12 @@ const FRAMES: Frame[] = [
 ];
 
 export default function DrumNetStory({ chapter }: { chapter: string }) {
-  return <Story id="drumnet" chapter={chapter} title="DrumNet" frames={FRAMES} per={0.85} />;
+  return (
+    <>
+      <Cover id="drumnet" chapter={chapter} title="DrumNet" lines={['DrumNet', 'V10']}
+        contents={[{ label: 'The problem' }, { label: 'Three stages, 693K parameters' }, { label: `One real run, ${STEPS.length} steps` }, { label: 'Where it stands' }]}
+        plate={<Plate srcs={['dn/photo.webp', 'dn/cut-win.webp', 'dn/rd-window.webp']} alt="The capture DrumNet reads, with the window it finds and the drums it cuts" />} />
+      <Story id="drumnet-body" chapter={chapter} title="DrumNet" frames={FRAMES} per={0.85} />
+    </>
+  );
 }
