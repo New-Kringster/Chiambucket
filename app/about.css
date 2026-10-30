@@ -14,8 +14,13 @@
    ═══════════════════════════════════════════════════════════════ */
 
 /* Its own stacking layer, so the grass drawn after it (SunlitField) covers all
-   of it while it rises; .hp-section's z-index 2 would otherwise lift it above. */
-#about { z-index: 0; }
+   of it while it rises; .hp-section's z-index 2 would otherwise lift it above.
+   It is pulled up under the hero so its heading starts just below the top of
+   the grass (the hill crest is at about 80% of the screen, see SunlitScene
+   HILL) and begins to rise as soon as the page scrolls. The hero is 100svh,
+   the grass is measured in lvh. */
+#about { z-index: 0; margin-top: calc(82lvh - 100svh); padding-top: 0; }
+#about > .hp-section > .section-editorial-header { padding-top: 0; }
 
 .hp-bento.ab-bento { grid-template-columns: repeat(6, minmax(0, 1fr)); grid-auto-rows: auto; }
 .hp-bento.ab-bento > :is(.hp-tile-intro, .ab-group) { grid-column: 1 / -1 !important; grid-row: auto !important; }

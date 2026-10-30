@@ -124,15 +124,16 @@ html.sensory-active[data-theme="sunlit"] {
 /* The lanes between the grass layers, where the fox and the rabbit run */
 .sl-lane { position: absolute; inset: 0; pointer-events: none; }
 .sl-critter {
-  position: absolute; left: 0; top: 0; transform-origin: 50% 100%; visibility: hidden;
+  /* a point at the animal's feet: the poses hang from it (components/critters.ts) */
+  position: absolute; left: 0; top: 0; width: 0; height: 0; transform-origin: 0 0; visibility: hidden;
   will-change: transform, filter;
 }
-/* paws fade into the grass; the mask is on the poses, not the box, so the
-   depth-of-field blur on the box can spill past its edges */
+/* only the current pose shows; paws fade into the grass. The mask is on the
+   poses, not the point, so the depth-of-field blur can spill past their edges */
 .sl-critter img {
-  position: absolute; inset: 0; width: 100%; height: 100%; user-select: none;
-  -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 16%);
-  mask-image: linear-gradient(to top, transparent 0%, #000 16%);
+  position: absolute; max-width: none; opacity: 0; user-select: none;
+  -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 14%);
+  mask-image: linear-gradient(to top, transparent 0%, #000 14%);
 }
 .sl-grass.is-calm .sl-critter { display: none; }
 
@@ -320,6 +321,9 @@ html.sensory-active[data-theme="sunlit"] {
     -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 
   /* ── Call to action ── */
+  /* no golden glow: the section clips it, and over the raised grass its cut-off
+     bottom edge showed as a line along the top of the footer */
+  & .hp-cta::before { display: none; }
   & .hp-cta h2 { color: var(--sl-ink); }
   & .hp-cta p { color: var(--sl-ink-soft); }
   /* the address is one long word; on phones it shrinks to fit instead of running off the edge */

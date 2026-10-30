@@ -24,10 +24,19 @@
   --nv-hover: rgba(255, 245, 230, 0.1);
   --nv-active: #f3ede2;
   --nv-active-text: #17120c;
+  /* keyboard focus ring: a plain colour (--nv-active can be a gradient, which outline cannot use) */
+  --nv-focus: #f3ede2;
   --nv-shadow: 0 10px 26px -14px rgba(0, 0, 0, 0.85);
   --nv-logo-filter: none;
   /* a soft halo behind the link text keeps it readable whatever slides under the glass */
   --nv-halo: 0 0 6px rgba(0, 0, 0, 0.8), 0 0 2px rgba(0, 0, 0, 0.7);
+  /* the merging glass (.pnav-blob): one fill for the whole shape, and the
+     colours its rim and shadow filter paints with */
+  --nv-fill: linear-gradient(180deg, rgba(42, 34, 25, 0.72), rgba(20, 16, 11, 0.64));
+  --nv-blob-edge: rgba(255, 240, 220, 0.16);
+  --nv-blob-rim: rgba(255, 245, 230, 0.34);
+  --nv-blob-rim2: rgba(255, 245, 230, 0.1);
+  --nv-blob-drop: rgba(0, 0, 0, 0.55);
 
   position: fixed;
   top: 16px;
@@ -59,6 +68,11 @@ html[data-theme="datacenter"] .pnav {
   --nv-hover: rgba(226, 233, 255, 0.08);
   --nv-active: #eef2ff;
   --nv-active-text: #0b0e18;
+  --nv-focus: #eef2ff;
+  --nv-fill: linear-gradient(180deg, rgba(26, 31, 50, 0.72), rgba(11, 14, 24, 0.64));
+  --nv-blob-edge: rgba(200, 214, 255, 0.16);
+  --nv-blob-rim: rgba(226, 233, 255, 0.32);
+  --nv-blob-rim2: rgba(226, 233, 255, 0.1);
 }
 html[data-theme="sunlit"] .pnav {
   --nv-glass:
@@ -74,14 +88,21 @@ html[data-theme="sunlit"] .pnav {
   --nv-hover: rgba(255, 255, 255, 0.45);
   --nv-active: linear-gradient(160deg, rgba(52, 70, 47, 0.9), rgba(31, 43, 28, 0.86));
   --nv-active-text: #f6f4e2;
+  --nv-focus: #1f2b1c;
   --nv-shadow: 0 1px 2px rgba(31, 43, 28, 0.08), 0 10px 24px -12px rgba(31, 43, 28, 0.5);
   --nv-logo-filter: brightness(0);
   --nv-halo: 0 0 6px rgba(255, 255, 255, 0.9), 0 0 2px rgba(255, 255, 255, 0.9);
+  --nv-fill: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.56));
+  --nv-blob-edge: rgba(255, 255, 255, 0.6);
+  --nv-blob-rim: rgba(255, 255, 255, 0.95);
+  --nv-blob-rim2: rgba(255, 255, 255, 0.5);
+  --nv-blob-drop: rgba(31, 43, 28, 0.3);
 }
 
 /* ── Logo: bare at the top of the page, on its own chip once you scroll ── */
 .pnav-logo {
   justify-self: start;
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   height: 40px;
@@ -186,10 +207,9 @@ html[data-theme="sunlit"] .pnav {
 .pnav-menu:active { transform: scale(0.95); }
 
 .pnav-logo:focus-visible, .pnav-item:focus-visible, .pnav-cta:focus-visible, .pnav-circle:focus-visible {
-  outline: 2px solid var(--nv-active);
+  outline: 2px solid var(--nv-focus);
   outline-offset: 2px;
 }
-html[data-theme="sunlit"] .pnav-logo:focus-visible { outline-color: #1f2b1c; }
 
 /* ── Phone dropdown ── */
 .pnav-sheet {
@@ -220,11 +240,51 @@ html[data-theme="sunlit"] .pnav-logo:focus-visible { outline-color: #1f2b1c; }
 .pnav-sheet nav { display: grid; gap: 2px; }
 .pnav-sheet .pnav-item { height: 44px; padding: 0 16px; font-size: 0.95rem; }
 
+/* ── The merging glass ──
+   While .is-blob is set (Nav.tsx turns it on unless motion or transparency is
+   reduced), the pieces give up their own glass and one shape draws it for all
+   of them: .pnav-blob-glass is the frosted layer, clipped to the shape, and
+   the SVG paints its edge, rim and shadow. "View my work" becomes a dark pill
+   set inside its piece, like the current page in the page pill. */
+.pnav > .pnav-blob { display: none; pointer-events: none; }
+.pnav.is-blob > .pnav-blob { display: block; position: fixed; inset: 0 0 auto 0; height: 96px; z-index: -1; }
+.pnav-blob-glass {
+  position: absolute;
+  inset: 0;
+  background: var(--nv-fill);
+  -webkit-backdrop-filter: var(--nv-blur) !important; backdrop-filter: var(--nv-blur) !important;
+  clip-path: inset(0 0 100% 0);
+}
+.pnav-blob-edge { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.pnav-blob-edge path { fill: #000; }
+.pnav-fl-drop { flood-color: var(--nv-blob-drop); }
+.pnav-fl-edge { flood-color: var(--nv-blob-edge); }
+.pnav-fl-rim { flood-color: var(--nv-blob-rim); }
+.pnav-fl-rim2 { flood-color: var(--nv-blob-rim2); }
+
+.pnav.is-blob :is(.pnav-pill, .pnav-circle),
+.pnav.is-blob.is-scrolled .pnav-logo {
+  background: transparent;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  border-color: transparent;
+  box-shadow: none;
+}
+.pnav.is-blob .pnav-cta {
+  background: var(--nv-cta, var(--nv-glass));
+  background-clip: padding-box;
+  border: 3px solid transparent;
+  box-shadow: inset 1px 1px 0 -0.5px rgba(255, 255, 255, 0.3);
+  padding: 0 16px;
+}
+/* on phones, room between "View my work" and the menu so they start apart */
+.pnav.is-blob .pnav-right { gap: 22px; }
+.pnav.is-blob :is(.pnav-logo, .pnav-links, .pnav-cta, .pnav-menu), .pnav.is-blob .pnav-sheet { will-change: translate; }
+
 /* Light bending where url() works inside backdrop-filter (Chromium; see GlassDefs.tsx) */
 @media (prefers-reduced-transparency: no-preference) {
-  html.lg-refract .pnav-pill,
-  html.lg-refract .pnav-circle,
-  html.lg-refract .pnav.is-scrolled .pnav-logo {
+  html.lg-refract .pnav:not(.is-blob) :is(.pnav-pill, .pnav-circle),
+  html.lg-refract .pnav.is-scrolled:not(.is-blob) .pnav-logo,
+  html.lg-refract .pnav-blob-glass {
     -webkit-backdrop-filter: var(--nv-refract) !important; backdrop-filter: var(--nv-refract) !important;
   }
 }

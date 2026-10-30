@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef } from 'react';
+import { createCritters } from './critters';
 
 /*
   SunlitScene — the homepage background for the "sunlit" theme, painted like a
@@ -310,7 +311,7 @@ const CREST = ['#dcc66f', '#e3d085', '#cdb862', '#c2b05b', '#b6a755'];
    of the page, where the field rises to reach above the footer. */
 const FIELD_TOP = 0.6;
 const FAR_TO_MID = 0.32;
-const MID_TO_NEAR = 0.62;
+const MID_TO_NEAR = 0.74;
 
 function drawGrass(canvases: HTMLCanvasElement[], w: number, h: number, full: number, dpr: number) {
   const origin = h * FIELD_TOP;
@@ -490,75 +491,6 @@ function nameBox(w: number, h: number): NameBox {
   const size = parseFloat(getComputedStyle(words[0]).fontSize) || 100;
   // the cap height starts a little below the top of the line
   return { left: Math.min(...spots.map((p) => p.x)), top: Math.min(...spots.map((p) => p.y)) + size * 0.18 };
-}
-
-/* ---------------- The fox and the rabbit ---------------- */
-
-/* A rabbit, then a fox close behind, chase each other through the grass now
-   and then. Each is two painted poses (stretched and gathered) swapped in step
-   with its bounds. They run along a path that wanders across the field and
-   usually swings towards the camera; the closer they come the bigger they are,
-   the faster they cross the screen; closer than all the grass they go soft,
-   as if the lens were focused on the field behind them. They run in three
-   lanes (behind the mid grass, behind the near grass, in front of it all),
-   moving to a nearer lane at the top of a bound, where the change is hidden. */
-const CRITTER_W = 260; // CSS width of a sprite before scaling
-
-type Run = { dir: 1 | -1; far: number; near: number; at: number; width: number; wiggle: number; seed: number; across: Float32Array };
-type Critter = {
-  el: HTMLDivElement;
-  poses: HTMLImageElement[];
-  aspect: number; // height / width of the sprite
-  size: number; // relative to the fox
-  pace: number; // body lengths per second
-  period: number; // seconds per bound
-  bounce: number; // bound height, as a fraction of the sprite's height
-  delay: number; // seconds after the run starts
-  t: number;
-  phase: number;
-  lane: number;
-  pose: number;
-  running: boolean;
-};
-
-function makeCritter(srcs: string[], aspect: number, opts: Pick<Critter, 'size' | 'pace' | 'period' | 'bounce' | 'delay'>): Critter {
-  const el = document.createElement('div');
-  el.className = 'sl-critter';
-  el.style.width = `${CRITTER_W}px`;
-  el.style.height = `${CRITTER_W * aspect}px`;
-  const poses = srcs.map((src, i) => {
-    const img = new Image();
-    img.src = src;
-    img.alt = '';
-    img.decoding = 'async';
-    img.draggable = false;
-    if (i) img.style.opacity = '0';
-    el.appendChild(img);
-    return img;
-  });
-  return { el, poses, aspect, ...opts, t: 0, phase: 0, lane: 0, pose: 0, running: false };
-}
-
-const swingAt = (run: Pick<Run, 'at' | 'width'>, t: number) => Math.exp(-(((t - run.at) / run.width) ** 2));
-
-// While they swing towards the camera they mostly come towards it, so they
-// cross the screen slowly there: `across` is how far across (0 to 1) they are at t.
-function crossing(run: Pick<Run, 'at' | 'width' | 'near' | 'far'>) {
-  const steps = 240;
-  const across = new Float32Array(steps + 1);
-  const ease = Math.min(0.8, Math.max(0, (run.near - run.far) * 0.95));
-  for (let i = 1; i <= steps; i++) across[i] = across[i - 1] + 1 - ease * swingAt(run, i / steps);
-  for (let i = 1; i <= steps; i++) across[i] /= across[steps];
-  return across;
-}
-
-function pathAt(run: Run, t: number) {
-  const f = Math.min(1, Math.max(0, t)) * (run.across.length - 1);
-  const i = Math.floor(f);
-  const u = run.across[i] + (run.across[Math.min(i + 1, run.across.length - 1)] - run.across[i]) * (f - i);
-  const x = run.dir > 0 ? -0.24 + 1.48 * u : 1.24 - 1.48 * u;
-  const d = run.far + (run.near - run.far) * swingAt(run, t) + Math.sin(t * Math.PI * 3 + run.seed) * 0.035;
-  return { x: x + Math.sin(t * Math.PI * 2 + run.seed) * run.wiggle, d: Math.max(0.04, d) };
 }
 
 /* ---------------- Birds ---------------- */
@@ -746,85 +678,15 @@ export default function SunlitScene() {
     /* The fox, the rabbit and the birds: one animation loop, running only while
        the hero (animals and birds) or the closing section (birds) is on screen,
        the tab is visible and motion is allowed. */
-    const rabbit = makeCritter(['/images/sunlit/rabbit-hop.webp', '/images/sunlit/rabbit-tuck.webp'], 0.424,
-      { size: 0.7, pace: 3.7, period: 0.36, bounce: 0.24, delay: 0 });
-    const fox = makeCritter(['/images/sunlit/fox-leap.webp', '/images/sunlit/fox-tuck.webp'], 0.44,
-      { size: 1, pace: 2.6, period: 0.46, bounce: 0.13, delay: 0.85 });
-    const critters = [rabbit, fox];
-    critters.forEach((c) => lanes[0].appendChild(c.el));
+    const critters = createCritters(lanes, ridgeAt, HILL);
+    if (process.env.NODE_ENV !== 'production') (window as unknown as { slCritters?: typeof critters }).slCritters = critters;
     const birds = [makeBird(), makeBird(), makeBird(), makeBird()];
     birds.forEach((b) => flock.appendChild(b.svg));
 
-    let run: Run | null = null;
-    let nextRun = performance.now() + 2600;
-    let lastDir: 1 | -1 = -1;
     let flight: { dir: 1 | -1; alt: number; start: number; secs: number; count: number } | null = null;
     let nextFlight = performance.now() + 5000;
     let loop = 0;
-    let last = 0;
     let heroShowing = false;
-
-    let runs = 0;
-    const startRun = (now: number) => {
-      lastDir = lastDir > 0 ? -1 : 1;
-      // the first chase always comes close; after that most do
-      const close = runs++ === 0 || Math.random() < 0.7;
-      const shape = {
-        far: between(Math.random, 0.12, 0.3),
-        near: close ? between(Math.random, 1.06, 1.2) : between(Math.random, 0.45, 0.7),
-        at: between(Math.random, 0.42, 0.58),
-        width: between(Math.random, 0.17, 0.24),
-      };
-      run = { dir: lastDir, ...shape, wiggle: between(Math.random, 0.01, 0.03), seed: Math.random() * 6, across: crossing(shape) };
-      critters.forEach((c) => { c.t = 0; c.phase = Math.random(); c.running = false; c.lane = 0; lanes[0].appendChild(c.el); });
-      nextRun = now + 1e9;
-      runStart = now;
-    };
-    let runStart = 0;
-
-    const stepCritters = (now: number, dt: number) => {
-      if (!run && now >= nextRun) startRun(now);
-      if (!run) return;
-      const w = drawnW;
-      const h = drawnH;
-      const band = h * (1 - HILL);
-      let done = true;
-      for (const c of critters) {
-        if (!c.running && (now - runStart) / 1000 >= c.delay && c.t === 0) c.running = true;
-        if (!c.running) { done = false; c.el.style.visibility = 'hidden'; continue; }
-        const p = pathAt(run, c.t);
-        // on-screen body length, px: grows as they come closer, at most about half a phone's width
-        const span = Math.min(band * (0.32 + 1.6 * Math.pow(p.d, 1.6)), w * 0.55 + 60) * c.size;
-        // advance along the path at a steady pace in body lengths, measured on
-        // screen, but never faster than about a screen width in two seconds
-        const q = pathAt(run, c.t + 0.002);
-        const perT = Math.hypot((q.x - p.x) * w, (q.d - p.d) * band * 2.2) / 0.002;
-        c.t += (Math.min(c.pace * span, w * 0.32) * dt) / Math.max(1, perT);
-        c.phase += dt / c.period;
-        if (c.t > 1) { c.el.style.visibility = 'hidden'; continue; }
-        done = false;
-
-        const hop = c.phase % 1;
-        const airborne = hop > 0.3 && hop < 0.7;
-        const lane = p.d < 0.42 ? 0 : p.d < 0.86 ? 1 : 2;
-        if (lane !== c.lane && airborne) { c.lane = lane; lanes[lane].appendChild(c.el); }
-        const pose = hop > 0.14 && hop < 0.76 ? 0 : 1;
-        if (pose !== c.pose) { c.poses[c.pose].style.opacity = '0'; c.poses[pose].style.opacity = '1'; c.pose = pose; }
-
-        const x = p.x * w;
-        const ground = ridgeAt(Math.min(w, Math.max(0, x)), w, h);
-        const feet = ground + 4 + p.d * (h - ground + 30);
-        const scale = span / CRITTER_W;
-        const lift = Math.sin(Math.PI * hop) * c.bounce * span * c.aspect;
-        c.el.style.transform = `translate3d(${(x - CRITTER_W / 2).toFixed(1)}px, ${(feet - CRITTER_W * c.aspect - lift).toFixed(1)}px, 0) scale(${(scale * run.dir).toFixed(4)}, ${scale.toFixed(4)})`;
-        // depth of field: the lens is on the field, so they are sharp in the
-        // grass and go soft only once they are closer than all of it
-        const soft = Math.pow(clamp01((p.d - 0.82) / 0.3), 1.1);
-        c.el.style.filter = soft > 0.02 ? `blur(${(soft * Math.min(14, 3 + span * 0.03)).toFixed(1)}px)` : 'none';
-        c.el.style.visibility = 'visible';
-      }
-      if (done) { run = null; nextRun = now + between(Math.random, 4500, 9000); }
-    };
 
     const stepBirds = (now: number) => {
       if (!flight && now >= nextFlight) {
@@ -858,9 +720,7 @@ export default function SunlitScene() {
 
     const tick = (now: number) => {
       loop = 0;
-      const dt = Math.min(0.05, last ? (now - last) / 1000 : 0.016);
-      last = now;
-      if (heroShowing) stepCritters(now, dt);
+      if (heroShowing) critters.step(now, { w: drawnW, h: drawnH, hill: HILL });
       stepBirds(now);
       loop = requestAnimationFrame(tick);
     };
@@ -871,12 +731,8 @@ export default function SunlitScene() {
       heroShowing = on && [...showing].some((el) => el.classList.contains('slp'));
       // a chase only plays out in the hero: one that is interrupted is dropped,
       // so it never reappears frozen when the field comes back at the end
-      if (!heroShowing && run) {
-        run = null;
-        critters.forEach((c) => { c.el.style.visibility = 'hidden'; });
-        nextRun = performance.now() + 2500;
-      }
-      if (on && !loop) { last = 0; loop = requestAnimationFrame(tick); }
+      if (!heroShowing) critters.stop(performance.now());
+      if (on && !loop) loop = requestAnimationFrame(tick);
       if (!on && loop) { cancelAnimationFrame(loop); loop = 0; }
       field.classList.toggle('is-calm', still.matches);
     };
@@ -906,7 +762,7 @@ export default function SunlitScene() {
       document.removeEventListener('visibilitychange', setMotion);
       still.removeEventListener('change', setMotion);
       treeImg.removeEventListener('load', redrawTree);
-      critters.forEach((c) => c.el.remove());
+      critters.destroy();
       birds.forEach((b) => b.svg.remove());
       rising.forEach(settle);
       root.classList.remove('sl-alive');
