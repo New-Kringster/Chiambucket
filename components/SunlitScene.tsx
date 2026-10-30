@@ -302,12 +302,25 @@ const MID = ['#b1a452', '#a4994b', '#988f46', '#b2ab66', '#8f8944', '#bcad5c'];
 const LOW = ['#8c853c', '#807930', '#938d46', '#706824', '#a19a55', '#635a1a', '#878140'];
 const CREST = ['#dcc66f', '#e3d085', '#cdb862', '#c2b05b', '#b6a755'];
 
-/* The field is painted for a screen of height h, on a canvas `full` tall: the
-   part below the screen is there for the end of the page, where the field
-   rises to reach above the footer. */
-function drawGrass(canvas: HTMLCanvasElement, w: number, h: number, full: number, dpr: number) {
-  const ctx = prepare(canvas, w, full, dpr);
-  ctx.clearRect(0, 0, w, full);
+/* The field is painted for a screen of height h onto three canvases, far, mid
+   and near, so the fox and the rabbit can run between the blades: each canvas
+   holds the strokes in one band of depth, and the animals are drawn between
+   them. The canvases start at FIELD_TOP (nothing is painted above it) and run
+   to `full`, below the bottom of the screen: that part is there for the end
+   of the page, where the field rises to reach above the footer. */
+const FIELD_TOP = 0.6;
+const FAR_TO_MID = 0.32;
+const MID_TO_NEAR = 0.62;
+
+function drawGrass(canvases: HTMLCanvasElement[], w: number, h: number, full: number, dpr: number) {
+  const origin = h * FIELD_TOP;
+  const [far, mid, near] = canvases.map((c) => {
+    const ctx = prepare(c, w, full - origin, dpr);
+    ctx.clearRect(0, 0, w, full - origin);
+    ctx.translate(0, -origin);
+    return ctx;
+  });
+  const layer = (depth: number) => (depth < FAR_TO_MID ? far : depth < MID_TO_NEAR ? mid : near);
   const rand = seeded(1517);
 
   const top = h * (HILL - 0.005);
@@ -316,19 +329,19 @@ function drawGrass(canvas: HTMLCanvasElement, w: number, h: number, full: number
   const ridge = (x: number) => ridgeAt(Math.min(w, Math.max(0, x)), w, h);
 
   // Base body of the hill, darkening towards the bottom of the screen and on below it.
-  const body = ctx.createLinearGradient(0, top, 0, h);
+  const body = far.createLinearGradient(0, top, 0, h);
   body.addColorStop(0, '#d2bc66');
   body.addColorStop(0.12, '#bfad58');
   body.addColorStop(0.32, '#9d9448');
   body.addColorStop(0.65, '#8a833b');
   body.addColorStop(1, '#736d29');
-  ctx.fillStyle = body;
-  ctx.beginPath();
-  ctx.moveTo(0, full);
-  for (let x = 0; x <= w; x += 6) ctx.lineTo(x, ridgeAt(x, w, h) + 3);
-  ctx.lineTo(w, full);
-  ctx.closePath();
-  ctx.fill();
+  far.fillStyle = body;
+  far.beginPath();
+  far.moveTo(0, full);
+  for (let x = 0; x <= w; x += 6) far.lineTo(x, ridgeAt(x, w, h) + 3);
+  far.lineTo(w, full);
+  far.closePath();
+  far.fill();
 
   // Broad, soft brushwork underneath: pale sweeps and deep shadow sweeps.
   const { canvas: soft, ctx: s } = softLayer(w, full, 0.25);
@@ -341,26 +354,29 @@ function drawGrass(canvas: HTMLCanvasElement, w: number, h: number, full: number
     blade(s, x, y, between(rand, 0.4, 1.1) * band, between(rand, -0.5, -0.18), between(rand, 8, 22) * k, between(rand, -10, 10),
       dark ? '#5d5517' : pick(rand, ['#c7b763', '#b4ab62', '#d6c374']), dark ? between(rand, 0.12, 0.28) : between(rand, 0.1, 0.25));
   }
-  ctx.globalAlpha = 1;
-  ctx.drawImage(soft, 0, 0, w, full);
+  far.globalAlpha = 1;
+  far.drawImage(soft, 0, 0, w, full);
 
   // Short tufts along the crest so the hilltop is ragged rather than a clean line.
   for (let i = 0; i < Math.round(w / 1.6); i++) {
     const x = between(rand, -10, w + 10);
-    blade(ctx, x, ridge(x) + between(rand, 4, 12), between(rand, 0.03, 0.1) * band, between(rand, -1.6, -0.75),
+    blade(far, x, ridge(x) + between(rand, 4, 12), between(rand, 0.03, 0.1) * band, between(rand, -1.6, -0.75),
       between(rand, 1.2, 3.2) * k, between(rand, -3, 3), pick(rand, ['#d2bc66', '#c9b45e', '#dcc66f', '#bfad58']), between(rand, 0.7, 1));
   }
 
-  // The main field of strokes, painted back to front. Depth is measured down
-  // the visible band, so the part below the screen is all deep, darker grass.
+  // The main field of strokes, painted back to front, each onto the canvas for
+  // its depth. Depth is measured down the visible band, so the part below the
+  // screen is all deep, darker grass. The nearer bands get a few extra strokes
+  // so an animal running through them is properly in the grass.
   const strokes: { x: number; y: number; depth: number }[] = [];
   const reach = (full - top) / band;
   const count = Math.round((w * band) / 55);
   const below = Math.round(count * (reach - 1) * 0.55);
-  for (let i = 0; i < count + below; i++) {
+  const extra = Math.round(count * 0.35);
+  for (let i = 0; i < count + below + extra; i++) {
     const x = between(rand, -60, w + 10);
     const r = ridge(x);
-    const depth = i < count ? Math.pow(rand(), 0.85) : between(rand, 1, reach);
+    const depth = i < count ? Math.pow(rand(), 0.85) : i < count + below ? between(rand, 1, reach) : between(rand, FAR_TO_MID, 1.1);
     strokes.push({ x, y: r + 4 + depth * (h - r + 30), depth });
   }
   strokes.sort((a, b) => a.y - b.y);
@@ -368,7 +384,7 @@ function drawGrass(canvas: HTMLCanvasElement, w: number, h: number, full: number
     const t = st.depth + between(rand, -0.1, 0.1);
     const palette = t < 0.15 ? LIT : t < 0.4 ? MID : LOW;
     const lift = st.depth < 0.18 ? 0.3 : 0; // blades on the crest stand more upright
-    blade(ctx, st.x, st.y, between(rand, 0.14, 0.5) * band * (st.depth < 0.15 ? 0.75 : 1), between(rand, -0.85, -0.25) - lift,
+    blade(layer(st.depth), st.x, st.y, between(rand, 0.14, 0.5) * band * (st.depth < 0.15 ? 0.75 : 1), between(rand, -0.85, -0.25) - lift,
       between(rand, 0.8, 3) * k, between(rand, -8, 8) * k, pick(rand, palette), between(rand, 0.3, 0.75));
   }
 
@@ -376,7 +392,8 @@ function drawGrass(canvas: HTMLCanvasElement, w: number, h: number, full: number
   for (let i = 0; i < Math.round(w / 4); i++) {
     const x = rand() * w;
     const r = ridgeAt(x, w, h);
-    blade(ctx, x, r + Math.pow(rand(), 2) * (h - r), between(rand, 0.1, 0.32) * band, between(rand, -1.05, -0.4),
+    const depth = Math.pow(rand(), 2);
+    blade(layer(depth), x, r + depth * (h - r), between(rand, 0.1, 0.32) * band, between(rand, -1.05, -0.4),
       between(rand, 0.4, 1) * k, between(rand, -5, 5), pick(rand, ['#ecdd9c', '#e3d189', '#d8ca85']), between(rand, 0.25, 0.6));
   }
 
@@ -387,7 +404,7 @@ function drawGrass(canvas: HTMLCanvasElement, w: number, h: number, full: number
     const tall = between(rand, 0.12, 0.3) * band;
     for (let i = 0; i < 18; i++) {
       const x = cx + between(rand, -1, 1) * tall * 0.35;
-      blade(ctx, x, ridge(x) + between(rand, 4, band * 0.07), tall * between(rand, 0.45, 1), between(rand, -1.65, -0.8),
+      blade(far, x, ridge(x) + between(rand, 4, band * 0.07), tall * between(rand, 0.45, 1), between(rand, -1.65, -0.8),
         between(rand, 0.5, 1.4) * k, between(rand, -6, 6), pick(rand, [...CREST, '#a99c4f']), between(rand, 0.55, 0.95));
     }
   }
@@ -395,214 +412,187 @@ function drawGrass(canvas: HTMLCanvasElement, w: number, h: number, full: number
   // Stray blades standing against the sky along the crest.
   for (let i = 0; i < Math.round(w / 4); i++) {
     const x = rand() * w;
-    blade(ctx, x, ridgeAt(x, w, h) + between(rand, 2, band * 0.06), between(rand, 0.04, 0.2) * band, between(rand, -1.75, -0.9),
+    blade(far, x, ridgeAt(x, w, h) + between(rand, 2, band * 0.06), between(rand, 0.04, 0.2) * band, between(rand, -1.75, -0.9),
       between(rand, 0.3, 0.9) * k, between(rand, -5, 5), pick(rand, CREST), between(rand, 0.45, 0.9));
   }
 
-  ctx.globalAlpha = 1;
+  for (const ctx of [far, mid, near]) ctx.globalAlpha = 1;
 
   // Darken the very bottom slightly so the field sits on the edge of the screen,
-  // and keep darkening below it.
-  const foot = ctx.createLinearGradient(0, h - band * 0.45, 0, full);
+  // and keep darkening below it. It is on the near canvas, so it shades
+  // anything running low in the grass too.
+  const foot = near.createLinearGradient(0, h - band * 0.45, 0, full);
   foot.addColorStop(0, 'rgba(70,64,18,0)');
   foot.addColorStop(Math.min(0.9, (band * 0.45) / (full - h + band * 0.45)), 'rgba(70,64,18,0.26)');
   foot.addColorStop(1, 'rgba(62,58,16,0.4)');
-  ctx.fillStyle = foot;
-  ctx.fillRect(0, h - band * 0.45, w, full - h + band * 0.45);
+  near.fillStyle = foot;
+  near.fillRect(0, h - band * 0.45, w, full - h + band * 0.45);
 }
 
 /* ---------------- The tree ---------------- */
 
-/* A lone umbrella pine on the hill at the left: a tall, bare, slightly bent
-   trunk, a few limbs fanning out under a broad, flat crown. The crown is a
-   stack of foliage pads painted like the clouds, back to front, each lit on
-   top from the sun in the top-right corner and dark underneath. The crown
-   sits above the name and the trunk to the left of it, so the name never has
-   foliage behind it. */
+/* A painted Italian stone pine (public/images/sunlit/stone-pine.webp) on the
+   hill at the left. It is drawn in two parts: the crown at one scale, sized to
+   fit between the nav and the name, and the bare trunk under it stretched down
+   into the grass. So on any screen the crown stays above the name and the
+   trunk to the left of it. */
+const TREE = {
+  src: '/images/sunlit/stone-pine.webp',
+  crownTop: 127 / 1536, // first row of needles in the painting
+  split: 740 / 1536, // below this row the trunk is bare
+  trunkX: 236 / 1024, // the trunk's centre, across the painting
+};
 
-function limb(ctx: Ctx, x0: number, y0: number, x1: number, y1: number, w0: number, w1: number, bend: number) {
-  const dx = x1 - x0;
-  const dy = y1 - y0;
-  const len = Math.hypot(dx, dy) || 1;
-  const nx = -dy / len;
-  const ny = dx / len;
-  const mx = (x0 + x1) / 2 + nx * bend;
-  const my = (y0 + y1) / 2 + ny * bend;
-  const wm = (w0 + w1) / 2;
-  ctx.beginPath();
-  ctx.moveTo(x0 + nx * w0, y0 + ny * w0);
-  ctx.quadraticCurveTo(mx + nx * wm, my + ny * wm, x1 + nx * w1, y1 + ny * w1);
-  ctx.lineTo(x1 - nx * w1, y1 - ny * w1);
-  ctx.quadraticCurveTo(mx - nx * wm, my - ny * wm, x0 - nx * w0, y0 - ny * w0);
-  ctx.closePath();
-  ctx.fill();
-}
+type NameBox = { left: number; top: number };
 
-// One foliage pad on its own small canvas: lobes with a flat underside, lit
-// on top towards the sun, short needle strokes for texture.
-function foliagePad(rw: number, rh: number, lit: number, rand: Rand) {
-  const pad = Math.ceil(rh * 0.5);
-  const cw = Math.ceil(rw * 2 + pad * 2);
-  const ch = Math.ceil(rh * 2 + pad);
-  const canvas = document.createElement('canvas');
-  canvas.width = cw;
-  canvas.height = ch;
-  const c = canvas.getContext('2d')!;
-  const ox = cw / 2;
-  const base = ch - pad * 0.6;
-
-  // Silhouette: a dome of lobes, lowest at the ends.
-  c.fillStyle = '#000';
-  const lobes = 11;
-  for (let i = 0; i < lobes; i++) {
-    const u = -0.92 + (1.84 * (i + rand() * 0.7)) / lobes;
-    const middle = 1 - Math.min(1, Math.abs(u));
-    const r = rh * (0.42 + 0.48 * Math.sqrt(middle)) * between(rand, 0.85, 1.12);
-    c.beginPath();
-    c.arc(ox + u * rw, base - r * between(rand, 0.75, 1.05), r, 0, Math.PI * 2);
-    c.fill();
-  }
-  // A soft, slightly uneven underside rather than a cut line.
-  c.globalCompositeOperation = 'destination-out';
-  const under = c.createLinearGradient(0, base - rh * 0.22, 0, base + rh * 0.1);
-  under.addColorStop(0, 'rgba(0,0,0,0)');
-  under.addColorStop(0.55, 'rgba(0,0,0,0.5)');
-  under.addColorStop(1, 'rgba(0,0,0,1)');
-  c.fillStyle = under;
-  c.fillRect(0, base - rh * 0.22, cw, ch);
-  c.globalCompositeOperation = 'source-over';
-
-  // Light from above and to the right; the underside sinks into shade.
-  c.globalCompositeOperation = 'source-in';
-  const tone = c.createLinearGradient(ox + rw * 0.35, base - rh * 2, ox - rw * 0.2, base);
-  tone.addColorStop(0, lit > 0.5 ? '#a9b67e' : '#8d9d6b');
-  tone.addColorStop(0.42, '#6d8056');
-  tone.addColorStop(0.8, '#4f6243');
-  tone.addColorStop(1, '#3c4c34');
-  c.fillStyle = tone;
-  c.fillRect(0, 0, cw, ch);
-
-  // Needle strokes: lighter and upright near the lit top, darker below.
-  c.globalCompositeOperation = 'source-atop';
-  const strokes = Math.round((rw * rh) / 5);
-  for (let i = 0; i < strokes; i++) {
-    const x = ox + between(rand, -1, 1) * rw;
-    const y = base - Math.pow(rand(), 0.8) * rh * 2;
-    const height = (base - y) / (rh * 2);
-    const sunSide = (x - ox) / rw;
-    const v = height * 0.75 + sunSide * 0.15 + between(rand, -0.15, 0.15);
-    const color = v > 0.72 ? pick(rand, ['#c3c992', '#b5bf86', '#cdd09c'])
-      : v > 0.48 ? pick(rand, ['#8fa06c', '#98a873', '#839565'])
-      : v > 0.25 ? pick(rand, ['#677a52', '#5f724c', '#71835a'])
-      : pick(rand, ['#435437', '#4b5d3e', '#3e4e34']);
-    blade(c, x, y, between(rand, 3, 7), between(rand, -2.2, -0.9), between(rand, 0.7, 1.5), between(rand, -1.2, 1.2), color, between(rand, 0.25, 0.55));
-  }
-  c.globalAlpha = 1;
-  // A bright rim along the top where the sun catches it.
-  puff(c, ox + rw * 0.3, base - rh * 1.75, rh * 0.9, '232,230,180', lit * 0.35);
-  c.globalCompositeOperation = 'source-over';
-
-  // Ragged needle tips poking out of the top edge.
-  for (let i = 0; i < Math.round(rw / 2.2); i++) {
-    const u = between(rand, -0.85, 0.85);
-    const middle = 1 - Math.abs(u);
-    const x = ox + u * rw;
-    const y = base - rh * (0.55 + 1.25 * Math.sqrt(middle)) * between(rand, 0.86, 1);
-    blade(c, x, y + 2, between(rand, 2.5, 5.5), between(rand, -2.4, -0.7), between(rand, 0.5, 1), 0,
-      u > 0 ? '#9fae78' : '#7d8f62', between(rand, 0.35, 0.7));
-  }
-  c.globalAlpha = 1;
-  return { canvas, ox, base };
-}
-
-function drawTree(canvas: HTMLCanvasElement, w: number, h: number, dpr: number) {
+function drawTree(canvas: HTMLCanvasElement, w: number, h: number, dpr: number, img: HTMLImageElement, name: NameBox) {
   const ctx = prepare(canvas, w, h, dpr);
   ctx.clearRect(0, 0, w, h);
-  const rand = seeded(3301);
+  const iw = img.naturalWidth;
+  const ih = img.naturalHeight;
+  if (!iw || !ih) return;
   const portrait = w < h * 0.9;
+  const crownBottom = name.top - h * 0.012;
+  const below = 66; // the nav pills
+  const s = Math.max(0.05, Math.min(
+    (crownBottom - below) / ((TREE.split - TREE.crownTop) * ih),
+    ((portrait ? 0.82 : 0.38) * w) / iw,
+  ));
+  const trunkX = Math.max(6, name.left - Math.max(18, w * 0.045));
+  const left = trunkX - TREE.trunkX * iw * s;
+  const splitY = TREE.split * ih;
+  const ground = ridgeAt(Math.max(0, trunkX), w, h) + h * 0.06;
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(img, 0, 0, iw, splitY, left, crownBottom - splitY * s, iw * s, splitY * s);
+  ctx.drawImage(img, 0, splitY, iw, ih - splitY, left, crownBottom, iw * s, Math.max(1, ground - crownBottom));
 
-  // The crown: centre and half-width/half-height, kept above and left of the name.
-  // (below the nav: its top stays clear of the logo)
-  const rx = portrait ? Math.min(w * 0.42, h * 0.2) : Math.min(w * 0.19, h * 0.33);
-  const ry = rx * 0.3;
-  const cx = portrait ? w * 0.12 : w * 0.075;
-  const cy = portrait ? h * 0.16 : h * 0.205;
-  const baseX = portrait ? w * 0.022 : w * 0.032;
-  const baseY = ridgeAt(baseX, w, h) + h * 0.06;
-  const forkX = portrait ? w * 0.045 : baseX + rx * 0.12;
-  const forkY = cy + ry * 1.25;
-  const girth = Math.max(4, rx * (portrait ? 0.05 : 0.065));
-
-  // Trunk, bent a little, lit on the side facing the sun.
-  const bark = ctx.createLinearGradient(forkX - girth * 1.4, 0, forkX + girth * 1.2, 0);
-  bark.addColorStop(0, '#3d3a2b');
-  bark.addColorStop(0.5, '#575140');
-  bark.addColorStop(1, '#8e8566');
-  ctx.fillStyle = bark;
-  limb(ctx, baseX, baseY, forkX, forkY, girth, girth * 0.72, -rx * 0.05);
-  // Bark: a few long dark strokes down the shaded side.
-  ctx.globalAlpha = 0.35;
-  ctx.fillStyle = '#2f2c20';
-  for (let i = 0; i < 5; i++) {
-    const t0 = between(rand, 0.05, 0.7);
-    const x0 = baseX + (forkX - baseX) * t0 - girth * between(rand, 0.1, 0.6);
-    const y0 = baseY + (forkY - baseY) * t0;
-    limb(ctx, x0, y0, x0 + (forkX - baseX) * 0.12, y0 + (forkY - baseY) * between(rand, 0.08, 0.2), girth * 0.09, girth * 0.03, 0);
-  }
-  ctx.globalAlpha = 1;
-
-  // Limbs fanning up and out from the fork into the underside of the crown.
-  const limbShade = ctx.createLinearGradient(0, forkY, 0, cy);
-  limbShade.addColorStop(0, '#4c4736');
-  limbShade.addColorStop(1, '#3a3a2a');
-  ctx.fillStyle = limbShade;
-  const reach = [-0.75, -0.35, 0.05, 0.42, 0.8];
-  for (const u of reach) {
-    const tx = cx + u * rx * 0.85;
-    const ty = cy + ry * (0.35 + 0.25 * Math.abs(u));
-    limb(ctx, forkX, forkY, tx, ty, girth * 0.48, girth * 0.14, (u > 0 ? -1 : 1) * rx * 0.08);
-    // and a twig or two from each
-    for (let j = 0; j < 2; j++) {
-      const ex = tx + between(rand, -0.16, 0.16) * rx;
-      limb(ctx, tx, ty, ex, ty - ry * between(rand, 0.2, 0.45), girth * 0.14, girth * 0.05, between(rand, -3, 3));
-    }
-  }
-
-  // Crown pads, back to front: the high middle ones first, the low outer ones last.
-  type Pad = { x: number; y: number; rw: number; rh: number; lit: number };
-  const pads: Pad[] = [];
-  const back = 5;
-  for (let i = 0; i < back; i++) {
-    const u = -0.62 + (1.24 * i) / (back - 1) + between(rand, -0.05, 0.05);
-    const middle = 1 - Math.abs(u);
-    pads.push({ x: cx + u * rx, y: cy - ry * (0.1 + middle * 0.45), rw: rx * between(rand, 0.3, 0.38), rh: ry * (0.55 + middle * 0.35), lit: 0.6 + u * 0.4 });
-  }
-  const front = 6;
-  for (let i = 0; i < front; i++) {
-    const u = -0.85 + (1.7 * i) / (front - 1) + between(rand, -0.05, 0.05);
-    pads.push({ x: cx + u * rx, y: cy + ry * between(rand, 0.25, 0.5), rw: rx * between(rand, 0.2, 0.28), rh: ry * between(rand, 0.45, 0.6), lit: 0.35 + u * 0.35 });
-  }
-  const scale = 0.6; // painted smaller, then scaled up: soft edges like the clouds
-  for (const p of pads) {
-    const { canvas: padCanvas, ox, base } = foliagePad(p.rw * scale, p.rh * scale, p.lit, rand);
-    ctx.drawImage(padCanvas, p.x - ox / scale, p.y + p.rh * 0.6 - base / scale, padCanvas.width / scale, padCanvas.height / scale);
-  }
-
-  // Air between us and the tree: a little of the sky's colour over all of it, then the grain.
+  // A little of the sky's colour over it, so it sits in the same air, then the grain.
   ctx.globalCompositeOperation = 'source-atop';
-  ctx.fillStyle = 'rgba(172, 190, 158, 0.14)';
+  ctx.fillStyle = 'rgba(176, 194, 162, 0.12)';
   ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = grainPattern(ctx, rand);
+  ctx.fillStyle = grainPattern(ctx, seeded(3301));
   ctx.fillRect(0, 0, w, h);
   ctx.globalCompositeOperation = 'source-over';
 }
 
+// Where the name sits, from layout offsets so its load animation (a scale) does not skew it.
+function nameBox(w: number, h: number): NameBox {
+  const words = Array.from(document.querySelectorAll<HTMLElement>('.slp-word'));
+  if (!words.length) return { left: w * 0.08, top: h * 0.35 };
+  const at = (el: HTMLElement) => {
+    let x = 0;
+    let y = 0;
+    for (let e: HTMLElement | null = el; e; e = e.offsetParent as HTMLElement | null) { x += e.offsetLeft; y += e.offsetTop; }
+    return { x, y };
+  };
+  const spots = words.map(at);
+  const size = parseFloat(getComputedStyle(words[0]).fontSize) || 100;
+  // the cap height starts a little below the top of the line
+  return { left: Math.min(...spots.map((p) => p.x)), top: Math.min(...spots.map((p) => p.y)) + size * 0.18 };
+}
 
-/** The grass. Render it inside <main>, after the section that should rise out of it. */
+/* ---------------- The fox and the rabbit ---------------- */
+
+/* A rabbit, then a fox close behind, chase each other through the grass now
+   and then. Each is two painted poses (stretched and gathered) swapped in step
+   with its bounds. They run along a path that wanders across the field and
+   usually swings towards the camera; the closer they come the bigger they are,
+   the faster they cross the screen; closer than all the grass they go soft,
+   as if the lens were focused on the field behind them. They run in three
+   lanes (behind the mid grass, behind the near grass, in front of it all),
+   moving to a nearer lane at the top of a bound, where the change is hidden. */
+const CRITTER_W = 260; // CSS width of a sprite before scaling
+
+type Run = { dir: 1 | -1; far: number; near: number; at: number; width: number; wiggle: number; seed: number; across: Float32Array };
+type Critter = {
+  el: HTMLDivElement;
+  poses: HTMLImageElement[];
+  aspect: number; // height / width of the sprite
+  size: number; // relative to the fox
+  pace: number; // body lengths per second
+  period: number; // seconds per bound
+  bounce: number; // bound height, as a fraction of the sprite's height
+  delay: number; // seconds after the run starts
+  t: number;
+  phase: number;
+  lane: number;
+  pose: number;
+  running: boolean;
+};
+
+function makeCritter(srcs: string[], aspect: number, opts: Pick<Critter, 'size' | 'pace' | 'period' | 'bounce' | 'delay'>): Critter {
+  const el = document.createElement('div');
+  el.className = 'sl-critter';
+  el.style.width = `${CRITTER_W}px`;
+  el.style.height = `${CRITTER_W * aspect}px`;
+  const poses = srcs.map((src, i) => {
+    const img = new Image();
+    img.src = src;
+    img.alt = '';
+    img.decoding = 'async';
+    img.draggable = false;
+    if (i) img.style.opacity = '0';
+    el.appendChild(img);
+    return img;
+  });
+  return { el, poses, aspect, ...opts, t: 0, phase: 0, lane: 0, pose: 0, running: false };
+}
+
+const swingAt = (run: Pick<Run, 'at' | 'width'>, t: number) => Math.exp(-(((t - run.at) / run.width) ** 2));
+
+// While they swing towards the camera they mostly come towards it, so they
+// cross the screen slowly there: `across` is how far across (0 to 1) they are at t.
+function crossing(run: Pick<Run, 'at' | 'width' | 'near' | 'far'>) {
+  const steps = 240;
+  const across = new Float32Array(steps + 1);
+  const ease = Math.min(0.8, Math.max(0, (run.near - run.far) * 0.95));
+  for (let i = 1; i <= steps; i++) across[i] = across[i - 1] + 1 - ease * swingAt(run, i / steps);
+  for (let i = 1; i <= steps; i++) across[i] /= across[steps];
+  return across;
+}
+
+function pathAt(run: Run, t: number) {
+  const f = Math.min(1, Math.max(0, t)) * (run.across.length - 1);
+  const i = Math.floor(f);
+  const u = run.across[i] + (run.across[Math.min(i + 1, run.across.length - 1)] - run.across[i]) * (f - i);
+  const x = run.dir > 0 ? -0.24 + 1.48 * u : 1.24 - 1.48 * u;
+  const d = run.far + (run.near - run.far) * swingAt(run, t) + Math.sin(t * Math.PI * 3 + run.seed) * 0.035;
+  return { x: x + Math.sin(t * Math.PI * 2 + run.seed) * run.wiggle, d: Math.max(0.04, d) };
+}
+
+/* ---------------- Birds ---------------- */
+
+/* Now and then a few tiny birds cross the sky far away, flapping and gliding. */
+type Bird = { svg: SVGSVGElement; path: SVGPathElement; ox: number; oy: number; flap: number; rate: number; glideAt: number };
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+function makeBird(): Bird {
+  const svg = document.createElementNS(SVG_NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 20 10');
+  svg.setAttribute('class', 'sl-bird');
+  const path = document.createElementNS(SVG_NS, 'path');
+  svg.appendChild(path);
+  return { svg, path, ox: 0, oy: 0, flap: Math.random() * 6, rate: 9 + Math.random() * 3, glideAt: 0 };
+}
+
+// Wings from a tip height: 1 is fully up, -0.4 a little below the body.
+const wings = (lift: number) => {
+  const y = (5 - lift * 4.2).toFixed(2);
+  return `M1 ${y} Q5.5 ${(5 - lift * 2.2).toFixed(2)} 10 5.6 Q14.5 ${(5 - lift * 2.2).toFixed(2)} 19 ${y}`;
+};
+
+
+/** The grass, with lanes between its layers for the fox and the rabbit. Render it inside <main>, after the section that should rise out of it. */
 export function SunlitField() {
   return (
     <div className="sl-grass" aria-hidden="true">
       <canvas className="sl-grass-canvas" />
+      <div className="sl-lane" />
+      <canvas className="sl-grass-canvas" />
+      <div className="sl-lane" />
+      <canvas className="sl-grass-canvas" />
+      <div className="sl-lane" />
     </div>
   );
 }
@@ -621,11 +611,16 @@ export default function SunlitScene() {
     const sky = skyRef.current;
     const rays = raysRef.current;
     const tree = treeRef.current;
-    // SunlitField renders in the same commit, so its canvas is already in the page.
-    const grass = document.querySelector<HTMLCanvasElement>('.sl-grass-canvas');
-    if (!scene || !sky || !rays || !tree || !grass) return;
-    const field = grass.parentElement as HTMLElement;
+    // SunlitField renders in the same commit, so its canvases are already in the page.
+    const field = document.querySelector<HTMLElement>('.sl-grass');
+    const grass = Array.from(document.querySelectorAll<HTMLCanvasElement>('.sl-grass .sl-grass-canvas'));
+    const lanes = Array.from(document.querySelectorAll<HTMLElement>('.sl-grass .sl-lane'));
+    const flock = scene?.querySelector<HTMLElement>('.sl-birds');
+    if (!scene || !sky || !rays || !tree || !field || grass.length !== 3 || lanes.length !== 3 || !flock) return;
     const treeLayer = tree.parentElement as HTMLElement;
+    const treeImg = new Image();
+    treeImg.decoding = 'async';
+    treeImg.src = TREE.src;
 
     let drawnW = 0;
     let drawnH = 0;
@@ -639,7 +634,7 @@ export default function SunlitScene() {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       drawSky(sky, w, h, dpr);
       drawRays(rays, w, h, dpr);
-      drawTree(tree, w, h, dpr);
+      if (treeImg.complete) drawTree(tree, w, h, dpr, treeImg, nameBox(w, h));
       drawGrass(grass, w, h, Math.max(h, Math.round(field.getBoundingClientRect().height)), dpr);
 
       const unit = Math.min(w, h * 1.15);
@@ -661,6 +656,13 @@ export default function SunlitScene() {
       field.classList.add('is-drawn');
     };
     draw();
+    // The painting may arrive after the first draw, and the name moves a little once its font loads.
+    const redrawTree = () => {
+      if (!drawnW || !treeImg.complete) return;
+      drawTree(tree, drawnW, drawnH, Math.min(window.devicePixelRatio || 1, 2), treeImg, nameBox(drawnW, drawnH));
+    };
+    treeImg.addEventListener('load', redrawTree);
+    document.fonts?.ready.then(redrawTree);
 
     let timer = 0;
     const onResize = () => {
@@ -703,19 +705,19 @@ export default function SunlitScene() {
       const end = root.scrollHeight - vh;
       const crest = vh * HILL;
 
-      // The field stays solid until the first block has come up out of it; the
-      // tree leaves a little sooner, before the section's heading reaches it.
+      // The field stays solid while the section's heading comes up out of it,
+      // then drops away quickly; the tree leaves with it.
       const back = clamp01((y - (end - vh * 1.1)) / (vh * 0.9));
       const fade = (from: number, over: number) => {
         const t = Math.max(0, clamp01((y - vh * from) / (vh * over)) - back);
         return t * t * (3 - 2 * t);
       };
-      const gone = fade(0.75, 0.6);
-      const treeGone = fade(0.3, 0.65);
+      const gone = fade(0.42, 0.3);
+      const treeGone = fade(0.3, 0.38);
       const reach = footer ? Math.max(0, crest - (vh - footer.offsetHeight - 28)) : 0;
       const lift = calm ? (back > 0 ? reach : 0) : reach * back;
       field.style.opacity = gone >= 1 ? '0' : (1 - gone).toFixed(3);
-      field.style.translate = `0 ${((calm ? 0 : gone * vh * 0.12) - lift).toFixed(1)}px`;
+      field.style.translate = `0 ${((calm ? 0 : gone * vh * 0.18) - lift).toFixed(1)}px`;
       treeLayer.style.opacity = treeGone >= 1 ? '0' : (1 - treeGone).toFixed(3);
       treeLayer.style.translate = calm ? '' : `0 ${(treeGone * vh * 0.04).toFixed(1)}px`;
 
@@ -741,17 +743,156 @@ export default function SunlitScene() {
     window.addEventListener('resize', onScroll);
     still.addEventListener('change', onScroll);
 
+    /* The fox, the rabbit and the birds: one animation loop, running only while
+       the hero (animals and birds) or the closing section (birds) is on screen,
+       the tab is visible and motion is allowed. */
+    const rabbit = makeCritter(['/images/sunlit/rabbit-hop.webp', '/images/sunlit/rabbit-tuck.webp'], 0.424,
+      { size: 0.7, pace: 3.7, period: 0.36, bounce: 0.24, delay: 0 });
+    const fox = makeCritter(['/images/sunlit/fox-leap.webp', '/images/sunlit/fox-tuck.webp'], 0.44,
+      { size: 1, pace: 2.6, period: 0.46, bounce: 0.13, delay: 0.85 });
+    const critters = [rabbit, fox];
+    critters.forEach((c) => lanes[0].appendChild(c.el));
+    const birds = [makeBird(), makeBird(), makeBird(), makeBird()];
+    birds.forEach((b) => flock.appendChild(b.svg));
+
+    let run: Run | null = null;
+    let nextRun = performance.now() + 2600;
+    let lastDir: 1 | -1 = -1;
+    let flight: { dir: 1 | -1; alt: number; start: number; secs: number; count: number } | null = null;
+    let nextFlight = performance.now() + 5000;
+    let loop = 0;
+    let last = 0;
+    let heroShowing = false;
+
+    let runs = 0;
+    const startRun = (now: number) => {
+      lastDir = lastDir > 0 ? -1 : 1;
+      // the first chase always comes close; after that most do
+      const close = runs++ === 0 || Math.random() < 0.7;
+      const shape = {
+        far: between(Math.random, 0.12, 0.3),
+        near: close ? between(Math.random, 1.06, 1.2) : between(Math.random, 0.45, 0.7),
+        at: between(Math.random, 0.42, 0.58),
+        width: between(Math.random, 0.17, 0.24),
+      };
+      run = { dir: lastDir, ...shape, wiggle: between(Math.random, 0.01, 0.03), seed: Math.random() * 6, across: crossing(shape) };
+      critters.forEach((c) => { c.t = 0; c.phase = Math.random(); c.running = false; c.lane = 0; lanes[0].appendChild(c.el); });
+      nextRun = now + 1e9;
+      runStart = now;
+    };
+    let runStart = 0;
+
+    const stepCritters = (now: number, dt: number) => {
+      if (!run && now >= nextRun) startRun(now);
+      if (!run) return;
+      const w = drawnW;
+      const h = drawnH;
+      const band = h * (1 - HILL);
+      let done = true;
+      for (const c of critters) {
+        if (!c.running && (now - runStart) / 1000 >= c.delay && c.t === 0) c.running = true;
+        if (!c.running) { done = false; c.el.style.visibility = 'hidden'; continue; }
+        const p = pathAt(run, c.t);
+        // on-screen body length, px: grows as they come closer, at most about half a phone's width
+        const span = Math.min(band * (0.32 + 1.6 * Math.pow(p.d, 1.6)), w * 0.55 + 60) * c.size;
+        // advance along the path at a steady pace in body lengths, measured on
+        // screen, but never faster than about a screen width in two seconds
+        const q = pathAt(run, c.t + 0.002);
+        const perT = Math.hypot((q.x - p.x) * w, (q.d - p.d) * band * 2.2) / 0.002;
+        c.t += (Math.min(c.pace * span, w * 0.32) * dt) / Math.max(1, perT);
+        c.phase += dt / c.period;
+        if (c.t > 1) { c.el.style.visibility = 'hidden'; continue; }
+        done = false;
+
+        const hop = c.phase % 1;
+        const airborne = hop > 0.3 && hop < 0.7;
+        const lane = p.d < 0.42 ? 0 : p.d < 0.86 ? 1 : 2;
+        if (lane !== c.lane && airborne) { c.lane = lane; lanes[lane].appendChild(c.el); }
+        const pose = hop > 0.14 && hop < 0.76 ? 0 : 1;
+        if (pose !== c.pose) { c.poses[c.pose].style.opacity = '0'; c.poses[pose].style.opacity = '1'; c.pose = pose; }
+
+        const x = p.x * w;
+        const ground = ridgeAt(Math.min(w, Math.max(0, x)), w, h);
+        const feet = ground + 4 + p.d * (h - ground + 30);
+        const scale = span / CRITTER_W;
+        const lift = Math.sin(Math.PI * hop) * c.bounce * span * c.aspect;
+        c.el.style.transform = `translate3d(${(x - CRITTER_W / 2).toFixed(1)}px, ${(feet - CRITTER_W * c.aspect - lift).toFixed(1)}px, 0) scale(${(scale * run.dir).toFixed(4)}, ${scale.toFixed(4)})`;
+        // depth of field: the lens is on the field, so they are sharp in the
+        // grass and go soft only once they are closer than all of it
+        const soft = Math.pow(clamp01((p.d - 0.82) / 0.3), 1.1);
+        c.el.style.filter = soft > 0.02 ? `blur(${(soft * Math.min(14, 3 + span * 0.03)).toFixed(1)}px)` : 'none';
+        c.el.style.visibility = 'visible';
+      }
+      if (done) { run = null; nextRun = now + between(Math.random, 4500, 9000); }
+    };
+
+    const stepBirds = (now: number) => {
+      if (!flight && now >= nextFlight) {
+        const count = 2 + Math.floor(Math.random() * 3);
+        flight = { dir: Math.random() < 0.5 ? 1 : -1, alt: between(Math.random, 0.1, 0.34), start: now, secs: between(Math.random, 26, 36), count };
+        birds.forEach((b, i) => {
+          b.ox = i === 0 ? 0 : between(Math.random, 14, 38) * Math.ceil(i / 2) * (i % 2 ? 1 : 0.85);
+          b.oy = i === 0 ? 0 : (i % 2 ? -1 : 1) * between(Math.random, 5, 12) * Math.ceil(i / 2);
+          b.svg.style.visibility = i < count ? 'visible' : 'hidden';
+        });
+      }
+      if (!flight) return;
+      const w = drawnW;
+      const h = drawnH;
+      const p = (now - flight.start) / (flight.secs * 1000);
+      if (p > 1) { flight = null; birds.forEach((b) => { b.svg.style.visibility = 'hidden'; }); nextFlight = now + between(Math.random, 9000, 20000); return; }
+      const lead = flight.dir > 0 ? -40 + (w + 120) * p : w + 40 - (w + 120) * p;
+      const size = Math.max(7, Math.min(11, w / 150));
+      birds.forEach((b, i) => {
+        if (i >= flight!.count) return;
+        b.flap += 0.016 * b.rate;
+        // flap for a while, then glide with wings held a little up
+        const gliding = ((now / 1000 + i * 1.7) % 7) > 5;
+        const lift = gliding ? 0.25 : Math.sin(b.flap);
+        b.path.setAttribute('d', wings(lift));
+        const x = lead - flight!.dir * b.ox;
+        const y = flight!.alt * h + b.oy + Math.sin(p * Math.PI * 3 + i) * 7;
+        b.svg.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) scale(${(size / 20).toFixed(3)})`;
+      });
+    };
+
+    const tick = (now: number) => {
+      loop = 0;
+      const dt = Math.min(0.05, last ? (now - last) / 1000 : 0.016);
+      last = now;
+      if (heroShowing) stepCritters(now, dt);
+      stepBirds(now);
+      loop = requestAnimationFrame(tick);
+    };
+    const showing = new Set<Element>();
+    const setMotion = () => {
+      const on = showing.size > 0 && !document.hidden && !still.matches;
+      root.classList.toggle('sl-alive', showing.size > 0);
+      heroShowing = on && [...showing].some((el) => el.classList.contains('slp'));
+      // a chase only plays out in the hero: one that is interrupted is dropped,
+      // so it never reappears frozen when the field comes back at the end
+      if (!heroShowing && run) {
+        run = null;
+        critters.forEach((c) => { c.el.style.visibility = 'hidden'; });
+        nextRun = performance.now() + 2500;
+      }
+      if (on && !loop) { last = 0; loop = requestAnimationFrame(tick); }
+      if (!on && loop) { cancelAnimationFrame(loop); loop = 0; }
+      field.classList.toggle('is-calm', still.matches);
+    };
+
     // Motion runs only while the poster hero or the closing section is in view.
     const watched = ['.slp', '.hp-cta'].map((q) => document.querySelector(q)).filter(Boolean) as Element[];
-    const showing = new Set<Element>();
     const io = new IntersectionObserver((entries) => {
       for (const e of entries) {
         if (e.isIntersecting) showing.add(e.target);
         else showing.delete(e.target);
       }
-      root.classList.toggle('sl-alive', showing.size > 0);
+      setMotion();
     });
     watched.forEach((el) => io.observe(el));
+    document.addEventListener('visibilitychange', setMotion);
+    still.addEventListener('change', setMotion);
 
     return () => {
       window.clearTimeout(timer);
@@ -760,7 +901,13 @@ export default function SunlitScene() {
       window.removeEventListener('resize', onScroll);
       still.removeEventListener('change', onScroll);
       cancelAnimationFrame(frame);
+      cancelAnimationFrame(loop);
       io.disconnect();
+      document.removeEventListener('visibilitychange', setMotion);
+      still.removeEventListener('change', setMotion);
+      treeImg.removeEventListener('load', redrawTree);
+      critters.forEach((c) => c.el.remove());
+      birds.forEach((b) => b.svg.remove());
       rising.forEach(settle);
       root.classList.remove('sl-alive');
     };
@@ -781,6 +928,7 @@ export default function SunlitScene() {
           />
         ))}
       </div>
+      <div className="sl-birds" />
       <div className="sl-tree">
         <canvas className="sl-tree-canvas" ref={treeRef} />
       </div>

@@ -1,10 +1,12 @@
 /* ═══════════════════════════════════════════════════════════════
    POSTER HERO (app/PosterHero.tsx)
-   The name in Gloock, as large as the screen allows, over the sunlit field,
-   with one line of context under it. The letters are lit like the landscape:
-   warm bronze at the top where the sun catches them, deep pine at their feet.
-   The only motion is a one-time focus pull on load: each word starts soft
-   and transparent and sharpens, "Chiam" a beat after "Braven". Nothing loops.
+   The name in Figtree, as large as the screen allows, made of clear frosted
+   glass like the cards below it: each letter blurs and brightens the sky
+   behind it, carries a milky tint, a highlight across its top and a bright
+   rim where the sun catches it, and casts a soft shadow. One line of context
+   sits under it. The only motion is a one-time focus pull on load: each word
+   starts soft and transparent and sharpens, "Chiam" a beat after "Braven".
+   Nothing loops.
    ═══════════════════════════════════════════════════════════════ */
 
 .slp {
@@ -22,24 +24,74 @@
 
 .slp-name {
   margin: 0;
-  /* "Braven Chiam" is about 6.45em wide in Gloock: this fills about 84% of the width */
-  font-size: min(13vw, 25vh);
-  line-height: 0.95;
-  letter-spacing: -0.02em;
-  color: #1f2b1c;
+  /* "Braven Chiam" is about 6.1em wide in Figtree: this fills about 82% of the width */
+  font-size: min(13.4vw, 25vh);
+  line-height: 1;
+  letter-spacing: -0.035em;
   white-space: nowrap;
 }
-/* set on the words: the site's global heading rules would win over inheritance */
-.slp-word {
-  display: inline-block;
-  /* room for the descender-free baseline and the gradient's bottom stop */
-  padding: 0 0.02em 0.04em;
-  font-family: var(--font-poster), 'Times New Roman', serif;
-  font-weight: 400;
-  background: linear-gradient(180deg, #82702a 0%, #4f5c2e 48%, #1d2a1a 100%);
+/* set on every layer: the site's universal font-family rule would win over inheritance */
+.slp-word, .slp-word > span {
+  font-family: var(--font-poster), system-ui, sans-serif;
+  font-weight: 800;
+}
+.slp-word { position: relative; display: inline-block; }
+.slp-word > span { display: block; padding: 0.02em 0.04em 0.06em; color: transparent; }
+.slp-word > :is(.slp-shadow, .slp-glass, .slp-light) { position: absolute; inset: 0; }
+.slp-word > .slp-rim { position: relative; }
+
+/* The shadow it casts. Its box is larger than the word so the soft edge has
+   room, and where the browser can, the letter shapes are cut out of it: a
+   shadow under the letters would show through the glass and grey it. */
+.slp-word > .slp-shadow {
+  inset: -0.3em -0.4em -0.6em;
+  padding: 0.32em 0.44em 0.66em;
+  text-shadow: 0 0.08em 0.2em rgba(31, 43, 28, 0.3), 0 0.015em 0.03em rgba(31, 43, 28, 0.16);
+}
+@supports (-webkit-mask-clip: text) {
+  .slp-word > .slp-shadow {
+    -webkit-mask-image: linear-gradient(#000, #000), linear-gradient(#000, #000);
+    -webkit-mask-clip: border-box, text;
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+}
+/* the glass: a milky tint, a touch of green at the foot of each letter */
+.slp-glass {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.36) 0%, rgba(255, 255, 255, 0.22) 58%, rgba(214, 226, 200, 0.18) 100%);
   -webkit-background-clip: text;
   background-clip: text;
-  -webkit-text-fill-color: transparent;
+}
+/* Where a browser can cut a backdrop blur to the letter shapes (Chromium,
+   Safari), the letters blur and brighten the sky behind them like the cards. */
+@supports (-webkit-mask-clip: text) {
+  .slp-glass {
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    /* !important: mainstyle.css turns backdrop-filter off everywhere unless a glass surface opts back in */
+    -webkit-backdrop-filter: blur(9px) saturate(1.7) brightness(1.05) !important;
+    backdrop-filter: blur(9px) saturate(1.7) brightness(1.05) !important;
+    -webkit-mask-image: linear-gradient(#000, #000);
+    -webkit-mask-clip: text;
+  }
+}
+/* Elsewhere (Firefox) there is no blur to brighten the letters and the shadow
+   shows through the tint, so the tint is milkier. */
+@supports not (-webkit-mask-clip: text) {
+  .slp-glass { background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.52) 0%, rgba(255, 255, 255, 0.4) 58%, rgba(226, 236, 214, 0.36) 100%); }
+  .slp-shadow { text-shadow: 0 0.08em 0.2em rgba(31, 43, 28, 0.2), 0 0.015em 0.03em rgba(31, 43, 28, 0.1); }
+}
+/* light across the top of each letter, a little shade at its foot */
+.slp-light {
+  background: linear-gradient(172deg, rgba(255, 255, 255, 0.62) 0%, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0) 66%, rgba(40, 58, 36, 0.16) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+/* the rim, brightest on the edges facing the sun */
+.slp-rim {
+  -webkit-text-stroke: 0.012em rgba(255, 255, 255, 0.95);
+  -webkit-mask-image: linear-gradient(150deg, #000 0%, rgba(0, 0, 0, 0.25) 55%, rgba(0, 0, 0, 0.7) 100%);
+  mask-image: linear-gradient(150deg, #000 0%, rgba(0, 0, 0, 0.25) 55%, rgba(0, 0, 0, 0.7) 100%);
 }
 
 .slp-role {
@@ -58,7 +110,9 @@
 }
 @keyframes slp-fade { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: no-preference) {
-  .slp-word { animation: slp-focus 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both; }
+  /* backwards, not both: a filter left on the word (even blur(0)) would stop
+     the glass inside it from seeing the sky */
+  .slp-word { animation: slp-focus 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.15s backwards; }
   .slp-word + .slp-word { animation-delay: 0.32s; }
   .slp-role { animation: slp-fade 1s ease-out 1s both; }
 }
@@ -67,12 +121,12 @@
 @media (max-width: 1100px) and (orientation: portrait), (max-width: 700px) {
   .slp-stage { margin-top: -10vh; }
   .slp-word { display: block; width: fit-content; margin: 0 auto; }
-  /* each word is about 3.13em wide */
-  .slp-name { font-size: min(26vw, 22vh); line-height: 0.92; }
+  /* each word is about 3.05em wide */
+  .slp-name { font-size: min(26vw, 22vh); line-height: 0.9; }
 }
 @media (max-width: 700px) {
   .slp { padding-top: 96px; padding-bottom: 22vh; }
   .slp-stage { margin-top: -3vh; }
-  .slp-name { font-size: min(27.5vw, 22vh); }
+  .slp-name { font-size: min(28vw, 22vh); }
   .slp-role { max-width: 24ch; font-size: 1rem; }
 }

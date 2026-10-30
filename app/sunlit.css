@@ -116,8 +116,35 @@ html.sensory-active[data-theme="sunlit"] {
   position: fixed; top: 0; left: 0; width: 100%; height: 135lvh;
   overflow: visible; pointer-events: none; will-change: opacity, translate;
 }
-/* a little wider than the screen, so the sway never opens a gap at the edges */
-.sl-grass-canvas { position: absolute; top: 0; left: -3%; width: 106%; height: 100%; transform-origin: 50% 74%; }
+/* Three canvases, far, mid and near (SunlitScene FIELD_TOP: nothing is painted
+   above 60% of the screen), a little wider than the screen so the sway never
+   opens a gap at the edges. The sway pivots on the bottom of the screen. */
+.sl-grass-canvas { position: absolute; top: 60lvh; left: -3%; width: 106%; height: 75lvh; transform-origin: 50% 40lvh; }
+
+/* The lanes between the grass layers, where the fox and the rabbit run */
+.sl-lane { position: absolute; inset: 0; pointer-events: none; }
+.sl-critter {
+  position: absolute; left: 0; top: 0; transform-origin: 50% 100%; visibility: hidden;
+  will-change: transform, filter;
+}
+/* paws fade into the grass; the mask is on the poses, not the box, so the
+   depth-of-field blur on the box can spill past its edges */
+.sl-critter img {
+  position: absolute; inset: 0; width: 100%; height: 100%; user-select: none;
+  -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 16%);
+  mask-image: linear-gradient(to top, transparent 0%, #000 16%);
+}
+.sl-grass.is-calm .sl-critter { display: none; }
+
+/* Tiny birds far off in the sky */
+.sl-scene > .sl-birds { overflow: hidden; }
+.sl-bird {
+  position: absolute; left: 0; top: 0; width: 20px; height: 10px; overflow: visible;
+  transform-origin: 0 0; visibility: hidden;
+  fill: none; stroke: rgba(44, 56, 40, 0.62); stroke-width: 1.3px; stroke-linecap: round; stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.sl-bird path { vector-effect: non-scaling-stroke; }
 
 .sl-sky-canvas, .sl-clouds, .sl-rays, .sl-tree-canvas, .sl-grass-canvas { opacity: 0; transition: opacity 0.9s ease-out; }
 :is(.sl-scene, .sl-grass).is-drawn :is(.sl-sky-canvas, .sl-clouds, .sl-rays, .sl-tree-canvas, .sl-grass-canvas) { opacity: 1; }
