@@ -1,0 +1,220 @@
+/* ═══════════════════════════════════════════════════════════════
+   ABOUT ("What I do") and the photo panel, homepage only (app/HomeClient.tsx)
+   The bento is four rows:
+     1. the intro, full width: who I am, the facts, and Sukuna
+     2. "From the chip to the cloud": the firmware, board, software and
+        servers tiles grouped into one chain, read left to right (top to
+        bottom on phones), to show one person building every layer
+     3. "Designed for people": the case and the interfaces, with why they matter
+     4. wireless, video and photos
+   A group is one glass panel; the layers inside it are plain translucent
+   cells with no blur of their own (a blur nested in a blur turns grey).
+   Selectors start at .ab-bento so they outrank the old bento spans in
+   public/mainstyle.css, several of which are !important.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Its own stacking layer, so the grass drawn after it (SunlitField) covers all
+   of it while it rises; .hp-section's z-index 2 would otherwise lift it above.
+   It is pulled up under the hero so its heading starts just below the top of
+   the grass (the hill crest is at about 80% of the screen, see SunlitScene
+   HILL) and begins to rise as soon as the page scrolls. The hero is 100svh,
+   the grass is measured in lvh. */
+#about { z-index: 0; margin-top: calc(82lvh - 100svh); padding-top: 0; }
+#about > .hp-section > .section-editorial-header { padding-top: 0; }
+
+.hp-bento.ab-bento { grid-template-columns: repeat(6, minmax(0, 1fr)); grid-auto-rows: auto; }
+.hp-bento.ab-bento > :is(.hp-tile-intro, .ab-group) { grid-column: 1 / -1 !important; grid-row: auto !important; }
+.hp-bento.ab-bento > :is(.hp-tile-rf, .hp-tile-davinci, .hp-tile-photo) { grid-column: span 2 !important; grid-row: auto !important; }
+.hp-bento.ab-bento > :is(.hp-tile-rf, .hp-tile-davinci, .hp-tile-photo) { box-sizing: border-box; min-height: 340px; }
+
+/* ── Intro: copy | facts | Sukuna ── */
+.hp-bento.ab-bento > .hp-tile-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) 190px;
+  grid-template-areas: "key key ." "copy facts .";
+  grid-template-rows: auto auto;
+  align-content: space-between;
+  gap: 18px 48px;
+  box-sizing: border-box;
+  min-height: 270px;
+  padding: 32px 34px 34px;
+}
+.ab-bento > .hp-tile-intro > .ab-intro-key { grid-area: key; position: static; }
+.ab-bento > .hp-tile-intro .hp-facts { grid-area: facts; position: static; align-self: end; max-width: none; margin: 0; }
+.ab-bento > .hp-tile-intro .ab-intro-copy { grid-area: copy; align-self: end; position: relative; z-index: 2; }
+.ab-bento > .hp-tile-intro .hp-tile-p { max-width: 46ch; }
+.ab-bento > .hp-tile-intro .hp-blink { right: 4px; bottom: -6px; width: 210px; height: 210px; }
+
+/* ── Group panels (.hp-bento.ab-bento > … to outrank .hp-tile's flex and padding) ── */
+.hp-bento.ab-bento > .ab-group { padding: 34px; gap: 28px; }
+/* a whole panel does not lift; the cells inside it do */
+.hp-bento.ab-bento > .ab-group:hover { transform: none; }
+.ab-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas: "key key" "title text";
+  gap: 6px 48px;
+  align-items: end;
+}
+.ab-head > .hp-key { grid-area: key; }
+.ab-head > .hp-tile-h { grid-area: title; margin: 0; font-size: clamp(1.7rem, 2.6vw, 2.4rem); }
+.ab-head > .hp-tile-p { grid-area: text; margin: 0; max-width: 52ch; font-size: 0.96rem; }
+
+/* A cell inside a group: translucent, no blur, lifts and brightens when you point at it */
+.ab-layer, .ab-cell {
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 20px 22px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.6);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease, box-shadow 0.3s ease;
+}
+.ab-layer:hover, .ab-cell:hover {
+  transform: translateY(-3px);
+  background-color: rgba(255, 255, 255, 0.36);
+  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.7), 0 18px 32px -22px rgba(31, 43, 28, 0.55);
+}
+.ab-layer:active, .ab-cell:active { transform: translateY(-1px) scale(0.99); }
+.ab-layer:focus-visible, .ab-cell:focus-visible { outline: 2px solid #2b3b27; outline-offset: 3px; }
+.ab-layer .hp-tile-h, .ab-cell .hp-tile-h { font-size: clamp(1.2rem, 1.6vw, 1.45rem); margin-top: 0.3rem; }
+.ab-layer .hp-tile-p, .ab-cell .hp-tile-p { margin-top: 0.4rem; font-size: 0.88rem; }
+/* the arrow hides in the corner until you point at a cell */
+.ab-layer .hp-tile-go, .ab-cell .hp-tile-go { top: 14px; right: 14px; }
+
+/* ── The chain: four layers, joined by a trace ── */
+.ab-chain {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 30px;
+}
+.ab-layer { overflow: visible; }
+.ab-layer .ab-media { height: 104px; margin: 0 0 18px; display: flex; align-items: center; }
+/* the trace between two layers: a gold line with a node, level with the pictures */
+.ab-layer:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 66px;
+  left: calc(100% + 1px);
+  width: 28px;
+  height: 9px;
+  background:
+    radial-gradient(circle, rgba(138, 112, 30, 0.85) 0 3px, transparent 3.5px),
+    linear-gradient(rgba(138, 112, 30, 0.6), rgba(138, 112, 30, 0.6)) center / 100% 1.5px no-repeat;
+  pointer-events: none;
+}
+.ab-media.hp-iconrow { gap: 8px; flex-wrap: nowrap; }
+.ab-media.hp-iconrow img { width: 44px; height: 44px; padding: 9px; border-radius: 13px; flex: 0 0 auto; }
+.ab-media.hp-iconrow-sm img { width: 38px; height: 38px; padding: 7px; border-radius: 11px; }
+.ab-media.hp-iconrow-sm { gap: 6px; }
+.ab-photo { width: 100%; height: 100%; object-fit: cover; object-position: 60% 40%; border-radius: 13px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5), 0 10px 22px -14px rgba(31, 43, 28, 0.6); }
+.ab-media:has(.ab-device) { justify-content: center; overflow: visible; }
+/* the picture is mostly empty margin around a flat rack unit: show it larger than its box */
+.ab-device { width: 136%; max-width: none; flex: none; filter: drop-shadow(0 12px 14px rgba(31, 43, 28, 0.22)); }
+
+/* ── Design: why it matters | the case | the interfaces ── */
+.hp-bento.ab-bento > .ab-design {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 22px;
+}
+.ab-design > .ab-head { grid-template-columns: 1fr; grid-template-areas: "key" "title" "text"; gap: 10px; align-content: end; padding: 4px 10px 6px 0; }
+.ab-design > .ab-head > .hp-tile-p { max-width: 40ch; }
+.ab-cell { justify-content: flex-end; min-height: 340px; }
+.ab-cad { padding-top: 180px; }
+.ab-cad .hp-tile-render { top: 18px; }
+.ab-cad:hover .hp-tile-render { transform: translateY(-4px) rotate(2deg); }
+.ab-ui .hp-figma-stack { margin: 0.2rem 0 auto; }
+.ab-ui:hover .hp-figma-stack img.back { transform: rotate(-12deg) translateY(-4px); }
+.ab-ui:hover .hp-figma-stack img.front { transform: rotate(13deg) translateY(-4px); }
+
+/* ── Photos: tabs and gallery in one glass panel ── */
+.ab-photos {
+  margin-top: 1.6rem;
+  padding: 22px;
+  border-radius: 26px;
+  overflow: hidden;
+}
+.ab-photos .hp-albums { justify-content: flex-start; max-width: none; margin: 0 0 6px; }
+.hp-photo-band .ab-photos .photo-main-ver { width: 100%; max-width: none; margin: 0; border: 0; border-radius: 0; }
+.ab-photos .phototop { justify-content: flex-start; gap: 10px; }
+.ab-photos .photography-box h1 { padding: 1.1rem 0.2rem 0.9rem; font-size: 1.6em; }
+/* the closed preview fades out into the panel; "Click to Expand" sits on the fade */
+.ab-photos .lyc {
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 64%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 64%, transparent 100%);
+}
+.ab-photos .photo-main-ver .expand {
+  display: flex; align-items: flex-end; justify-content: center;
+  height: 120px; padding-bottom: 10px; background: none !important;
+}
+
+/* ── Tablets: two columns ── */
+@media (max-width: 1000px) {
+  .hp-bento.ab-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hp-bento.ab-bento > .hp-tile-rf, .hp-bento.ab-bento > .hp-tile-davinci { grid-column: span 1 !important; }
+  .hp-bento.ab-bento > .hp-tile-photo { grid-column: 1 / -1 !important; }
+
+  .hp-bento.ab-bento > .hp-tile-intro {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "key" "facts" "copy";
+    grid-template-rows: auto;
+    gap: 14px;
+  }
+  .ab-bento > .hp-tile-intro .hp-facts { max-width: 520px; }
+  .ab-bento > .hp-tile-intro .hp-tile-p { max-width: calc(100% - 150px); }
+  .ab-bento > .hp-tile-intro .hp-blink { width: 150px; height: 150px; }
+
+  .ab-head { grid-template-columns: 1fr; grid-template-areas: "key" "title" "text"; gap: 10px; }
+  .ab-chain { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px 30px; }
+  /* in a 2 by 2 grid only the left-hand layers have a neighbour to the right */
+  .ab-layer:nth-child(2n)::after { display: none; }
+  .hp-bento.ab-bento > .ab-design { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ab-design > .ab-head { grid-column: 1 / -1; padding: 0; }
+}
+
+/* ── Phones: one column; the chain reads top to bottom ── */
+@media (max-width: 560px) {
+  .hp-bento.ab-bento { grid-template-columns: minmax(0, 1fr); }
+  .hp-bento.ab-bento > :is(.hp-tile-rf, .hp-tile-davinci, .hp-tile-photo) { grid-column: 1 / -1 !important; }
+  .hp-bento.ab-bento > :is(.hp-tile-davinci, .hp-tile-photo) { min-height: 300px; }
+  .hp-bento.ab-bento > .hp-tile-rf { min-height: 0; }
+
+  .hp-bento.ab-bento > .hp-tile-intro { padding: 26px 24px 26px; min-height: 0; }
+  .ab-bento > .hp-tile-intro .hp-tile-h { font-size: 1.85rem; }
+  .ab-bento > .hp-tile-intro .hp-tile-p { max-width: calc(100% - 104px); }
+  .ab-bento > .hp-tile-intro .hp-blink { width: 118px; height: 118px; right: -4px; opacity: 0.9; }
+  .ab-bento > .hp-tile-intro .hp-facts > div { grid-template-columns: 72px 1fr; }
+
+  .hp-bento.ab-bento > .ab-group { padding: 24px 18px 20px; gap: 20px; }
+  .ab-head > .hp-tile-h { font-size: 1.75rem; }
+  .ab-chain { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  /* picture on the left, words on the right */
+  .ab-layer { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 0 16px; align-items: start; padding: 16px 16px 18px; }
+  .ab-layer .ab-media { height: auto; min-height: 84px; margin: 2px 0 0; }
+  .ab-media.hp-iconrow { display: grid; grid-template-columns: repeat(2, 38px); gap: 8px; align-content: start; }
+  .ab-media.hp-iconrow img, .ab-media.hp-iconrow-sm img { width: 38px; height: 38px; padding: 7px; border-radius: 11px; }
+  .ab-media.hp-iconrow-sm img:nth-child(n + 5) { display: none; }
+  .ab-photo { height: 104px; }
+  .ab-layer:nth-child(2n)::after { display: block; }
+  .ab-layer:not(:last-child)::after {
+    top: 100%; left: 58px; width: 9px; height: 22px; margin-top: 1px;
+    background:
+      radial-gradient(circle, rgba(138, 112, 30, 0.85) 0 3px, transparent 3.5px),
+      linear-gradient(rgba(138, 112, 30, 0.6), rgba(138, 112, 30, 0.6)) center / 1.5px 100% no-repeat;
+  }
+  .hp-bento.ab-bento > .ab-design { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .ab-cell { min-height: 0; }
+  .ab-cad { padding-top: 170px; }
+  .ab-ui .hp-figma-stack { margin-bottom: 1rem; }
+
+  .ab-photos { padding: 14px; border-radius: 22px; }
+}

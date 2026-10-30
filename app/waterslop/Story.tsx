@@ -161,7 +161,9 @@ export default function Story({ id, chapter, title, frames, per = 0.92, ariaLabe
     const vh = window.innerHeight;
     const top = el.getBoundingClientRect().top + window.scrollY;
     if (k >= n) {
-      const next = el.nextElementSibling as HTMLElement | null;
+      // The next thing on the page: skip siblings with no box (a <style> follows the ConfigKing story).
+      let next = el.nextElementSibling as HTMLElement | null;
+      while (next && next.getClientRects().length === 0) next = next.nextElementSibling as HTMLElement | null;
       const y = next ? next.getBoundingClientRect().top + window.scrollY : top + el.offsetHeight;
       window.scrollTo({ top: y, behavior: reduced ? 'auto' : 'smooth' });
       return;

@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, LazyMotion, domAnimation, m } from 'framer-motion';
 
-/* SpicyGate — dramatises BeadReader's per-reader "spicy" content gate. The
+/* SpicyGate: dramatises BeadReader's per-reader "spicy" content gate. The
    spicy passage sits on its OWN line between two clean sentences, so revealing
    it never rearranges the surrounding text. Full access blurs the line and
    animates it clear on tap; No access shows a locked block; Cal mode drops the
@@ -15,9 +15,9 @@ const TRAIL = 'Morning came far too soon.';
 type ModeKey = 'full' | 'none' | 'cal';
 type Mode = { key: ModeKey; label: string; caption: string };
 const MODES: Mode[] = [
-  { key: 'full', label: 'Full access', caption: 'Tap the blurred line and it clears. The reader has access.' },
-  { key: 'none', label: 'No access', caption: 'Locked. The passage never renders for this reader.' },
-  { key: 'cal', label: 'Cal mode', caption: 'The line is dropped entirely, no gap and no marker.' },
+  { key: 'full', label: 'Full access', caption: 'This reader has access. Tap the blurred line and it clears.' },
+  { key: 'none', label: 'No access', caption: 'Locked. The server never sends this reader the passage.' },
+  { key: 'cal', label: 'Cal mode', caption: 'The line is removed entirely, with no gap and no marker.' },
 ];
 
 const LONGEST_CAPTION = MODES.reduce((a, b) => (b.caption.length > a.length ? b.caption : a), '');
@@ -91,13 +91,13 @@ export default function SpicyGate() {
                         aria-label={showRevealed ? 'Spicy passage revealed' : 'Tap to reveal the spicy passage'}
                       >
                         <span className="sg-spicy-text">{SPICY}</span>
-                        <span className="sg-reveal-tag"><span aria-hidden="true">🌶</span> tap to reveal</span>
+                        <span className="sg-reveal-tag"><span aria-hidden="true">🌶</span> Tap to reveal</span>
                       </button>
                     </m.div>
                   )}
                   {mode.key === 'none' && (
                     <m.div key="none" className="sg-spicy-wrap" {...fade}>
-                      <span className="sg-lock-block"><span aria-hidden="true">🔒</span> Spicy passage, access on request</span>
+                      <span className="sg-lock-block"><span aria-hidden="true">🔒</span> Spicy passage. Ask the admin for access.</span>
                     </m.div>
                   )}
                   {mode.key === 'cal' && (
@@ -129,7 +129,7 @@ export default function SpicyGate() {
             <p className="sg-cap sg-cap-sizer" aria-hidden="true">{LONGEST_CAPTION}</p>
             <p className="sg-cap">{mode.caption}</p>
           </div>
-          <span className="sg-footnote">Enforced in the SQL query, gated text never leaves the server.</span>
+          <span className="sg-footnote">The gate is enforced in the SQL query, so gated text never leaves the server.</span>
         </div>
 
         <style>{`

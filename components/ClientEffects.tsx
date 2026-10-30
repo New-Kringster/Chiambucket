@@ -1,32 +1,26 @@
 'use client';
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { themeForPath } from '../lib/theme';
+import { themeForPath, applyTheme } from '../lib/theme';
 
 export default function ClientEffects() {
   const pathname = usePathname();
 
-  // Keep the per-page accent theme in sync across client-side navigation
+  // Keep the per-page theme (and .is-day / .is-night) in sync across client-side navigation
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', themeForPath(pathname));
+    applyTheme(themeForPath(pathname));
   }, [pathname]);
 
-  // One-time effects: cursor spotlight, nav scroll glow
+  // One-time effect: once the page scrolls, the nav logo gets its own chip
   useEffect(() => {
-    const onMouseMove = (e: MouseEvent) => {
-      document.documentElement.style.setProperty('--cursor-x', e.clientX + 'px');
-      document.documentElement.style.setProperty('--cursor-y', e.clientY + 'px');
-    };
-    document.addEventListener('mousemove', onMouseMove);
 
     const onScroll = () => {
-      const holder = document.querySelector('.nav-holder');
-      if (holder) holder.classList.toggle('nav-scrolled', window.scrollY > 60);
+      const nav = document.querySelector('.pnav');
+      if (nav) nav.classList.toggle('is-scrolled', window.scrollY > 60);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
 
     return () => {
-      document.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('scroll', onScroll);
     };
   }, []);

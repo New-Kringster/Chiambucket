@@ -1,24 +1,45 @@
 /* ────────────────────────────────────────────────────────────────
-   Per-page accent theming.
+   Per-page scene and theme.
 
-   Each route maps to a named theme; the theme name is written to
-   <html data-theme="…"> and CSS variable blocks in mainstyle.css
-   (:root + html[data-theme="…"]) recolour accents, auras and
-   gradient text. All hues are sampled from the Frame 6 navy →
-   lavender → mauve → violet gradient so the site stays cohesive
-   while each page reads distinctly.
+   Every route sits on a painted scene (components/SunlitScene.tsx) in the
+   same pastel-poster style, each at its own time of day. The theme name is
+   written to <html data-theme="…">, and <html> also gets .is-day or
+   .is-night: day pages share the light glass styles (app/sunlit.css), night
+   pages the dark glass ones (app/scenes.css). Each theme picks its scene
+   preset (PRESETS in SunlitScene.tsx) and its sky colours (app/scenes.css).
 
-   The site-wide default is now the warm "paper" theme (honey / amber /
-   chestnut). Only two routes keep a distinct cool palette: /contact and
-   /homelab. Every other route (home, articles, photography, credits, …)
-   falls through to "paper".
+     /             sunlit   morning, sage sky, sun top right, the stone pine
+     /photography  golden   golden hour, low sun on the left
+     /contact      noon     clear blue midday
+     /homelab      teal     cool, misty teal morning
+     /credits      mist     soft lilac haze (also /comingsoon)
+     /ai-use       dusk     just after sunset, violet sky, first stars (dark glass)
+     everything else (the articles and the 404 page): night, moon and stars
    ──────────────────────────────────────────────────────────────── */
 export const THEME_MAP: Record<string, string> = {
-  '/contact': 'indigo',
-  '/homelab': 'datacenter',
+  '/': 'sunlit',
+  '/photography': 'golden',
+  '/contact': 'noon',
+  '/homelab': 'teal',
+  '/credits': 'mist',
+  '/comingsoon': 'mist',
+  '/ai-use': 'dusk',
 };
+
+export const DEFAULT_THEME = 'night';
 
 export function themeForPath(pathname: string): string {
   const p = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
-  return THEME_MAP[p] ?? 'paper';
+  return THEME_MAP[p] ?? DEFAULT_THEME;
+}
+
+// Pages whose scene is dark enough for the dark glass (app/scenes.css .is-night).
+export const isNight = (theme: string) => theme === 'night' || theme === 'dusk';
+
+/** Write the theme to <html>: data-theme plus .is-day or .is-night. */
+export function applyTheme(theme: string) {
+  const d = document.documentElement;
+  d.setAttribute('data-theme', theme);
+  d.classList.toggle('is-night', isNight(theme));
+  d.classList.toggle('is-day', !isNight(theme));
 }

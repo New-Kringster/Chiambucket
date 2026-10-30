@@ -17,32 +17,29 @@ const TEXTS = [
 const RADIO: Record<Radio, {
   label: string;
   short: string;
-  band: string;
   range: string;
-  rangeNote: string;
-  speed: string;
+  carries: string;
+  module: string;
   glyph: 'wave' | 'bolt';
   blurb: string;
 }> = {
   lora: {
     label: 'Text over LoRa',
     short: 'LoRa',
-    band: '915 MHz · spread spectrum',
-    range: 'Kilometres',
-    rangeNote: 'open ground, line of sight',
-    speed: 'One slow packet at a time',
+    range: 'Long distance',
+    carries: 'Short text packets',
+    module: 'Ebyte E220-900D',
     glyph: 'wave',
-    blurb: 'Long, lazy radio waves trade reach for bandwidth, so messages travel far but arrive a character at a time.',
+    blurb: 'Reaches much further than ESP-NOW, but only has the bandwidth for text.',
   },
   espnow: {
     label: 'Voice over ESP-NOW',
     short: 'ESP-NOW',
-    band: '2.4 GHz · direct peer link',
-    range: '~150 metres',
-    rangeNote: 'through a wall or two',
-    speed: 'Live, two-way audio',
+    range: 'Short, direct link',
+    carries: 'Crude full-duplex voice',
+    module: 'The ESP32 itself',
     glyph: 'bolt',
-    blurb: 'A short, direct hop between the two ESP32 radios keeps latency low enough for real conversation.',
+    blurb: 'A direct link between the two ESP32s. Fast enough for crude two-way voice, but only at short range.',
   },
 };
 
@@ -63,6 +60,8 @@ function useAutoDemo(running: boolean, onTick: () => void, delayMs: number) {
 
 export default function LinkDemo() {
   const reduceMotion = useReducedMotion();
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const [inView, setInView] = useState(false);
 
   const [radio, setRadio] = useState<Radio>('lora');
   const [auto, setAuto] = useState(true);
@@ -72,12 +71,20 @@ export default function LinkDemo() {
   const [talking, setTalking] = useState(false);
   const [pulse, setPulse] = useState(0);
 
-  const cfg = RADIO[radio];
   const message = TEXTS[textIdx];
 
-  // Auto-play only when motion is welcome; reduced-motion visitors land on a
-  // calm static scene they can still drive by hand (chips, toggle, hold-to-talk).
-  const autoplay = auto && !reduceMotion;
+  /* Pause the auto-demo while the widget is off screen */
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.2 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  // Auto-play only when motion is welcome and the widget is on screen;
+  // reduced-motion visitors get a still scene they can drive by hand.
+  const autoplay = auto && !reduceMotion && inView;
   const stopAuto = useCallback(() => setAuto(false), []);
 
   /* ---- LoRa: send a packet, then type it out on the friend's screen ---- */
@@ -166,7 +173,7 @@ export default function LinkDemo() {
 
   return (
     <LazyMotion features={domAnimation}>
-    <div className={`bl-ld bl-ld-${radio}`} data-no-zoom>
+    <div ref={rootRef} className={`bl-ld bl-ld-${radio}`} data-no-zoom>
       <div className="bl-ld-head">
         <div className="bl-ld-modes" role="tablist" aria-label="Choose a radio link">
           {(['lora', 'espnow'] as Radio[]).map((r) => (
@@ -185,7 +192,7 @@ export default function LinkDemo() {
         </div>
         {!auto && !reduceMotion && (
           <button type="button" className="bl-ld-replay" onClick={() => { setAuto(true); setPhase('idle'); setTalking(false); setTyped(''); }}>
-            <RefreshIcon /> Auto-demo
+            <RefreshIcon /> Play the demo
           </button>
         )}
       </div>
@@ -198,7 +205,7 @@ export default function LinkDemo() {
           phase={phase}
           message={message}
           typed={typed}
-          screenText={radio === 'lora' ? (phase === 'idle' ? 'Pick a message' : phase === 'arrived' ? 'Delivered ✓' : 'Sending…') : (talking ? 'Mic live' : 'Hold to talk')}
+          screenText={radio === 'lora' ? (phase === 'idle' ? 'Pick a message' : phase === 'arrived' ? 'Delivered' : 'Sending') : (talking ? 'Mic live' : 'Hold to talk')}
           talking={radio === 'espnow' && talking}
           pulse={pulse}
           isSender
@@ -240,8 +247,8 @@ export default function LinkDemo() {
           </svg>
           <span className={`bl-ld-link-label${linkActive ? ' is-on' : ''}`}>
             {radio === 'lora'
-              ? (phase === 'sending' ? 'Packet in flight…' : phase === 'arrived' ? 'Link closed' : 'Long-range hop')
-              : (talking ? 'Two-way audio streaming' : 'Direct peer link')}
+              ? (phase === 'sending' ? 'Packet in flight' : phase === 'arrived' ? 'Delivered' : 'Long-range link')
+              : (talking ? 'Voice streaming both ways' : 'Direct peer link')}
           </span>
         </div>
 
@@ -252,7 +259,7 @@ export default function LinkDemo() {
           phase={phase}
           message={message}
           typed={typed}
-          screenText={radio === 'lora' ? (phase === 'arrived' ? 'New message' : phase === 'sending' ? 'Receiving…' : 'Standing by') : (talking ? 'Listening…' : 'Standing by')}
+          screenText={radio === 'lora' ? (phase === 'arrived' ? 'New message' : phase === 'sending' ? 'Receiving' : 'Standing by') : (talking ? 'Listening' : 'Standing by')}
           talking={radio === 'espnow' && talking}
           pulse={pulse}
           reduceMotion={!!reduceMotion}
@@ -262,7 +269,7 @@ export default function LinkDemo() {
       <div className="bl-ld-controls">
         {radio === 'lora' ? (
           <>
-            <span className="bl-ld-controls-label">Pick a message</span>
+            <span className="bl-ld-controls-label">Pick a message, then send it</span>
             <div className="bl-ld-chips">
               {TEXTS.map((t, n) => (
                 <button
@@ -292,7 +299,7 @@ export default function LinkDemo() {
               aria-pressed={talking}
             >
               <MicIcon />
-              {talking ? 'Transmitting…' : 'Hold to talk'}
+              {talking ? 'Transmitting' : 'Hold to talk'}
             </button>
           </>
         )}
@@ -308,8 +315,9 @@ export default function LinkDemo() {
                 <span className="bl-ld-gauge-name">{c.short}</span>
               </div>
               <div className="bl-ld-gauge-track"><span className={`bl-ld-gauge-fill fill-${r}`} /></div>
-              <div className="bl-ld-gauge-row"><b>Range</b><span>{c.range}<i>{c.rangeNote}</i></span></div>
-              <div className="bl-ld-gauge-row"><b>Carries</b><span>{c.speed}</span></div>
+              <div className="bl-ld-gauge-row"><b>Range</b><span>{c.range}</span></div>
+              <div className="bl-ld-gauge-row"><b>Carries</b><span>{c.carries}</span></div>
+              <div className="bl-ld-gauge-row"><b>Radio</b><span>{c.module}</span></div>
               <p className="bl-ld-gauge-blurb">{c.blurb}</p>
             </div>
           );

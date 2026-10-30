@@ -1,0 +1,536 @@
+/* ═══════════════════════════════════════════════════════════════
+   SUNLIT: the light glass of the day pages (October 2026, branch task/sunlit-home)
+   Every day page rides a painted scene (components/SunlitScene.tsx); the
+   homepage's is a sage morning with the sun top right, soft clouds and
+   grass along the bottom. Same layout and components as the dark design;
+   only colours and surfaces change: panels, buttons and pop-ups are
+   Apple-style glass (frosted blur, a bright rim where light catches the
+   edge, and in Chromium real refraction from components/GlassDefs.tsx),
+   text is dark pine ink, and the honey accent becomes the deep gold of the
+   grass.
+   Every rule is scoped to html.is-day (every route with a daytime scene,
+   see lib/theme.ts). The night pages are styled in app/scenes.css, which
+   also holds each scene's sky colours.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Tokens ── */
+html.sensory-active.is-day {
+  --sl-sky: #9ab396;
+  --sl-ink: #1f2b1c;
+  --sl-ink-soft: #3a4734;
+  --sl-ink-dim: rgba(31, 43, 28, 0.78);
+  --sl-label: #574610;        /* gold-brown labels, readable on glass */
+  --sl-pine: #2b3b27;
+  --sl-pine-hi: #3a4e34;
+  --sl-cream: #f6f4e2;
+  --sl-paper: rgba(251, 250, 241, 0.95);
+  --sl-paper-lo: rgba(244, 242, 227, 0.95);
+  --sl-line: rgba(31, 43, 28, 0.11);
+  --sl-gold: #8a701e;         /* text-safe gold on cream */
+  --sl-shadow: 0 1px 2px rgba(60, 64, 30, 0.08), 0 14px 34px -18px rgba(52, 60, 26, 0.38);
+
+  /* Glass: a sheen in the top-left corner over a soft white tint */
+  --gl-fill:
+    radial-gradient(130% 90% at 0% 0%, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 48%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.44) 0%, rgba(255, 255, 255, 0.22) 55%, rgba(255, 255, 255, 0.32) 100%);
+  --gl-blur: blur(16px) saturate(175%) brightness(1.05);
+  --gl-refract: url(#lg-refract) blur(7px) saturate(175%) brightness(1.05);
+  --gl-refract-pill: url(#lg-refract-pill) blur(3px) saturate(175%) brightness(1.06);
+  --gl-border: rgba(255, 255, 255, 0.55);
+  /* bright rim top-left, dimmer rim bottom-right, a little inner glow */
+  --gl-rim: inset 1.5px 1.5px 0 -0.5px rgba(255, 255, 255, 0.95), inset -1px -1px 0 -0.5px rgba(255, 255, 255, 0.5),
+    inset 0 0 24px rgba(255, 255, 255, 0.16);
+  --gl-drop: 0 1px 2px rgba(31, 43, 28, 0.07), 0 18px 40px -22px rgba(31, 43, 28, 0.45);
+  --gl-drop-hi: 0 2px 4px rgba(31, 43, 28, 0.08), 0 26px 52px -24px rgba(31, 43, 28, 0.55);
+  /* pine-tinted glass for primary buttons and active pills */
+  --gl-pine: linear-gradient(160deg, rgba(52, 70, 47, 0.86) 0%, rgba(31, 43, 28, 0.8) 100%);
+  --gl-pine-rim: inset 1.5px 1.5px 0 -0.5px rgba(255, 255, 240, 0.45), inset -1px -1px 0 -0.5px rgba(255, 255, 240, 0.18);
+  /* small chips: translucent, no blur of their own (they sit on glass already) */
+  --gl-chip: rgba(255, 255, 255, 0.38);
+  --gl-chip-line: rgba(255, 255, 255, 0.65);
+
+  --sa-accent: 138, 112, 30;
+  --sa-panel-hi: var(--sl-paper);
+  --sa-panel-lo: var(--sl-paper-lo);
+  --sa-btn: var(--sl-pine);
+  --sa-hairline: var(--sl-line);
+  --hp-glass: rgba(251, 250, 241, 0.6);
+  --hp-line: var(--sl-line);
+  --hp-ink: var(--sl-ink);
+  --hp-ink-dim: var(--sl-ink-dim);
+  --hp-blue: #8a701e; --hp-blue-deep: #5c4a12;
+  --hp-indigo: #8a701e; --hp-sky: #6f5a14;
+  --em-grad: linear-gradient(102deg, #6f5a14, #9a7d22);
+  --title-grad: linear-gradient(102deg, #5c4a12 0%, #8a701e 55%, #a3852a 100%);
+  --orb-edge: rgba(31, 43, 28, 0.22);
+  background: var(--sl-sky);
+  color-scheme: light;
+}
+
+/* ── The scene (components/SunlitScene.tsx) ── */
+.sl-scene {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100lvh;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.sl-scene > * { position: absolute; inset: 0; width: 100%; height: 100%; }
+.sl-sky {
+  background:
+    radial-gradient(circle 100vmax at 97% 0%,
+      #fdfcf2 0%, #eeedd8 5%, #e2e1c4 10%, #d2d4b2 17%, #c2c9a7 24%, #b2bfa0 32%,
+      rgba(166, 184, 155, 0.5) 40%, rgba(154, 179, 150, 0) 52%),
+    linear-gradient(180deg, #a2b69a 0%, #9db498 40%, #9ab396 100%);
+}
+/* Pastel washes, like a soft painted poster: dusty blue up top left,
+   apricot light over the horizon, a little rose low on the left. */
+.sl-wash {
+  background:
+    radial-gradient(70% 55% at 6% 4%, rgba(178, 194, 216, 0.42) 0%, rgba(178, 194, 216, 0) 70%),
+    radial-gradient(95% 26% at 46% 72%, rgba(247, 214, 178, 0.46) 0%, rgba(247, 214, 178, 0) 72%),
+    radial-gradient(45% 30% at 12% 66%, rgba(236, 200, 192, 0.3) 0%, rgba(236, 200, 192, 0) 72%);
+}
+.sl-sun-bloom {
+  background: radial-gradient(circle 42vmax at 97% 0%,
+    rgba(255, 253, 238, 0.85) 0%, rgba(253, 250, 230, 0.45) 22%,
+    rgba(250, 247, 224, 0.12) 55%, rgba(250, 247, 224, 0) 100%);
+  mix-blend-mode: screen;
+  transform-origin: 97% 0%;
+}
+.sl-rays { mix-blend-mode: screen; transform-origin: 97% 0%; }
+.sl-scene > .sl-clouds { overflow: hidden; }
+.sl-cloud { position: absolute; }
+/* The lone tree on the hill, left of the name. Same scroll fade as the field. */
+
+.sl-tree-canvas { position: absolute; inset: 0; width: 100%; height: 100%; transform-origin: 4% 86%; }
+
+/* The field is not part of .sl-scene: SunlitField renders it inside <main>,
+   after the About section, so it is drawn in front of that section (which
+   rises out of it) and behind everything after it. It is taller than the
+   screen so it can rise at the end of the page to reach above the footer.
+   SunlitScene sets its opacity and translate inline as you scroll. */
+.sl-grass {
+  position: fixed; top: 0; left: 0; width: 100%; height: 135lvh;
+  overflow: visible; pointer-events: none;
+}
+/* The canvas starts at 60% of the screen (SunlitScene FIELD_TOP: nothing is
+   painted above it) and is a little wider than the screen, so the sway never
+   opens a gap at the edges. The sway pivots on the bottom of the screen. */
+.sl-grass-canvas { position: absolute; top: 60lvh; left: -3%; width: 106%; height: 75lvh; transform-origin: 50% 40lvh; }
+
+/* Tiny birds far off in the sky */
+.sl-scene > .sl-birds { overflow: hidden; }
+.sl-bird {
+  position: absolute; left: 0; top: 0; width: 20px; height: 10px; overflow: visible;
+  transform-origin: 0 0; visibility: hidden;
+  fill: none; stroke: rgba(44, 56, 40, 0.62); stroke-width: 1.3px; stroke-linecap: round; stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.sl-bird path { vector-effect: non-scaling-stroke; }
+
+.sl-sky-canvas, .sl-clouds, .sl-rays, .sl-tree-canvas, .sl-grass-canvas { opacity: 0; transition: opacity 0.9s ease-out; }
+:is(.sl-scene, .sl-grass).is-drawn :is(.sl-sky-canvas, .sl-clouds, .sl-rays, .sl-tree-canvas, .sl-grass-canvas) { opacity: 1; }
+
+/* ── The living poster: gentle motion, only while html.sl-alive ── */
+@keyframes sl-drift { from { transform: translateX(calc(var(--drift) * -1)); } to { transform: translateX(var(--drift)); } }
+@keyframes sl-shimmer { from { opacity: 0.62; transform: rotate(-0.6deg); } to { opacity: 1; transform: rotate(0.7deg); } }
+@keyframes sl-breathe { from { opacity: 0.82; transform: scale(1); } to { opacity: 1; transform: scale(1.06); } }
+@keyframes sl-sway { from { transform: skewX(-1.3deg); } to { transform: skewX(1.5deg); } }
+@keyframes sl-tree-sway { from { transform: rotate(-0.25deg); } to { transform: rotate(0.35deg); } }
+@media (prefers-reduced-motion: no-preference) {
+  .sl-cloud { animation: sl-drift var(--secs) ease-in-out var(--delay) infinite alternate; }
+  .sl-rays { animation: sl-shimmer 11s ease-in-out infinite alternate; }
+  .sl-sun-bloom { animation: sl-breathe 9s ease-in-out infinite alternate; }
+  .sl-grass-canvas { animation: sl-sway 5.5s ease-in-out infinite alternate; }
+  .sl-tree-canvas { animation: sl-tree-sway 7.5s ease-in-out infinite alternate; }
+  .sl-cloud, .sl-rays, .sl-sun-bloom, .sl-tree-canvas, .sl-grass-canvas { animation-play-state: paused; }
+  html.sl-alive :is(.sl-cloud, .sl-rays, .sl-sun-bloom, .sl-tree-canvas, .sl-grass-canvas) { animation-play-state: running; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.sl-sky-canvas, .sl-clouds, .sl-rays, .sl-tree-canvas, .sl-grass-canvas) { transition: none; }
+}
+
+html.sensory-active.is-day {
+  /* The dark static backdrop gives way to the scene. */
+  & .sa-backdrop { display: none; }
+  & ::selection { background: rgba(214, 191, 104, 0.45); color: var(--sl-ink); }
+  & body { color: var(--sl-ink); }
+}
+
+/* ═══════ Surfaces and type on the sunlit field ═══════
+   The dark design's rules are mostly `html.sensory-active .x` (often
+   !important); prefixing .is-day outranks them. */
+html.sensory-active.is-day {
+
+  /* ── Panels: glass over the field ── */
+  & .hp-collab-card, & .hp-pf-card, & .hp-spot-card,
+  & .hp-spotlight, & .hp-tile, & .ab-photos, & .cr-card, & .ct-email-card {
+    background: var(--gl-fill) !important;
+    -webkit-backdrop-filter: var(--gl-blur) !important; backdrop-filter: var(--gl-blur) !important;
+    border: 1px solid var(--gl-border) !important;
+    box-shadow: var(--gl-rim), var(--gl-drop) !important;
+  }
+  & .hp-collab-card:hover, & .hp-pf-card:hover,
+  & .hp-spot-card:hover, & .hp-tile:hover {
+    border-color: rgba(255, 255, 255, 0.85) !important;
+    box-shadow: var(--gl-rim), inset 0 0 0 1px rgba(255, 255, 255, 0.25), var(--gl-drop-hi) !important;
+  }
+  & .hp-band + .hp-band::before {
+    background: linear-gradient(90deg, transparent, rgba(31, 43, 28, 0.06) 18%, rgba(31, 43, 28, 0.22) 50%, rgba(31, 43, 28, 0.06) 82%, transparent);
+  }
+
+  /* ── Labels ── */
+  & .hp-eyebrow, & .seh-eyebrow, & .peh-eyebrow { color: var(--sl-label); }
+  & .hp-eyebrow::before, & .seh-eyebrow::before, & .peh-eyebrow::before {
+    background: linear-gradient(90deg, transparent, rgba(var(--sa-accent), 0.9)); }
+  & .hp-key { color: var(--sl-label) !important; }
+
+  /* ── Headings: the white-to-grey gradient becomes pine-to-olive ── */
+  & .seh-title, & .peh-title, & .hp-homelab-h, & .hp-spot-title,
+  & .hp-tile-h {
+    background: linear-gradient(92deg, #1f2b1c 0%, #4c5a3c 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  & .section-editorial-header, & .portfolio-editorial-header {
+    background: linear-gradient(90deg, rgba(31, 43, 28, 0.28), rgba(31, 43, 28, 0.06) 42%, transparent 82%) left bottom / 100% 1px no-repeat; }
+  & .peh-description, & .seh-description { color: var(--sl-ink-dim); }
+
+  /* ── Buttons: pine-tinted glass, clear glass for the secondary ones ── */
+  & .hp-btn {
+    background: var(--gl-pine) !important; border: 1px solid rgba(255, 255, 240, 0.22) !important;
+    -webkit-backdrop-filter: var(--gl-blur) !important; backdrop-filter: var(--gl-blur) !important;
+    color: var(--sl-cream) !important;
+    box-shadow: var(--gl-pine-rim), 0 10px 22px -12px rgba(31, 43, 28, 0.65) !important; }
+  & .hp-btn:hover { border-color: rgba(255, 255, 240, 0.4) !important; filter: brightness(1.08); }
+  & .hp-btn.hp-btn-ghost {
+    background: var(--gl-fill) !important; border: 1px solid var(--gl-border) !important;
+    color: var(--sl-ink) !important; box-shadow: var(--gl-rim), 0 8px 20px -12px rgba(31, 43, 28, 0.5) !important; }
+  & .hp-btn.hp-btn-ghost:hover { border-color: rgba(255, 255, 255, 0.9) !important; filter: brightness(1.04); }
+  & .hp-btn svg { color: currentColor; }
+
+  /* ── About bento ── */
+  & .hp-tile-p { color: var(--sl-ink-dim); }
+  /* media tiles keep light type over their photo or video */
+  & .hp-media-tile .hp-tile-p { color: rgba(246, 244, 226, 0.86); }
+  & .hp-media-tile .hp-tile-h {
+    background: none; -webkit-text-fill-color: #fbfaf1; color: #fbfaf1; }
+  & .hp-media-tile .hp-key { color: rgba(246, 236, 200, 0.9) !important; }
+
+  /* ── Spotlights ── */
+  & .hp-spot-lead { color: var(--sl-ink-soft); }
+  & .hp-spot-stat b { color: var(--sl-ink); }
+  & .hp-spot-stat span, & .hp-homelab-stat span { color: var(--sl-ink-dim); }
+  & .hp-spot-tags span { color: var(--sl-label); background: var(--gl-chip); border-color: var(--gl-chip-line); }
+
+  /* ── Tool chips and icon chips on the glass tiles ── */
+  & .hp-chips span { color: var(--sl-ink-soft); background: var(--gl-chip); border-color: var(--gl-chip-line); }
+  & .hp-facts > div { border-color: rgba(31, 43, 28, 0.12); }
+  & .hp-facts dt { color: var(--sl-label); }
+  & .hp-facts dd { color: var(--sl-ink); }
+  & .hp-iconrow img {
+    background: linear-gradient(158deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.42));
+    border-color: rgba(255, 255, 255, 0.85);
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.9), 0 8px 16px -10px rgba(31, 43, 28, 0.45); }
+  & .hp-tile-fw .hp-iconrow::before { background: linear-gradient(90deg, transparent, rgba(138, 112, 30, 0.45) 13%, rgba(138, 112, 30, 0.45) 87%, transparent); box-shadow: none; }
+  /* the Next.js mark is white on a black disc: give it a dark chip so it reads on glass */
+  & .hp-iconrow img[alt="Next.js"] { background: #1f2b1c; border-color: rgba(31, 43, 28, 0.6); }
+  & .hp-tile-photo-inset { box-shadow: var(--gl-rim), 0 10px 24px -14px rgba(31, 43, 28, 0.6); }
+
+  /* ── Projects toolbar ── */
+  & .hp-pf-lead span { color: var(--sl-ink-dim); }
+  & .hp-pf-search-wrap, & .hp-pf-filter, & .hp-album-link {
+    background: var(--gl-fill) !important; border: 1px solid var(--gl-border) !important;
+    -webkit-backdrop-filter: var(--gl-blur) !important; backdrop-filter: var(--gl-blur) !important;
+    box-shadow: var(--gl-rim), 0 6px 16px -12px rgba(31, 43, 28, 0.45); color: var(--sl-ink-soft); }
+  & .hp-pf-filter:hover, & .hp-album-link:hover { color: var(--sl-ink); border-color: rgba(255, 255, 255, 0.9) !important; }
+  & .hp-pf-filter.is-active, & .hp-album-link.is-active {
+    background: var(--gl-pine) !important; border-color: rgba(255, 255, 240, 0.22) !important; color: var(--sl-cream) !important;
+    box-shadow: var(--gl-pine-rim), 0 8px 18px -10px rgba(31, 43, 28, 0.6); }
+  & .hp-pf-search { color: var(--sl-ink); }
+  & .hp-pf-search::placeholder { color: rgba(31, 43, 28, 0.5); }
+  & .hp-pf-search-wrap svg { color: rgba(31, 43, 28, 0.5); }
+
+  /* ── Project cards ── */
+  & .hp-pf-name { color: var(--sl-ink); }
+  & .hp-pf-blurb { color: var(--sl-ink-dim); }
+  /* "Read article" is the card's main action: pine, like every primary button */
+  & .hp-pf-view {
+    color: var(--sl-cream); background: var(--gl-pine); border-color: rgba(255, 255, 240, 0.22);
+    box-shadow: var(--gl-pine-rim), 0 8px 18px -10px rgba(31, 43, 28, 0.6); }
+  & .hp-pf-view:hover { color: var(--sl-cream); background: var(--gl-pine); border-color: rgba(255, 255, 240, 0.4); filter: brightness(1.1); }
+  & .hp-pf-view:focus-visible { outline: 2px solid var(--sl-ink); outline-offset: 2px; }
+  & .hp-pf-card.is-compact .hp-pf-thumb::after { background: none; }
+  /* not written up yet: the glass drains the colour out of what is behind it */
+  & .hp-pf-card.is-soon {
+    background: linear-gradient(160deg, rgba(235, 237, 232, 0.4), rgba(220, 223, 216, 0.3)) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(25%) brightness(1.08) !important; backdrop-filter: blur(16px) saturate(25%) brightness(1.08) !important; }
+  & .hp-pf-card.is-soon:hover { box-shadow: var(--gl-rim), var(--gl-drop) !important; }
+  & .hp-pf-card.is-soon .hp-pf-name { color: rgba(31, 43, 28, 0.72); }
+  & .hp-pf-card.is-soon .hp-pf-blurb { color: rgba(31, 43, 28, 0.66); }
+  & .hp-pf-soon { color: rgba(31, 43, 28, 0.7); border-color: rgba(31, 43, 28, 0.3); }
+  & .hp-pf-showmore-wrap::before {
+    background: linear-gradient(to bottom, rgba(154, 179, 150, 0) 0%, rgba(154, 179, 150, 0.85) 62%, rgba(154, 179, 150, 0.97) 100%) !important; }
+
+  /* ── Collaborators ── */
+  & .hp-collab-h { color: var(--sl-ink); }
+  & .hp-collab-p { color: var(--sl-ink-soft); }
+  & .hp-collab-name { color: var(--sl-ink); }
+  & .hp-collab-role { color: var(--sl-ink-dim); }
+  & .hp-collab-proj { color: var(--sl-label); background: var(--gl-chip); border-color: var(--gl-chip-line); }
+  & .hp-collab-proj:hover { color: var(--sl-ink); background: rgba(255, 255, 255, 0.6); }
+
+  /* ── HomeLab ── */
+  & .hp-homelab-text p, & .hp-homelab-p { color: var(--sl-ink-soft); }
+  & .hp-homelab-stat b { color: var(--sl-ink); }
+  & .hp-stack-label, & .hp-exp-chip span { color: var(--sl-ink-dim); }
+  & .hp-stack-more { color: var(--sl-ink-dim); }
+
+  /* ── Photography: tabs and gallery sit in one glass panel (.ab-photos, app/about.css) ── */
+  & .photo-main-ver .expand { background: none !important; }
+  & .photo-main-ver .expand button {
+    font-family: 'dmsans'; font-size: 0.95rem; font-weight: 600; padding: 0.7rem 1.4rem;
+    color: var(--sl-cream); background: var(--gl-pine); border: 1px solid rgba(255, 255, 240, 0.22);
+    box-shadow: var(--gl-pine-rim), 0 10px 22px -12px rgba(31, 43, 28, 0.65); }
+  & .photo-main-ver .expand button:hover { color: var(--sl-cream); background: var(--gl-pine); filter: brightness(1.1); transform: translateY(-1px); }
+  & .photo-main-ver .expand button:active { transform: translateY(0) scale(0.98); }
+  & .photo-main-ver .expand button:focus-visible { outline: 2px solid var(--sl-ink); outline-offset: 3px; }
+  & .ab-photos .phototop a {
+    padding: 10px; border: 1px solid rgba(255, 255, 255, 0.7); background: rgba(255, 255, 255, 0.45);
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.8); }
+  & .ab-photos .phototop a:hover { border-color: #fff; background: rgba(255, 255, 255, 0.7); }
+  & .ab-photos .phototop img { filter: brightness(0) invert(0.18); width: 16px; }
+  & .hp-album-all { color: var(--sl-ink-soft); }
+  & .hp-album-all:hover { color: var(--sl-ink); }
+  & .photography-box h1 {
+    background: linear-gradient(92deg, #1f2b1c 0%, #4c5a3c 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+
+  /* ── Call to action ── */
+  /* no golden glow: the section clips it, and over the raised grass its cut-off
+     bottom edge showed as a line along the top of the footer */
+  & .hp-cta::before { display: none; }
+  & .hp-cta h2 { color: var(--sl-ink); }
+  & .hp-cta p { color: var(--sl-ink-soft); }
+  /* the address is one long word; on phones it shrinks to fit instead of running off the edge */
+  & .hp-cta h2 em { display: inline-block; max-width: 100%; font-size: min(1em, 6.8vw); }
+
+  /* ── Footer: no strip of its own. It stands in the grass, which SunlitScene
+     raises at the end of the page to reach above it, and the near grass falls
+     into shade under it, so cream type and a pine pill read clearly. ── */
+  & .footer {
+    background: linear-gradient(180deg, rgba(44, 48, 14, 0) 0%, rgba(44, 48, 14, 0.42) 24%, rgba(38, 42, 12, 0.72) 100%) !important;
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+    border-top: 0 !important; box-shadow: none !important; }
+  & .footer::before, & .footer::after { display: none; }
+  & .footer-left-text, & .footer-right-text { font-size: 0.68rem; color: rgba(250, 248, 232, 0.94); text-shadow: 0 1px 10px rgba(30, 34, 8, 0.45); }
+  & .footer-left-img { filter: brightness(0) invert(0.97); opacity: 0.92; }
+  & .footer-center {
+    background: var(--gl-pine) !important; border: 1px solid rgba(255, 255, 240, 0.24) !important;
+    -webkit-backdrop-filter: var(--gl-blur) !important; backdrop-filter: var(--gl-blur) !important;
+    box-shadow: var(--gl-pine-rim), 0 14px 30px -14px rgba(24, 28, 6, 0.7) !important; }
+  & .footer-center .btn svg { filter: brightness(0) invert(0.95); }
+  & .footer-center .btn:hover svg { filter: none; }
+  & .footer-center .btn:focus-visible { outline: 2px solid var(--sl-cream); outline-offset: 2px; border-radius: 10px; }
+  & .footer-right-text button { color: #f2df98; }
+  & .footer-right-text button:hover { color: #fff6d0; }
+}
+
+/* ═══════ Pop-ups: the info cards and the project reader become cream paper ═══════ */
+html.sensory-active.is-day {
+  /* the page behind softens; the panel is a thicker pane of glass so long text stays easy to read */
+  & .im-scrim { background: rgba(38, 50, 34, 0.26); -webkit-backdrop-filter: blur(6px) !important; backdrop-filter: blur(6px) !important; }
+  & .hp-modal-backdrop { background: rgba(38, 50, 34, 0.32) !important; -webkit-backdrop-filter: blur(6px) !important; backdrop-filter: blur(6px) !important; }
+  & .im-panel, & .hp-modal-panel {
+    background:
+      radial-gradient(120% 70% at 0% 0%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 50%),
+      linear-gradient(160deg, rgba(250, 251, 246, 0.8), rgba(242, 245, 236, 0.72)) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(180%) !important; backdrop-filter: blur(28px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.7) !important;
+    box-shadow: var(--gl-rim), 0 2px 6px rgba(31, 43, 28, 0.08), 0 40px 90px -36px rgba(31, 43, 28, 0.6) !important; }
+  & .im-x, & .hp-modal-close { background: var(--gl-chip); border-color: var(--gl-chip-line); color: var(--sl-ink); }
+  & .im-x:hover, & .hp-modal-close:hover { background: rgba(255, 255, 255, 0.7); }
+  & .im-eyebrow { color: var(--sl-label); }
+  & .im-title, & .hp-md-title { color: var(--sl-ink); }
+  & .im-blurb { color: var(--sl-ink-soft); }
+  & .im-add { color: var(--sl-ink-dim); }
+  & .im-points li { color: var(--sl-ink-soft); }
+  & .im-points li svg { color: #8a701e; }
+  & .im-chips span { color: var(--sl-label); background: var(--gl-chip); border-color: var(--gl-chip-line); }
+  & .im-media { border-color: rgba(31, 43, 28, 0.12); }
+
+  & .hp-md-meta { color: var(--sl-ink-dim); }
+  & .hp-md-video { border-color: rgba(31, 43, 28, 0.12); }
+  & .hp-rd-lead { color: var(--sl-ink-soft); }
+  & .hp-rd-chapter { border-top-color: rgba(31, 43, 28, 0.1); }
+  & .hp-rd-ch-num { color: #8a701e; }
+  & .hp-rd-ch-body h4 { color: var(--sl-ink); }
+  & .hp-rd-ch-body p { color: var(--sl-ink-soft); }
+  & .hp-rd-fig { border-color: rgba(31, 43, 28, 0.1); }
+  & .hp-rd-cta { background: linear-gradient(135deg, rgba(214, 191, 104, 0.24), rgba(214, 191, 104, 0.1)); border-color: rgba(138, 112, 30, 0.3); }
+  & .hp-rd-cta-text strong { color: var(--sl-ink); }
+  & .hp-rd-cta-text span { color: var(--sl-ink-dim); }
+  & .hp-rd-feed-sep::before, & .hp-rd-feed-sep::after {
+    background: linear-gradient(90deg, transparent, rgba(31, 43, 28, 0.25), transparent); }
+  & .hp-rd-feed-sep span { color: var(--sl-label); }
+  & .hp-rd-feed-skel { background: rgba(31, 43, 28, 0.04); border-color: rgba(31, 43, 28, 0.08); }
+  & .hp-rd-feed-end { border-top-color: rgba(31, 43, 28, 0.1); }
+  & .hp-rd-pull-hint { color: var(--sl-ink-soft); }
+  & .hp-rd-pull-card { border-color: rgba(255, 255, 255, 0.85); box-shadow: 0 -10px 40px -18px rgba(31, 43, 28, 0.45); }
+  & .hp-rd-pull-card:focus-visible { outline-color: var(--sl-ink); }
+  /* the close button floats over the reader's text as it scrolls: give it a solid chip */
+  & .hp-modal-close {
+    background: rgba(252, 253, 249, 0.86) !important; border: 1px solid rgba(255, 255, 255, 0.95) !important;
+    -webkit-backdrop-filter: blur(10px) !important; backdrop-filter: blur(10px) !important;
+    box-shadow: 0 6px 16px -8px rgba(31, 43, 28, 0.5); }
+  & .hp-rd-feed-end span { color: var(--sl-ink-dim); }
+}
+
+/* Buttons and pills inside a glass card: a translucent fill and no blur of their
+   own. A blur nested in another blur only sees the card's tint, so it turns grey. */
+html.sensory-active.is-day {
+  & :is(.hp-spotlight, .hp-tile, .hp-pf-card, .hp-collab-card) :is(.hp-btn, .hp-pf-view),
+  & .ab-photos .hp-album-link {
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  & .ab-photos .hp-album-link:not(.is-active) { background: rgba(255, 255, 255, 0.4) !important; }
+  & :is(.hp-spotlight, .hp-tile, .hp-pf-card, .hp-collab-card) .hp-btn.hp-btn-ghost {
+    background: rgba(255, 255, 255, 0.55) !important; border-color: rgba(255, 255, 255, 0.85) !important; }
+  & :is(.hp-spotlight, .hp-tile, .hp-pf-card, .hp-collab-card) .hp-btn.hp-btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.75) !important; }
+}
+
+/* ═══════ Light bending (Chromium) ═══════
+   Where url() filters work inside backdrop-filter, glass refracts the scene
+   along its edges before the blur, so cloud edges, sun rays and grass bend
+   at each rim. html.lg-refract is set by the head script in app/layout.tsx. */
+@media (prefers-reduced-transparency: no-preference) {
+  html.lg-refract.sensory-active.is-day {
+    & .hp-collab-card, & .hp-pf-card:not(.is-soon), & .hp-spot-card,
+    & .hp-spotlight, & .hp-tile, & .ab-photos, & .cr-card, & .ct-email-card {
+      -webkit-backdrop-filter: var(--gl-refract) !important; backdrop-filter: var(--gl-refract) !important; }
+    & .hp-btn:not(:is(.hp-spotlight, .hp-tile, .hp-pf-card, .hp-collab-card) .hp-btn),
+    & .hp-pf-search-wrap, & .hp-pf-filter, & .hp-album-link:not(.ab-photos .hp-album-link) {
+      -webkit-backdrop-filter: var(--gl-refract-pill) !important; backdrop-filter: var(--gl-refract-pill) !important; }
+  }
+}
+
+/* "Reduce transparency" (macOS/iOS and others): solid frosted panels, no blur or bending */
+@media (prefers-reduced-transparency: reduce) {
+  html.sensory-active.is-day {
+    & .hp-collab-card, & .hp-pf-card, & .hp-spot-card, & .hp-spotlight,
+    & .hp-tile, & .ab-photos, & .cr-card, & .ct-email-card, & .hp-pf-search-wrap, & .hp-pf-filter:not(.is-active),
+    & .hp-album-link:not(.is-active), & .hp-btn.hp-btn-ghost, & .im-panel, & .hp-modal-panel {
+      background: rgba(248, 249, 243, 0.97) !important;
+      -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+    & .hp-btn:not(.hp-btn-ghost), & .hp-pf-filter.is-active, & .hp-album-link.is-active {
+      background: #2b3b27 !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  }
+}
+
+/* ═══════ Day pages: the shared page heroes and cards ═══════
+   ct-* heroes (contact, credits, coming soon, photography), the contact
+   email card and links, and the credits cards: pine ink and gold on glass. */
+html.sensory-active.is-day {
+  & .ct-kicker { color: var(--sl-label); }
+  & .ct-kicker::before, & .ct-kicker::after { background: linear-gradient(90deg, transparent, rgba(var(--sa-accent), 0.9)); }
+  & .ct-title { color: var(--sl-ink); }
+  & .ct-title em { text-shadow: none; }
+  & .ct-sub { color: var(--sl-ink-soft); }
+  /* the dark design's soft lights behind the heroes do not show on a light sky */
+  & :is(.cx-monolith, .cw-bloom) { display: none; }
+
+  & .ct-email-card .ct-email-label { color: var(--sl-label); }
+  & .ct-email-card .ct-email-addr { color: var(--sl-ink); }
+  & .ct-copy {
+    background: var(--gl-pine); border: 1px solid rgba(255, 255, 240, 0.22); color: var(--sl-cream);
+    box-shadow: var(--gl-pine-rim), 0 8px 18px -10px rgba(31, 43, 28, 0.6); }
+  & .ct-copy:hover { background: var(--gl-pine); filter: brightness(1.1); }
+  & .ct-copy:focus-visible { outline: 2px solid var(--sl-ink); outline-offset: 3px; }
+  /* the links can sit over the grass on phones: each gets a glass chip */
+  & .cx-soc {
+    color: var(--sl-ink); padding: 0.5rem 0.95rem; border-radius: 999px;
+    background: var(--gl-fill); border: 1px solid var(--gl-border); box-shadow: var(--gl-rim), 0 6px 16px -12px rgba(31, 43, 28, 0.5);
+    -webkit-backdrop-filter: var(--gl-blur); backdrop-filter: var(--gl-blur); }
+  & .cx-soc:hover { color: var(--sl-ink); text-shadow: none; border-color: #fff; }
+  & .ct-socials.cx-socials { gap: 8px; }
+  & .cx-soc:focus-visible { outline-color: var(--sl-ink); }
+
+  & .cr-h {
+    background: linear-gradient(92deg, #1f2b1c 0%, #4c5a3c 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  & .cr-card p, & .cr-list li { color: var(--sl-ink-dim); }
+  & .cr-list li b { color: var(--sl-ink); }
+  & .cr-list li::before, & .mf-card .cr-list li::before { background: #8a701e; }
+  & .cr-card a { color: #6f5a14; border-bottom-color: rgba(138, 112, 30, 0.4); }
+  & .cr-card a:hover { color: var(--sl-ink); border-bottom-color: var(--sl-ink); }
+  & .mf-head { background: linear-gradient(90deg, rgba(31, 43, 28, 0.28), rgba(31, 43, 28, 0.06) 55%, transparent 90%) left bottom / 100% 1px no-repeat; }
+}
+
+/* ═══════ Day pages: photography (app/photography/PhotographyClient.tsx) ═══════
+   The page's own block styles it for the dark design (often !important);
+   html.sensory-active.is-day outranks it. The hero montage dissolves into
+   the golden sky instead of a dark scrim. */
+html.sensory-active.is-day {
+  /* the montage hangs as a framed picture on the right, so the sky stays open */
+  & .ph-hero-scrim { display: none; }
+  & .ph-hero > .ph-hero-media {
+    inset: auto; right: clamp(24px, 6vw, 110px); top: 50%; translate: 0 -46%;
+    width: min(44vw, 620px); aspect-ratio: 4 / 3;
+    border-radius: 24px; overflow: hidden; opacity: 1;
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    box-shadow: inset 1.5px 1.5px 0 -0.5px rgba(255, 255, 255, 0.9), 0 2px 6px rgba(80, 50, 30, 0.12), 0 40px 80px -36px rgba(80, 50, 30, 0.6); }
+  & .ph-hero-media video { opacity: 1; -webkit-mask-image: none; mask-image: none; }
+  @media (max-width: 760px) {
+    & .ph-hero { padding-top: calc(clamp(132px, 18vh, 180px) + 46vw); }
+    & .ph-hero > .ph-hero-media { right: 5vw; left: 5vw; top: 96px; translate: none; width: auto; aspect-ratio: 16 / 10; border-radius: 20px; }
+  }
+  & .ph-hero .ct-kicker { color: var(--sl-label); }
+  & .ph-hero .ct-title em { text-shadow: none; }
+
+  & .ph-tool-card {
+    background: var(--gl-fill) !important;
+    -webkit-backdrop-filter: var(--gl-blur) !important; backdrop-filter: var(--gl-blur) !important;
+    border: 1px solid var(--gl-border) !important;
+    box-shadow: var(--gl-rim), var(--gl-drop) !important; }
+  & .ph-tool-card:hover { border-color: rgba(255, 255, 255, 0.9) !important; box-shadow: var(--gl-rim), var(--gl-drop-hi) !important; }
+  & .ph-tool-card::before { background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent); }
+  & .ph-tool-card:focus-visible { outline-color: var(--sl-ink); }
+  & .ph-tool-name { color: var(--sl-label) !important; }
+  & .ph-tool-desc { color: var(--sl-ink-dim); }
+  & .ph-tool-plus { color: rgba(31, 43, 28, 0.45); }
+  & .ph-tool-card:hover .ph-tool-plus { color: var(--sl-ink); }
+  & .ph-tool-icon {
+    background: linear-gradient(158deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.42)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.85) !important;
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.9), 0 8px 16px -10px rgba(31, 43, 28, 0.45); }
+
+  & .ph-figma-label { color: var(--sl-label); }
+  & .ph-figma-label::before { background: linear-gradient(90deg, transparent, rgba(var(--sa-accent), 0.9)); }
+  & .ph-figma-frame, & .ph-gallery-frame {
+    background: var(--gl-fill) !important;
+    -webkit-backdrop-filter: var(--gl-blur) !important; backdrop-filter: var(--gl-blur) !important;
+    border: 1px solid var(--gl-border) !important;
+    box-shadow: var(--gl-rim), var(--gl-drop) !important; }
+  & .ph-figma-cap { color: var(--sl-ink-dim); }
+
+  & .ph-gallery-head::after { background: linear-gradient(90deg, rgba(31, 43, 28, 0.3), rgba(31, 43, 28, 0.06) 45%, transparent) !important; }
+  & .ph-gallery-num { background: none; -webkit-text-stroke: 1px rgba(31, 43, 28, 0.32) !important; }
+  & .ph-gallery-title {
+    background: linear-gradient(92deg, #1f2b1c 0%, #4c5a3c 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  & .ph-gallery-open {
+    background: var(--gl-chip) !important; border: 1px solid var(--gl-chip-line) !important; color: var(--sl-ink) !important; }
+  & .ph-gallery-open:hover { background: rgba(255, 255, 255, 0.7) !important; border-color: #fff !important; color: var(--sl-ink) !important; }
+  /* the closed preview fades out into the glass frame, like the homepage gallery */
+  & .ph-gallery .expand-photography { background: none !important; display: flex; align-items: flex-end; padding-bottom: 12px; }
+  & .ph-gallery .photography-restrict {
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%); }
+  & .ph-gallery .expand-photography button {
+    color: var(--sl-cream); background: var(--gl-pine); border: 1px solid rgba(255, 255, 240, 0.22);
+    box-shadow: var(--gl-pine-rim), 0 10px 22px -12px rgba(31, 43, 28, 0.65); }
+  & .ph-gallery .expand-photography button:hover { color: var(--sl-cream); background: var(--gl-pine); filter: brightness(1.1); }
+}

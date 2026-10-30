@@ -11,6 +11,8 @@ import ConfigKingChapter from './ConfigKingStory';
 import PairCompare from './Compare';
 import { LoopRing, AgentBadges } from './Agents';
 import PageFx from './PageFx';
+import { IcRead, IcOut } from '../../components/Icons';
+import AiMark from '../../components/AiMark';
 import './waterslop.css';
 import './article.css';
 import './story.css';
@@ -49,9 +51,6 @@ const REPORT_LINK = 'https://1drv.ms/w/c/4eae3340327c4979/IQD6fnAtH4qnTp-LM2j2Hj
 const REPORT_EMBED_URL = 'https://1drv.ms/w/c/4eae3340327c4979/IQTHPE0ITKXXRo97ze60q4LkAcIyqE0Ek_Mh2xwbOefamDk?em=2';
 
 const I = '/images/waterslop/';
-const ArrowRight = () => (
-  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
-);
 const img = (src: string, alt: string, cls?: string) => <img src={I + src} alt={alt} loading="lazy" decoding="async" className={cls} />;
 const pair = (a: string, altA: string, b: string, altB: string, cls?: string) => (
   <div className={`ws-pair${cls ? ` ${cls}` : ''}`}>{img(a, altA)}{img(b, altB)}</div>
@@ -388,10 +387,11 @@ export default function WaterslopPage() {
           <div className="ws-hero-copy">
             <h1><span>OCR</span><span>Reader</span></h1>
             <p className="ws-hero-lead">A low-cost, low-power, vision-based OCR water meter reader. A 693K-parameter neural network, DrumNet V10, runs entirely on the reader&rsquo;s ESP32-S3: it finds the digit window, reads each drum, and sends the number home over LoRaWAN in about 2 seconds. The target is 99 % accuracy on a 2-year battery; the current build reads 56 % of readings correctly, with plans to improve.</p>
+            <AiMark project="proj-waterslop" />
             <Contents />
             <div className="ws-hero-actions">
-              <a className="ws-btn" href="#brief">Start reading <ArrowRight /></a>
-              <a className="ws-btn ghost" href={REPORT_LINK} target="_blank" rel="noopener">The report</a>
+              <a className="ws-btn" href="#brief"><IcRead /> Start reading</a>
+              <a className="ws-btn ghost" href={REPORT_LINK} target="_blank" rel="noopener"><IcOut /> The report</a>
               <span className="ws-hero-meta">ESP32-S3 · OV2640 · KiCad · Onshape · PlatformIO · Tailscale</span>
             </div>
           </div>
@@ -455,13 +455,9 @@ export default function WaterslopPage() {
                 <b>OCR Water Meter Reader</b>
                 <span>Low cost and power vision-based OCR solution for reading water meters. Braven Chiam, NYP Electronic and Computer Engineering. Opens in Word on OneDrive.</span>
               </div>
-              <a className="ws-btn" href={REPORT_LINK} target="_blank" rel="noopener">Open the report <ArrowRight /></a>
+              <a className="ws-btn" href={REPORT_LINK} target="_blank" rel="noopener"><IcOut /> Open the report</a>
             </div>
             <p className="ws-note ws-report-note">AI tools were used heavily in the development of this project. Most of the report was written by me in my own words, except for the introduction section and certain graphs; other AI use includes research, chart generation and data verification. This project scores a Level 3 on my scale of AI use.</p>
-            <div className="ws-end">
-              <span>Check out the next article</span>
-              <a href="/#portfolio-items-holder" className="ws-btn ghost">All projects <ArrowRight /></a>
-            </div>
           </div>
         </div>
       </section>

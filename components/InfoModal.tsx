@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { iconForUrl } from './Icons';
 
 export type InfoItem = {
   icon?: string;
@@ -84,7 +85,7 @@ export default function InfoModal({ item, onClose }: { item: InfoItem | null; on
                 return (
                   <a key={l.url} className={`hp-btn${idx === 0 ? '' : ' hp-btn-ghost'} im-link`} href={l.url}
                     {...(ext ? { target: '_blank', rel: 'noopener' } : {})}>
-                    {l.label}
+                    {iconForUrl(l.url)} {l.label}
                   </a>
                 );
               })}

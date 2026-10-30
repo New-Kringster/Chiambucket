@@ -1,0 +1,341 @@
+/* ═══════════════════════════════════════════════════════════════
+   NAV (components/Nav.tsx): separate small pieces instead of one bar.
+   The logo on its own, a segmented pill of pages and "My work" on its own at
+   the right; a dark mark slides to the current one. Phones swap the page pill
+   for a round menu button and a dropdown.
+   Every piece is glass (blur, a bright rim, and in Chromium the refraction
+   filter from components/GlassDefs.tsx). Colours come from --nv-* tokens:
+   smoky warm glass by default, cool on the indigo/datacenter routes, clear
+   glass with pine ink on the sunlit homepage.
+   ═══════════════════════════════════════════════════════════════ */
+
+.pnav {
+  --nv-glass:
+    radial-gradient(130% 90% at 0% 0%, rgba(255, 245, 230, 0.14) 0%, rgba(255, 245, 230, 0) 50%),
+    linear-gradient(160deg, rgba(42, 34, 25, 0.7), rgba(20, 16, 11, 0.62));
+  --nv-sheet: linear-gradient(160deg, rgba(42, 34, 25, 0.84), rgba(20, 16, 11, 0.8));
+  --nv-blur: blur(18px) saturate(170%);
+  --nv-refract: url(#lg-refract-pill) blur(4px) saturate(170%);
+  --nv-border: rgba(255, 240, 220, 0.16);
+  --nv-rim: inset 1.5px 1.5px 0 -0.5px rgba(255, 245, 230, 0.34), inset -1px -1px 0 -0.5px rgba(255, 245, 230, 0.1);
+  --nv-text: rgba(243, 237, 226, 0.76);
+  --nv-text-hi: #f6f1e7;
+  --nv-hover: rgba(255, 245, 230, 0.1);
+  --nv-active: #f3ede2;
+  --nv-active-text: #17120c;
+  /* keyboard focus ring: a plain colour (--nv-active can be a gradient, which outline cannot use) */
+  --nv-focus: #f3ede2;
+  --nv-shadow: 0 10px 26px -14px rgba(0, 0, 0, 0.85);
+  --nv-logo-filter: none;
+  /* a soft halo behind the link text keeps it readable whatever slides under the glass */
+  --nv-halo: 0 0 6px rgba(0, 0, 0, 0.8), 0 0 2px rgba(0, 0, 0, 0.7);
+  /* the merging glass (.pnav-blob): one fill for the whole shape, and the
+     colours its rim and shadow filter paints with */
+  --nv-fill: linear-gradient(180deg, rgba(42, 34, 25, 0.72), rgba(20, 16, 11, 0.64));
+  --nv-blob-edge: rgba(255, 240, 220, 0.16);
+  --nv-blob-rim: rgba(255, 245, 230, 0.34);
+  --nv-blob-rim2: rgba(255, 245, 230, 0.1);
+  --nv-blob-drop: rgba(0, 0, 0, 0.55);
+
+  position: fixed;
+  top: 16px;
+  left: clamp(14px, 3vw, 32px);
+  right: clamp(14px, 3vw, 32px);
+  z-index: 999;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  /* the gaps between the pieces let clicks through to the page */
+  pointer-events: none;
+}
+.pnav > *, .pnav-right > * { pointer-events: auto; }
+/* set on the links themselves: a global `a` rule would otherwise win over inheritance */
+.pnav-item { font-family: 'dmsans', system-ui, sans-serif; }
+
+html.is-night .pnav {
+  --nv-glass:
+    radial-gradient(130% 90% at 0% 0%, rgba(226, 233, 255, 0.14) 0%, rgba(226, 233, 255, 0) 50%),
+    linear-gradient(160deg, rgba(26, 31, 50, 0.7), rgba(11, 14, 24, 0.62));
+  --nv-sheet: linear-gradient(160deg, rgba(26, 31, 50, 0.86), rgba(11, 14, 24, 0.82));
+  --nv-border: rgba(200, 214, 255, 0.16);
+  --nv-rim: inset 1.5px 1.5px 0 -0.5px rgba(226, 233, 255, 0.32), inset -1px -1px 0 -0.5px rgba(226, 233, 255, 0.1);
+  --nv-text: rgba(226, 233, 255, 0.76);
+  --nv-text-hi: #eef2ff;
+  --nv-hover: rgba(226, 233, 255, 0.08);
+  --nv-active: #eef2ff;
+  --nv-active-text: #0b0e18;
+  --nv-focus: #eef2ff;
+  --nv-fill: linear-gradient(180deg, rgba(26, 31, 50, 0.72), rgba(11, 14, 24, 0.64));
+  --nv-blob-edge: rgba(200, 214, 255, 0.16);
+  --nv-blob-rim: rgba(226, 233, 255, 0.32);
+  --nv-blob-rim2: rgba(226, 233, 255, 0.1);
+}
+html.is-day .pnav {
+  --nv-glass:
+    radial-gradient(130% 90% at 0% 0%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 50%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.56));
+  --nv-sheet: linear-gradient(160deg, rgba(252, 253, 249, 0.86), rgba(240, 244, 235, 0.8));
+  --nv-border: rgba(255, 255, 255, 0.6);
+  --nv-rim: inset 1.5px 1.5px 0 -0.5px rgba(255, 255, 255, 0.95), inset -1px -1px 0 -0.5px rgba(255, 255, 255, 0.5);
+  --nv-text: rgba(31, 43, 28, 0.8);
+  --nv-text-hi: #1f2b1c;
+  --nv-hover: rgba(255, 255, 255, 0.45);
+  --nv-active: linear-gradient(160deg, rgba(52, 70, 47, 0.9), rgba(31, 43, 28, 0.86));
+  --nv-active-text: #f6f4e2;
+  --nv-focus: #1f2b1c;
+  --nv-shadow: 0 1px 2px rgba(31, 43, 28, 0.08), 0 10px 24px -12px rgba(31, 43, 28, 0.5);
+  --nv-logo-filter: brightness(0);
+  --nv-halo: 0 0 6px rgba(255, 255, 255, 0.9), 0 0 2px rgba(255, 255, 255, 0.9);
+  --nv-fill: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.56));
+  --nv-blob-edge: rgba(255, 255, 255, 0.6);
+  --nv-blob-rim: rgba(255, 255, 255, 0.95);
+  --nv-blob-rim2: rgba(255, 255, 255, 0.5);
+  --nv-blob-drop: rgba(31, 43, 28, 0.3);
+}
+
+/* ── Logo: bare at the top of the page, on its own chip once you scroll ── */
+.pnav-logo {
+  justify-self: start;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 12px;
+  margin-left: -12px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.pnav-logo img { height: 28px; width: auto; display: block; filter: var(--nv-logo-filter); transition: filter 0.25s ease; }
+.pnav.is-scrolled .pnav-logo {
+  background: var(--nv-glass);
+  -webkit-backdrop-filter: var(--nv-blur) !important; backdrop-filter: var(--nv-blur) !important;
+  border-color: var(--nv-border);
+  box-shadow: var(--nv-rim), var(--nv-shadow);
+}
+
+/* ── Pills ── */
+.pnav-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  background: var(--nv-glass);
+  -webkit-backdrop-filter: var(--nv-blur) !important; backdrop-filter: var(--nv-blur) !important;
+  border: 1px solid var(--nv-border);
+  box-shadow: var(--nv-rim), var(--nv-shadow);
+}
+.pnav-links { position: relative; padding: 3px; gap: 2px; }
+
+/* The mark: one dark pill starting at the page pill's left edge and running
+   far to the right (Nav.tsx MARK_W), so it can reach My work once that has
+   merged onto the end of the list. clip-path cuts it down to the current item;
+   Nav.tsx sets the two cut lengths. The edge on the side it is moving towards
+   (.to-right or not) goes first and the other follows, so it stretches to the
+   next item and then catches up. Where the lengths cannot be animated (no
+   @property) it simply moves. */
+@property --mark-l { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --mark-r { syntax: '<length>'; inherits: false; initial-value: 0px; }
+.pnav-mark {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 0;
+  width: 3000px;
+  background: var(--nv-active);
+  box-shadow: inset 1px 1px 0 -0.5px rgba(255, 255, 255, 0.35);
+  clip-path: inset(0 var(--mark-r) 0 var(--mark-l) round 999px);
+  pointer-events: none;
+  visibility: hidden;
+}
+.pnav.has-mark .pnav-mark { visibility: visible; }
+/* moving left: the left edge leads, the right edge follows a beat later */
+.pnav-mark.is-live { transition: --mark-l 0.32s cubic-bezier(0.3, 1, 0.3, 1.18), --mark-r 0.42s cubic-bezier(0.5, 0, 0.25, 1.18) 0.06s; }
+/* moving right: the right edge leads */
+.pnav-mark.is-live.to-right { transition: --mark-r 0.32s cubic-bezier(0.3, 1, 0.3, 1.18), --mark-l 0.42s cubic-bezier(0.5, 0, 0.25, 1.18) 0.06s; }
+/* the items paint over the mark */
+:is(.pnav-links, .pnav-work) > .pnav-item { position: relative; }
+
+/* My work: in a pill of its own until it merges onto the list. While it stands
+   alone it is lit, a dark pill like the current item, so it reads as the way
+   in; Nav.tsx dims --lit to 0 as it joins the list and it becomes one more
+   option (the mark lights it again on the projects). */
+.pnav-work { padding: 3px; --lit: 1; --ink: 1; }
+.pnav-work > .pnav-item {
+  isolation: isolate;
+  color: color-mix(in srgb, var(--nv-active-text) calc(var(--ink) * 100%), var(--nv-text));
+}
+.pnav-work > .pnav-item:not(.is-active) { text-shadow: 0 0 6px rgba(0, 0, 0, calc(var(--ink) * 0.25)); }
+html.is-day .pnav-work > .pnav-item:not(.is-active) { text-shadow: 0 0 6px rgba(255, 255, 255, calc((1 - var(--ink)) * 0.9)); }
+.pnav-work > .pnav-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--nv-active);
+  box-shadow: inset 1px 1px 0 -0.5px rgba(255, 255, 255, 0.35);
+  opacity: var(--lit);
+  transition: filter 0.2s ease;
+}
+.pnav-work > .pnav-item:hover::before { filter: brightness(1.15); }
+
+.pnav-item {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 15px;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--nv-text);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.2s ease, background-color 0.2s ease, transform 0.15s ease;
+}
+.pnav-item:not(.is-active) { text-shadow: var(--nv-halo); }
+.pnav-item:hover { color: var(--nv-text-hi); background: var(--nv-hover); }
+.pnav-item:active { transform: scale(0.96); }
+.pnav-item.is-active,
+.pnav-item.is-active:hover {
+  background: var(--nv-active);
+  color: var(--nv-active-text);
+  box-shadow: inset 1px 1px 0 -0.5px rgba(255, 255, 255, 0.35), 0 2px 6px -2px rgba(0, 0, 0, 0.3);
+}
+/* once the mark is placed it draws the current item's background */
+.pnav.has-mark :is(.pnav-links, .pnav-work) > .pnav-item.is-active { background: transparent; box-shadow: none; }
+.pnav.has-mark :is(.pnav-links, .pnav-work) > .pnav-item { transition: color 0.25s ease 0.08s, background-color 0.2s ease, transform 0.15s ease; }
+
+/* ── Right side: the menu button on phones ── */
+.pnav-right {
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pnav-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--nv-glass);
+  -webkit-backdrop-filter: var(--nv-blur) !important; backdrop-filter: var(--nv-blur) !important;
+  border: 1px solid var(--nv-border);
+  box-shadow: var(--nv-rim), var(--nv-shadow);
+  color: var(--nv-text-hi);
+  cursor: pointer;
+  padding: 0;
+}
+.pnav-menu { display: none; position: relative; }
+.pnav-menu span {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.pnav-menu span:first-child { top: 15px; }
+.pnav-menu span:last-child { top: 21px; }
+.pnav-menu.is-open span:first-child { transform: translateY(3px) rotate(45deg); }
+.pnav-menu.is-open span:last-child { transform: translateY(-3px) rotate(-45deg); }
+.pnav-menu:active { transform: scale(0.95); }
+
+.pnav-logo:focus-visible, .pnav-item:focus-visible, .pnav-circle:focus-visible {
+  outline: 2px solid var(--nv-focus);
+  outline-offset: 2px;
+}
+
+/* ── Phone dropdown ── */
+.pnav-sheet {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(260px, calc(100vw - 28px));
+  padding: 6px;
+  box-sizing: border-box;
+  border-radius: 22px;
+  /* thicker glass than the pills: the menu sits over busy page content */
+  background: var(--nv-sheet);
+  -webkit-backdrop-filter: blur(24px) saturate(170%) !important; backdrop-filter: blur(24px) saturate(170%) !important;
+  border: 1px solid var(--nv-border);
+  box-shadow: var(--nv-rim), var(--nv-shadow), 0 24px 48px -24px rgba(0, 0, 0, 0.5);
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  transform-origin: top right;
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0.18s;
+}
+.pnav-sheet.is-open {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+  transition-delay: 0s;
+}
+.pnav-sheet nav { display: grid; gap: 2px; }
+.pnav-sheet .pnav-item { height: 44px; padding: 0 16px; font-size: 0.95rem; }
+
+/* ── The merging glass ──
+   While .is-blob is set (Nav.tsx turns it on unless motion or transparency is
+   reduced), the pieces give up their own glass and one shape draws it for all
+   of them: .pnav-blob-glass is the frosted layer, clipped to the shape, and
+   the SVG paints its edge, rim and shadow. */
+.pnav > .pnav-blob { display: none; pointer-events: none; }
+.pnav.is-blob > .pnav-blob { display: block; position: fixed; inset: 0 0 auto 0; height: 96px; z-index: -1; }
+.pnav-blob-glass {
+  position: absolute;
+  inset: 0;
+  background: var(--nv-fill);
+  -webkit-backdrop-filter: var(--nv-blur) !important; backdrop-filter: var(--nv-blur) !important;
+  clip-path: inset(0 0 100% 0);
+}
+.pnav-blob-edge { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.pnav-blob-edge path { fill: #000; }
+.pnav-fl-drop { flood-color: var(--nv-blob-drop); }
+.pnav-fl-edge { flood-color: var(--nv-blob-edge); }
+.pnav-fl-rim { flood-color: var(--nv-blob-rim); }
+.pnav-fl-rim2 { flood-color: var(--nv-blob-rim2); }
+
+.pnav.is-blob :is(.pnav-pill, .pnav-circle),
+.pnav.is-blob.is-scrolled .pnav-logo {
+  background: transparent;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  border-color: transparent;
+  box-shadow: none;
+}
+.pnav.is-blob :is(.pnav-logo, .pnav-links, .pnav-work, .pnav-menu), .pnav.is-blob .pnav-sheet { will-change: translate; }
+/* on phones, room between My work and the menu button so they start apart */
+.pnav.is-blob .pnav-right { gap: 22px; }
+
+/* Light bending where url() works inside backdrop-filter (Chromium; see GlassDefs.tsx) */
+@media (prefers-reduced-transparency: no-preference) {
+  html.lg-refract .pnav:not(.is-blob) :is(.pnav-pill, .pnav-circle),
+  html.lg-refract .pnav.is-scrolled:not(.is-blob) .pnav-logo,
+  html.lg-refract .pnav-blob-glass {
+    -webkit-backdrop-filter: var(--nv-refract) !important; backdrop-filter: var(--nv-refract) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .pnav { top: 12px; grid-template-columns: 1fr auto; }
+  .pnav-links { display: none; }
+  .pnav-menu { display: inline-block; }
+}
+@media (min-width: 761px) {
+  .pnav-sheet { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pnav-sheet, .pnav-menu span, .pnav-item, .pnav-mark.is-live { transition: none; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .pnav-pill, .pnav-circle, .pnav.is-scrolled .pnav-logo, .pnav-sheet {
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+    background: rgba(26, 21, 15, 0.97);
+  }
+  html.is-day :is(.pnav-pill, .pnav-circle, .pnav.is-scrolled .pnav-logo, .pnav-sheet) { background: rgba(248, 249, 243, 0.97); }
+}

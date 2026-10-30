@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, LazyMotion, domAnimation, m } from 'framer-motion';
 
-/* ReadingTogether — dramatises BeadReader's "reading together" presence: an
+/* ReadingTogether: dramatises BeadReader's "reading together" presence: an
    Online-now panel where a friend in the same book gets a green ring + chapter
    badge, and a tap sends a wave or a short note that pops on their row and
    fades. Auto-cycles, pauses off-screen, never reflows the page. */
@@ -18,10 +18,10 @@ type Bubble = { row: number; kind: 'wave' | 'note'; text?: string } | null;
 
 type Beat = { caption: string; bubble: Bubble; samInBook: boolean };
 const BEATS: Beat[] = [
-  { caption: 'Mara is on chapter 12, right here in the same book as you.', bubble: null, samInBook: false },
-  { caption: 'Tap a reader to send a wave. It lands on their screen, then fades.', bubble: { row: 0, kind: 'wave' }, samInBook: false },
-  { caption: 'Or a short note, gone in a few seconds. Nothing is saved.', bubble: { row: 1, kind: 'note', text: 'loved that twist!' }, samInBook: false },
-  { caption: 'Sam just opened the same book. Three of you, reading together.', bubble: null, samInBook: true },
+  { caption: 'Mara is on chapter 12 of the book you are reading, so her avatar has the green ring.', bubble: null, samInBook: false },
+  { caption: 'Tap a reader to send a wave. It shows on their screen, then fades.', bubble: { row: 0, kind: 'wave' }, samInBook: false },
+  { caption: 'Or send a short note. It is gone in a few seconds and nothing is saved.', bubble: { row: 1, kind: 'note', text: 'loved that twist!' }, samInBook: false },
+  { caption: 'Sam opens the same book and gets a green ring too.', bubble: null, samInBook: true },
 ];
 
 const LONGEST_CAPTION = BEATS.reduce((a, b) => (b.caption.length > a.length ? b.caption : a), '');
@@ -78,9 +78,9 @@ export default function ReadingTogether() {
   const samInBook = current.samInBook;
 
   const status = useMemo(() => [
-    'Reading here · ch 12',
-    'The Hobbit · ch 3',
-    samInBook ? 'Reading here · ch 1' : 'Browsing',
+    'This book, chapter 12',
+    'The Hobbit, chapter 3',
+    samInBook ? 'This book, chapter 1' : 'Browsing the library',
   ], [samInBook]);
   const sameBook = [true, false, samInBook];
   const badge = ['12', '', '1'];
@@ -141,11 +141,11 @@ export default function ReadingTogether() {
                 onClick={() => { setAuto(false); setManual(null); setBeat(n); }}
                 role="tab"
                 aria-selected={n === beat}
-                aria-label={`Beat ${n + 1}`}
+                aria-label={`Step ${n + 1} of ${BEATS.length}`}
               />
             ))}
           </div>
-          <span className="rt-legend"><span className="rt-legend-dot" /> green ring = same book as you</span>
+          <span className="rt-legend"><span className="rt-legend-dot" /> Green ring: in the same book as you</span>
         </div>
 
         <style>{`

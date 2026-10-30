@@ -1,6 +1,7 @@
 'use client';
 import HlModal from './HlModal';
 import { WEIGHT_META, type Service } from './data';
+import { IcOut } from '../../components/Icons';
 
 type StatusMap = Record<string, 'up' | 'down'>;
 
@@ -10,9 +11,9 @@ export default function ServiceModal({ service, status, onClose }: { service: Se
       {(s) => {
         const live = s.statusKey ? status[s.statusKey] : undefined;
         const statusCls = s.statusKey ? (live === 'up' ? 'up' : live === 'down' ? 'down' : 'wait') : s.featured ? 'build' : 'self';
-        const statusText = s.statusKey ? (live === 'up' ? 'online' : live === 'down' ? 'offline' : 'checking…') : s.featured ? 'current build' : 'self-hosted';
+        const statusText = s.statusKey ? (live === 'up' ? 'online' : live === 'down' ? 'offline' : 'checking') : s.featured ? 'building now' : 'private';
         const access = s.statusKey
-          ? 'Public, via Nginx Proxy Manager + CrowdSec'
+          ? 'Public, through Nginx Proxy Manager and CrowdSec'
           : s.featured
             ? 'In development on NewMain'
             : 'Private, on the Tailscale network';
@@ -31,7 +32,7 @@ export default function ServiceModal({ service, status, onClose }: { service: Se
             {s.long?.map((para, i) => <p key={i} className="hl2-modal-p">{para}</p>)}
 
             <dl className="hl2-smodal-facts">
-              <div><dt>Runs on</dt><dd>{s.hosts.join(' · ')}</dd></div>
+              <div><dt>Runs on</dt><dd>{s.hosts.join(', ')}</dd></div>
               <div><dt>Load</dt><dd>{WEIGHT_META[s.weight].label}</dd></div>
               <div><dt>Access</dt><dd>{access}</dd></div>
               <div><dt>Category</dt><dd>{s.category}</dd></div>
@@ -39,8 +40,7 @@ export default function ServiceModal({ service, status, onClose }: { service: Se
 
             {s.url && (
               <a className="hl2-btn hl2-smodal-visit" href={s.url} target="_blank" rel="noopener">
-                Visit {s.url.replace('https://', '')}
-                <svg viewBox="0 0 24 24" fill="none" width="16" height="16" aria-hidden="true"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M13 6l6 6-6 6" /></svg>
+                <IcOut /> Visit {s.url.replace('https://', '')}
               </a>
             )}
           </div>

@@ -8,30 +8,30 @@ interface Node {
   label: string; sub: string; vlan: Vlan; detail: string;
 }
 const N: Record<string, Node> = {
-  internet: { id: 'internet', x: 500, y: 22, w: 120, h: 46, label: 'Internet', sub: 'public edge', vlan: 'core',
-    detail: 'The open internet. Inbound traffic hits a single public address and is handed to the gateway; there is no direct path to anything behind it.' },
-  udm: { id: 'udm', x: 466, y: 112, w: 188, h: 60, label: 'UDM Pro', sub: 'gateway · firewall · RADIUS', vlan: 'core',
-    detail: 'The UniFi Dream Machine Pro is the brain: gateway, firewall, controller and RADIUS server. It enforces which VLAN can talk to which, and authenticates the WPA3-Enterprise network.' },
-  sw1: { id: 'sw1', x: 142, y: 246, w: 196, h: 56, label: 'USW Pro Max 24', sub: 'server rack', vlan: 'core',
-    detail: 'The 24-port workhorse switch wiring up everything in the server rack. Every server lands here on a redundant pair of links.' },
-  sw2: { id: 'sw2', x: 476, y: 246, w: 168, h: 56, label: 'USW Flex 2.5G', sub: 'general', vlan: 'core',
-    detail: 'A 2.5-gigabit Flex switch handling the faster general-purpose devices around the apartment.' },
-  sw3: { id: 'sw3', x: 842, y: 246, w: 176, h: 56, label: 'USW Lite 8 PoE', sub: 'powers the APs', vlan: 'core',
-    detail: 'An 8-port PoE switch that both connects and powers the five wireless access points over a single cable each.' },
-  newmain: { id: 'newmain', x: 28, y: 410, w: 124, h: 64, label: 'NewMain', sub: 'Unraid · storage', vlan: 'unraid',
-    detail: 'The Unraid server sits alone on its own VLAN. It holds the storage and the bulk of the Docker stack, reachable from trusted VLANs but firewalled off from the isolated IoT network.' },
-  caca: { id: 'caca', x: 178, y: 410, w: 124, h: 64, label: 'CaCa', sub: 'Proxmox · 24/7', vlan: 'server',
-    detail: 'The always-on half of the Proxmox PXE cluster, on the dedicated server VLAN with Adell.' },
-  adell: { id: 'adell', x: 328, y: 410, w: 124, h: 64, label: 'Adell', sub: 'Proxmox · on demand', vlan: 'server',
-    detail: 'The heavy Proxmox node, woken on demand. Shares the server VLAN with CaCa for live migration and PXE.' },
-  clients: { id: 'clients', x: 476, y: 412, w: 168, h: 60, label: 'Workstations', sub: 'laptops · desktops', vlan: 'default',
-    detail: 'Everyday devices live on the default VLAN. They can reach the servers, but the IoT network cannot reach them back.' },
-  aps: { id: 'aps', x: 842, y: 410, w: 176, h: 62, label: '5× UniFi APs', sub: 'wireless fabric', vlan: 'core',
-    detail: 'Five access points broadcast two separate wireless networks across the apartment, all powered over PoE from the Lite 8.' },
+  internet: { id: 'internet', x: 500, y: 22, w: 120, h: 46, label: 'Internet', sub: 'Public edge', vlan: 'core',
+    detail: 'Inbound traffic reaches one public address and goes straight to the gateway. Nothing behind it is reachable directly.' },
+  udm: { id: 'udm', x: 466, y: 112, w: 188, h: 60, label: 'UDM Pro', sub: 'Gateway, firewall, RADIUS', vlan: 'core',
+    detail: 'The UniFi Dream Machine Pro is the gateway, firewall, network controller and RADIUS server. It decides which VLAN can reach which, and authenticates the WPA3-Enterprise Wi-Fi.' },
+  sw1: { id: 'sw1', x: 142, y: 246, w: 196, h: 56, label: 'USW Pro Max 24', sub: 'Server rack', vlan: 'core',
+    detail: 'The 24-port switch in the server rack. Each server connects to it with a redundant pair of links.' },
+  sw2: { id: 'sw2', x: 476, y: 246, w: 168, h: 56, label: 'USW Flex 2.5G', sub: 'General', vlan: 'core',
+    detail: 'A 2.5 Gb switch for the faster everyday devices in the apartment.' },
+  sw3: { id: 'sw3', x: 842, y: 246, w: 176, h: 56, label: 'USW Lite 8 PoE', sub: 'Powers the APs', vlan: 'core',
+    detail: 'An 8-port PoE switch that connects and powers the five access points, one cable each.' },
+  newmain: { id: 'newmain', x: 28, y: 410, w: 124, h: 64, label: 'NewMain', sub: 'Unraid', vlan: 'unraid',
+    detail: 'The Unraid server has a VLAN to itself. Trusted VLANs can reach it for storage and apps; the IoT VLAN cannot.' },
+  caca: { id: 'caca', x: 178, y: 410, w: 124, h: 64, label: 'CaCa', sub: 'Always on', vlan: 'server',
+    detail: 'The always-on Proxmox node. It shares the server VLAN with Adell.' },
+  adell: { id: 'adell', x: 328, y: 410, w: 124, h: 64, label: 'Adell', sub: 'On demand', vlan: 'server',
+    detail: 'The Proxmox node I wake when I need it. It shares the server VLAN with CaCa for live migration and PXE boot.' },
+  clients: { id: 'clients', x: 476, y: 412, w: 168, h: 60, label: 'Workstations', sub: 'Laptops, desktops', vlan: 'default',
+    detail: 'Everyday devices on the default VLAN. They can reach the servers; the IoT VLAN cannot reach them.' },
+  aps: { id: 'aps', x: 842, y: 410, w: 176, h: 62, label: '5 UniFi APs', sub: 'Wi-Fi', vlan: 'core',
+    detail: 'Five access points broadcast two separate Wi-Fi networks across the apartment, powered over PoE from the Lite 8.' },
   wmain: { id: 'wmain', x: 772, y: 548, w: 150, h: 56, label: 'Main WLAN', sub: 'WPA3-Enterprise', vlan: 'default',
-    detail: 'The primary Wi-Fi uses WPA3-Enterprise with RADIUS auth from the UDM Pro, so every device gets its own credentials. Pure enterprise-networking practice, at home.' },
-  wiot: { id: 'wiot', x: 938, y: 548, w: 146, h: 56, label: 'IoT WLAN', sub: 'isolated', vlan: 'iot',
-    detail: 'The IoT network is walled off by stricter firewall rules. Smart devices get internet, but cannot reach any other VLAN. This is the one segment that cannot talk to the rest.' },
+    detail: 'The main Wi-Fi uses WPA3-Enterprise with RADIUS on the UDM Pro, so every device has its own credentials.' },
+  wiot: { id: 'wiot', x: 938, y: 548, w: 146, h: 56, label: 'IoT WLAN', sub: 'Isolated', vlan: 'iot',
+    detail: 'Smart devices get internet access and nothing else. Firewall rules block them from every other VLAN.' },
 };
 
 interface Edge { from: string; to: string; redundant?: boolean }
@@ -52,15 +52,15 @@ const LEGEND: { v: Vlan; label: string }[] = [
   { v: 'unraid', label: 'Unraid VLAN' },
   { v: 'server', label: 'Server VLAN' },
   { v: 'default', label: 'Default VLAN' },
-  { v: 'iot', label: 'IoT · isolated' },
+  { v: 'iot', label: 'IoT VLAN, isolated' },
 ];
 
 const VLAN_INFO: Record<Vlan, { label: string; blurb: string }> = {
-  unraid: { label: 'Unraid VLAN', blurb: 'NewMain sits alone on its own segment. Trusted VLANs can reach it for storage and apps, but it is firewalled off from the isolated IoT network.' },
-  server: { label: 'Server VLAN', blurb: 'The Proxmox PXE cluster, CaCa and Adell, share a dedicated segment so they can live-migrate and network-boot between each other.' },
-  default: { label: 'Default VLAN', blurb: 'Everyday workstations and the main WPA3-Enterprise Wi-Fi. They can reach the servers; the IoT network can never reach back.' },
-  iot: { label: 'IoT · isolated', blurb: 'Smart devices get internet and nothing else. Stricter firewall rules wall this segment off from every other VLAN on the network.' },
-  core: { label: 'Core network', blurb: 'The gateway and switches that route between every segment.' },
+  unraid: { label: 'Unraid VLAN', blurb: 'NewMain on its own. Trusted VLANs can reach it for storage and apps; the IoT VLAN cannot.' },
+  server: { label: 'Server VLAN', blurb: 'CaCa and Adell, the Proxmox cluster, on a shared segment so they can live-migrate VMs and PXE boot.' },
+  default: { label: 'Default VLAN', blurb: 'Workstations and the main WPA3-Enterprise Wi-Fi. They can reach the servers; the IoT VLAN cannot reach them.' },
+  iot: { label: 'IoT VLAN', blurb: 'Smart devices get internet access and nothing else. Firewall rules block this segment from every other VLAN.' },
+  core: { label: 'Core network', blurb: 'The gateway and switches that route between the VLANs.' },
 };
 
 const cx = (n: Node) => n.x + n.w / 2;
@@ -110,17 +110,17 @@ export default function SystemMap() {
         </div>
         <div className="hl2-map-buttons">
           {pinned
-            ? <button type="button" className="hl2-btn small ghost" onClick={() => setPinned(null)}>Clear segment</button>
-            : <span className="hl2-map-tip">Hover or tap a VLAN to trace its segment</span>}
+            ? <button type="button" className="hl2-btn small ghost" onClick={() => setPinned(null)}>Clear highlight</button>
+            : <span className="hl2-map-tip">Select a VLAN to highlight its devices</span>}
         </div>
       </div>
 
       <div className="hl2-map-scroll">
-        <svg className="hl2-map-svg" viewBox="0 0 1120 640" role="img" aria-label="Network topology diagram">
+        <svg className="hl2-map-svg" viewBox="0 0 1120 640" role="img" aria-label="Network map. Select a device for details.">
           {/* VLAN zones (only the two adjacent server-rack groups get a backing) */}
           <g className="hl2-zones">
-            <Zone x={19} y={384} w={142} h={98} color={VLAN_COLOR.unraid} label="UNRAID VLAN" active={active === 'unraid'} />
-            <Zone x={169} y={384} w={292} h={98} color={VLAN_COLOR.server} label="SERVER VLAN" dashed active={active === 'server'} />
+            <Zone x={19} y={384} w={142} h={98} color={VLAN_COLOR.unraid} label="Unraid VLAN" active={active === 'unraid'} />
+            <Zone x={169} y={384} w={292} h={98} color={VLAN_COLOR.server} label="Server VLAN" dashed active={active === 'server'} />
           </g>
 
           {/* edges */}
@@ -169,7 +169,7 @@ export default function SystemMap() {
         {active ? (
           <div className="hl2-detail">
             <div className="hl2-detail-head">
-              <span className="hl2-detail-vlan" style={{ '--nc': VLAN_COLOR[active] } as CSSProperties}>{active === 'core' ? 'core network' : `${active} vlan`}</span>
+              <span className="hl2-detail-vlan" style={{ '--nc': VLAN_COLOR[active] } as CSSProperties}>{active === 'core' ? 'Core network' : 'Segment'}</span>
               <h4>{VLAN_INFO[active].label}</h4>
             </div>
             <p>{VLAN_INFO[active].blurb}</p>
@@ -177,14 +177,14 @@ export default function SystemMap() {
         ) : sel ? (
           <div className="hl2-detail">
             <div className="hl2-detail-head">
-              <span className="hl2-detail-vlan" style={{ '--nc': VLAN_COLOR[sel.vlan] } as CSSProperties}>{sel.vlan === 'core' ? 'core network' : `${sel.vlan} vlan`}</span>
+              <span className="hl2-detail-vlan" style={{ '--nc': VLAN_COLOR[sel.vlan] } as CSSProperties}>{sel.vlan === 'core' ? 'Core network' : VLAN_INFO[sel.vlan].label}</span>
               <h4>{sel.label}</h4>
               <span className="hl2-detail-sub">{sel.sub}</span>
             </div>
             <p>{sel.detail}</p>
           </div>
         ) : (
-          <p className="hl2-detail-hint">Tap any node to inspect it.</p>
+          <p className="hl2-detail-hint">Select a device to see what it does.</p>
         )}
       </div>
     </div>

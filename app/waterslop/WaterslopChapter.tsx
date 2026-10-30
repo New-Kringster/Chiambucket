@@ -15,21 +15,12 @@ export default function WaterslopChapter({ numeral = 'XI' }: { numeral?: string 
   useEffect(() => {
     const el = root.current;
     if (!el) return;
-    // Keep the chapter's top-anchored titles clear of the fixed site nav.
-    const nav = document.querySelector<HTMLElement>('.nav-holder');
-    const inset = () => el.style.setProperty('--ws-top-inset', `${nav?.offsetHeight ?? 0}px`);
-    inset();
-    const navSize = new ResizeObserver(inset);
-    if (nav) navSize.observe(nav);
     const unmount = mountChapter(el, {
       assetBase: '/waterslop/',
-      // The whole article pauses the site shader field (PageFx); nothing to toggle here.
+      // The chapter's stage is opaque; the scene behind the page needs nothing from it.
       onCover: () => {},
     });
-    return () => {
-      navSize.disconnect();
-      unmount();
-    };
+    return unmount;
   }, []);
   return (
     <div
@@ -43,7 +34,12 @@ export default function WaterslopChapter({ numeral = 'XI' }: { numeral?: string 
 }
 
 /* The exported chapter ends with a 'Component notes and sources' block and a skip
-   link to it; the article keeps the chapter to the animation. */
+   link to it; the article keeps the chapter to the animation. The notes block is
+   not removed, though: at the last stop the chapter's Next button scrolls it into
+   view, so it stays as an empty, invisible anchor at the chapter's end, and Next
+   carries the reader on to the section after the chapter. With display: none,
+   Next had nowhere to go and did nothing. */
 export function WaterslopChapterStyle() {
-  return <style>{`.ws-chapter #reading, .ws-chapter .skip { display: none; }`}</style>;
+  /* Its top-anchored titles clear the fixed site nav: PageFx measures the nav as --ws-nav. */
+  return <style>{`.ws-chapter .skip { display: none; } .ws-pcb .ws-chapter #reading { display: block; height: 0; margin: 0; padding: 0; border: 0; overflow: hidden; visibility: hidden; } .ws-chapter { --ws-top-inset: var(--ws-nav, 0px); }`}</style>;
 }

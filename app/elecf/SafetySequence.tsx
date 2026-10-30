@@ -21,8 +21,8 @@ const STEPS: Step[] = [
     img: '/images/elecf-door-open.png',
     label: 'Door open',
     title: 'Set the timer',
-    desc: 'A worker steps into the freezer. The PIR sensor reads their body heat and movement, while the ToF sensor sees the door as open. On the M5Stack, you set how long the door is allowed to stay shut.',
-    pir: 'Presence detected',
+    desc: 'A worker walks into the freezer. The PIR sensor picks up their body heat and movement, and the ToF sensor reads the door as open. On the M5Stack you set how long the door may stay shut.',
+    pir: 'Person inside',
     tof: 'Door open',
     tofClosed: false,
     alarm: 'idle',
@@ -32,9 +32,9 @@ const STEPS: Step[] = [
     key: 'armed',
     img: '/images/elecf-door-armed.png',
     label: 'Door closed',
-    title: 'Armed and counting',
-    desc: 'The door swings shut. The ToF sensor flips to closed and the countdown arms itself. If the room empties before time runs out, the system quietly resets, no fuss.',
-    pir: 'Still inside',
+    title: 'Timer running',
+    desc: 'The door shuts. The ToF sensor reads it as closed and the timer starts. If the room empties before the time runs out, the system resets.',
+    pir: 'Person inside',
     tof: 'Door closed',
     tofClosed: true,
     alarm: 'armed',
@@ -43,10 +43,10 @@ const STEPS: Step[] = [
   {
     key: 'alarm',
     img: '/images/elecf-warning.png',
-    label: 'Overtime',
-    title: 'Overtime, alarm',
-    desc: 'Time runs out with someone still inside. The RGB unit flashes and the M5Stack buzzer sounds to alert anyone nearby. Opening the door cancels the alarm at once.',
-    pir: 'Still inside',
+    label: 'Time up',
+    title: 'Alarm',
+    desc: 'The time runs out with someone still inside. The RGB unit flashes and the M5Stack buzzer sounds to alert anyone nearby. Opening the door stops the alarm.',
+    pir: 'Person inside',
     tof: 'Door closed',
     tofClosed: true,
     alarm: 'sounding',
@@ -60,7 +60,8 @@ const LONGEST_DESC = STEPS.reduce((a, s) => (s.desc.length > a.length ? s.desc :
 export default function SafetySequence() {
   const [i, setI] = useState(0);
   const [auto, setAuto] = useState(true);
-  const [inView, setInView] = useState(true);
+  const [inView, setInView] = useState(false);
+  const [reduce, setReduce] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const step = STEPS[i];
 
@@ -71,6 +72,7 @@ export default function SafetySequence() {
 
   // Only run the demo while it is on screen, so it never reflows the page out of view
   useEffect(() => {
+    setReduce(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     const el = rootRef.current;
     if (!el) return;
     const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.15 });
@@ -80,14 +82,14 @@ export default function SafetySequence() {
 
   // Auto-advance the demo until the visitor takes over (and only while in view)
   useEffect(() => {
-    if (!auto || !inView) return;
-    const t = setInterval(() => setI((p) => (p + 1) % STEPS.length), 3000);
+    if (!auto || !inView || reduce) return;
+    const t = setInterval(() => setI((p) => (p + 1) % STEPS.length), 3400);
     return () => clearInterval(t);
-  }, [auto, inView]);
+  }, [auto, inView, reduce]);
 
   return (
     <LazyMotion features={domAnimation}>
-    <div ref={rootRef} className={`ef-seq tone-${step.tone}`} data-no-zoom>
+    <div ref={rootRef} className={`ef-seq tone-${step.tone}`} data-no-zoom data-live={inView ? 'on' : 'off'}>
       <div className="ef-seq-media">
         <div className="ef-seq-glow" aria-hidden="true" />
         <div className="ef-seq-screen">
@@ -95,7 +97,7 @@ export default function SafetySequence() {
             <m.img
               key={step.key}
               src={step.img}
-              alt={`M5Stack screen: ${step.title}`}
+              alt={`M5Stack screen, ${step.label.toLowerCase()}: ${step.title.toLowerCase()}`}
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 1.02 }}
@@ -111,7 +113,7 @@ export default function SafetySequence() {
         <h3 className="ef-seq-title">{step.title}</h3>
         <div className="ef-seq-desc-wrap">
           <p className="ef-seq-desc ef-seq-desc-sizer" aria-hidden="true">{LONGEST_DESC}</p>
-          <p className="ef-seq-desc">{step.desc}</p>
+          <p className="ef-seq-desc" aria-live="polite">{step.desc}</p>
         </div>
 
         <div className="ef-seq-sensors-wrap">
@@ -120,7 +122,7 @@ export default function SafetySequence() {
           <div className="ef-seq-sensors ef-seq-sensors-sizer" aria-hidden="true">
             <div className="ef-chip"><span className="ef-chip-dot" /><span className="ef-chip-txt"><b>PIR</b>Presence detected</span></div>
             <div className="ef-chip"><span className="ef-chip-dot" /><span className="ef-chip-txt"><b>ToF</b>Door closed</span></div>
-            <div className="ef-chip"><span className="ef-chip-dot" /><span className="ef-chip-txt"><b>Alert</b>RGB + buzzer</span></div>
+            <div className="ef-chip"><span className="ef-chip-dot" /><span className="ef-chip-txt"><b>Alert</b>RGB light and buzzer</span></div>
           </div>
           <div className="ef-seq-sensors">
             <div className="ef-chip on">
@@ -133,13 +135,13 @@ export default function SafetySequence() {
             </div>
             <div className={`ef-chip alarm-${step.alarm}`}>
               <span className="ef-chip-dot" />
-              <span className="ef-chip-txt"><b>Alert</b>{step.alarm === 'sounding' ? 'RGB + buzzer' : step.alarm === 'armed' ? 'Armed' : 'Standby'}</span>
+              <span className="ef-chip-txt"><b>Alert</b>{step.alarm === 'sounding' ? 'RGB light and buzzer' : step.alarm === 'armed' ? 'Armed' : 'Standby'}</span>
             </div>
           </div>
         </div>
 
         <div className="ef-seq-controls">
-          <div className="ef-seq-dots" role="tablist" aria-label="Sequence steps">
+          <div className="ef-seq-dots" role="tablist" aria-label="Steps">
             {STEPS.map((s, n) => (
               <button
                 key={s.key}
@@ -247,6 +249,7 @@ export default function SafetySequence() {
           .ef-seq { grid-template-columns: 1fr; gap: 22px; }
           .ef-seq-media { min-height: 0; }
         }
+        .ef-seq[data-live="off"] .ef-seq-glow, .ef-seq[data-live="off"] .ef-chip-dot { animation-play-state: paused; }
         @media (prefers-reduced-motion: reduce) {
           .ef-seq.tone-alarm .ef-seq-glow, .ef-chip.alarm-sounding .ef-chip-dot { animation: none; }
         }

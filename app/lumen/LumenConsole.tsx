@@ -53,7 +53,7 @@ const SCRIPT: Step[] = [
     said: 'Set the brightness to the humidity percentage.',
     json: `{ "type": "action", "device": "white_led",
   "action": "set_brightness", "value": 69 }
-// STATE.sensors.humidity = 69% → clamped`,
+// from STATE.sensors.humidity = 69%`,
     reply: 'Brightness set to 69%.',
     apply: (r) => ({ ...r, whiteLed: { on: true, bright: 69 }, auto: false }),
   },
@@ -64,7 +64,7 @@ const SCRIPT: Step[] = [
   "action": "turn_off", "delay_seconds": 600,
   "label": "10 min light off" }`,
     reply: 'Light off in 10 min.',
-    apply: (r) => ({ ...r, timer: '10 min · light off' }),
+    apply: (r) => ({ ...r, timer: 'light off in 10 min' }),
   },
   {
     trigger: 'ptt',
@@ -165,7 +165,7 @@ export default function LumenConsole() {
     phase === 'idle' ? -1 :
     phase === 'done' || phase === 'exec' ? STAGE_AT.exec :
     STAGE_AT[phase];
-  const rgbCss = `rgb(${step ? room.rgb.r : 0}, ${room.rgb.g}, ${room.rgb.b})`;
+  const rgbCss = `rgb(${room.rgb.r}, ${room.rgb.g}, ${room.rgb.b})`;
 
   return (
     <LazyMotion features={domAnimation}>
@@ -192,7 +192,7 @@ export default function LumenConsole() {
 
           {/* heard */}
           <div className="lm-cl-line">
-            <span className="lm-cl-k">heard</span>
+            <span className="lm-cl-k">Heard</span>
             <AnimatePresence mode="wait">
               <m.p
                 key={idx + '-said'}
@@ -209,7 +209,7 @@ export default function LumenConsole() {
 
           {/* parsed JSON */}
           <div className="lm-cl-line">
-            <span className="lm-cl-k">parsed</span>
+            <span className="lm-cl-k">Parsed</span>
             <div className="lm-cl-jsonwrap">
               <AnimatePresence mode="wait">
                 {activeStage >= STAGE_AT.exec ? (
@@ -247,7 +247,7 @@ export default function LumenConsole() {
         <div className="lm-cl-room">
           <div className="lm-cl-room-h">
             <span>The room</span>
-            <span className={`lm-cl-auto${room.auto ? ' on' : ''}`}>auto-mode {room.auto ? 'on' : 'off'}</span>
+            <span className={`lm-cl-auto${room.auto ? ' on' : ''}`}>Auto mode {room.auto ? 'on' : 'off'}</span>
           </div>
 
           <div className="lm-cl-devices">
@@ -300,7 +300,7 @@ export default function LumenConsole() {
             <AnimatePresence>
               {room.timer && (
                 <m.span className="lm-cl-chip timer" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}>
-                  ⏱ {room.timer}
+                  Timer: {room.timer}
                 </m.span>
               )}
             </AnimatePresence>
@@ -310,12 +310,12 @@ export default function LumenConsole() {
         {/* ── Pick a phrase ── */}
         <div className="lm-cl-picks">
           {SCRIPT.map((s, i) => (
-            <button key={i} className={`lm-cl-pick${i === idx ? ' active' : ''}`} onClick={() => pick(i)}>
-              {s.said.length > 34 ? s.said.slice(0, 32) + '…' : s.said}
+            <button key={i} type="button" className={`lm-cl-pick${i === idx ? ' active' : ''}`} aria-pressed={i === idx} title={s.said} onClick={() => pick(i)}>
+              {s.said}
             </button>
           ))}
           <button className={`lm-cl-pick play${playing ? ' active' : ''}`} onClick={() => setPlaying((p) => !p)}>
-            {playing ? '❚❚ auto' : '▶ auto'}
+            {playing ? 'Pause' : 'Play'}
           </button>
         </div>
 
@@ -388,10 +388,12 @@ export default function LumenConsole() {
           .lm-cl-pick:active { transform: scale(0.97); }
           .lm-cl-pick:focus-visible { outline: 2px solid var(--lm); outline-offset: 2px; }
           .lm-cl-pick.active { color: #fff; border-color: var(--lm); background: color-mix(in srgb, var(--lm) 16%, transparent); }
+          .lm-cl-pick:not(.play) { max-width: 230px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
           .lm-cl-pick.play { margin-left: auto; }
 
           @media (max-width: 720px) {
             .lm-cl { grid-template-columns: 1fr; }
+            .lm-cl-pick:not(.play) { max-width: none; white-space: normal; text-align: left; line-height: 1.35; }
           }
           @media (prefers-reduced-motion: reduce) {
             .lm-cl-node.live .lm-cl-node-d, .lm-cl-think span { animation: none; }

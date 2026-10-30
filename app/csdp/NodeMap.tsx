@@ -3,81 +3,73 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { AnimatePresence, LazyMotion, domAnimation, m, useReducedMotion } from 'framer-motion';
 
 /* ────────────────────────────────────────────────────────────────────────
- * EMA Home Map: a hub-and-spoke explorer for the five-node SocketIO mesh.
+ * EMA home map: the four BeagleBone nodes around the SocketIO web server.
  *
- * The BeagleBone controller sits at the centre; the five sensor nodes ring
- * it like a pentagon. Telemetry dots glide inward along each spoke on a
- * loop, one node auto-highlights at a time, and clicking a node pins its
- * detail card open. "Simulate alert" turns the chosen node red, races a
- * red pulse down its spoke, and lights up the controller as it lands.
+ * Each spoke is a SocketIO link. While the map is on screen, a reading
+ * travels in from every node now and then and one node is highlighted at a
+ * time; clicking a node pins its detail card. "Simulate a kitchen fire" arms
+ * the kitchen node, sends the alarm to the server, and the server broadcasts
+ * it back so every node sounds, which is how the real system behaves.
  * ──────────────────────────────────────────────────────────────────────── */
 
-type NodeId = 'climate' | 'bathroom' | 'energy' | 'flame' | 'intrusion';
+type NodeId = 'climate' | 'bathroom' | 'kitchen' | 'intrusion';
 
 type SpokeNode = {
   id: NodeId;
   name: string;
   short: string;
-  monitors: string;
-  sensors: string;
-  buzzer: string;
-  icon: 'climate' | 'bathroom' | 'energy' | 'flame' | 'intrusion';
+  does: string;
+  hardware: string;
+  alarm: string;
+  icon: 'climate' | 'bathroom' | 'flame' | 'intrusion';
 };
 
+/* Facts from the write-up and the project README */
 const NODES: SpokeNode[] = [
   {
     id: 'climate',
     name: 'Climate',
-    short: 'Comfort',
-    monitors: 'Room temperature and humidity, so the home only runs the fan when it actually needs to.',
-    sensors: 'Temperature + humidity sensor, paired with a presence reading',
-    buzzer: 'Soft chime if the room drifts out of the comfort range while occupied',
+    short: 'Fan control',
+    does: 'Turns the fan on only when someone is in the room and it is warm and humid.',
+    hardware: 'BME680 temperature and humidity sensor, PIR presence sensor, 8x8 LED matrix, buzzer',
+    alarm: 'Sounds when any node raises the alarm',
     icon: 'climate',
   },
   {
     id: 'bathroom',
     name: 'Bathroom',
-    short: 'Routine',
-    monitors: 'Presence and the shower timer for the bathroom zone, so nobody loses track of time.',
-    sensors: 'Entry presence sensor with an on-device button and display for setting the timer',
-    buzzer: 'Buzzes once the set shower time runs out',
+    short: 'Shower timer',
+    does: 'A shower timer you set with the buttons. It starts when you walk into the shower.',
+    hardware: 'PIR sensor, OLED display, capacitive buttons, buzzer',
+    alarm: 'Three-tone buzzer when the time is up',
     icon: 'bathroom',
   },
   {
-    id: 'energy',
-    name: 'Kitchen energy',
-    short: 'Consumption',
-    monitors: 'How much power the kitchen appliances are drawing, scored live on the dashboard.',
-    sensors: 'Current and voltage sensing on the fridge circuit',
-    buzzer: 'Short alert tone on an unusual draw spike',
-    icon: 'energy',
-  },
-  {
-    id: 'flame',
-    name: 'Kitchen flame',
-    short: 'Safety-critical',
-    monitors: 'The kitchen for an uncontrolled fire. The most safety-critical node in the mesh.',
-    sensors: 'Flame sensor watching the cooking area',
-    buzzer: 'Sustained siren that also triggers every other node in the home',
+    id: 'kitchen',
+    name: 'Kitchen',
+    short: 'Energy and fire',
+    does: 'Reports the fridge\u2019s energy use to the dashboard as a score, and watches for fire.',
+    hardware: 'Analog current sensor, Flame Click, OLED display, buzzer',
+    alarm: 'A fire sets off the alarm on every node',
     icon: 'flame',
   },
   {
     id: 'intrusion',
     name: 'Intrusion',
-    short: 'Security',
-    monitors: 'Motion and door activity for unusual entries, especially at odd hours.',
-    sensors: 'Motion sensor plus a door-knock / open detector',
-    buzzer: 'Sharp repeating alarm broadcast across the whole mesh',
+    short: 'Door security',
+    does: 'Watches the door for knocks, and for it opening at unusual times.',
+    hardware: 'Reed switch on the door, vibration sensor for knocks, buzzer',
+    alarm: 'Either event sets off the alarm on every node',
     icon: 'intrusion',
   },
 ];
 
 const N = NODES.length;
-const STEP_DEG = 360 / N;
+const FIRE: NodeId = 'kitchen';
 
-/* Angle for node i, measured clockwise from straight up (12 o'clock).
- * Climate lands at the top; the rest fan out clockwise into a pentagon. */
-const angleFor = (i: number) => STEP_DEG * i;
+/* Angle for node i, clockwise from 12 o'clock. Nodes sit on the diagonals
+ * (top right first) so the node cards have room inside the square. */
+const angleFor = (i: number) => 45 + (360 / N) * i;
 
 /* ── tiny line-art icons, one per node type, plus the controller glyph ── */
 function NodeGlyph({ kind }: { kind: SpokeNode['icon'] | 'controller' }) {
@@ -96,12 +88,6 @@ function NodeGlyph({ kind }: { kind: SpokeNode['icon'] | 'controller' }) {
           <path d="M5 11V6.5a2.5 2.5 0 015 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
           <rect x="3.5" y="11" width="17" height="3.4" rx="1.4" stroke="currentColor" strokeWidth="1.6" />
           <path d="M5 14.4c.3 2.6 1.4 4.6 3 5.7M19 14.4c-.3 2.6-1.4 4.6-3 5.7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-        </svg>
-      );
-    case 'energy':
-      return (
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true">
-          <path d="M13 3.5L6 13.5h5.2L11 20.5l7-10.6h-5.4z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round" />
         </svg>
       );
     case 'flame':
@@ -147,8 +133,16 @@ const lerp = (from: number, to: number, t: number) => r4(from + (to - from) * t)
 
 type AlertPhase = 'idle' | 'arming' | 'travelling' | 'received';
 
+const STATUS: Record<Exclude<AlertPhase, 'idle'>, string> = {
+  arming: 'Flame detected, kitchen buzzer sounding',
+  travelling: 'Alarm on its way to the server',
+  received: 'Server broadcasts the alarm, every node sounds',
+};
+
 export default function NodeMap() {
   const reduceMotion = useReducedMotion();
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const [inView, setInView] = useState(false);
   const [active, setActive] = useState<NodeId>(NODES[0].id);
   const [pinned, setPinned] = useState(false);
   const [tick, setTick] = useState(0); // bumps every pulse cycle, drives the dot animation key
@@ -156,10 +150,20 @@ export default function NodeMap() {
   const alertTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const node = useMemo(() => NODES.find((n) => n.id === active) ?? NODES[0], [active]);
+  const running = inView && !reduceMotion;
 
-  /* Auto-rotate the highlighted node until the visitor takes the wheel */
+  /* Pause the tour and the readings while the map is off screen */
   useEffect(() => {
-    if (pinned || reduceMotion || alert !== 'idle') return;
+    const el = rootRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.2 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  /* Step the highlight round the nodes until the visitor picks one */
+  useEffect(() => {
+    if (pinned || !running || alert !== 'idle') return;
     const t = setInterval(() => {
       setActive((cur) => {
         const i = NODES.findIndex((n) => n.id === cur);
@@ -167,14 +171,14 @@ export default function NodeMap() {
       });
     }, 3400);
     return () => clearInterval(t);
-  }, [pinned, reduceMotion, alert]);
+  }, [pinned, running, alert]);
 
-  /* Telemetry pulses: every spoke periodically sends a dot inward */
+  /* Readings: every spoke periodically sends a dot to the server */
   useEffect(() => {
-    if (reduceMotion) return;
+    if (!running) return;
     const t = setInterval(() => setTick((p) => p + 1), 2600);
     return () => clearInterval(t);
-  }, [reduceMotion]);
+  }, [running]);
 
   const selectNode = (id: NodeId) => {
     setPinned(true);
@@ -188,11 +192,11 @@ export default function NodeMap() {
     setAlert('idle');
   };
 
-  /* Walk the flame node through arm → travel → received, then settle */
+  /* Walk the kitchen node through arm, travel, broadcast, then settle */
   const simulateAlert = () => {
     resetAlert();
     setPinned(true);
-    setActive('flame');
+    setActive(FIRE);
     setAlert('arming');
     const schedule = (fn: () => void, ms: number) => {
       alertTimers.current.push(setTimeout(fn, ms));
@@ -205,11 +209,13 @@ export default function NodeMap() {
   useEffect(() => () => alertTimers.current.forEach(clearTimeout), []);
 
   const isAlerting = alert !== 'idle';
+  const allSounding = alert === 'received';
+  const nodeAlarm = (id: NodeId) => (isAlerting && id === FIRE) || allSounding;
   const alertDuration = reduceMotion ? 0.05 : 1.35;
 
   return (
     <LazyMotion features={domAnimation}>
-    <div className="cs-nm" data-no-zoom>
+    <div ref={rootRef} className="cs-nm" data-no-zoom>
       <div className="cs-nm-inner">
         {/* ── Diagram ── */}
         <div className="cs-nm-stage">
@@ -219,7 +225,7 @@ export default function NodeMap() {
             {/* Layer 1: spokes, lines radiating from the hub centre out to
                 each node. Pure rotation + length, no per-node coordinates. */}
             {NODES.map((n, i) => {
-              const isAlertSpoke = isAlerting && n.id === 'flame';
+              const isAlertSpoke = nodeAlarm(n.id);
               const isHotSpoke = n.id === active && !isAlerting;
               return (
                 <span
@@ -233,8 +239,8 @@ export default function NodeMap() {
 
             {/* Layer 2: telemetry dots travelling node → hub in plain percentage
                 coordinates (no motion-path needed, broad browser support). */}
-            {!reduceMotion && NODES.map((n, i) => {
-              if (isAlerting && n.id === 'flame') return null;
+            {running && NODES.map((n, i) => {
+              if (isAlerting && n.id === FIRE) return null;
               const { nx, ny } = nodeCentre(i);
               const isHot = n.id === active;
               return (
@@ -248,7 +254,7 @@ export default function NodeMap() {
               );
             })}
             {isAlerting && (alert === 'travelling' || alert === 'received') && (() => {
-              const flameIdx = NODES.findIndex((n) => n.id === 'flame');
+              const flameIdx = NODES.findIndex((n) => n.id === FIRE);
               const { nx, ny } = nodeCentre(flameIdx);
               const tx = alert === 'received' ? 50 : lerp(nx, 50, 0.9);
               const ty = alert === 'received' ? 50 : lerp(ny, 50, 0.9);
@@ -268,7 +274,7 @@ export default function NodeMap() {
             <div className={`cs-nm-hub${isAlerting ? ' is-alert' : ''}${alert === 'received' ? ' is-hit' : ''}`}>
               <span className="cs-nm-hub-ping" aria-hidden="true" />
               <span className="cs-nm-hub-icon"><NodeGlyph kind="controller" /></span>
-              <span className="cs-nm-hub-label">Controller</span>
+              <span className="cs-nm-hub-label">Web server</span>
               <span className="cs-nm-hub-sub-slot">
                 <AnimatePresence mode="wait">
                   {alert === 'received' ? (
@@ -280,7 +286,7 @@ export default function NodeMap() {
                       exit={{ opacity: 0, y: -4 }}
                       transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
                     >
-                      Alert surfaced to dashboard
+                      Alarm sent to all nodes
                     </m.span>
                   ) : (
                     <m.span
@@ -291,7 +297,7 @@ export default function NodeMap() {
                       exit={{ opacity: 0, y: -4 }}
                       transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
                     >
-                      BeagleBone Black Wireless
+                      SocketIO, hosts the dashboard
                     </m.span>
                   )}
                 </AnimatePresence>
@@ -302,7 +308,7 @@ export default function NodeMap() {
             {NODES.map((n, i) => {
               const { nx, ny } = nodeCentre(i);
               const isActive = n.id === active;
-              const isFlameAlerting = isAlerting && n.id === 'flame';
+              const isFlameAlerting = nodeAlarm(n.id);
               return (
                 <button
                   key={n.id}
@@ -312,7 +318,7 @@ export default function NodeMap() {
                   onClick={() => selectNode(n.id)}
                   onMouseEnter={() => { if (!isAlerting) { setPinned(true); setActive(n.id); } }}
                   aria-pressed={isActive}
-                  aria-label={`${n.name} node${isFlameAlerting ? ', alarm active' : ''}`}
+                  aria-label={`${n.name} node${isFlameAlerting ? ', alarm sounding' : ''}`}
                 >
                   <span className="cs-nm-node-icon"><NodeGlyph kind={n.icon} /></span>
                   <span className="cs-nm-node-name">{n.name}</span>
@@ -323,20 +329,20 @@ export default function NodeMap() {
             })}
           </div>
 
-          <p className="cs-nm-caption">Lines are the SocketIO links; each dot is a telemetry packet on its way to the controller.</p>
+          <p className="cs-nm-caption">Each line is a SocketIO link. Dots are readings on their way to the server.</p>
         </div>
 
         {/* ── Detail panel ── */}
         <div className="cs-nm-panel">
           <div className="cs-nm-panel-head">
-            <span className="cs-nm-eyebrow">{pinned ? 'Selected node' : 'Auto-touring · click any node to pin it'}</span>
+            <span className="cs-nm-eyebrow">{pinned ? 'Selected node' : 'Select a node'}</span>
             <div className="cs-nm-tabs" role="tablist" aria-label="Sensor nodes">
               {NODES.map((n) => (
                 <button
                   key={n.id}
                   role="tab"
                   aria-selected={n.id === active}
-                  className={`cs-nm-tab${n.id === active ? ' is-active' : ''}${isAlerting && n.id === 'flame' ? ' is-alarm' : ''}`}
+                  className={`cs-nm-tab${n.id === active ? ' is-active' : ''}${nodeAlarm(n.id) ? ' is-alarm' : ''}`}
                   onClick={() => selectNode(n.id)}
                 >
                   {n.name}
@@ -347,7 +353,7 @@ export default function NodeMap() {
 
           <AnimatePresence mode="wait">
             <m.div
-              key={node.id + (isAlerting && node.id === 'flame' ? '-alarm' : '')}
+              key={node.id + (nodeAlarm(node.id) ? '-alarm' : '')}
               className="cs-nm-card"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -364,26 +370,24 @@ export default function NodeMap() {
 
               <dl className="cs-nm-deflist">
                 <div>
-                  <dt>Monitors</dt>
-                  <dd>{node.monitors}</dd>
+                  <dt>Does</dt>
+                  <dd>{node.does}</dd>
                 </div>
                 <div>
-                  <dt>Sensors</dt>
-                  <dd>{node.sensors}</dd>
+                  <dt>Hardware</dt>
+                  <dd>{node.hardware}</dd>
                 </div>
                 <div>
-                  <dt>Buzzer alert</dt>
-                  <dd>{node.buzzer}</dd>
+                  <dt>Buzzer</dt>
+                  <dd>{node.alarm}</dd>
                 </div>
               </dl>
 
-              <div className={`cs-nm-status${isAlerting && node.id === 'flame' ? ' is-alarm' : ''}`}>
+              <div className={`cs-nm-status${alert !== 'idle' && node.id === FIRE ? ' is-alarm' : ''}`}>
                 <span className="cs-nm-status-dot" />
-                {isAlerting && node.id === 'flame'
-                  ? (alert === 'arming' ? 'Flame detected, arming local buzzer…'
-                    : alert === 'travelling' ? 'Buzzer sounding, alert racing to the controller…'
-                      : 'Controller has surfaced the alert to the dashboard')
-                  : 'Link nominal · streaming over SocketIO'}
+                {alert !== 'idle' && node.id === FIRE
+                  ? STATUS[alert]
+                  : 'Connected, sending readings to the server'}
               </div>
             </m.div>
           </AnimatePresence>
@@ -396,9 +400,9 @@ export default function NodeMap() {
               disabled={isAlerting}
             >
               <span className="cs-nm-sim-dot" aria-hidden="true" />
-              {isAlerting ? 'Alert in progress…' : 'Simulate flame alert'}
+              {isAlerting ? 'Alarm running' : 'Simulate a kitchen fire'}
             </button>
-            <p className="cs-nm-hint">Fires the kitchen flame node, the most safety-critical link in the mesh, and follows it into the controller.</p>
+            <p className="cs-nm-hint">The kitchen node detects a flame, the server receives the alarm and sends it to every node.</p>
           </div>
         </div>
       </div>
@@ -482,7 +486,7 @@ export default function NodeMap() {
           width: clamp(118px, 28%, 142px); aspect-ratio: 1; border-radius: 50%;
           display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
           text-align: center; padding: 10px;
-          background: radial-gradient(120% 120% at 50% 18%, rgba(255,255,255,0.07), transparent 60%), linear-gradient(165deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
+          background: radial-gradient(120% 120% at 50% 18%, rgba(255,255,255,0.07), transparent 60%), linear-gradient(165deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015)), #17141b;
           border: 1px solid color-mix(in srgb, var(--hp-sky) 32%, var(--hp-line));
           box-shadow: 0 18px 50px -22px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.07);
           color: var(--hp-ink, #ececec);
@@ -517,7 +521,8 @@ export default function NodeMap() {
           display: flex; flex-direction: column; align-items: center; gap: 4px;
           width: clamp(82px, 21%, 100px); padding: 11px 8px 10px;
           border-radius: 16px; text-align: center;
-          background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.1);
+          /* Opaque base so the spokes never run through the label */
+          background: linear-gradient(rgba(255,255,255,0.035), rgba(255,255,255,0.035)), #17141b; border: 1px solid rgba(255,255,255,0.1);
           color: var(--hp-ink-dim, rgba(232,232,232,0.6));
           box-shadow: 0 10px 30px -18px rgba(0,0,0,0.7);
           transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease, background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
@@ -529,14 +534,14 @@ export default function NodeMap() {
         .cs-nm-node-tag { font-family: 'inter'; font-size: 0.56rem; letter-spacing: 0.09em; text-transform: uppercase; color: inherit; opacity: 0.62; }
         .cs-nm-node.is-active {
           transform: translate(-50%, -50%) translateY(-4px);
-          background: color-mix(in srgb, var(--hp-blue) 16%, rgba(255,255,255,0.04));
+          background: linear-gradient(color-mix(in srgb, var(--hp-blue) 16%, rgba(255,255,255,0.04)), color-mix(in srgb, var(--hp-blue) 16%, rgba(255,255,255,0.04))), #17141b;
           border-color: color-mix(in srgb, var(--hp-sky) 55%, transparent);
           color: #f4f4f4;
           box-shadow: 0 16px 40px -18px rgba(0,0,0,0.8), 0 0 0 1px color-mix(in srgb, var(--hp-sky) 18%, transparent), 0 0 24px -6px var(--glow);
         }
         .cs-nm-node.is-active .cs-nm-node-icon { color: var(--hp-sky); }
         .cs-nm-node.is-alarm {
-          background: rgba(255,90,77,0.14); border-color: rgba(255,90,77,0.6); color: #ffe2df;
+          background: linear-gradient(rgba(255,90,77,0.14), rgba(255,90,77,0.14)), #17141b; border-color: rgba(255,90,77,0.6); color: #ffe2df;
           box-shadow: 0 16px 40px -16px rgba(255,90,77,0.4), 0 0 0 1px rgba(255,90,77,0.25);
           animation: csNmNodeFlash 0.6s ease-in-out infinite;
         }
