@@ -3267,7 +3267,8 @@ html.sensory-active .hp-pf-card.is-soon:hover {
 /* OCR Reader hero: under the lead, on the lead's left edge (the copy column is right-aligned) */
 .ws-hero-copy > .ai-mark { --ai-h: 76px; align-self: flex-end; margin: 2.6vh calc(min(100%, 440px) - var(--ai-h) * 84 / 94) 0 0; }
 @media (max-width: 560px) {
-  .hp-spot-media > .ai-mark { --ai-h: 68px; top: 10px; right: 10px; }
+  /* the spotlight badges are long on a phone, so the label moves to the bottom corner */
+  .hp-spot-media > .ai-mark { --ai-h: 60px; top: auto; bottom: 10px; right: 10px; }
   .art-tags .ai-mark, .ws-hero-copy > .ai-mark { --ai-h: 68px; }
 }
 @media (prefers-reduced-motion: reduce) { .ai-mark { transition: none; } .ai-mark:hover { transform: none; } }

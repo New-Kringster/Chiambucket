@@ -498,9 +498,9 @@ export default function HomeClient() {
                   <div className="hp-spot-stat"><b>693K</b><span>parameters on the chip</span></div>
                   <div className="hp-spot-stat"><b>~2 s</b><span>per meter reading</span></div>
                   <div className="hp-spot-stat"><b>4-layer</b><span>custom PCB</span></div>
-                  <div className="hp-spot-stat"><b>6</b><span>AI training agents</span></div>
+                  <div className="hp-spot-stat"><b>LoRaWAN</b><span>sends just the number</span></div>
                 </div>
-                <div className="hp-spot-tags"><span>ESP32-S3</span><span>OV2640</span><span>DrumNet</span><span>LoRaWAN</span><span>KiCad</span><span>Onshape</span></div>
+                <div className="hp-spot-tags"><span>ESP32-S3</span><span>OV2640</span><span>DrumNet</span><span>KiCad</span><span>Onshape</span><span>PlatformIO</span></div>
                 <div className="hp-spot-solo-cta">
                   <a className="hp-btn" href="/waterslop"><IcRead /> Read article</a>
                   <button className="hp-btn hp-btn-ghost" onClick={() => openProject('proj-waterslop')}><IcPeek /> Peek summary</button>
