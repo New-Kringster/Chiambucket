@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
 import ArticleScrollSpy from '../../components/ArticleScrollSpy';
 import ArticleLinks from '../../components/ArticleLinks';
+import AiMark from '../../components/AiMark';
 import LinkDemo from './LinkDemo';
 import { IcGitHub, IcDownload, IcCube } from '../../components/Icons';
 
@@ -51,6 +52,7 @@ export default function BrolocatorPage() {
           <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>
           <div className="art-tags">
             <span className="hp-md-tag personal">Personal project</span>
+            <AiMark project="proj-lora" />
           </div>
           <h1 className="art-title">LoRA <em>Messenger</em></h1>
           <p className="art-lead">My first PCB and my first ESP32 project. Two of these handhelds text each other over LoRa with no internet, and do crude full-duplex two-way voice over ESP-NOW when they are in range. I called it Brolocator while I was building it.</p>

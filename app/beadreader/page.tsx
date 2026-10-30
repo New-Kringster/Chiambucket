@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import ArticleScrollSpy from '../../components/ArticleScrollSpy';
 import ArticleLinks from '../../components/ArticleLinks';
+import AiMark from '../../components/AiMark';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
 import ReadingTogether from './ReadingTogether';
 import SpicyGate from './SpicyGate';
@@ -53,6 +54,7 @@ export default function BeadReaderPage() {
           <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>
           <div className="art-tags">
             <span className="hp-md-tag personal">Personal project</span>
+            <AiMark project="proj-beadreader" />
           </div>
           {/* On desktop the cover art carries the BeadReader wordmark, so this title is
               hidden there (kept for SEO/a11y). On phones the wide promo crops out its own

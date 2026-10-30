@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import ArticleScrollSpy from '../../components/ArticleScrollSpy';
+import AiMark from '../../components/AiMark';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
 import LumenConsole from './LumenConsole';
 import PromptReveal from './PromptReveal';
@@ -153,6 +154,7 @@ export default function LumenPage() {
           <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>
           <div className="art-tags">
             <span className="hp-md-tag school">School project</span>
+            <AiMark project="proj-lumen" />
           </div>
           <h1 className="art-title"><em>LUMEN</em></h1>
           <p className="art-lead">A voice-controlled smart-room assistant. Say &ldquo;Hello Robot&rdquo; or hold a button and speak. An ESP32 records the audio, a server transcribes it and has an LLM turn it into one JSON command, and MQTT carries that command to the lights, fan, servo and buzzer. The hard part was fitting it onto a board with about 33&nbsp;KB of free RAM.</p>

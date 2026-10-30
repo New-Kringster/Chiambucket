@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { PeekFeed } from './ProjectPeek';
 import { IcRead, IcMore } from './Icons';
+import AiMark from './AiMark';
 
 const SR = () => <svg aria-hidden="true"><use href="#arec-search" /></svg>;
 const ST = () => <svg aria-hidden="true"><use href="#arec-star" /></svg>;
@@ -101,6 +102,7 @@ export default function ArticleRecommendations({ exclude }: { exclude: string })
                     <span className="hp-pf-peek-pill"><SR />Peek summary</span>
                   </button>
                   <span className={`hp-pf-type ${p.type}`}>{p.type === 'personal' ? 'Personal' : 'School'}</span>
+                  <AiMark project={p.id} />
                   
                   <img src={p.img} alt={p.imgAlt} loading="lazy" />
                 </div>

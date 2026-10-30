@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
 import ArticleScrollSpy from '../../components/ArticleScrollSpy';
 import ArticleLinks from '../../components/ArticleLinks';
+import AiMark from '../../components/AiMark';
 import LazyVideo from '../../components/LazyVideo';
 import NodeMap from './NodeMap';
 import { IcGitHub } from '../../components/Icons';
@@ -52,6 +53,7 @@ export default function CsdpPage() {
           <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>
           <div className="art-tags">
             <span className="hp-md-tag school">School project, team of five</span>
+            <AiMark project="proj-ema" />
           </div>
           <h1 className="art-title">EMA Smart <em>Home</em></h1>
           <p className="art-lead">A smart home system on four BeagleBone Black Wireless boards, built to cut energy use. It was the most complex group project I have worked on and drew on several of our courses. We got an A.</p>

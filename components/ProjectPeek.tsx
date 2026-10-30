@@ -1,6 +1,7 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { IcRead, IcScreen, iconForUrl } from './Icons';
+import AiMark from './AiMark';
 
 /*
   ProjectPeek — the shared "peek" reader used by the homepage project gallery
@@ -63,6 +64,7 @@ export function PeekModalContent({ id }: { id: string }) {
       <img src={img} alt={alt} />
       <div className="hp-rd-hero-tags">
         {tags.map(t => <span key={t} className={`hp-md-tag ${t === 'Flagship' ? 'flagship' : t === 'Highlights' ? 'highlight' : type}`}>{t}</span>)}
+        <AiMark project={id} />
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import InfoModal, { type InfoItem } from '../components/InfoModal';
 import LazyVideo from '../components/LazyVideo';
 import { PeekFeed } from '../components/ProjectPeek';
 import { SunlitField } from '../components/SunlitScene';
+import AiMark from '../components/AiMark';
 import { IcRead, IcPeek, IcPlay, IcGitHub, IcMail, IcGrid, IcServer, IcMore, IcExpand, IcOut } from '../components/Icons';
 import PosterHero from './PosterHero';
 import './about.css';
@@ -512,6 +513,7 @@ export default function HomeClient() {
               <div className="hp-spot-media">
                 <img src="/images/ProjJuneBanner1.webp" alt="Project June, a 5G radio-controlled vehicle" loading="lazy" />
                 <span className="hp-spot-badge is-highlight">Highlighted hardware build</span>
+                <AiMark project="proj-june" />
               </div>
               <div className="hp-spot-body">
                 <span className="hp-key">Project June · Personal</span>
@@ -537,6 +539,7 @@ export default function HomeClient() {
               <div className="hp-spot-media">
                 <img src="/images/beadreader-flagship.webp" alt="BeadReader, a self-hosted invite-only private book reader" loading="lazy" />
                 <span className="hp-spot-badge is-highlight">Highlighted software build</span>
+                <AiMark project="proj-beadreader" />
               </div>
               <div className="hp-spot-solo-body">
                 <div className="hp-spot-stats">
@@ -581,6 +584,7 @@ export default function HomeClient() {
                 <div className="hp-pf-thumb">
                   <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
                   <span className="hp-pf-type personal">Personal</span>
+                  <AiMark project="proj-lora" />
                   <img src="/images/borlocator-pf-context.webp" alt="LoRA Messenger" loading="lazy" />
                 </div>
                 <div className="hp-pf-info">
@@ -598,6 +602,7 @@ export default function HomeClient() {
                 <div className="hp-pf-thumb">
                   <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
                   <span className="hp-pf-type school">School</span>
+                  <AiMark project="proj-lumen" />
                   <img src="/images/lumen-pf-context.webp" alt="LUMEN voice assistant" loading="lazy" />
                 </div>
                 <div className="hp-pf-info">
@@ -615,6 +620,7 @@ export default function HomeClient() {
                 <div className="hp-pf-thumb">
                   <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
                   <span className="hp-pf-type school">School</span>
+                  <AiMark project="proj-ema" />
                   <img src="/images/Ema-pf-context.webp" alt="EMA Smart Home System" loading="lazy" />
                 </div>
                 <div className="hp-pf-info">

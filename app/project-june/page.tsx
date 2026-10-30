@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import ArticleScrollSpy from '../../components/ArticleScrollSpy';
 import ArticleLinks from '../../components/ArticleLinks';
+import AiMark from '../../components/AiMark';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
 import LazyVideo from '../../components/LazyVideo';
 import CommandLink from './CommandLink';
@@ -57,6 +58,7 @@ export default function ProjectJunePage() {
           <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>
           <div className="art-tags">
             <span className="hp-md-tag personal">Personal project</span>
+            <AiMark project="proj-june" />
           </div>
           <h1 className="art-title">Project <em>June</em></h1>
           <p className="art-lead">A 5G rover I built because I wanted a Mars rover. It streams three live camera feeds, GPS and sensor readings (temperature, humidity, pressure, brightness) to a web console I drive it from.</p>

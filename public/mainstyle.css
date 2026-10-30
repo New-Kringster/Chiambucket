@@ -3239,3 +3239,28 @@ html.sensory-active .hp-pf-card.is-soon:hover {
 .hp-btn:hover .btn-ico, .hp-pf-view:hover .btn-ico, .art-link:hover .btn-ico, .hl2-btn:hover .btn-ico { transform: none; }
 .hp-pf-view .btn-ico { width: 14px; height: 14px; }
 .hp-pf-showmore, .photo-main-ver .expand button { display: inline-flex; align-items: center; gap: 0.5rem; }
+
+/* =========================================================
+   AI MARKS (components/AiMark.tsx)
+   A project's level on the Scale of AI use, as the official icon mark,
+   linking to that level on /ai-use. On a project image it sits in the
+   top-right corner, like a rating on a game box, above the peek overlay;
+   in a tag row it sits beside the tags.
+   ========================================================= */
+.ai-mark { --ai-h: 30px; position: relative; z-index: 5; display: inline-flex; flex: none; align-self: center; line-height: 0; border-radius: 9px;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+.ai-mark img, .hp-pf-thumb .ai-mark img, .hp-spot-media .ai-mark img, .hp-rd-hero .ai-mark img {
+  display: block; width: auto; height: var(--ai-h); object-fit: contain; transform: none; transition: none;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.38)); }
+.ai-mark:hover { transform: translateY(-1px) scale(1.06); }
+.ai-mark:active { transform: scale(0.96); }
+.ai-mark:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.hp-pf-thumb > .ai-mark, .hp-spot-media > .ai-mark { position: absolute; top: 12px; right: 12px; }
+.hp-spot-media > .ai-mark { --ai-h: 36px; top: 14px; right: 14px; }
+.hp-pf-card.is-compact .hp-pf-thumb > .ai-mark { --ai-h: 22px; top: 8px; right: 8px; border-radius: 6px; }
+.hp-rd-hero-tags .ai-mark { --ai-h: 30px; }
+.art-tags .ai-mark { --ai-h: 32px; }
+@media (max-width: 560px) {
+  .hp-spot-media > .ai-mark { --ai-h: 30px; top: 10px; right: 10px; }
+}
+@media (prefers-reduced-motion: reduce) { .ai-mark { transition: none; } .ai-mark:hover { transform: none; } }
