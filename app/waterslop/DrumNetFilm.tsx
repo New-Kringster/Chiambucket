@@ -58,7 +58,7 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
     const alphaOf = (key: PanelKey) => { const i = IDX[REVEAL[key]]; return finaleP >= 0 ? 1 : clamp01((now - STARTS[i] + 0.7) / 0.8); };
     // the camera: the scene's own view, or the map so far when zoomed out; eased towards its target
     const wide = zoomRef.current || sc.full;
-    const target = wide ? revealedBounds(alphaOf) : sc.view;
+    const target = wide ? revealedBounds(alphaOf) : sc.viewAt ? sc.viewAt(clamp01(lt / sc.dur)) : sc.view;
     if (!cam.current || reducedRef.current) cam.current = target;
     else { const e = 1 - Math.exp(-dt * 3.2); cam.current = lerpRect(cam.current, target, e); }
     const view = cam.current;
@@ -80,7 +80,7 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
     skeleton(g, env, alphaOf);
     for (let i = 0; i < FINALE; i++) {
       const s = SCENES[i];
-      if (finaleP >= 0) { (s.finale ?? s.draw)(g, env, finaleP); continue; }
+      if (finaleP >= 0) { if (!s.until) (s.finale ?? s.draw)(g, env, finaleP); continue; }
       const p = (now - STARTS[i]) / s.dur;
       if (p < 0) continue;
       if (s.until && now >= STARTS[IDX[s.until]]) continue;

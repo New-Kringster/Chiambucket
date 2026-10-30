@@ -41,3 +41,9 @@ export default function WaterslopChapter({ numeral = 'XI' }: { numeral?: string 
     />
   );
 }
+
+/* The exported chapter ends with a 'Component notes and sources' block and a skip
+   link to it; the article keeps the chapter to the animation. */
+export function WaterslopChapterStyle() {
+  return <style>{`.ws-chapter #reading, .ws-chapter .skip { display: none; }`}</style>;
+}

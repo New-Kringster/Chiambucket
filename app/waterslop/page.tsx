@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import ArticleScrollSpy from '../../components/ArticleScrollSpy';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
-import WaterslopChapter from './WaterslopChapter';
+import WaterslopChapter, { WaterslopChapterStyle } from './WaterslopChapter';
 import { Cover, Page, Plate, type Frame } from './Story';
 import DrumNetStory from './DrumNetWalk';
 import FirmwareChapter from './ReadCycle';
@@ -405,6 +405,7 @@ export default function WaterslopPage() {
       {/* Chapter II: the exported 3D chapter opens it, then the board and the enclosure */}
       <section id="v2" className="ws-pcb" aria-label="Prototype V2: PCB and enclosure in 3D">
         <WaterslopChapter numeral={NUM.v2} />
+        <WaterslopChapterStyle />
       </section>
       <Page id="v2-body" chapter={NUM.v2} title="Prototype V2" rows={V2} />
       <Page id="enclosure" chapter={NUM.v2} title="Enclosure" rows={ENCLOSURE} />

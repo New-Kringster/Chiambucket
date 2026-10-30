@@ -221,7 +221,7 @@ export function drawNet(ctx: Ctx, env: Env, L: NetLayout, p: number, drawInput: 
     const kp = kernelPath(reveal, src, Math.max(6, src.w / 9));
     for (let k = shown - 1; k >= 0; k--) {
       let kt = 1;
-      if (k > 0) { kt = seg(arrive, (k - 1) / shown, (k - 1) / shown + 0.4); if (kt <= 0) continue; }
+      if (k > 0) { const s0 = ((k - 1) / shown) * 0.68; kt = seg(arrive, s0, s0 + 0.3); if (kt <= 0) continue; }
       const tr = { x: b.x + k * step, y: b.y - k * step * 0.72 - (1 - kt) * 70, w: b.w, h: b.h };
       const a = k === 0 ? 1 : 0.9 * kt;
       rect(ctx, env, { x: tr.x - 1, y: tr.y - 1, w: tr.w + 2, h: tr.h + 2 }, { fill: C.sunken, stroke: '#45403f', w: 1, rad: 2, alpha: a });
@@ -248,7 +248,7 @@ export function drawNet(ctx: Ctx, env: Env, L: NetLayout, p: number, drawInput: 
       const cy = o.capY ?? L.midY + Math.max(...L.blocks.map((q) => q.h / 2)) + 30;
       const count = bi >= 1 ? b.n : Math.max(1, Math.round(b.n * clamp01(arrive)));
       txt(ctx, env, b.label, b.x + cw / 2, cy, 17, { a: 'center', w: 700, alpha: la });
-      txt(ctx, env, `${count} maps · ${b.sub}`, b.x + cw / 2, cy + 20, 12.5, { a: 'center', c: C.muted, alpha: la });
+      txt(ctx, env, `${count} map${count === 1 ? '' : 's'} · ${b.sub}`, b.x + cw / 2, cy + 20, 12.5, { a: 'center', c: C.muted, alpha: la });
       if (b.weights) txt(ctx, env, `${fmt(b.weights)} weights`, b.x + cw / 2, cy + 37, 11.5, { a: 'center', c: C.dim, alpha: la });
     }
   }

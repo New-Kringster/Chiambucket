@@ -8,10 +8,11 @@
 import { DN } from '../drumnet-data';
 import { C, SERIF, MONO, type Ctx, type Env, type Rect, type Strip, arrow, bars, chip, clamp01, drawNet, ease, eyebrow, fmt, frame, grid, hexRows, img, lerp, lerpRect, line, netLayout, norm, pct, ramp, rect, seg, segL, sgn, stackRight, strip1d, tile, txt, lw } from './draw';
 
-export const MAP = { w: 3460, h: 6260 };
+export const MAP = { w: 3460, h: 6340 };
 export type Scene = {
   id: string; stage: string; title: string; body: string; dur: number; view: Rect;
   full?: boolean;                 // the whole revealed map, beside the caption
+  viewAt?: (p: number) => Rect;   // a view that changes within the scene
   until?: string;                 // stop drawing once this scene has started (not in the finale)
   draw: (ctx: Ctx, env: Env, p: number) => void;
   finale?: (ctx: Ctx, env: Env, p: number) => void;   // what to draw in the finale instead of draw
@@ -65,7 +66,7 @@ export const PAN = {
   reader1: { x: PX + RX, y: 440, w: PW, h: RH, title: 'DrumNet Reader 1', sub: 'which digit shows, and how far it has turned' },
   reader2: { x: PX + RX, y: 440 + RH + 80, w: PW, h: RH, title: 'DrumNet Reader 2', sub: 'the same net, a different random start' },
   reader3: { x: PX + RX, y: 440 + 2 * (RH + 80), w: PW, h: RH, title: 'DrumNet Reader 3', sub: 'the tie breaker' },
-  vote: { x: PX + RX, y: 440 + 3 * (RH + 80), w: PW, h: 1160, title: 'Ensemble vote and reading', sub: 'average, carry rule, reading' },
+  vote: { x: PX + RX, y: 440 + 3 * (RH + 80), w: PW, h: 1230, title: 'Ensemble vote and reading', sub: 'average, carry rule, reading' },
 };
 export type PanelKey = keyof typeof PAN;
 /* the scene at which each panel appears */
@@ -108,7 +109,7 @@ const R = (y0: number) => ({
   flat: y0 + 380, dense: y0 + 640, digit: y0 + 860, roll: y0 + 1232, note: y0 + RH - 24,
 });
 const RP = [R(PAN.reader1.y), R(PAN.reader2.y), R(PAN.reader3.y)];
-const VOTE_Y = PAN.vote.y + 40, DRUMS_Y = PAN.vote.y + 380, CARRY_Y = PAN.vote.y + 550, READ_Y = PAN.vote.y + 930;
+const VOTE_Y = PAN.vote.y + 100, DRUMS_Y = PAN.vote.y + 440, CARRY_Y = PAN.vote.y + 610, READ_Y = PAN.vote.y + 990;
 const drumSlot = (i: number) => ({ x: 170 + i * 240, y: DRUMS_Y + 10 });
 
 const inPhoto = (Rr: Rect, b: readonly number[]): Rect => ({ x: Rr.x + (b[0] / 800) * Rr.w, y: Rr.y + (b[1] / 600) * Rr.h, w: (b[2] / 800) * Rr.w, h: (b[3] / 600) * Rr.h });
@@ -121,12 +122,16 @@ export function skeleton(ctx: Ctx, env: Env, alphaOf: (k: PanelKey) => number) {
   keys.forEach((k) => {
     const p = PAN[k], a = alphaOf(k);
     if (a <= 0) return;
-    const ts = Math.min(Math.max(28, 14 / env.scale), p.w / (p.title.length * 0.64));
     rect(ctx, env, p, { fill: C.panel, stroke: C.line, rad: 14, w: 1.2, alpha: a });
-    txt(ctx, env, p.title, p.x + 36, p.y + 18 + ts, ts, { font: SERIF, c: C.ink, alpha: a });
-    if (env.scale > 0.3) {
-      ctx.font = `400 ${ts}px ${SERIF}`;
-      txt(ctx, env, p.sub, p.x + 36 + ctx.measureText(p.title).width + 18, p.y + 18 + ts, 14, { c: C.muted, alpha: a });
+    const far = 14 / env.scale > 32;
+    if (far) {
+      // the map is small on screen: the title sits in the gap above its panel, at a readable size
+      const ts = Math.min(14 / env.scale, 76);
+      txt(ctx, env, p.title, p.x + 6, p.y - 10, ts, { font: SERIF, c: C.ink, alpha: a, w: 700 });
+    } else {
+      txt(ctx, env, p.title, p.x + 36, p.y + 46, 28, { font: SERIF, c: C.ink, alpha: a });
+      ctx.font = `400 28px ${SERIF}`;
+      txt(ctx, env, p.sub, p.x + 36 + ctx.measureText(p.title).width + 18, p.y + 46, 14, { c: C.muted, alpha: a });
     }
   });
   const chain = (ks: PanelKey[]) => ks.forEach((k, i) => {
@@ -156,7 +161,7 @@ export function revealedBounds(alphaOf: (k: PanelKey) => number): Rect {
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
   (Object.keys(PAN) as PanelKey[]).forEach((k) => { if (alphaOf(k) <= 0) return; const p = PAN[k]; x0 = Math.min(x0, p.x); y0 = Math.min(y0, p.y); x1 = Math.max(x1, p.x + p.w); y1 = Math.max(y1, p.y + p.h); });
   if (!isFinite(x0)) return { x: 0, y: 0, w: MAP.w, h: MAP.h };
-  return { x: x0 - 40, y: y0 - 40, w: x1 - x0 + 80, h: y1 - y0 + 80 };
+  return { x: x0 - 40, y: y0 - 100, w: x1 - x0 + 80, h: y1 - y0 + 140 };
 }
 
 /* ── shared pieces ── */
@@ -680,24 +685,34 @@ export const SCENES: Scene[] = [
   },
   {
     id: 'vote', stage: 'Vote', title: 'Three answers are averaged into one', dur: 7,
-    body: 'The three probability lists are averaged, so each reader has the same voting power and the third breaks ties. The averaged list gives the digit and its confidence; the three rolls are averaged too. Drum 6: a 7 at 98.8 %.',
+    body: 'The three readers’ answers come down to the vote. Their probability lists are averaged, so each reader has the same voting power and the third breaks ties. The averaged list gives the digit and its confidence; the three rolls are averaged too. Drum 6: a 7 at 98.8 %.',
     view: { x: PX + RX, y: VOTE_Y - 30, w: PW, h: 360 },
+    viewAt: (p) => (p < 0.3 ? { x: PX + RX, y: RP[0].digit + 60, w: PW, h: VOTE_Y + 330 - (RP[0].digit + 60) } : { x: PX + RX, y: VOTE_Y - 30, w: PW, h: 360 }),
     draw: right((ctx, env, p) => {
       const d = 5, mean = ENS[d], mi = mean.indexOf(Math.max(...mean));
       frame(ctx, env, { x: 120, y: VOTE_Y + 40, w: 64, h: 128 }); tile(ctx, env, cutFeats, d, { x: 120, y: VOTE_Y + 40, w: 64, h: 128 }, { pixel: false });
       txt(ctx, env, 'drum 6', 152, VOTE_Y + 190, 12, { a: 'center', c: C.muted });
+      // each reader's answer leaves its panel and lands in its row of the vote
+      const big = Math.max(1, 0.5 / env.scale);
       MEMBERS.forEach((M, k) => {
         const pr = M.probs[d], bi = pr.indexOf(Math.max(...pr)), y = VOTE_Y + 10 + k * 92;
-        const a = seg(p, k * 0.08, k * 0.08 + 0.2);
+        const fly = seg(p, 0.02 + k * 0.05, 0.24 + k * 0.05);
+        if (fly > 0 && fly < 1) {
+          const fx = lerp(1100, 560, fly), fy = lerp(RP[k].digit + 140, y + 22, fly);
+          const w = 150 * big, h = 36 * big;
+          chip(ctx, env, `${bi} · ${pct(pr[bi])}`, fx - 10, fy - h / 2, w, h, { hot: true, fill: true, size: 16 * big });
+          txt(ctx, env, `reader ${k + 1}`, fx - 10, fy - h / 2 - 8 * big, 12 * big, { c: C.red });
+        }
+        const a = fly >= 1 ? seg(p, 0.24 + k * 0.05, 0.3 + k * 0.05) : 0;
         line(ctx, env, 190, VOTE_Y + 104, 230, y + 36, { c: '#5a5450', alpha: a });
         txt(ctx, env, `reader ${k + 1}`, 240, y + 40, 12, { c: C.muted, alpha: a });
         bars(ctx, env, pr, { x: 320, y, w: 220, h: 70 }, { hi: bi, base: 0, alpha: a, grow: a, labels: k === 2 });
         txt(ctx, env, `${bi} · ${pct(pr[bi])}`, 560, y + 40, 14, { font: MONO, alpha: a });
         txt(ctx, env, `roll ${sgn(M.rolls[d])}`, 560, y + 58, 11, { c: C.dim, alpha: a });
-        const c = seg(p, 0.3, 0.6);
+        const c = seg(p, 0.45, 0.62);
         line(ctx, env, 700, y + 36, lerp(700, 840, c), lerp(y + 36, VOTE_Y + 118, c), { c: C.red, alpha: c });
       });
-      const m = seg(p, 0.55, 0.7), r = seg(p, 0.7, 0.9), f = seg(p, 0.88, 1);
+      const m = seg(p, 0.6, 0.72), r = seg(p, 0.72, 0.9), f = seg(p, 0.88, 1);
       rect(ctx, env, { x: 840, y: VOTE_Y + 98, w: 74, h: 40 }, { fill: C.chip, stroke: '#45403f', rad: 6, alpha: m }); txt(ctx, env, 'mean', 877, VOTE_Y + 124, 15, { a: 'center', alpha: m });
       arrow(ctx, env, 920, VOTE_Y + 118, 960, VOTE_Y + 118, { alpha: r });
       bars(ctx, env, mean, { x: 970, y: VOTE_Y + 60, w: 220, h: 110 }, { hi: mi, base: 0, alpha: r, grow: r, labels: true });
@@ -721,7 +736,6 @@ export const SCENES: Scene[] = [
         voteSlot(ctx, env, i, landed);
       }
     }),
-    finale: right((ctx, env) => { for (let i = 0; i < 6; i++) voteSlot(ctx, env, i, 1); }),
   },
   {
     id: 'carry', stage: 'Vote', title: 'The carry rule, then the reading', dur: 9,
