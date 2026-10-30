@@ -138,9 +138,6 @@ confirming what you did, suitable for an OLED line (<= 40 chars ideal).
 const BackArrow = () => (
   <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
 );
-const Circle = () => (
-  <svg fill="currentColor" viewBox="0 0 24 24" className="pf-item-buttom-icon" aria-hidden="true"><path clipRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z" fillRule="evenodd" /></svg>
-);
 
 export default function LumenPage() {
   return (
@@ -150,7 +147,7 @@ export default function LumenPage() {
 
       {/* ── Feature hero (decorative; drop a hero photo into art-hero-bg later) ── */}
       <header className="art-hero">
-        <div className="art-hero-bg"><img src="/images/lumen-cover.webp" alt="LUMEN smart-home assistant: built with OpenAI Whisper and DeepSeek" /></div>
+        <div className="art-hero-bg"><img src="/images/covers/lumen.webp" alt="LUMEN smart-home assistant: built with OpenAI Whisper and DeepSeek" /></div>
         <div className="art-hero-scrim"></div>
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>
@@ -310,10 +307,6 @@ export default function LumenPage() {
               <li><b>A working wake word</b> on the hardware, so push-to-talk becomes the fallback instead of the main trigger.</li>
             </ul>
 
-            <div className="art-next">
-              <span className="art-next-label">Check out the next article</span>
-              <a href="/#portfolio-items-holder" className="hp-btn">All projects <Circle /></a>
-            </div>
           </section>
         </div>
       </div>

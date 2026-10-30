@@ -1,8 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { PeekFeed } from './ProjectPeek';
+import { IcRead, IcMore } from './Icons';
 
-const AU = () => <svg aria-hidden="true"><use href="#arec-arrow-ur" /></svg>;
 const SR = () => <svg aria-hidden="true"><use href="#arec-search" /></svg>;
 const ST = () => <svg aria-hidden="true"><use href="#arec-star" /></svg>;
 const CR = () => <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2.4 18.2h19.2l-1.5-9.4-5.4 3.9L12 4.8 9.3 12.7 3.9 8.8z" /></svg>;
@@ -75,7 +75,6 @@ export default function ArticleRecommendations({ exclude }: { exclude: string })
     <>
       <svg style={{ display: 'none' }} xmlns="http://www.w3.org/2000/svg">
         <symbol id="arec-arrow-circle" viewBox="0 0 24 24" fill="none"><path fill="currentColor" clipRule="evenodd" fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"/></symbol>
-        <symbol id="arec-arrow-ur" viewBox="0 0 24 24" fill="none"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M17 7H9M17 7V15"/></symbol>
         <symbol id="arec-search" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2"/><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" d="M20.5 20.5l-4-4"/></symbol>
         <symbol id="arec-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 6.05 6.6.78-4.87 4.5 1.28 6.52L12 17.9 6.09 20.85l1.28-6.52L2.5 9.33l6.6-.78z"/></symbol>
       </svg>
@@ -113,7 +112,7 @@ export default function ArticleRecommendations({ exclude }: { exclude: string })
                     </div>
                     {soonOf(p)
                       ? <span className="hp-pf-soon">Coming soon</span>
-                      : <a className="hp-pf-view" href={p.articleUrl}>Read article <AU /></a>}
+                      : <a className="hp-pf-view" href={p.articleUrl}><IcRead /> Read article</a>}
                   </div>
                 </div>
               </article>
@@ -121,7 +120,7 @@ export default function ArticleRecommendations({ exclude }: { exclude: string })
           </div>
           {!showAll && projects.length > 3 && (
             <div className="arec-more">
-              <button className="hp-btn hp-btn-ghost" onClick={() => setShowAll(true)}>Load more</button>
+              <button className="hp-btn hp-btn-ghost" onClick={() => setShowAll(true)}><IcMore /> Show more projects</button>
             </div>
           )}
         </div>

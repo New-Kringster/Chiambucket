@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { IcGrid, IcHome } from '../../components/Icons';
 
 export const metadata: Metadata = {
   title: 'Coming soon | Braven Chiam',
@@ -22,8 +23,8 @@ export default function ComingSoonPage() {
         </p>
 
         <div className="cw-btns">
-          <Link href="/#portfolio-items-holder" className="hp-btn">See all projects</Link>
-          <Link href="/" className="hp-btn hp-btn-ghost">Go to the homepage</Link>
+          <Link href="/#portfolio-items-holder" className="hp-btn"><IcGrid /> See all projects</Link>
+          <Link href="/" className="hp-btn hp-btn-ghost"><IcHome /> Go to the homepage</Link>
         </div>
       </section>
 

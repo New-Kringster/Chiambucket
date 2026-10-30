@@ -4,6 +4,7 @@ import ArticleScrollSpy from '../../components/ArticleScrollSpy';
 import ArticleLinks from '../../components/ArticleLinks';
 import LazyVideo from '../../components/LazyVideo';
 import DispenseDemo from './DispenseDemo';
+import { IcCube } from '../../components/Icons';
 
 const DESCRIPTION =
   'My first school project at Nanyang Polytechnic: a syrup dispenser made of six 3D-printed parts, run by an Arduino Uno from Python with PyFirmata.';
@@ -35,9 +36,6 @@ const jsonLd = {
 const BackArrow = () => (
   <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
 );
-const Circle = () => (
-  <svg fill="currentColor" viewBox="0 0 24 24" className="pf-item-buttom-icon" aria-hidden="true"><path clipRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z" fillRule="evenodd" /></svg>
-);
 
 export default function PandusPage() {
   return (
@@ -47,7 +45,7 @@ export default function PandusPage() {
 
       {/* Feature hero */}
       <header className="art-hero">
-        <div className="art-hero-bg"><img src="/images/pandusarticle.webp" alt="Pandus syrup dispenser" /></div>
+        <div className="art-hero-bg"><img src="/images/covers/pandus.webp" alt="Pandus syrup dispenser" /></div>
         <div className="art-hero-scrim"></div>
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>
@@ -125,7 +123,7 @@ export default function PandusPage() {
                 <strong>3D model</strong>
                 <span>The Pandus model in Onshape, which you can rotate and take apart.</span>
               </div>
-              <a className="hp-btn" href="https://cad.onshape.com/documents/5010f3da2be8b0cad10575b0/w/c1baff5b3751dfe2426baad4/e/d042961855d215532e28db65" target="_blank" rel="noopener">View on Onshape <Circle /></a>
+              <a className="hp-btn" href="https://cad.onshape.com/documents/5010f3da2be8b0cad10575b0/w/c1baff5b3751dfe2426baad4/e/d042961855d215532e28db65" target="_blank" rel="noopener"><IcCube /> Open the 3D model in Onshape</a>
             </div>
           </section>
 
@@ -151,10 +149,6 @@ export default function PandusPage() {
             </figure>
           </section>
 
-          <div className="art-next">
-            <span className="art-next-label">More projects</span>
-            <a href="/#portfolio-items-holder" className="hp-btn">All projects <Circle /></a>
-          </div>
         </div>
       </div>
       <ArticleRecommendations exclude="proj-pandus" />

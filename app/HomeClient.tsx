@@ -5,6 +5,7 @@ import InfoModal, { type InfoItem } from '../components/InfoModal';
 import LazyVideo from '../components/LazyVideo';
 import { PeekFeed } from '../components/ProjectPeek';
 import { SunlitField } from '../components/SunlitScene';
+import { IcRead, IcPeek, IcPlay, IcGitHub, IcMail, IcGrid, IcServer, IcMore, IcExpand } from '../components/Icons';
 import PosterHero from './PosterHero';
 import './about.css';
 
@@ -116,12 +117,8 @@ const COLLABORATORS: Collab[] = [
 ];
 
 /* ── Shared icon helpers ── */
-const AC = () => <svg aria-hidden="true"><use href="#icon-arrow-circle" /></svg>;
-const CR = () => <svg aria-hidden="true"><use href="#icon-chevron-right" /></svg>;
 const AU = () => <svg aria-hidden="true"><use href="#icon-arrow-ur" /></svg>;
 const SR = () => <svg aria-hidden="true"><use href="#icon-search" /></svg>;
-const ST = () => <svg aria-hidden="true"><use href="#icon-star" /></svg>;
-const CRWN = () => <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2.4 18.2h19.2l-1.5-9.4-5.4 3.9L12 4.8 9.3 12.7 3.9 8.8z" /></svg>;
 
 export default function HomeClient() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -506,9 +503,9 @@ export default function HomeClient() {
                 </div>
                 <div className="hp-spot-tags"><span>ESP32-S3</span><span>WebRTC</span><span>MQTT</span><span>KiCAD</span><span>Onshape</span><span>PlatformIO</span></div>
                 <div className="hp-spot-cta">
-                  <button className="hp-btn" onClick={() => openProject('proj-june')}>Read the summary</button>
-                  <button className="hp-btn hp-btn-ghost" onClick={() => { window.location.href = '/project-june'; }}>Full article</button>
-                  <button className="hp-btn hp-btn-ghost" onClick={() => window.open('https://youtu.be/MnkJsx-nwoE?si=kd1n5bYct6dWTcQC', '_blank')}>Watch the build</button>
+                  <a className="hp-btn" href="/project-june"><IcRead /> Read article</a>
+                  <button className="hp-btn hp-btn-ghost" onClick={() => openProject('proj-june')}><IcPeek /> Peek summary</button>
+                  <a className="hp-btn hp-btn-ghost" href="https://youtu.be/MnkJsx-nwoE?si=kd1n5bYct6dWTcQC" target="_blank" rel="noopener"><IcPlay /> Watch the build</a>
                 </div>
               </div>
             </article>
@@ -528,9 +525,9 @@ export default function HomeClient() {
                 </div>
                 <div className="hp-spot-tags"><span>Next.js</span><span>Supabase</span><span>Cloudflare R2</span><span>Tailwind v4</span><span>TypeScript</span></div>
                 <div className="hp-spot-solo-cta">
-                  <button className="hp-btn" onClick={() => openProject('proj-beadreader')}>Read the summary</button>
-                  <button className="hp-btn hp-btn-ghost" onClick={() => { window.location.href = '/beadreader'; }}>Full article</button>
-                  <button className="hp-btn hp-btn-ghost" onClick={() => window.open('https://github.com/New-Kringster/BeadReader', '_blank')}>GitHub</button>
+                  <a className="hp-btn" href="/beadreader"><IcRead /> Read article</a>
+                  <button className="hp-btn hp-btn-ghost" onClick={() => openProject('proj-beadreader')}><IcPeek /> Peek summary</button>
+                  <a className="hp-btn hp-btn-ghost" href="https://github.com/New-Kringster/BeadReader" target="_blank" rel="noopener"><IcGitHub /> GitHub</a>
                 </div>
               </div>
             </article>
@@ -569,7 +566,7 @@ export default function HomeClient() {
                   <p className="hp-pf-blurb">Two ESP32 handhelds: text over LoRa, rough two-way voice over ESP-NOW. My first PCB, in KiCAD, and a case in Onshape.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/esp-icon.webp" alt="" /><img src="/images/Kicad-icon.webp" alt="" /><img src="/images/onshape-icon.webp" alt="" /><img src="/images/PlatformIO-icon.webp" alt="" /></div>
-                    <a className="hp-pf-view" href="/brolocator">Read article <AU /></a>
+                    <a className="hp-pf-view" href="/brolocator"><IcRead /> Read article</a>
                   </div>
                 </div>
               </article>
@@ -586,7 +583,7 @@ export default function HomeClient() {
                   <p className="hp-pf-blurb">A voice-controlled smart-room assistant on an ESP32, with Whisper and a DeepSeek LLM via OpenRouter turning speech into one JSON command over MQTT.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/esp-icon.webp" alt="" /><img src="/images/python-icon.webp" alt="" /><img src="/images/docker-icon.webp" alt="" /><img src="/images/vscode-icon.webp" alt="" /></div>
-                    <a className="hp-pf-view" href="/lumen">Read article <AU /></a>
+                    <a className="hp-pf-view" href="/lumen"><IcRead /> Read article</a>
                   </div>
                 </div>
               </article>
@@ -603,7 +600,7 @@ export default function HomeClient() {
                   <p className="hp-pf-blurb">A team smart home: four BeagleBone Black nodes report to a SocketIO server with a live 3D Spline dashboard. Graded A.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/vscode-icon.webp" alt="" /><img src="/images/figma-icon.webp" alt="" /><img src="/images/resolve-icon.webp" alt="" /><img src="/images/onshape-icon.webp" alt="" /></div>
-                    <a className="hp-pf-view" href="/csdp">Read article <AU /></a>
+                    <a className="hp-pf-view" href="/csdp"><IcRead /> Read article</a>
                   </div>
                 </div>
               </article>
@@ -620,7 +617,7 @@ export default function HomeClient() {
                   <p className="hp-pf-blurb">My first school project: a six-part 3D-printed syrup dispenser run by an Arduino Uno and PyFirmata.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/onshape-icon.webp" alt="" /><img src="/images/vscode-icon.webp" alt="" /><img src="/images/resolve-icon.webp" alt="" /><img src="/images/powerpoint-icon.webp" alt="" /></div>
-                    <a className="hp-pf-view" href="/pandus">Read article <AU /></a>
+                    <a className="hp-pf-view" href="/pandus"><IcRead /> Read article</a>
                   </div>
                 </div>
               </article>
@@ -637,7 +634,7 @@ export default function HomeClient() {
                   <p className="hp-pf-blurb">A walk-in freezer alarm on M5Stack. If someone is inside when the door shuts, a timer starts and the alarm sounds when it runs out.</p>
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/figma-icon.webp" alt="" /><img src="/images/ps-pf-icon.webp" alt="" /><img src="/images/resolve-icon.webp" alt="" /></div>
-                    <a className="hp-pf-view" href="/elecf">Read article <AU /></a>
+                    <a className="hp-pf-view" href="/elecf"><IcRead /> Read article</a>
                   </div>
                 </div>
               </article>
@@ -730,7 +727,7 @@ export default function HomeClient() {
             </div>
             {!projectsExpanded && (
               <div className="hp-pf-showmore-wrap">
-                <button className="hp-pf-showmore" onClick={() => setProjectsExpanded(true)}>Show all projects <CR /></button>
+                <button className="hp-pf-showmore" onClick={() => setProjectsExpanded(true)}><IcMore /> Show all projects</button>
               </div>
             )}
             <p className="hp-pf-empty" id="hp-pf-empty" hidden>No projects match that search. Try another keyword.</p>
@@ -815,9 +812,9 @@ export default function HomeClient() {
                   <span className="hp-stack-more">and more</span>
                 </div>
               </div>
-              <button className="hp-btn" onClick={() => { window.location.href = '/homelab'; }} style={{ marginTop: '1.8rem' }}>
-                Explore the HomeLab <AC />
-              </button>
+              <a className="hp-btn" href="/homelab" style={{ marginTop: '1.8rem' }}>
+                <IcServer /> Explore the HomeLab
+              </a>
             </div>
             <div className="hp-homelab-media">
               <img src="/images/dither2.webp" alt="Chiambucket homelab server rack" />
@@ -845,7 +842,7 @@ export default function HomeClient() {
               </div>
               <div className="photography-box photo-main-ver" id="photolink">
                 <div className="expand" id="expand">
-                  <button onClick={() => (window as any).expandphoto?.()}>Click to Expand</button>
+                  <button onClick={() => (window as any).expandphoto?.()}><IcExpand /> Show the whole album</button>
                 </div>
                 <div className="phototop">
                   <h1 id="hp-gallery-title">Highlights</h1>
@@ -862,8 +859,8 @@ export default function HomeClient() {
           <span className="hp-eyebrow">Get in touch</span>
           <h2>Email me at <a href="mailto:braven@chiambucket.com"><em>braven@chiambucket.com</em></a></h2>
           <div className="hp-cta-row">
-            <button className="hp-btn" onClick={() => { window.location.href = '/contact'; }}>Contact me <AC /></button>
-            <a className="hp-btn hp-btn-ghost" href="#portfolio-items-holder">Browse projects</a>
+            <a className="hp-btn" href="/contact"><IcMail /> Contact me</a>
+            <a className="hp-btn hp-btn-ghost" href="#portfolio-items-holder"><IcGrid /> Browse projects</a>
           </div>
         </section>
       </main>

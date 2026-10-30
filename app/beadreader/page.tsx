@@ -47,7 +47,7 @@ export default function BeadReaderPage() {
 
       {/* ── Feature hero ── */}
       <header className="art-hero br-hero">
-        <div className="art-hero-bg"><img src="/images/beadreader-cover.webp" alt="BeadReader on three phones: the login screen, a chapter and the stats page" /></div>
+        <div className="art-hero-bg"><img src="/images/covers/beadreader.webp" alt="BeadReader on three phones: the login screen, a chapter and the stats page" /></div>
         <div className="art-hero-scrim"></div>
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>

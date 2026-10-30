@@ -829,13 +829,19 @@ export default function SunlitScene({ theme, home }: SceneProps) {
       if (!w || !h || (w === drawnW && h === drawnH)) return;
       drawnW = w;
       drawnH = h;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      drawSky(sky, w, h, dpr, p);
+      /* Resolution. The sky, rays and stars are soft paintings with grain, so
+         they draw at one pixel per CSS pixel; only the grass and the tree need
+         the screen's sharpness. On phones that keeps the scene to a few
+         megabytes of graphics memory: iOS paints layers black when a page runs
+         out of it, and the articles stack many layers over the scene. */
+      const dpr = Math.min(window.devicePixelRatio || 1, window.matchMedia('(pointer: coarse)').matches ? 1.5 : 2);
+      const soft = 1;
+      drawSky(sky, w, h, soft, p);
       if ((p.night || p.stars) && starsRef.current && twinkleRef.current) {
-        drawStars(starsRef.current, w, h, dpr, false);
-        drawStars(twinkleRef.current, w, h, dpr, true);
+        drawStars(starsRef.current, w, h, soft, false);
+        drawStars(twinkleRef.current, w, h, soft, true);
       }
-      drawRays(rays, w, h, dpr, p);
+      drawRays(rays, w, h, soft, p);
       if (tree && treeImg?.complete) drawTree(tree, w, h, dpr, treeImg, nameBox(w, h));
       drawGrass(grass, w, h, Math.max(h, Math.round(field.getBoundingClientRect().height)), dpr, p);
       if (p.night) { flies.forEach((f) => f.remove()); flies = addFireflies(field, h); }

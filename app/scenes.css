@@ -9,6 +9,13 @@
    moonlit glass over the dark sky, with the same dark-design layout.
    ═══════════════════════════════════════════════════════════════ */
 
+/* The page background behind iOS Safari's status bar: the top of each day
+   sky (the homepage's sage is set in app/sunlit.css). .is-day to outrank it. */
+html.sensory-active.is-day[data-theme="golden"] { --sl-sky: #b6aec3; }
+html.sensory-active.is-day[data-theme="noon"] { --sl-sky: #92b6d0; }
+html.sensory-active.is-day[data-theme="teal"] { --sl-sky: #8eb2ad; }
+html.sensory-active.is-day[data-theme="mist"] { --sl-sky: #b5afc4; }
+
 /* ── Golden hour (photography): a low sun on the left ── */
 html[data-theme="golden"] {
   --sl-sky: #d4bdb2;
@@ -194,9 +201,14 @@ html.sensory-active.is-night[data-theme] {
   --em-grad: linear-gradient(102deg, #e4eaff, #93a8e8);
   --title-grad: linear-gradient(102deg, #f2f5ff 0%, #c4d0f4 55%, #9fb2ea 100%);
   --orb-edge: rgba(200, 214, 250, 0.2);
-  background: var(--sl-sky);
+  /* iOS Safari does not draw fixed layers (the scene, the grass) behind its
+     status bar and floating toolbar; the page background shows there instead.
+     It takes the colour of the dark grass along the bottom of the screen, so
+     no navy band shows under the grass or the footer. */
+  background: var(--sl-edge, #0b1012);
   color-scheme: dark;
 }
+html[data-theme="dusk"] { --sl-edge: #171d29; }
 
 /* The night footer stands in the dark grass like the day one: no strip,
    moonlit shade under cream type and a night-glass social pill. */
@@ -218,29 +230,62 @@ html.sensory-active.is-night {
   & .footer-right-text button:hover { color: #fff; }
 }
 
-/* Article heroes at night: the cover is drawn as light on the sky (the
-   #night-cover filter in components/GlassDefs.tsx turns dark pixels clear),
-   it fades out at its edges instead of ending in a box, and the scrim only
-   darkens the corner behind the title. */
+/* Article heroes at night. Each cover is a cut-out (public/images/covers/,
+   the subject with its black backdrop removed), so it stands on the sky
+   itself. It never sits behind the words: on wide screens the text keeps
+   to a left column and the cover fills the space to its right; on phones
+   and tablets the cover sits above the text. */
 html.sensory-active.is-night {
+  --art-l: max(var(--hp-pad), calc((100vw - var(--hp-max)) / 2 + var(--hp-pad)));
+  --art-text: min(560px, 44vw);
+  & .art-hero { min-height: clamp(520px, 74vh, 740px); }
+  & .art-hero-inner > * { max-width: var(--art-text); }
   & .art-hero-bg {
-    -webkit-mask-image: radial-gradient(ellipse 78% 88% at 58% 40%, #000 40%, rgba(0, 0, 0, 0.5) 70%, transparent 92%);
-    mask-image: radial-gradient(ellipse 78% 88% at 58% 40%, #000 40%, rgba(0, 0, 0, 0.5) 70%, transparent 92%); }
-  & .art-hero-bg img { filter: url(#night-cover) saturate(0.92); }
-  /* a daylight photograph as a cover: dimmed and cooled first, so it reads as moonlit */
-  & .art-hero-photo img { filter: brightness(0.56) saturate(0.5) url(#night-cover); opacity: 0.85; }
-  & .art-hero-scrim {
-    background:
-      radial-gradient(ellipse 70% 62% at 12% 92%, rgba(8, 14, 28, 0.72), transparent 72%),
-      linear-gradient(180deg, transparent 0%, transparent 55%, rgba(8, 14, 28, 0.32) 85%, transparent 100%); }
+    inset: 104px var(--art-l) 44px calc(var(--art-l) + var(--art-text) + 48px);
+    -webkit-mask-image: none; mask-image: none; }
+  & .art-hero-bg img {
+    width: 100%; height: 100%; object-fit: contain; object-position: center; transform: none;
+    filter: drop-shadow(0 28px 36px rgba(2, 6, 16, 0.5)); }
+  & .art-hero-scrim { display: none; }
   & .art-title { text-shadow: 0 6px 40px rgba(4, 8, 18, 0.8); }
-  /* phones: the text fills the hero, so the cover keeps to its top part and
-     a band of night shade sits behind the words */
-  @media (max-width: 760px) {
-    & .art-hero-bg {
-      -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 26%, rgba(0, 0, 0, 0.35) 44%, transparent 60%);
-      mask-image: linear-gradient(180deg, #000 0%, #000 26%, rgba(0, 0, 0, 0.35) 44%, transparent 60%); }
-    & .art-hero-scrim {
-      background: linear-gradient(180deg, transparent 0%, transparent 26%, rgba(8, 14, 28, 0.62) 46%, rgba(8, 14, 28, 0.62) 88%, transparent 100%); }
+  /* BeadReader: the title shows here too; its cover's wordmark no longer stands in for it */
+  & .br-hero .br-hero-title { position: static; width: auto; height: auto; margin: 0; overflow: visible; clip: auto; white-space: normal; }
+
+  @media (max-width: 900px) {
+    --art-cover: min(58vw, 340px);
+    & .art-hero { min-height: 0; padding-top: calc(88px + var(--art-cover) + 18px); }
+    & .art-hero-inner > * { max-width: none; }
+    & .art-hero-bg { inset: 88px var(--hp-pad) auto var(--hp-pad); height: var(--art-cover); }
   }
+}
+
+/* The reader's close button at night: a solid chip, so it never sits on text */
+html.sensory-active.is-night .hp-modal-close {
+  background: rgba(22, 32, 54, 0.9) !important; border: 1px solid rgba(200, 214, 250, 0.24) !important;
+  -webkit-backdrop-filter: blur(10px) !important; backdrop-filter: blur(10px) !important;
+  box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.6); }
+
+/* Buttons at night. The dark design drew every .hp-btn as a faint outline, so
+   the main action did not stand out. Primary is moonlight now, filled; the
+   rest are night glass. The same for the cards' "Read article" and the
+   article's first key link. */
+html.sensory-active.is-night {
+  & :is(.hp-btn:not(.hp-btn-ghost), .hp-pf-view, .art-link.primary) {
+    color: #0f1830 !important;
+    background: linear-gradient(160deg, #f1f4ff 0%, #d3dcf6 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.85) !important;
+    box-shadow: inset 1.5px 1.5px 0 -0.5px #fff, 0 10px 26px -12px rgba(150, 176, 240, 0.6) !important;
+    text-shadow: none; }
+  & :is(.hp-btn:not(.hp-btn-ghost), .hp-pf-view, .art-link.primary):hover {
+    color: #0f1830 !important; filter: brightness(1.05);
+    box-shadow: inset 1.5px 1.5px 0 -0.5px #fff, 0 14px 32px -12px rgba(170, 196, 246, 0.75) !important; }
+  & :is(.hp-btn:not(.hp-btn-ghost), .hp-pf-view, .art-link.primary):focus-visible { outline: 2px solid #e8eefc; outline-offset: 3px; }
+  & :is(.hp-btn.hp-btn-ghost, .art-link:not(.primary)) {
+    color: #e8eefc !important;
+    background: rgba(24, 34, 58, 0.62) !important;
+    border: 1px solid rgba(200, 214, 250, 0.26) !important;
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    box-shadow: inset 1px 1px 0 -0.5px rgba(220, 230, 255, 0.3) !important; }
+  & :is(.hp-btn.hp-btn-ghost, .art-link:not(.primary)):hover { background: rgba(36, 50, 82, 0.72) !important; border-color: rgba(214, 226, 255, 0.45) !important; }
+  & .hp-pf-peek-pill { color: #e8eefc; background: rgba(18, 26, 46, 0.78); border-color: rgba(200, 214, 250, 0.28); }
 }

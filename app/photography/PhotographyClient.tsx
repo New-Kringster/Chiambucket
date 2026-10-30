@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import InfoModal, { type InfoItem } from '../../components/InfoModal';
 import LazyVideo from '../../components/LazyVideo';
+import { IcPhotos, IcPlay } from '../../components/Icons';
 
 const tools = [
   {
@@ -133,10 +134,7 @@ export default function PhotographyClient() {
             target="_blank"
             rel="noopener"
           >
-            All photos
-            <svg viewBox="0 0 24 24" fill="none" width="17" height="17" aria-hidden="true">
-              <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M17 7H9M17 7V15"/>
-            </svg>
+            <IcPhotos /> All photos
           </a>
           <a
             className="hp-btn hp-btn-ghost"
@@ -144,7 +142,7 @@ export default function PhotographyClient() {
             target="_blank"
             rel="noopener"
           >
-            Videos on YouTube
+            <IcPlay /> Videos on YouTube
           </a>
         </div>
       </section>
@@ -301,7 +299,10 @@ export default function PhotographyClient() {
         }
 
         /* ── My Tools: richer cards ── */
+        /* its own grid: it used to borrow display:grid from the homepage's
+           capability grid, which is gone, and stacked with no gaps */
         .ph-tools-grid {
+          display: grid;
           grid-template-columns: repeat(3, 1fr);
           margin-top: 0;
           gap: 16px;
@@ -310,7 +311,12 @@ export default function PhotographyClient() {
           .ph-tools-grid { grid-template-columns: repeat(2, 1fr); }
         }
         @media only screen and (max-width: 560px) {
-          .ph-tools-grid { grid-template-columns: 1fr; }
+          .ph-tools-grid { grid-template-columns: 1fr; gap: 12px; }
+          .ph-tool-card { padding: 18px 18px 20px; }
+          .ph-tool-card-inner { gap: 14px; }
+          .ph-tool-icon { width: 46px; height: 46px; padding: 9px; border-radius: 13px; }
+          .ph-tool-name { letter-spacing: 0.08em; }
+          .ph-tool-desc { font-size: 0.92rem; line-height: 1.55; }
         }
         .ph-tool-card {
           position: relative;

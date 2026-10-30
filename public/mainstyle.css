@@ -2311,6 +2311,59 @@ html[data-theme="paper"] {
     repeating-linear-gradient(115deg, transparent 0 22px, rgba(var(--sa-accent, 150,178,255),0.03) 22px 24px);
   border: 1px solid rgba(255,255,255,0.05);
 }
+/* ── Pull the next project up (components/ProjectPeek.tsx PullNext) ──
+   At the end of a reader the next project's cover peeks up from the bottom
+   edge, blurred and mostly hidden. --pull (0 to 1) follows a wheel or a
+   finger pulling past the end: the card rises, sharpens and grows; let go
+   early and it springs back, past the line it pops open. */
+.hp-rd-pull {
+  --pad: clamp(22px, 4vw, 38px);
+  position: relative; height: 176px; overflow: hidden;
+  margin: 36px calc(-1 * var(--pad)) -34px; padding: 0 var(--pad);
+}
+.hp-rd-pull-hint {
+  display: flex; align-items: center; justify-content: center; gap: 8px; height: 30px;
+  font-family: 'dmsans', sans-serif; font-size: 0.82rem; font-weight: 600; letter-spacing: 0.01em;
+  color: rgba(232, 236, 246, 0.72);
+}
+.hp-rd-pull-hint svg { animation: hp-rd-nudge 1.8s ease-in-out 3; }
+@keyframes hp-rd-nudge { 0%, 100% { transform: translateY(2px); } 50% { transform: translateY(-3px); } }
+.hp-rd-pull-card {
+  --pull: 0;
+  position: relative; display: block; width: 100%; height: 300px; margin-top: 12px; padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 22px; overflow: hidden; cursor: pointer;
+  background: #0d0f14;
+  transform: translateY(calc(var(--pull) * -84px)) scale(calc(0.93 + var(--pull) * 0.07));
+  transform-origin: 50% 0%;
+  filter: blur(calc((1 - var(--pull)) * 5px)) saturate(calc(0.7 + var(--pull) * 0.3));
+  opacity: calc(0.72 + var(--pull) * 0.28);
+  box-shadow: 0 -10px 40px -18px rgba(0, 0, 0, 0.6);
+  /* letting go springs it back */
+  transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.4s ease, opacity 0.4s ease;
+}
+.hp-rd-pull-card.is-held { transition: none; }
+.hp-rd-pull-card:hover { --pull: 0.12; }
+.hp-rd-pull-card:active { transform: translateY(calc(var(--pull) * -84px)) scale(0.91); }
+.hp-rd-pull-card:focus-visible { outline: 2px solid rgba(var(--sa-accent), 0.9); outline-offset: 3px; }
+.hp-rd-pull-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hp-rd-pull-title {
+  position: absolute; left: 0; right: 0; top: 0; padding: 18px 20px 30px; text-align: left;
+  font-family: 'oswaldbold', sans-serif; font-size: clamp(1.3rem, 3vw, 1.7rem); letter-spacing: -0.01em; color: #fff;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.62), transparent);
+}
+/* popping open: it springs up into place, then the full reader takes its spot */
+.hp-rd-pull.is-popping .hp-rd-pull-card {
+  transition: transform 0.42s cubic-bezier(0.34, 1.7, 0.64, 1), filter 0.25s ease, opacity 0.25s ease;
+  transform: translateY(-120px) scale(1.02); filter: none; opacity: 1;
+}
+.hp-rd-pull.is-popping .hp-rd-pull-hint { opacity: 0; transition: opacity 0.2s ease; }
+@media (prefers-reduced-motion: reduce) {
+  .hp-rd-pull-hint svg { animation: none; }
+  .hp-rd-pull-card, .hp-rd-pull.is-popping .hp-rd-pull-card { transition: none; filter: none; }
+}
+/* the reader scrolls on its own: pulling past its end must not move the page */
+.hp-modal-content { overscroll-behavior: contain; }
+
 .hp-rd-feed-end {
   display: flex; align-items: center; justify-content: center; gap: 12px;
   margin-top: 40px; padding-top: 26px; border-top: 1px solid rgba(255,255,255,0.07);
@@ -3162,3 +3215,17 @@ html.sensory-active .hp-pf-card.is-soon:hover {
 .arec-section .hp-pf-grid > .hp-pf-card:not(.is-compact) { flex-basis: calc((100% - 36px) / 3); }
 @media (max-width: 1100px) { .arec-section .hp-pf-grid > .hp-pf-card:not(.is-compact) { flex-basis: calc((100% - 18px) / 2); } }
 @media (max-width: 760px) { .arec-section .hp-pf-grid > .hp-pf-card:not(.is-compact) { flex-basis: 100%; } }
+
+/* ═══════════════════════════════════════════════════════════════
+   BUTTON ICONS AND IMPORTANCE (October 2026)
+   Every button leads with an icon that says what it does (components/
+   Icons.tsx: read, peek, watch, GitHub, download, 3D model, email, …), and
+   the icon stays put on hover. One primary (filled) button per group, the
+   main thing to do there (reading the article, for a project); the rest are
+   secondary glass. Theme colours: app/sunlit.css (day), app/scenes.css (night).
+   ═══════════════════════════════════════════════════════════════ */
+.btn-ico { flex: none; display: block; }
+.hp-btn .btn-ico { width: 17px; height: 17px; }
+.hp-btn:hover .btn-ico, .hp-pf-view:hover .btn-ico, .art-link:hover .btn-ico, .hl2-btn:hover .btn-ico { transform: none; }
+.hp-pf-view .btn-ico { width: 14px; height: 14px; }
+.hp-pf-showmore, .photo-main-ver .expand button { display: inline-flex; align-items: center; gap: 0.5rem; }

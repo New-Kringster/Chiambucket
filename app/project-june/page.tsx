@@ -4,6 +4,7 @@ import ArticleLinks from '../../components/ArticleLinks';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
 import LazyVideo from '../../components/LazyVideo';
 import CommandLink from './CommandLink';
+import { IcGitHub } from '../../components/Icons';
 
 const DESCRIPTION =
   'A 5G rover I built in three weeks. An ESP32-S3 and three phones stream three live camera feeds, GPS and sensor readings to a web console I drive it from.';
@@ -41,9 +42,6 @@ const clip = (n: number) => ({
   poster: `/images/posters/projjune${n}.webp`,
 });
 
-const Circle = () => (
-  <svg fill="currentColor" viewBox="0 0 24 24" className="pf-item-buttom-icon" aria-hidden="true"><path clipRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z" fillRule="evenodd" /></svg>
-);
 
 export default function ProjectJunePage() {
   return (
@@ -53,7 +51,7 @@ export default function ProjectJunePage() {
 
       {/* ── Feature hero ── */}
       <header className="art-hero">
-        <div className="art-hero-bg"><img src="/images/ProjJuneBanner1.webp" alt="Project June, a 5G radio-controlled vehicle" /></div>
+        <div className="art-hero-bg"><img src="/images/covers/june.webp" alt="Project June, a 5G radio-controlled vehicle" /></div>
         <div className="art-hero-scrim"></div>
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>
@@ -228,14 +226,10 @@ export default function ProjectJunePage() {
                 <strong>Project June on GitHub</strong>
                 <span>The console, WebRTC video, MQTT telemetry and ESP32 firmware.</span>
               </div>
-              <a className="hp-btn" href="https://github.com/New-Kringster/ProjectJune" target="_blank" rel="noopener">View GitHub Repo <Circle /></a>
+              <a className="hp-btn" href="https://github.com/New-Kringster/ProjectJune" target="_blank" rel="noopener"><IcGitHub /> View the code on GitHub</a>
             </div>
           </section>
 
-          <div className="art-next">
-            <span className="art-next-label">More projects</span>
-            <a href="/#portfolio-items-holder" className="hp-btn">All projects <Circle /></a>
-          </div>
         </div>
       </div>
       <ArticleRecommendations exclude="proj-june" />

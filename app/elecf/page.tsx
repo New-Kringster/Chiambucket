@@ -3,6 +3,7 @@ import ArticleRecommendations from '../../components/ArticleRecommendations';
 import ArticleScrollSpy from '../../components/ArticleScrollSpy';
 import ArticleLinks from '../../components/ArticleLinks';
 import SafetySequence from './SafetySequence';
+import { IcGitHub } from '../../components/Icons';
 
 const DESCRIPTION =
   'ELEC-F, a safe freezer storage system built by a team of four: two M5Stack Fire controllers with ToF, PIR and RGB units that sound an alarm when someone is shut inside a walk-in freezer too long.';
@@ -34,9 +35,6 @@ const jsonLd = {
 const BackArrow = () => (
   <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
 );
-const Circle = () => (
-  <svg fill="currentColor" viewBox="0 0 24 24" className="pf-item-buttom-icon" aria-hidden="true"><path clipRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z" fillRule="evenodd" /></svg>
-);
 const Fwd = () => <img src="/images/fwd-arrow.svg" alt="" />;
 
 const COMPONENTS = [
@@ -55,7 +53,7 @@ export default function ElecfPage() {
 
       {/* ── Feature hero ── */}
       <header className="art-hero">
-        <div className="art-hero-bg art-hero-photo"><img src="/images/elecf-prototype1.avif" alt="The ELEC-F cardboard freezer prototype with M5Stack and sensors" /></div>
+        <div className="art-hero-bg"><img src="/images/covers/elecf.webp" alt="The ELEC-F cardboard freezer prototype with M5Stack and sensors" /></div>
         <div className="art-hero-scrim"></div>
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>
@@ -220,7 +218,7 @@ export default function ElecfPage() {
                 <strong>ELEC-F on GitHub</strong>
                 <span>The M5Stack code for the door timer, the sensor reads and the alarm.</span>
               </div>
-              <a className="hp-btn" href="https://github.com/New-Kringster/ELEC-F-Safe-Fridge-Concept" target="_blank" rel="noopener">View GitHub Repo <Circle /></a>
+              <a className="hp-btn" href="https://github.com/New-Kringster/ELEC-F-Safe-Fridge-Concept" target="_blank" rel="noopener"><IcGitHub /> View the code on GitHub</a>
             </div>
           </section>
 
@@ -259,10 +257,6 @@ export default function ElecfPage() {
             </div>
           </section>
 
-          <div className="art-next">
-            <span className="art-next-label">More projects</span>
-            <a href="/#portfolio-items-holder" className="hp-btn">All projects <Circle /></a>
-          </div>
 
         </div>
       </div>

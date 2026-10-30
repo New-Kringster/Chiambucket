@@ -48,12 +48,6 @@ export default function GlassDefs() {
       <Refract id="lg-refract" scale={60} />
       {/* pills and buttons: a stronger bend with a prism fringe */}
       <Disperse id="lg-refract-pill" scale={38} />
-      {/* night pages: article covers drawn as light on the sky. Each pixel's
-          alpha follows its brightness, so black backgrounds vanish into the
-          night scene and the bright subject stays (app/scenes.css). */}
-      <filter id="night-cover" colorInterpolationFilters="sRGB">
-        <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0.9 1.1 0.7 0 -0.08" />
-      </filter>
     </svg>
   );
 }

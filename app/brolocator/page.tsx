@@ -3,6 +3,7 @@ import ArticleRecommendations from '../../components/ArticleRecommendations';
 import ArticleScrollSpy from '../../components/ArticleScrollSpy';
 import ArticleLinks from '../../components/ArticleLinks';
 import LinkDemo from './LinkDemo';
+import { IcGitHub, IcDownload, IcCube } from '../../components/Icons';
 
 const DESCRIPTION =
   'My first PCB: an ESP32 handheld that sends text over LoRa with no internet and does crude full-duplex voice over ESP-NOW. KiCAD board, 3D-printed Onshape case, PlatformIO firmware.';
@@ -35,9 +36,6 @@ const jsonLd = {
 const BackArrow = () => (
   <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
 );
-const Circle = () => (
-  <svg fill="currentColor" viewBox="0 0 24 24" className="pf-item-buttom-icon" aria-hidden="true"><path clipRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z" fillRule="evenodd" /></svg>
-);
 
 export default function BrolocatorPage() {
   return (
@@ -47,7 +45,7 @@ export default function BrolocatorPage() {
 
       {/* Feature hero */}
       <header className="art-hero">
-        <div className="art-hero-bg"><img src="/images/borlocator-pf-context.webp" alt="The LoRA Messenger handheld" /></div>
+        <div className="art-hero-bg"><img src="/images/covers/lora.webp" alt="The LoRA Messenger handheld" /></div>
         <div className="art-hero-scrim"></div>
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>
@@ -151,14 +149,14 @@ export default function BrolocatorPage() {
                 <strong>PlatformIO project</strong>
                 <span>The complete firmware project, ready to open in PlatformIO.</span>
               </div>
-              <a className="hp-btn" href="https://file.chiambucket.com/public/api/raw?hash=Uw31ufKRXVAmviDG4Y3zsw" target="_blank" rel="noopener">Download project <Circle /></a>
+              <a className="hp-btn" href="https://file.chiambucket.com/public/api/raw?hash=Uw31ufKRXVAmviDG4Y3zsw" target="_blank" rel="noopener"><IcDownload /> Download the project</a>
             </div>
             <div className="art-repo">
               <div className="art-repo-text">
                 <strong>Source on GitHub</strong>
                 <span>The firmware source.</span>
               </div>
-              <a className="hp-btn" href="https://github.com/New-Kringster/Bro_Locator" target="_blank" rel="noopener">View on GitHub <Circle /></a>
+              <a className="hp-btn" href="https://github.com/New-Kringster/Bro_Locator" target="_blank" rel="noopener"><IcGitHub /> View the code on GitHub</a>
             </div>
           </section>
 
@@ -179,7 +177,7 @@ export default function BrolocatorPage() {
                 <strong>KiCAD files</strong>
                 <span>The full KiCAD project for the board.</span>
               </div>
-              <a className="hp-btn" href="https://file.chiambucket.com/public/api/raw?hash=y5dKQ_glrduAHZ2b09PwFw" target="_blank" rel="noopener">Download KiCAD files <Circle /></a>
+              <a className="hp-btn" href="https://file.chiambucket.com/public/api/raw?hash=y5dKQ_glrduAHZ2b09PwFw" target="_blank" rel="noopener"><IcDownload /> Download the KiCAD files</a>
             </div>
           </section>
 
@@ -203,7 +201,7 @@ export default function BrolocatorPage() {
                 <strong>Onshape model</strong>
                 <span>The live 3D model of the case.</span>
               </div>
-              <a className="hp-btn" href="https://cad.onshape.com/documents/06f42027d48061220c14a0ca/w/a8ae7436030816f045f9e912/e/ee2cc98ca48e0de54fb6f19a?renderMode=0&uiState=69242b3fb36228e1cf876de1" target="_blank" rel="noopener">View on Onshape <Circle /></a>
+              <a className="hp-btn" href="https://cad.onshape.com/documents/06f42027d48061220c14a0ca/w/a8ae7436030816f045f9e912/e/ee2cc98ca48e0de54fb6f19a?renderMode=0&uiState=69242b3fb36228e1cf876de1" target="_blank" rel="noopener"><IcCube /> Open the 3D model in Onshape</a>
             </div>
           </section>
 
@@ -223,10 +221,6 @@ export default function BrolocatorPage() {
             </figure>
           </section>
 
-          <div className="art-next">
-            <span className="art-next-label">Check out the next article</span>
-            <a href="/#portfolio-items-holder" className="hp-btn">All projects <Circle /></a>
-          </div>
         </div>
       </div>
       <ArticleRecommendations exclude="proj-lora" />

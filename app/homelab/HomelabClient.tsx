@@ -6,6 +6,7 @@ import { SERVERS, SERVICES, CATEGORIES, WEIGHT_META, ACCESS_METHODS, type Weight
 import SystemMap from './SystemMap';
 import MachineModal from './MachineModal';
 import ServiceModal from './ServiceModal';
+import { IcGrid, IcMail, IcMap } from '../../components/Icons';
 
 /* ── live status hook (graceful: unknown until the ping returns) ── */
 type StatusMap = Record<string, 'up' | 'down'>;
@@ -129,8 +130,8 @@ export default function HomelabClient() {
 
           <motion.div className="hl2-hero-cta"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.62 }}>
-            <a className="hl2-btn" href="#map">See the network map <Arrow /></a>
-            <a className="hl2-btn ghost" href="#stack">See the services</a>
+            <a className="hl2-btn" href="#map"><IcMap /> See the network map</a>
+            <a className="hl2-btn ghost" href="#stack"><IcGrid /> See the services</a>
           </motion.div>
         </div>
         <a className="hl2-scrollcue" href="#mission" aria-label="Scroll down"><span /></a>
@@ -385,8 +386,8 @@ export default function HomelabClient() {
             <h2 className="hl2-cta-title">What I am building now.</h2>
             <p className="hl2-cta-sub">OpenClaw, a runner that lets AI agents do real tasks on the lab: start a container, check a service, deploy a small app and report back. It is not finished.</p>
             <div className="hl2-hero-cta">
-              <a className="hl2-btn" href="/#portfolio-items-holder">See my projects <Arrow /></a>
-              <a className="hl2-btn ghost" href="/contact">Contact me</a>
+              <a className="hl2-btn" href="/#portfolio-items-holder"><IcGrid /> See my projects</a>
+              <a className="hl2-btn ghost" href="/contact"><IcMail /> Contact me</a>
             </div>
           </Reveal>
         </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { IcGrid, IcHome } from '../components/Icons';
 
 export const metadata: Metadata = {
   title: 'Page not found | Braven Chiam',
@@ -19,8 +20,8 @@ export default function NotFound() {
           There is nothing at this address. The page may have moved, or the link may be wrong.
         </p>
         <div className="nf-btns">
-          <Link href="/" className="hp-btn">Go to the homepage</Link>
-          <Link href="/#portfolio-items-holder" className="hp-btn hp-btn-ghost">See all projects</Link>
+          <Link href="/" className="hp-btn"><IcHome /> Go to the homepage</Link>
+          <Link href="/#portfolio-items-holder" className="hp-btn hp-btn-ghost"><IcGrid /> See all projects</Link>
         </div>
       </section>
 

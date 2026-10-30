@@ -103,9 +103,9 @@ html.sensory-active.is-day {
 }
 .sl-rays { mix-blend-mode: screen; transform-origin: 97% 0%; }
 .sl-scene > .sl-clouds { overflow: hidden; }
-.sl-cloud { position: absolute; will-change: transform; }
+.sl-cloud { position: absolute; }
 /* The lone tree on the hill, left of the name. Same scroll fade as the field. */
-.sl-scene > .sl-tree { will-change: opacity, translate; }
+
 .sl-tree-canvas { position: absolute; inset: 0; width: 100%; height: 100%; transform-origin: 4% 86%; }
 
 /* The field is not part of .sl-scene: SunlitField renders it inside <main>,
@@ -115,7 +115,7 @@ html.sensory-active.is-day {
    SunlitScene sets its opacity and translate inline as you scroll. */
 .sl-grass {
   position: fixed; top: 0; left: 0; width: 100%; height: 135lvh;
-  overflow: visible; pointer-events: none; will-change: opacity, translate;
+  overflow: visible; pointer-events: none;
 }
 /* The canvas starts at 60% of the screen (SunlitScene FIELD_TOP: nothing is
    painted above it) and is a little wider than the screen, so the sway never
@@ -257,8 +257,12 @@ html.sensory-active.is-day {
   /* ── Project cards ── */
   & .hp-pf-name { color: var(--sl-ink); }
   & .hp-pf-blurb { color: var(--sl-ink-dim); }
-  & .hp-pf-view { color: var(--sl-ink); background: var(--gl-chip); border-color: var(--gl-chip-line); }
-  & .hp-pf-view:hover { color: var(--sl-ink); background: rgba(255, 255, 255, 0.62); border-color: #fff; }
+  /* "Read article" is the card's main action: pine, like every primary button */
+  & .hp-pf-view {
+    color: var(--sl-cream); background: var(--gl-pine); border-color: rgba(255, 255, 240, 0.22);
+    box-shadow: var(--gl-pine-rim), 0 8px 18px -10px rgba(31, 43, 28, 0.6); }
+  & .hp-pf-view:hover { color: var(--sl-cream); background: var(--gl-pine); border-color: rgba(255, 255, 240, 0.4); filter: brightness(1.1); }
+  & .hp-pf-view:focus-visible { outline: 2px solid var(--sl-ink); outline-offset: 2px; }
   & .hp-pf-card.is-compact .hp-pf-thumb::after { background: none; }
   /* not written up yet: the glass drains the colour out of what is behind it */
   & .hp-pf-card.is-soon {
@@ -374,6 +378,14 @@ html.sensory-active.is-day {
   & .hp-rd-feed-sep span { color: var(--sl-label); }
   & .hp-rd-feed-skel { background: rgba(31, 43, 28, 0.04); border-color: rgba(31, 43, 28, 0.08); }
   & .hp-rd-feed-end { border-top-color: rgba(31, 43, 28, 0.1); }
+  & .hp-rd-pull-hint { color: var(--sl-ink-soft); }
+  & .hp-rd-pull-card { border-color: rgba(255, 255, 255, 0.85); box-shadow: 0 -10px 40px -18px rgba(31, 43, 28, 0.45); }
+  & .hp-rd-pull-card:focus-visible { outline-color: var(--sl-ink); }
+  /* the close button floats over the reader's text as it scrolls: give it a solid chip */
+  & .hp-modal-close {
+    background: rgba(252, 253, 249, 0.86) !important; border: 1px solid rgba(255, 255, 255, 0.95) !important;
+    -webkit-backdrop-filter: blur(10px) !important; backdrop-filter: blur(10px) !important;
+    box-shadow: 0 6px 16px -8px rgba(31, 43, 28, 0.5); }
   & .hp-rd-feed-end span { color: var(--sl-ink-dim); }
 }
 

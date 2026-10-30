@@ -4,6 +4,8 @@ import ArticleScrollSpy from '../../components/ArticleScrollSpy';
 import ArticleLinks from '../../components/ArticleLinks';
 import LazyVideo from '../../components/LazyVideo';
 import NodeMap from './NodeMap';
+import { IcGitHub } from '../../components/Icons';
+import PdfEmbed from '../../components/PdfEmbed';
 
 const DESCRIPTION =
   'A school group project, graded A: four BeagleBone Black Wireless nodes (climate, bathroom, kitchen, intrusion) linked to a SocketIO web server that hosts a live dashboard with a Spline 3D view.';
@@ -35,9 +37,6 @@ const jsonLd = {
 const BackArrow = () => (
   <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
 );
-const Circle = () => (
-  <svg fill="currentColor" viewBox="0 0 24 24" className="pf-item-buttom-icon" aria-hidden="true"><path clipRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z" fillRule="evenodd" /></svg>
-);
 
 export default function CsdpPage() {
   return (
@@ -47,7 +46,7 @@ export default function CsdpPage() {
 
       {/* Feature hero */}
       <header className="art-hero">
-        <div className="art-hero-bg"><img src="/images/Ema-pf-context.webp" alt="EMA Smart Home" /></div>
+        <div className="art-hero-bg"><img src="/images/covers/ema.webp" alt="EMA Smart Home" /></div>
         <div className="art-hero-scrim"></div>
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>
@@ -267,14 +266,14 @@ export default function CsdpPage() {
                 <strong>Source on GitHub</strong>
                 <span>The node code and the SocketIO dashboard server.</span>
               </div>
-              <a className="hp-btn" href="https://github.com/New-Kringster/EMA-Smart-home-System" target="_blank" rel="noopener">View on GitHub <Circle /></a>
+              <a className="hp-btn" href="https://github.com/New-Kringster/EMA-Smart-home-System" target="_blank" rel="noopener"><IcGitHub /> View the code on GitHub</a>
             </div>
           </section>
 
           <section id="SlideDeck" className="art-section" data-reveal>
             <h2>Slide deck</h2>
             <div className="art-embed art-pdf">
-              <iframe src="https://content.chiambucket.com/downloadable/csdpf1.pdf" title="EMA Smart Home slide deck (PDF)" loading="lazy"></iframe>
+              <PdfEmbed src="https://content.chiambucket.com/downloadable/csdpf1.pdf" title="EMA Smart Home slide deck (PDF)" />
             </div>
             <p><a href="https://content.chiambucket.com/downloadable/csdpf1.pdf" target="_blank" rel="noopener">Open the slide deck (PDF)</a></p>
           </section>
@@ -282,15 +281,11 @@ export default function CsdpPage() {
           <section id="Documentation" className="art-section" data-reveal>
             <h2>Documentation</h2>
             <div className="art-embed art-pdf">
-              <iframe src="https://content.chiambucket.com/downloadable/csdpf2.pdf" title="EMA Smart Home documentation (PDF)" loading="lazy"></iframe>
+              <PdfEmbed src="https://content.chiambucket.com/downloadable/csdpf2.pdf" title="EMA Smart Home documentation (PDF)" />
             </div>
             <p><a href="https://content.chiambucket.com/downloadable/csdpf2.pdf" target="_blank" rel="noopener">Open the documentation (PDF)</a></p>
           </section>
 
-          <div className="art-next">
-            <span className="art-next-label">Check out the next article</span>
-            <a href="/#portfolio-items-holder" className="hp-btn">All projects <Circle /></a>
-          </div>
 
         </div>
       </div>

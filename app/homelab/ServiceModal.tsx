@@ -1,6 +1,7 @@
 'use client';
 import HlModal from './HlModal';
 import { WEIGHT_META, type Service } from './data';
+import { IcOut } from '../../components/Icons';
 
 type StatusMap = Record<string, 'up' | 'down'>;
 
@@ -39,8 +40,7 @@ export default function ServiceModal({ service, status, onClose }: { service: Se
 
             {s.url && (
               <a className="hl2-btn hl2-smodal-visit" href={s.url} target="_blank" rel="noopener">
-                Visit {s.url.replace('https://', '')}
-                <svg viewBox="0 0 24 24" fill="none" width="16" height="16" aria-hidden="true"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M13 6l6 6-6 6" /></svg>
+                <IcOut /> Visit {s.url.replace('https://', '')}
               </a>
             )}
           </div>
