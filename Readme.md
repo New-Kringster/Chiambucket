@@ -31,8 +31,8 @@ Opens at `http://localhost:3000`. Use `npx tsc --noEmit` to type-check without d
 |------|---------|
 | `app/layout.tsx` | Root layout — stylesheet links, loader, Nav/Footer, Analytics, sets per-page theme |
 | `app/page.tsx` → `app/HomeClient.tsx` | Homepage — hero, disciplines, About bento, Projects, HomeLab, photography, CTA |
-| `app/<route>/page.tsx` | File-based routes (`/photography`, `/contact`, `/credits`, `/homelab`, article pages) |
-| `components/` | Shared `Nav`, `Footer`, `ClientEffects`, `Backdrop`, `ArticleRecommendations`, `ArticleScrollSpy` |
+| `app/<route>/page.tsx` | File-based routes (`/photography`, `/contact`, `/credits`, `/ai-use`, `/homelab`, article pages) |
+| `components/` | Shared `Nav`, `Footer`, `ClientEffects`, `SceneShell`/`SunlitScene` (the painted background), `ArticleRecommendations`, `ArticleScrollSpy` |
 | `lib/theme.ts` | Per-page accent theme map (`data-theme` on `<html>`) |
 | `public/mainstyle.css` | Single global stylesheet (~6300 lines) |
 | `public/` | Images, fonts, downloads, `robots.txt` / `sitemap.xml` / `llms.txt` |
