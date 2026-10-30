@@ -214,21 +214,22 @@ export function drawNet(ctx: Ctx, env: Env, L: NetLayout, p: number, drawInput: 
     const src = i === 0 ? L.input : L.blocks[i - 1];
     const prevRight = i === 0 ? L.input.x + L.input.w : L.blocks[i - 1].x + L.blocks[i - 1].w + Math.min(8, L.blocks[i - 1].n) * step;
     arrow(ctx, env, prevRight + 8, L.midY, b.x - 10, L.midY, { alpha: clamp01(bi * 4) });
-    // the fan: nothing but the front map until 0.3, fan out to 0.7, then collapse
-    const fan = bi < 0.3 ? 0 : bi < 0.7 ? ease((bi - 0.3) / 0.4) : 1;
-    const st = bi < 0.7 ? lerp(1.5, 15, fan) : lerp(15, step, ease((bi - 0.7) / 0.3));
-    const shown = Math.min(8, b.n);
-    const vis = bi < 0.3 ? 1 : Math.max(1, Math.round(shown * fan));
+    // the first map fills as the kernel sweeps (to 0.5); then the other maps slide in from above, one after another
     const reveal = bi < 0.5 ? bi / 0.5 : 1;
+    const arrive = bi < 0.5 ? 0 : (bi - 0.5) / 0.5;
+    const shown = Math.min(8, b.n);
     const kp = kernelPath(reveal, src, Math.max(6, src.w / 9));
-    for (let k = vis - 1; k >= 0; k--) {
-      const tr = { x: b.x + k * st, y: b.y - k * st * 0.72, w: b.w, h: b.h };
-      rect(ctx, env, { x: tr.x - 1, y: tr.y - 1, w: tr.w + 2, h: tr.h + 2 }, { fill: C.sunken, stroke: '#45403f', w: 1, rad: 2, alpha: k === 0 ? 1 : 0.9 });
+    for (let k = shown - 1; k >= 0; k--) {
+      let kt = 1;
+      if (k > 0) { kt = seg(arrive, (k - 1) / shown, (k - 1) / shown + 0.4); if (kt <= 0) continue; }
+      const tr = { x: b.x + k * step, y: b.y - k * step * 0.72 - (1 - kt) * 70, w: b.w, h: b.h };
+      const a = k === 0 ? 1 : 0.9 * kt;
+      rect(ctx, env, { x: tr.x - 1, y: tr.y - 1, w: tr.w + 2, h: tr.h + 2 }, { fill: C.sunken, stroke: '#45403f', w: 1, rad: 2, alpha: a });
       if (k === 0 && reveal < 1) {
         const rh = ((kp.y - src.y) / src.h) * b.h + b.h / 9;
         ctx.save(); ctx.beginPath(); ctx.rect(tr.x, tr.y, tr.w, Math.min(tr.h, rh)); ctx.clip();
         tile(ctx, env, b.strip, 0, tr); ctx.restore();
-      } else tile(ctx, env, b.strip, k, tr, { alpha: k === 0 ? 1 : 0.9 });
+      } else tile(ctx, env, b.strip, k, tr, { alpha: a });
     }
     if (reveal < 1) {
       // the kernel on the source and the cell it produces on the output
@@ -245,8 +246,9 @@ export function drawNet(ctx: Ctx, env: Env, L: NetLayout, p: number, drawInput: 
     const la = clamp01((bi - 0.25) * 3);
     if (o.caps !== false) {
       const cy = o.capY ?? L.midY + Math.max(...L.blocks.map((q) => q.h / 2)) + 30;
+      const count = bi >= 1 ? b.n : Math.max(1, Math.round(b.n * clamp01(arrive)));
       txt(ctx, env, b.label, b.x + cw / 2, cy, 17, { a: 'center', w: 700, alpha: la });
-      txt(ctx, env, `${bi < 0.7 ? Math.max(1, Math.round(b.n * fan)) : b.n} maps · ${b.sub}`, b.x + cw / 2, cy + 20, 12.5, { a: 'center', c: C.muted, alpha: la });
+      txt(ctx, env, `${count} maps · ${b.sub}`, b.x + cw / 2, cy + 20, 12.5, { a: 'center', c: C.muted, alpha: la });
       if (b.weights) txt(ctx, env, `${fmt(b.weights)} weights`, b.x + cw / 2, cy + 37, 11.5, { a: 'center', c: C.dim, alpha: la });
     }
   }

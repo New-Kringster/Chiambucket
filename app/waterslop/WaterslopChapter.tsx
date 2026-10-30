@@ -7,10 +7,10 @@ import './chapter/chapter.css';
 import './waterslop.css';
 
 // Rendered on the server too, so the component notes are in the HTML. The
-// exported chapter numbers itself V; in this article it is chapter XI.
-const markup = chapterMarkup().replace('Chapter - V', 'Chapter - XI').replace('Chapter V:', 'Chapter XI:').replace('WaterSlop PCB', 'OCR Reader PCB');
+// exported chapter numbers itself V; the article passes its own numeral.
+const markupFor = (numeral: string) => chapterMarkup().replace('Chapter - V', `Chapter - ${numeral}`).replace('Chapter V:', `Chapter ${numeral}:`).replace('WaterSlop PCB', 'OCR Reader PCB');
 
-export default function WaterslopChapter() {
+export default function WaterslopChapter({ numeral = 'XI' }: { numeral?: string }) {
   const root = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = root.current;
@@ -37,7 +37,7 @@ export default function WaterslopChapter() {
       className="ws-chapter"
       data-no-zoom
       suppressHydrationWarning
-      dangerouslySetInnerHTML={{ __html: markup }}
+      dangerouslySetInnerHTML={{ __html: markupFor(numeral) }}
     />
   );
 }

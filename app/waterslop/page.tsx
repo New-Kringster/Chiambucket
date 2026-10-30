@@ -60,9 +60,9 @@ const pair = (a: string, altA: string, b: string, altB: string, cls?: string) =>
 /* Chapters, in order. The PCB chapter is the exported 3D chapter plus two
    pages of its own; the roman numeral is shared. */
 const CHAPTERS: Array<[string, string]> = [
-  ['brief', 'Design brief'], ['metersim', 'MeterSim'], ['simgen2', 'SimGen2'], ['agents', 'Agentic workflow'], ['drumnet', 'DrumNet'],
-  ['firmware', 'Firmware'], ['power', 'Power optimisation'], ['camera', 'Camera choice'], ['v2', 'PCB & enclosure'], ['calibration', 'Camera calibration'],
-  ['configking', 'ConfigKing'], ['conclusion', 'Conclusion'], ['report', 'The report'],
+  ['brief', 'Design brief'], ['v2', 'PCB & enclosure'], ['drumnet', 'DrumNet'], ['configking', 'ConfigKing'],
+  ['metersim', 'MeterSim'], ['simgen2', 'SimGen2'], ['agents', 'Agentic workflow'], ['firmware', 'Firmware'], ['power', 'Power optimisation'],
+  ['camera', 'Camera choice'], ['calibration', 'Camera calibration'], ['conclusion', 'Conclusion'], ['report', 'The report'],
 ];
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV'];
 const NUM: Record<string, string> = Object.fromEntries(CHAPTERS.map(([id], i) => [id, ROMAN[i]]));
@@ -402,6 +402,16 @@ export default function WaterslopPage() {
         plate={<Plate src="adapter-done-b.webp" alt="The completed reader mounted on a water meter" />} />
       <Page id="brief-body" title="Design brief" rows={BRIEF} />
 
+      {/* Chapter II: the exported 3D chapter opens it, then the board and the enclosure */}
+      <section id="v2" className="ws-pcb" aria-label="Prototype V2: PCB and enclosure in 3D">
+        <WaterslopChapter numeral={NUM.v2} />
+      </section>
+      <Page id="v2-body" chapter={NUM.v2} title="Prototype V2" rows={V2} />
+      <Page id="enclosure" chapter={NUM.v2} title="Enclosure" rows={ENCLOSURE} />
+
+      <DrumNetStory chapter={NUM.drumnet} />
+      <ConfigKingChapter chapter={NUM.configking} />
+
       <Cover id="metersim" chapter={NUM.metersim} title="MeterSim" lines={['Meter', 'Sim']} contents={[{ label: 'A simulated meter', href: '#ms-rig' }, { label: 'Built for agents', href: '#ms-control' }, { label: 'Designs and presets', href: '#ms-designs' }, { label: 'Half-rolled drums', href: '#ms-halfroll' }, { label: 'Weather and surfaces', href: '#ms-effects' }, { label: 'Unattended evaluation', href: '#ms-eval' }]}
         plate={<Plate srcs={['metersim-control.webp', 'metersim-effects.webp']} alt="The MeterSim control panel" />} />
       <Page id="metersim-body" title="MeterSim" rows={METERSIM} />
@@ -414,7 +424,6 @@ export default function WaterslopPage() {
         plate={<Plate srcs={['agents-resources-sketch.webp', 'scheduler-compute.webp', 't3-tailscale.webp']} alt="The agents' shared resources" cls="light" />} />
       <Page id="agents-body" title="Agentic workflow" rows={AGENTIC} />
 
-      <DrumNetStory chapter={NUM.drumnet} />
       <FirmwareChapter chapter={NUM.firmware} />
 
       <Cover id="power" chapter={NUM.power} title="Power optimisation" lines={['Saving', 'power']} contents={[{ label: 'Sub-sampling', href: '#pw-sub' }, { label: 'Capture modes, side by side', href: '#pw-modes' }, { label: 'PWM dimming', href: '#pw-pwm' }, { label: 'Greyscale', href: '#pw-grey' }, { label: 'INT8 and vector maths', href: '#pw-int8' }, { label: 'Hardware', href: '#pw-hw' }]}
@@ -423,15 +432,8 @@ export default function WaterslopPage() {
 
       <CameraChapter chapter={NUM.camera} />
 
-      {/* Chapter IX: the exported 3D chapter opens it, then the board and the enclosure */}
-      <section id="v2" className="ws-pcb" aria-label="Prototype V2: PCB and enclosure in 3D">
-        <WaterslopChapter />
-      </section>
-      <Page id="v2-body" chapter={NUM.v2} title="Prototype V2" rows={V2} />
-      <Page id="enclosure" chapter={NUM.v2} title="Enclosure" rows={ENCLOSURE} />
 
       <CalibrationChapter chapter={NUM.calibration} />
-      <ConfigKingChapter chapter={NUM.configking} />
 
       <Cover id="conclusion" chapter={NUM.conclusion} title="Conclusion" lines={['Conclusion']} contents={[{ label: 'Where it stops, for now', href: '#cc-all' }, { label: 'The report', href: '#report' }]}
         plate={<Plate src="enc-final.webp" alt="The printed enclosure with the board inside" />} />
