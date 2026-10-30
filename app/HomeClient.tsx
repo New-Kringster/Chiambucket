@@ -4,9 +4,10 @@ import Script from 'next/script';
 import InfoModal, { type InfoItem } from '../components/InfoModal';
 import LazyVideo from '../components/LazyVideo';
 import { PeekFeed } from '../components/ProjectPeek';
-import SunlitScene from '../components/SunlitScene';
+import SunlitScene, { SunlitField } from '../components/SunlitScene';
 import PosterHero from './PosterHero';
 import './sunlit.css';
+import './about.css';
 
 /* About bento tiles → detail pop-ups. Each skill tile lists where it was used;
    every fact comes from a project write-up on this site. */
@@ -131,12 +132,9 @@ export default function HomeClient() {
   const [openTile, setOpenTile] = useState<InfoItem | null>(null); // about-bento tile detail modal
 
   /* ── Modal ── */
-  const openProject = (cardEl: Element | string) => {
-    const card = (typeof cardEl === 'string'
-      ? document.getElementById(cardEl)
-      : (cardEl as Element).closest('.hp-pf-card')) as HTMLElement | null;
-    if (!card?.id) return;
-    setActiveProject(card.id);
+  // Takes a project id, not a card: the two spotlit projects have no card in the gallery.
+  const openProject = (id: string) => {
+    setActiveProject(id);
     setModalOpen(true);
     document.body.style.overflow = 'hidden';
   };
@@ -289,7 +287,20 @@ export default function HomeClient() {
   }, []);
 
   /* ── Peek button helper ── */
-  const peek = (e: React.MouseEvent<HTMLButtonElement>) => openProject(e.currentTarget);
+  const peek = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const id = e.currentTarget.closest('.hp-pf-card')?.id;
+    if (id) openProject(id);
+  };
+
+  /* Skill tiles and the layers inside the grouped tiles open a detail pop-up. */
+  const opens = (item: InfoItem) => ({
+    role: 'button' as const,
+    tabIndex: 0,
+    onClick: () => setOpenTile(item),
+    onKeyDown: (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(item); }
+    },
+  });
 
   return (
     <>
@@ -342,107 +353,133 @@ export default function HomeClient() {
         {/* ── HERO: a typographic poster over the field ── */}
         <PosterHero />
 
-        {/* ── ABOUT BENTO: who I am and what I can build ── */}
+        {/* ── ABOUT: who I am and what I can build. It rises out of the grass
+             (SunlitScene blurs each .sl-emerge block into focus as it clears
+             the crest; the field is drawn in front of this one section). ── */}
         <section className="abm-bg hp-band" id="about">
           <div className="hp-section">
-            <div className="section-editorial-header" data-reveal>
-              <div className="seh-content"><span className="seh-eyebrow">About</span><span className="seh-title">What I work with</span></div>
+            <div className="section-editorial-header sl-emerge">
+              <div className="seh-content"><span className="seh-eyebrow">About</span><span className="seh-title">What I do</span></div>
             </div>
-            <div className="hp-bento">
+            <div className="hp-bento ab-bento">
               {/* Intro */}
-              <div className="hp-tile hp-tile-intro hp-clickable" data-reveal role="button" tabIndex={0} onClick={() => setOpenTile(TILE_INTRO)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(TILE_INTRO); } }}>
+              <div className="hp-tile hp-tile-intro hp-clickable sl-emerge" {...opens(TILE_INTRO)}>
                 <span className="hp-tile-go"><AU /></span>
                 <a className="hp-blink" id="sukuna-blink" href="https://www.pinterest.com/pin/665547651180427494/" onClick={(e) => e.stopPropagation()} aria-label="A little friend"></a>
-                <span className="hp-key">About</span>
+                <span className="hp-key ab-intro-key">About</span>
                 <dl className="hp-facts">
                   <div><dt>Studying</dt><dd>Electronic and Computer Engineering, year 3</dd></div>
                   <div><dt>At</dt><dd>Nanyang Polytechnic, Singapore</dd></div>
                   <div><dt>Builds</dt><dd>Hardware, software and design, end to end</dd></div>
                 </dl>
-                <h3 className="hp-tile-h">Hi, I&apos;m Braven.</h3>
-                <p className="hp-tile-p">I design circuit boards, write the software that runs on them, and model the cases they go in. Most of it I taught myself through these projects.</p>
-              </div>
-              {/* Hardware */}
-              <div className="hp-tile hp-tile-hw hp-clickable" data-reveal data-delay="1" role="button" tabIndex={0} onClick={() => setOpenTile(SKILL_HARDWARE)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(SKILL_HARDWARE); } }}>
-                <span className="hp-tile-go"><AU /></span>
-                <div className="hp-tile-copy">
-                  <span className="hp-key">Hardware</span>
-                  <h3 className="hp-tile-h">Circuit boards, designed and soldered.</h3>
-                  <p className="hp-tile-p">Schematics and layouts in KiCAD, then SMD parts reflowed and soldered at home.</p>
-                  <div className="hp-chips"><span>KiCAD</span><span>EAGLE</span><span>SMD reflow</span></div>
+                <div className="ab-intro-copy">
+                  <h3 className="hp-tile-h">Hi, I&apos;m Braven.</h3>
+                  <p className="hp-tile-p">I design circuit boards, write the software that runs on them, and model the cases they go in. Most of it I taught myself through these projects.</p>
                 </div>
-                <img className="hp-tile-photo-inset" src="/images/Brolocator13.webp" alt="The LoRA Messenger circuit board, lit up in my hand" loading="lazy" />
               </div>
-              {/* Firmware */}
-              <div className="hp-tile hp-tile-fw hp-clickable" data-reveal data-delay="2" role="button" tabIndex={0} onClick={() => setOpenTile(SKILL_FIRMWARE)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(SKILL_FIRMWARE); } }}>
-                <span className="hp-tile-go"><AU /></span>
-                <span className="hp-key">Firmware</span>
-                <div className="hp-iconrow">
-                  <img src="/images/esp-icon.webp" alt="ESP32" /><img src="/images/arduino-icon.webp" alt="Arduino" /><img src="/images/microchip-icon.webp" alt="Microchip ATmega328" /><img src="/images/PlatformIO-icon.webp" alt="PlatformIO" />
+
+              {/* One system, every layer: firmware, board, software, servers */}
+              <div className="hp-tile ab-group ab-stack sl-emerge">
+                <div className="ab-head">
+                  <span className="hp-key">End to end</span>
+                  <h3 className="hp-tile-h">From the chip to the cloud.</h3>
+                  <p className="hp-tile-p">I can build a whole system myself, from the microcontroller and its firmware to the servers it reports to.</p>
                 </div>
-                <h3 className="hp-tile-h">ESP32, Arduino and the ATmega328, in C, C++ and MicroPython.</h3>
+                <ol className="ab-chain">
+                  <li className="ab-layer hp-clickable" {...opens(SKILL_FIRMWARE)}>
+                    <span className="hp-tile-go"><AU /></span>
+                    <div className="ab-media hp-iconrow">
+                      <img src="/images/esp-icon.webp" alt="ESP32" /><img src="/images/arduino-icon.webp" alt="Arduino" /><img src="/images/microchip-icon.webp" alt="Microchip ATmega328" /><img src="/images/PlatformIO-icon.webp" alt="PlatformIO" />
+                    </div>
+                    <div className="ab-layer-text">
+                      <span className="hp-key">Firmware</span>
+                      <h4 className="hp-tile-h">The microcontroller.</h4>
+                      <p className="hp-tile-p">ESP32, Arduino and the ATmega328, programmed in C, C++ and MicroPython.</p>
+                    </div>
+                  </li>
+                  <li className="ab-layer hp-clickable" {...opens(SKILL_HARDWARE)}>
+                    <span className="hp-tile-go"><AU /></span>
+                    <div className="ab-media"><img className="ab-photo" src="/images/Brolocator13.webp" alt="The LoRA Messenger circuit board, lit up in my hand" loading="lazy" /></div>
+                    <div className="ab-layer-text">
+                      <span className="hp-key">Hardware</span>
+                      <h4 className="hp-tile-h">The circuit board.</h4>
+                      <p className="hp-tile-p">Schematics and layouts in KiCAD, then SMD parts reflowed and soldered at home.</p>
+                    </div>
+                  </li>
+                  <li className="ab-layer hp-clickable" {...opens(SKILL_SOFTWARE)}>
+                    <span className="hp-tile-go"><AU /></span>
+                    <div className="ab-media hp-iconrow hp-iconrow-sm">
+                      <img src="/images/nextjs-icon.webp" alt="Next.js" /><img src="/images/typescript-icon.webp" alt="TypeScript" /><img src="/images/supabase-icon.webp" alt="Supabase" /><img src="/images/python-icon.webp" alt="Python" /><img src="/images/docker-icon.webp" alt="Docker" />
+                    </div>
+                    <div className="ab-layer-text">
+                      <span className="hp-key">Software</span>
+                      <h4 className="hp-tile-h">The software.</h4>
+                      <p className="hp-tile-p">Web apps in Next.js and Supabase like BeadReader, and Python servers like the one behind LUMEN.</p>
+                    </div>
+                  </li>
+                  <li className="ab-layer hp-clickable" {...opens(SKILL_INFRA)}>
+                    <span className="hp-tile-go"><AU /></span>
+                    <div className="ab-media"><img className="ab-device" src="/images/abm-udm.webp" alt="" loading="lazy" /></div>
+                    <div className="ab-layer-text">
+                      <span className="hp-key">Infrastructure</span>
+                      <h4 className="hp-tile-h">The cloud.</h4>
+                      <p className="hp-tile-p">My own. Three servers at home run my photos and files, and the MQTT and TURN servers my projects talk to.</p>
+                    </div>
+                  </li>
+                </ol>
               </div>
-              {/* Software */}
-              <div className="hp-tile hp-tile-sw hp-clickable" data-reveal role="button" tabIndex={0} onClick={() => setOpenTile(SKILL_SOFTWARE)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(SKILL_SOFTWARE); } }}>
-                <span className="hp-tile-go"><AU /></span>
-                <span className="hp-key">Software</span>
-                <div className="hp-iconrow hp-iconrow-sm">
-                  <img src="/images/nextjs-icon.webp" alt="Next.js" /><img src="/images/typescript-icon.webp" alt="TypeScript" /><img src="/images/supabase-icon.webp" alt="Supabase" /><img src="/images/python-icon.webp" alt="Python" /><img src="/images/docker-icon.webp" alt="Docker" />
+
+              {/* Design: why the case, the screens and the poster matter */}
+              <div className="hp-tile ab-group ab-design sl-emerge">
+                <div className="ab-head">
+                  <span className="hp-key">Design</span>
+                  <h3 className="hp-tile-h">Designed for people.</h3>
+                  <p className="hp-tile-p">Design is how my projects stand out. A build has to work, but it also has to fit the hand that holds it and make sense the first time someone sees it. So I design the case, the screens and the poster myself.</p>
                 </div>
-                <h3 className="hp-tile-h">Web apps and servers.</h3>
-                <p className="hp-tile-p">BeadReader on Next.js and Supabase, and the FastAPI server behind LUMEN.</p>
+                <div className="ab-cell ab-cad hp-clickable" {...opens(SKILL_CAD)}>
+                  <span className="hp-tile-go"><AU /></span>
+                  <img className="hp-tile-render" src="/images/lora-case-cut.webp" alt="The LoRA Messenger case, modelled in Onshape" loading="lazy" />
+                  <span className="hp-key">3D and CAD</span>
+                  <h4 className="hp-tile-h">Enclosures that fit.</h4>
+                  <p className="hp-tile-p">Modelled in Onshape, rendered in Blender, printed until the fit is right.</p>
+                </div>
+                <div className="ab-cell ab-ui hp-clickable" {...opens(SKILL_DESIGN)}>
+                  <span className="hp-tile-go"><AU /></span>
+                  <div className="hp-figma-stack"><img className="back" src="/images/ELECF.webp" alt="" /><img className="mid" src="/images/Dashboard.webp" alt="" /><img className="front" src="/images/Cdyspstart.webp" alt="" /></div>
+                  <span className="hp-key">Interfaces</span>
+                  <h4 className="hp-tile-h">Interfaces and posters.</h4>
+                  <p className="hp-tile-p">The Project June console, the EMA dashboard and the ELEC-F poster, in Figma, Spline and Photoshop.</p>
+                </div>
               </div>
+
               {/* Wireless */}
-              <div className="hp-tile hp-tile-rf hp-clickable" data-reveal data-delay="1" role="button" tabIndex={0} onClick={() => setOpenTile(SKILL_WIRELESS)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(SKILL_WIRELESS); } }}>
+              <div className="hp-tile hp-tile-rf hp-clickable" data-reveal {...opens(SKILL_WIRELESS)}>
                 <span className="hp-tile-go"><AU /></span>
                 <span className="hp-key">Wireless</span>
                 <h3 className="hp-tile-h">Radios and live links.</h3>
                 <p className="hp-tile-p">LoRa for range, ESP-NOW for quick local links, MQTT for telemetry and WebRTC over 5G for live video.</p>
                 <div className="hp-chips"><span>LoRa</span><span>ESP-NOW</span><span>MQTT</span><span>WebRTC</span><span>5G</span></div>
               </div>
-              {/* Infrastructure */}
-              <div className="hp-tile hp-tile-infra hp-clickable" data-reveal data-delay="2" role="button" tabIndex={0} onClick={() => setOpenTile(SKILL_INFRA)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(SKILL_INFRA); } }}>
-                <span className="hp-tile-go"><AU /></span>
-                <img className="hp-tile-device" src="/images/abm-udm.webp" alt="" loading="lazy" />
-                <span className="hp-key">Infrastructure</span>
-                <h3 className="hp-tile-h">A homelab of my own.</h3>
-                <p className="hp-tile-p">Three servers at home run my photo library, files, and the MQTT and TURN servers my projects use.</p>
-                <div className="hp-chips"><span>Unraid</span><span>Docker</span><span>Tailscale</span><span>UniFi</span></div>
-              </div>
-              {/* 3D and CAD */}
-              <div className="hp-tile hp-tile-cad hp-clickable" data-reveal role="button" tabIndex={0} onClick={() => setOpenTile(SKILL_CAD)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(SKILL_CAD); } }}>
-                <span className="hp-tile-go"><AU /></span>
-                <img className="hp-tile-render" src="/images/lora-case-cut.webp" alt="The LoRA Messenger case, modelled in Onshape" loading="lazy" />
-                <span className="hp-key">3D and CAD</span>
-                <h3 className="hp-tile-h">Enclosures that fit.</h3>
-                <p className="hp-tile-p">Modelled in Onshape, rendered in Blender, printed until the fit is right.</p>
-              </div>
-              {/* Design */}
-              <div className="hp-tile hp-tile-design hp-clickable" data-reveal data-delay="1" role="button" tabIndex={0} onClick={() => setOpenTile(SKILL_DESIGN)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTile(SKILL_DESIGN); } }}>
-                <span className="hp-tile-go"><AU /></span>
-                <span className="hp-key">Design</span>
-                <div className="hp-figma-stack"><img className="back" src="/images/ELECF.webp" alt="" /><img className="mid" src="/images/Dashboard.webp" alt="" /><img className="front" src="/images/Cdyspstart.webp" alt="" /></div>
-                <h3 className="hp-tile-h">Interfaces and posters.</h3>
-                <p className="hp-tile-p">The Project June console, the EMA dashboard and the ELEC-F poster, in Figma, Spline and Photoshop.</p>
-              </div>
               {/* Video */}
-              <div className="hp-tile hp-media-tile hp-tile-davinci hp-clickable" data-reveal data-delay="2" role="link" tabIndex={0} onClick={() => window.open('https://www.youtube.com/@newkringster2564', '_blank')} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}>
+              <div className="hp-tile hp-media-tile hp-tile-davinci hp-clickable" data-reveal data-delay="1" role="link" tabIndex={0} onClick={() => window.open('https://www.youtube.com/@newkringster2564', '_blank')} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}>
                 <span className="hp-tile-go"><AU /></span>
                 <LazyVideo webm="/images/Davinci-showcase.webm" mp4="/images/Davinci-showcase.mp4" poster="/images/Davinci-showcase-poster.webp" />
                 <div className="hp-media-scrim"></div>
-                <div className="hp-media-body"><span className="hp-key">Video</span><h3 className="hp-tile-h">A film for every build.</h3><p className="hp-tile-p">Shot and edited in DaVinci Resolve.</p></div>
+                <div className="hp-media-body"><span className="hp-key">Video</span><h3 className="hp-tile-h">A film for every build.</h3><p className="hp-tile-p">Engaging videos to explain my builds.</p></div>
               </div>
               {/* Photography */}
-              <div className="hp-tile hp-media-tile hp-tile-photo hp-clickable" data-reveal role="link" tabIndex={0} onClick={() => { window.location.href = '#photolink'; }} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}>
+              <div className="hp-tile hp-media-tile hp-tile-photo hp-clickable" data-reveal data-delay="2" role="link" tabIndex={0} onClick={() => { window.location.href = '#photolink'; }} onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.click(); }}>
                 <span className="hp-tile-go"><AU /></span>
                 <img src="/images/abm-lr.webp" alt="Photography" />
                 <div className="hp-media-scrim"></div>
-                <div className="hp-media-body"><span className="hp-key">Photography</span><h3 className="hp-tile-h">Travel photos.</h3><p className="hp-tile-p">Europe, China, New Zealand and Hong Kong.</p></div>
+                <div className="hp-media-body"><span className="hp-key">Photography</span><h3 className="hp-tile-h">Photos.</h3><p className="hp-tile-p">Photography helps me explore more of my creativity.</p></div>
               </div>
             </div>
           </div>
         </section>
 
+        {/* The grass, drawn here so it sits in front of the About section and behind everything after it */}
+        <SunlitField />
         {/* ── PROJECTS ── */}
         <section className="hp-band hp-projects-band" id="portfolio-items-holder">
           <div className="hp-section">
@@ -502,7 +539,7 @@ export default function HomeClient() {
             </article>
 
             <div className="hp-pf-lead" data-reveal>
-              <h3>All projects</h3><span>Search or filter, then open a card for a summary.</span>
+              <h3>Other projects</h3><span>Search or filter, then open a card for a summary.</span>
             </div>
             <div className="hp-pf-toolbar" data-reveal>
               <label className="hp-pf-search-wrap">
@@ -522,40 +559,6 @@ export default function HomeClient() {
 
             {/* Project cards grid */}
             <div className={`hp-pf-grid${projectsExpanded ? '' : ' is-clamped'}`} id="hp-pf-grid">
-
-              {/* Project June */}
-              <article id="proj-june" className="hp-pf-card" data-article="/project-june" data-type="personal" data-flagship="1" data-search="project june 5g rc rover vehicle webrtc mqtt esp32 gps gyroscope laser spline cellular video personal flagship highlight">
-                <div className="hp-pf-thumb">
-                  <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
-                  <span className="hp-pf-type personal">Personal</span>
-                  <img src="/images/ProjJuneBanner1.webp" alt="Project June rover" loading="lazy" />
-                </div>
-                <div className="hp-pf-info">
-                  <h3 className="hp-pf-name">Project June</h3>
-                  <p className="hp-pf-blurb">A 5G rover with three live camera feeds, GPS, a laser pointer and seven sensors, driven from a web console.</p>
-                  <div className="hp-pf-foot">
-                    <div className="icon-stack"><img src="/images/esp-icon.webp" alt="" /><img src="/images/Kicad-icon.webp" alt="" /><img src="/images/onshape-icon.webp" alt="" /><img src="/images/PlatformIO-icon.webp" alt="" /></div>
-                    <a className="hp-pf-view" href="/project-june">Read article <AU /></a>
-                  </div>
-                </div>
-              </article>
-
-              {/* BeadReader */}
-              <article id="proj-beadreader" className="hp-pf-card" data-article="/beadreader" data-type="personal" data-flagship="1" data-search="beadreader bead reader private book reader ebook webtoon nextjs supabase cloudflare r2 tailwind postgres presence reading stats access code personal flagship highlight web app">
-                <div className="hp-pf-thumb">
-                  <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
-                  <span className="hp-pf-type personal">Personal</span>
-                  <img src="/images/beadreader-pf-context.webp" alt="BeadReader private book reader" loading="lazy" />
-                </div>
-                <div className="hp-pf-info">
-                  <h3 className="hp-pf-name">BeadReader</h3>
-                  <p className="hp-pf-blurb">A private, invite-only online book reader with live reading-together presence, per-reader resume, a SQL-enforced content gate, webtoons and shared reading stats. Next.js and Supabase.</p>
-                  <div className="hp-pf-foot">
-                    <div className="icon-stack"><img src="/images/nextjs-icon.webp" alt="" /><img src="/images/supabase-icon.webp" alt="" /><img src="/images/tailwind-icon.webp" alt="" /><img src="/images/cloudflare-icon.webp" alt="" /></div>
-                    <a className="hp-pf-view" href="/beadreader">Read article <AU /></a>
-                  </div>
-                </div>
-              </article>
 
               {/* LoRA Messenger */}
               <article id="proj-lora" className="hp-pf-card" data-article="/brolocator" data-type="personal" data-highlight="1" data-search="lora messenger esp32 espnow voice pcb kicad onshape oled battery personal radio highlight">
@@ -832,25 +835,28 @@ export default function HomeClient() {
             <div className="section-editorial-header" data-reveal>
               <div className="seh-content"><span className="seh-eyebrow">Gallery</span><span className="seh-title">Photography</span></div>
             </div>
-            <div className="hp-albums" data-reveal role="tablist" aria-label="Photo albums">
-              {[['highlight','Highlights'],['europe','Europe'],['china','China'],['zealand','New Zealand'],['by219','21:9'],['general','General']].map(([key, label], i) => (
-                <button key={key} className={`hp-album-link${i === 0 ? ' is-active' : ''}`} role="tab" aria-selected={i === 0}
-                  onClick={(e) => (window as any).switchGallery?.(key, e.currentTarget)}>
-                  {label}
-                </button>
-              ))}
-              <a className="hp-album-all" href="/photography">All albums <AU /></a>
+            {/* Tabs and gallery share one glass panel, so the preview fades into the panel instead of the sky */}
+            <div className="ab-photos" data-reveal>
+              <div className="hp-albums" role="tablist" aria-label="Photo albums">
+                {[['highlight','Highlights'],['europe','Europe'],['china','China'],['zealand','New Zealand'],['by219','21:9'],['general','General']].map(([key, label], i) => (
+                  <button key={key} className={`hp-album-link${i === 0 ? ' is-active' : ''}`} role="tab" aria-selected={i === 0}
+                    onClick={(e) => (window as any).switchGallery?.(key, e.currentTarget)}>
+                    {label}
+                  </button>
+                ))}
+                <a className="hp-album-all" href="/photography">All albums <AU /></a>
+              </div>
+              <div className="photography-box photo-main-ver" id="photolink">
+                <div className="expand" id="expand">
+                  <button onClick={() => (window as any).expandphoto?.()}>Click to Expand</button>
+                </div>
+                <div className="phototop">
+                  <h1 id="hp-gallery-title">Highlights</h1>
+                  <a href="/photography" aria-label="Open full gallery"><img src="/images/arrow.webp" alt="" /></a>
+                </div>
+                <div className="hp-gallery-stage" id="hp-gallery-stage"></div>
+              </div>
             </div>
-          </div>
-          <div className="photography-box photo-main-ver" id="photolink">
-            <div className="expand" id="expand">
-              <button onClick={() => (window as any).expandphoto?.()}>Click to Expand</button>
-            </div>
-            <div className="phototop">
-              <h1 id="hp-gallery-title">Highlights</h1>
-              <a href="/photography" aria-label="Open full gallery"><img src="/images/arrow.webp" alt="" /></a>
-            </div>
-            <div className="hp-gallery-stage" id="hp-gallery-stage"></div>
           </div>
         </section>
 

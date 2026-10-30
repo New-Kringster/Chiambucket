@@ -103,29 +103,42 @@ html.sensory-active[data-theme="sunlit"] {
 .sl-rays { mix-blend-mode: screen; transform-origin: 97% 0%; }
 .sl-scene > .sl-clouds { overflow: hidden; }
 .sl-cloud { position: absolute; will-change: transform; }
-/* SunlitScene sets the field's opacity and translate inline as you scroll */
-.sl-scene > .sl-grass { overflow: visible; will-change: opacity, translate; }
-/* a little wider than the screen, so the sway never opens a gap at the edges */
-.sl-grass-canvas { position: absolute; top: 0; left: -3%; width: 106%; height: 100%; transform-origin: 50% 100%; }
+/* The lone tree on the hill, left of the name. Same scroll fade as the field. */
+.sl-scene > .sl-tree { will-change: opacity, translate; }
+.sl-tree-canvas { position: absolute; inset: 0; width: 100%; height: 100%; transform-origin: 4% 86%; }
 
-.sl-sky-canvas, .sl-clouds, .sl-rays, .sl-grass-canvas { opacity: 0; transition: opacity 0.9s ease-out; }
-.sl-scene.is-drawn :is(.sl-sky-canvas, .sl-clouds, .sl-rays, .sl-grass-canvas) { opacity: 1; }
+/* The field is not part of .sl-scene: SunlitField renders it inside <main>,
+   after the About section, so it is drawn in front of that section (which
+   rises out of it) and behind everything after it. It is taller than the
+   screen so it can rise at the end of the page to reach above the footer.
+   SunlitScene sets its opacity and translate inline as you scroll. */
+.sl-grass {
+  position: fixed; top: 0; left: 0; width: 100%; height: 135lvh;
+  overflow: visible; pointer-events: none; will-change: opacity, translate;
+}
+/* a little wider than the screen, so the sway never opens a gap at the edges */
+.sl-grass-canvas { position: absolute; top: 0; left: -3%; width: 106%; height: 100%; transform-origin: 50% 74%; }
+
+.sl-sky-canvas, .sl-clouds, .sl-rays, .sl-tree-canvas, .sl-grass-canvas { opacity: 0; transition: opacity 0.9s ease-out; }
+:is(.sl-scene, .sl-grass).is-drawn :is(.sl-sky-canvas, .sl-clouds, .sl-rays, .sl-tree-canvas, .sl-grass-canvas) { opacity: 1; }
 
 /* ── The living poster: gentle motion, only while html.sl-alive ── */
 @keyframes sl-drift { from { transform: translateX(calc(var(--drift) * -1)); } to { transform: translateX(var(--drift)); } }
 @keyframes sl-shimmer { from { opacity: 0.62; transform: rotate(-0.6deg); } to { opacity: 1; transform: rotate(0.7deg); } }
 @keyframes sl-breathe { from { opacity: 0.82; transform: scale(1); } to { opacity: 1; transform: scale(1.06); } }
 @keyframes sl-sway { from { transform: skewX(-1.3deg); } to { transform: skewX(1.5deg); } }
+@keyframes sl-tree-sway { from { transform: rotate(-0.25deg); } to { transform: rotate(0.35deg); } }
 @media (prefers-reduced-motion: no-preference) {
   .sl-cloud { animation: sl-drift var(--secs) ease-in-out var(--delay) infinite alternate; }
   .sl-rays { animation: sl-shimmer 11s ease-in-out infinite alternate; }
   .sl-sun-bloom { animation: sl-breathe 9s ease-in-out infinite alternate; }
   .sl-grass-canvas { animation: sl-sway 5.5s ease-in-out infinite alternate; }
-  .sl-cloud, .sl-rays, .sl-sun-bloom, .sl-grass-canvas { animation-play-state: paused; }
-  html.sl-alive :is(.sl-cloud, .sl-rays, .sl-sun-bloom, .sl-grass-canvas) { animation-play-state: running; }
+  .sl-tree-canvas { animation: sl-tree-sway 7.5s ease-in-out infinite alternate; }
+  .sl-cloud, .sl-rays, .sl-sun-bloom, .sl-tree-canvas, .sl-grass-canvas { animation-play-state: paused; }
+  html.sl-alive :is(.sl-cloud, .sl-rays, .sl-sun-bloom, .sl-tree-canvas, .sl-grass-canvas) { animation-play-state: running; }
 }
 @media (prefers-reduced-motion: reduce) {
-  :is(.sl-sky-canvas, .sl-clouds, .sl-rays, .sl-grass-canvas) { transition: none; }
+  :is(.sl-sky-canvas, .sl-clouds, .sl-rays, .sl-tree-canvas, .sl-grass-canvas) { transition: none; }
 }
 
 html.sensory-active[data-theme="sunlit"] {
@@ -142,7 +155,7 @@ html.sensory-active[data-theme="sunlit"] {
 
   /* ── Panels: glass over the field ── */
   & .hp-collab-card, & .hp-pf-card, & .hp-spot-card,
-  & .hp-spotlight, & .hp-tile {
+  & .hp-spotlight, & .hp-tile, & .ab-photos {
     background: var(--gl-fill) !important;
     -webkit-backdrop-filter: var(--gl-blur) !important; backdrop-filter: var(--gl-blur) !important;
     border: 1px solid var(--gl-border) !important;
@@ -259,11 +272,22 @@ html.sensory-active[data-theme="sunlit"] {
   & .hp-stack-label, & .hp-exp-chip span { color: var(--sl-ink-dim); }
   & .hp-stack-more { color: var(--sl-ink-dim); }
 
-  /* ── Photography ── */
-  & .photo-main-ver .expand {
-    background: linear-gradient(180deg, rgba(154, 179, 150, 0) 0%, rgba(154, 179, 150, 0.6) 55%, rgba(154, 179, 150, 0.98) 100%) !important; }
-  & .photo-main-ver .expand button { color: var(--sl-ink); background-color: rgba(251, 250, 241, 0.8); }
-  & .photo-main-ver .expand button:hover { color: var(--sl-ink); background-color: rgba(251, 250, 241, 0.98); }
+  /* ── Photography: tabs and gallery sit in one glass panel (.ab-photos, app/about.css) ── */
+  & .photo-main-ver .expand { background: none !important; }
+  & .photo-main-ver .expand button {
+    font-family: 'dmsans'; font-size: 0.95rem; font-weight: 600; padding: 0.7rem 1.4rem;
+    color: var(--sl-cream); background: var(--gl-pine); border: 1px solid rgba(255, 255, 240, 0.22);
+    box-shadow: var(--gl-pine-rim), 0 10px 22px -12px rgba(31, 43, 28, 0.65); }
+  & .photo-main-ver .expand button:hover { color: var(--sl-cream); background: var(--gl-pine); filter: brightness(1.1); transform: translateY(-1px); }
+  & .photo-main-ver .expand button:active { transform: translateY(0) scale(0.98); }
+  & .photo-main-ver .expand button:focus-visible { outline: 2px solid var(--sl-ink); outline-offset: 3px; }
+  & .ab-photos .phototop a {
+    padding: 10px; border: 1px solid rgba(255, 255, 255, 0.7); background: rgba(255, 255, 255, 0.45);
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.8); }
+  & .ab-photos .phototop a:hover { border-color: #fff; background: rgba(255, 255, 255, 0.7); }
+  & .ab-photos .phototop img { filter: brightness(0) invert(0.18); width: 16px; }
+  & .hp-album-all { color: var(--sl-ink-soft); }
+  & .hp-album-all:hover { color: var(--sl-ink); }
   & .photography-box h1 {
     background: linear-gradient(92deg, #1f2b1c 0%, #4c5a3c 100%);
     -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
@@ -274,23 +298,25 @@ html.sensory-active[data-theme="sunlit"] {
   /* the address is one long word; on phones it shrinks to fit instead of running off the edge */
   & .hp-cta h2 em { display: inline-block; max-width: 100%; font-size: min(1em, 6.8vw); }
 
-  /* ── Footer: sits on the grass, so it gets its own paper strip ── */
-  /* thicker glass than the cards: the footer always sits over the bright grass */
+  /* ── Footer: no strip of its own. It stands in the grass, which SunlitScene
+     raises at the end of the page to reach above it, and the near grass falls
+     into shade under it, so cream type and a pine pill read clearly. ── */
   & .footer {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.5)) !important;
-    -webkit-backdrop-filter: var(--gl-blur) !important; backdrop-filter: var(--gl-blur) !important;
-    border-top: 1px solid var(--gl-border) !important;
-    box-shadow: inset 0 1.5px 0 -0.5px rgba(255, 255, 255, 0.95) !important; }
-  & .footer::before { display: none; }
-  & .footer::after { color: rgba(31, 43, 28, 0.7); }
-  & .footer-left-text { color: var(--sl-ink-soft); }
-  & .footer-left-img { filter: brightness(0); opacity: 0.75; }
+    background: linear-gradient(180deg, rgba(44, 48, 14, 0) 0%, rgba(44, 48, 14, 0.42) 24%, rgba(38, 42, 12, 0.72) 100%) !important;
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+    border-top: 0 !important; box-shadow: none !important; }
+  & .footer::before, & .footer::after { display: none; }
+  & .footer-left-text, & .footer-right-text { font-size: 0.68rem; color: rgba(250, 248, 232, 0.94); text-shadow: 0 1px 10px rgba(30, 34, 8, 0.45); }
+  & .footer-left-img { filter: brightness(0) invert(0.97); opacity: 0.92; }
   & .footer-center {
-    background: var(--gl-fill) !important; border: 1px solid var(--gl-border) !important;
-    box-shadow: var(--gl-rim), var(--gl-drop) !important; }
-  & .footer-center .btn svg { filter: brightness(0) invert(0.3); }
-  & .footer-right-text { color: var(--sl-ink-soft); }
-  & .footer-right-text button { color: var(--sl-label); }
+    background: var(--gl-pine) !important; border: 1px solid rgba(255, 255, 240, 0.24) !important;
+    -webkit-backdrop-filter: var(--gl-blur) !important; backdrop-filter: var(--gl-blur) !important;
+    box-shadow: var(--gl-pine-rim), 0 14px 30px -14px rgba(24, 28, 6, 0.7) !important; }
+  & .footer-center .btn svg { filter: brightness(0) invert(0.95); }
+  & .footer-center .btn:hover svg { filter: none; }
+  & .footer-center .btn:focus-visible { outline: 2px solid var(--sl-cream); outline-offset: 2px; border-radius: 10px; }
+  & .footer-right-text button { color: #f2df98; }
+  & .footer-right-text button:hover { color: #fff6d0; }
 }
 
 /* ═══════ Pop-ups: the info cards and the project reader become cream paper ═══════ */
@@ -338,8 +364,10 @@ html.sensory-active[data-theme="sunlit"] {
 /* Buttons and pills inside a glass card: a translucent fill and no blur of their
    own. A blur nested in another blur only sees the card's tint, so it turns grey. */
 html.sensory-active[data-theme="sunlit"] {
-  & :is(.hp-spotlight, .hp-tile, .hp-pf-card, .hp-collab-card) :is(.hp-btn, .hp-pf-view) {
+  & :is(.hp-spotlight, .hp-tile, .hp-pf-card, .hp-collab-card) :is(.hp-btn, .hp-pf-view),
+  & .ab-photos .hp-album-link {
     -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  & .ab-photos .hp-album-link:not(.is-active) { background: rgba(255, 255, 255, 0.4) !important; }
   & :is(.hp-spotlight, .hp-tile, .hp-pf-card, .hp-collab-card) .hp-btn.hp-btn-ghost {
     background: rgba(255, 255, 255, 0.55) !important; border-color: rgba(255, 255, 255, 0.85) !important; }
   & :is(.hp-spotlight, .hp-tile, .hp-pf-card, .hp-collab-card) .hp-btn.hp-btn-ghost:hover {
@@ -353,10 +381,10 @@ html.sensory-active[data-theme="sunlit"] {
 @media (prefers-reduced-transparency: no-preference) {
   html.lg-refract.sensory-active[data-theme="sunlit"] {
     & .hp-collab-card, & .hp-pf-card:not(.is-soon), & .hp-spot-card,
-    & .hp-spotlight, & .hp-tile, & .footer {
+    & .hp-spotlight, & .hp-tile, & .ab-photos {
       -webkit-backdrop-filter: var(--gl-refract) !important; backdrop-filter: var(--gl-refract) !important; }
     & .hp-btn:not(:is(.hp-spotlight, .hp-tile, .hp-pf-card, .hp-collab-card) .hp-btn),
-    & .hp-pf-search-wrap, & .hp-pf-filter, & .hp-album-link {
+    & .hp-pf-search-wrap, & .hp-pf-filter, & .hp-album-link:not(.ab-photos .hp-album-link) {
       -webkit-backdrop-filter: var(--gl-refract-pill) !important; backdrop-filter: var(--gl-refract-pill) !important; }
   }
 }
@@ -365,7 +393,7 @@ html.sensory-active[data-theme="sunlit"] {
 @media (prefers-reduced-transparency: reduce) {
   html.sensory-active[data-theme="sunlit"] {
     & .hp-collab-card, & .hp-pf-card, & .hp-spot-card, & .hp-spotlight,
-    & .hp-tile, & .footer, & .hp-pf-search-wrap, & .hp-pf-filter:not(.is-active),
+    & .hp-tile, & .ab-photos, & .hp-pf-search-wrap, & .hp-pf-filter:not(.is-active),
     & .hp-album-link:not(.is-active), & .hp-btn.hp-btn-ghost, & .im-panel, & .hp-modal-panel {
       background: rgba(248, 249, 243, 0.97) !important;
       -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }

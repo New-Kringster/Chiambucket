@@ -1,27 +1,30 @@
 /* ═══════════════════════════════════════════════════════════════
    POSTER HERO (app/PosterHero.tsx)
-   The name in Instrument Serif, as large as the screen allows, in pine ink
-   over the sunlit field, with one line of context under it. The only motion
-   is a one-time focus pull on load: each word starts soft and transparent and
-   sharpens, "Chiam" a beat after "Braven". Nothing loops.
+   The name in Gloock, as large as the screen allows, over the sunlit field,
+   with one line of context under it. The letters are lit like the landscape:
+   warm bronze at the top where the sun catches them, deep pine at their feet.
+   The only motion is a one-time focus pull on load: each word starts soft
+   and transparent and sharpens, "Chiam" a beat after "Braven". Nothing loops.
    ═══════════════════════════════════════════════════════════════ */
 
 .slp {
   justify-content: center;
   padding: clamp(96px, 12vh, 140px) 0 clamp(80px, 14vh, 150px);
+  /* above the grass, which is drawn in front of the About section */
+  z-index: 2;
 }
 
 .slp-stage {
   width: min(1600px, 94vw);
-  margin-top: -6vh;
+  margin-top: -8vh;
   text-align: center;
 }
 
 .slp-name {
   margin: 0;
-  /* "Braven Chiam" is 4.57em wide: this fills about 84% of the width */
-  font-size: min(18.4vw, 34vh);
-  line-height: 0.9;
+  /* "Braven Chiam" is about 6.45em wide in Gloock: this fills about 84% of the width */
+  font-size: min(13vw, 25vh);
+  line-height: 0.95;
   letter-spacing: -0.02em;
   color: #1f2b1c;
   white-space: nowrap;
@@ -29,17 +32,23 @@
 /* set on the words: the site's global heading rules would win over inheritance */
 .slp-word {
   display: inline-block;
+  /* room for the descender-free baseline and the gradient's bottom stop */
+  padding: 0 0.02em 0.04em;
   font-family: var(--font-poster), 'Times New Roman', serif;
   font-weight: 400;
+  background: linear-gradient(180deg, #82702a 0%, #4f5c2e 48%, #1d2a1a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .slp-role {
   margin: clamp(16px, 2.4vh, 28px) auto 0;
   max-width: 60ch;
   font-family: 'dmsans', system-ui, sans-serif;
-  font-size: clamp(0.88rem, 1.05vw, 1rem);
+  font-size: clamp(0.95rem, 1.2vw, 1.12rem);
   line-height: 1.5;
-  color: rgba(31, 43, 28, 0.82);
+  color: rgba(31, 43, 28, 0.86);
 }
 
 /* ── Focus pull, once ── */
@@ -56,13 +65,14 @@
 
 /* ── Portrait tablets and phones: one word per line ── */
 @media (max-width: 1100px) and (orientation: portrait), (max-width: 700px) {
-  .slp-stage { margin-top: -8vh; }
-  .slp-word { display: block; }
-  /* each word is about 2.25em wide */
-  .slp-name { font-size: min(34vw, 30vh); line-height: 0.86; }
+  .slp-stage { margin-top: -10vh; }
+  .slp-word { display: block; width: fit-content; margin: 0 auto; }
+  /* each word is about 3.13em wide */
+  .slp-name { font-size: min(26vw, 22vh); line-height: 0.92; }
 }
 @media (max-width: 700px) {
-  .slp { padding-top: 96px; padding-bottom: 18vh; }
-  .slp-name { font-size: min(38vw, 30vh); }
-  .slp-role { max-width: 24ch; font-size: 0.92rem; }
+  .slp { padding-top: 96px; padding-bottom: 22vh; }
+  .slp-stage { margin-top: -3vh; }
+  .slp-name { font-size: min(27.5vw, 22vh); }
+  .slp-role { max-width: 24ch; font-size: 1rem; }
 }
