@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-const TITLE = 'Braven’s Scale of AI use | Braven Chiam';
+const TITLE = 'Scale of AI use | Braven Chiam';
 const DESCRIPTION =
   'How I use AI in my projects, and the four-level scale (L1 to L4) I use to label how much of each project was made with AI tools.';
 const URL = 'https://www.chiambucket.com/ai-use';
@@ -121,13 +121,19 @@ const ROWS: { q: string; a: [string, string, string, string] }[] = [
   },
 ];
 
+/* The two downloadable versions of each mark, at their SVG viewBox sizes. */
+const MARKS = [
+  { kind: 'label', label: 'Label', w: 84, h: 94 },
+  { kind: 'icon', label: 'Icon', w: 84, h: 67 },
+] as const;
+
 const lv = (rgb: string) => ({ '--lv': rgb } as React.CSSProperties);
 
 export default function AiUsePage() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
-    headline: 'Braven’s Scale of AI use',
+    headline: 'Scale of AI use',
     description: DESCRIPTION,
     url: URL,
     author: { '@type': 'Person', name: 'Braven Chiam', url: 'https://www.chiambucket.com' },
@@ -140,10 +146,10 @@ export default function AiUsePage() {
 
       <section className="cr-hero ai-hero">
         <div className="ct-aura"></div>
-        <h1 className="ct-title">Braven’s Scale of AI use</h1>
+        <h1 className="ct-title">Scale of AI use</h1>
         <p className="ct-sub">
-          Four levels that say how much of a project was made with AI, from a little help to
-          work run entirely by agents.
+          This scale is used to transparently communicate the impact of AI tools on my
+          projects.
         </p>
 
         <nav className="ai-scale" aria-label="The four levels">
@@ -171,23 +177,20 @@ export default function AiUsePage() {
             <p>
               In my opinion, AI is a revolutionary technology that allows unprecedented, rapid
               development in many fields. Instead of gating and limiting its use as most
-              institutions do, I let myself use AI tools to their full potential and push the
-              limits of what they can do. That way I keep learning about this ever-changing,
-              rapidly improving technology, and it happens to speed up my work and raise its
-              quality.
+              institutions do, I let myself explore these tools to their full potential and push
+              the limits of what they can do. In that way, I continuously learn about this
+              ever-changing, rapidly improving technology, which significantly speeds up my work
+              and raises its quality.
             </p>
             <p>
-              These tools add a layer of abstraction between knowledge and understanding. I
-              believe that layer is what lets us focus on the more important goal of a project.
+              However, I am very much against the use of AI tools to make low-quality,
+              low-effort work, especially art. I use AI tools in my design work, but I heavily
+              tweak the design styles myself till they are of a level I can proudly display.
             </p>
             <p>
-              However, I am very much against using AI tools to make low-quality, low-effort
-              work, especially art. I use AI tools in my design work, but I heavily tweak the
-              design styles myself until they reach a level I would be proud to display.
-            </p>
-            <p>
-              That is why I think it is important to be open about how I use AI in all of my
-              projects and work, and why I created this scale.
+              As such, I built this scale to make it easy to see how much AI was involved in a
+              given project. If you find it useful, please feel free to adopt it for your work
+              too!
             </p>
           </article>
         </div>
@@ -257,10 +260,52 @@ export default function AiUsePage() {
               </tbody>
             </table>
           </div>
+        </div>
+      </section>
 
-          <p className="ai-note">
-            The QR code on each printed mark links back to this page.
-          </p>
+      <section className="hp-band ai-band" aria-labelledby="ai-dl-h">
+        <div className="hp-section">
+          <header className="ai-intro">
+            <h2 className="ai-h2" id="ai-dl-h">Download the marks</h2>
+            <p>
+              Each level comes as a label and a smaller icon, both SVG. Use them to mark your own
+              projects.
+            </p>
+          </header>
+
+          <ul className="ai-dl">
+            {LEVELS.map((l) => (
+              <li key={l.id} className="ai-dl-level" style={lv(l.rgb)}>
+                <h3>{l.code} <span>{l.short}</span></h3>
+                <div className="ai-dl-marks">
+                  {MARKS.map((m) => (
+                    <figure key={m.kind} className="ai-dl-mark">
+                      <div className="ai-dl-well">
+                        <img
+                          src={`/images/ai-use/${l.code}-${m.kind}.svg`}
+                          alt={`${l.code} ${m.kind} mark`}
+                          width={m.w}
+                          height={m.h}
+                          loading="lazy"
+                        />
+                      </div>
+                      <a
+                        href={`/images/ai-use/${l.code}-${m.kind}.svg`}
+                        download={`AI-use-${l.code}-${m.kind}.svg`}
+                        className="ai-dl-btn"
+                        aria-label={`Download the ${l.code} ${m.kind} mark as SVG`}
+                      >
+                        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+                          <path d="M8 2v8M4.5 6.8 8 10.3l3.5-3.5M3 13.5h10" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        {m.label}
+                      </a>
+                    </figure>
+                  ))}
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
@@ -339,8 +384,40 @@ export default function AiUsePage() {
         .ai-cmp tbody th { font-weight: 600; color: #f0ece6; padding-left: 24px; }
         .ai-cmp td { color: rgba(236,232,226,0.74); }
         .ai-cmp tbody tr:nth-child(even) { background: rgba(255,236,210,0.022); }
-        .ai-note { max-width: 720px; margin: 22px auto 0; text-align: center;
-          font-family: 'dmsans'; font-size: 0.92rem; color: var(--hp-ink-dim); }
+
+        /* Downloads: one tile per level, label and icon side by side */
+        .ai-dl { list-style: none; margin: 0 auto; padding: 0; display: grid;
+          grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(12px, 1.6vw, 18px); }
+        .ai-dl-level { padding: 18px 16px 16px; border-radius: 18px; border: 1px solid var(--sa-hairline);
+          border-top: 2px solid rgba(var(--lv), 0.7);
+          background: linear-gradient(180deg, var(--sa-panel-hi), var(--sa-panel-lo));
+          box-shadow: inset 0 1px 0 rgba(255,236,210,0.05), 0 20px 50px -30px rgba(0,0,0,0.85); }
+        .ai-dl-level h3 { font-family: 'oswaldbold'; font-size: 1.2rem; line-height: 1.15; color: rgb(var(--lv)); }
+        .ai-dl-level h3 span { font-family: 'dmsans'; font-weight: 500; font-size: 0.92rem; color: rgba(236,232,226,0.72); margin-left: 4px; }
+        .ai-dl-marks { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+        .ai-dl-mark { margin: 0; display: flex; flex-direction: column; gap: 10px; }
+        .ai-dl-well { display: flex; align-items: center; justify-content: center; aspect-ratio: 1 / 1;
+          border-radius: 12px; background: rgba(0,0,0,0.28); border: 1px solid rgba(255,236,210,0.05); }
+        .ai-dl-well img { display: block; width: 62%; height: auto; }
+        .ai-dl-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px;
+          padding: 6px 10px; border-radius: 10px; text-decoration: none;
+          font-family: 'dmsans'; font-size: 0.86rem; font-weight: 600; color: rgba(244,240,234,0.92);
+          background: rgba(var(--lv), 0.1); border: 1px solid rgba(var(--lv), 0.34); outline: none;
+          transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.25s cubic-bezier(.22,1,.36,1); }
+        .ai-dl-btn svg { color: rgb(var(--lv)); flex: none; }
+        .ai-dl-btn:hover { background: rgba(var(--lv), 0.2); border-color: rgba(var(--lv), 0.6); }
+        .ai-dl-btn:focus-visible { box-shadow: 0 0 0 2px #0b0906, 0 0 0 4px rgba(var(--lv), 0.95); }
+        .ai-dl-btn:active { transform: scale(0.97); }
+        @media (max-width: 1000px) {
+          .ai-dl { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 520px) {
+          .ai-dl { gap: 10px; }
+          .ai-dl-level { padding: 14px 10px 12px; border-radius: 16px; }
+          .ai-dl-level h3 span { display: block; margin: 2px 0 0; }
+          .ai-dl-marks { gap: 8px; margin-top: 10px; }
+          .ai-dl-btn { padding: 6px 6px; font-size: 0.8rem; gap: 4px; }
+        }
 
         @media (max-width: 760px) {
           .ai-level { grid-template-columns: 72px 1fr; }
@@ -369,7 +446,7 @@ export default function AiUsePage() {
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .ai-scale-mark, .ai-cmp-head img { transition: none; }
+          .ai-scale-mark, .ai-cmp-head img, .ai-dl-btn { transition: none; }
           .ai-scale-mark:hover, .ai-cmp-head:hover img { transform: none; }
         }
       `}</style>
