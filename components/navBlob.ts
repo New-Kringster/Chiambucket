@@ -1,9 +1,9 @@
 /*
   navBlob — the geometry behind the nav's merge (components/Nav.tsx).
 
-  The nav's pieces (logo, page pill, "View my work", and on phones the menu
-  button) are all capsules of the same height on one line. As the page
-  scrolls they slide together into one bar, and where two neighbours come
+  The nav's pieces (the logo, the page pill, and on phones the menu button)
+  are all capsules of the same height on one line. As the page scrolls they
+  slide together into one bar, and where two neighbours come
   close a neck of glass reaches across and thickens until they fuse, like
   metaballs. Everything here is plain path strings: the union is drawn as one
   SVG path (clockwise subpaths, so a nonzero fill unions them) that both

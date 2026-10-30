@@ -7,18 +7,22 @@ import './nav.css';
 
 const PORTFOLIO_ID = 'portfolio-items-holder';
 
-const LINKS = [
-  { href: '/', label: 'Home' },
-  { href: '/photography', label: 'Photography' },
-  { href: '/homelab', label: 'HomeLab' },
-  { href: '/contact', label: 'Contact' },
+type Key = 'home' | 'work' | 'photography' | 'homelab' | 'contact';
+const LINKS: { key: Key; href: string; label: string }[] = [
+  { key: 'home', href: '/', label: 'Home' },
+  { key: 'work', href: `/#${PORTFOLIO_ID}`, label: 'My work' },
+  { key: 'photography', href: '/photography', label: 'Photography' },
+  { key: 'homelab', href: '/homelab', label: 'HomeLab' },
+  { key: 'contact', href: '/contact', label: 'Contact' },
 ];
 
 /*
   The nav is a row of separate small pieces rather than one long bar: the logo
-  on its own, a segmented pill of pages (the current page is the light inner
-  pill), and a "View my work" pill on the right. On phones the page pill folds
-  into a round menu button that opens a small dropdown. Styles: components/nav.css.
+  on its own and a segmented pill of pages. The current one sits in a dark
+  inner pill, the mark, which slides from item to item: on the homepage it
+  moves from Home to My work while the projects section is in the middle of
+  the screen, and back again. On phones the page pill folds into a round menu
+  button that opens a small dropdown. Styles: components/nav.css.
 
   As the page scrolls, the pieces slide together and merge into one compact
   bar in the middle, like metaballs: the logo gets a chip that swells out of a
@@ -42,26 +46,78 @@ export default function Nav() {
   const headerRef = useRef<HTMLElement>(null);
   const logoRef = useRef<HTMLAnchorElement>(null);
   const linksRef = useRef<HTMLElement>(null);
-  const ctaRef = useRef<HTMLAnchorElement>(null);
+  const markRef = useRef<HTMLSpanElement>(null);
   const glassRef = useRef<HTMLDivElement>(null);
   const edgeRef = useRef<SVGPathElement>(null);
   const close = () => setOpen(false);
+  // On the homepage: is the projects section in the middle of the screen?
+  const [atWork, setAtWork] = useState(false);
 
-  const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
+  const active: Key | null = pathname === '/' ? (atWork ? 'work' : 'home')
+    : LINKS.find((l) => l.key !== 'home' && l.key !== 'work' && pathname.startsWith(l.href))?.key ?? null;
 
-  /* Already on the homepage, scroll to the projects directly. Leaving it to the
-     href would do nothing on a repeat click, because the URL still carries
-     #portfolio-items-holder from last time and the router sees no change. */
-  const goToPortfolio = (e: React.MouseEvent) => {
+  /* On the homepage, Home and My work scroll the page instead of navigating.
+     Leaving it to the href would do nothing on a repeat click, because the URL
+     still carries #portfolio-items-holder from last time and the router sees
+     no change. Elsewhere they are ordinary links to the homepage. */
+  const scrollTo = (e: React.MouseEvent, key: 'home' | 'work') => {
     close();
     if (pathname !== '/') return;
     e.preventDefault();
-    const target = document.getElementById(PORTFOLIO_ID);
-    if (!target) return;
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+    setAtWork(key === 'work');
+    if (key === 'home') {
+      window.scrollTo({ top: 0, behavior });
+      window.history.replaceState(null, '', '/');
+      return;
+    }
+    document.getElementById(PORTFOLIO_ID)?.scrollIntoView({ behavior, block: 'start' });
     window.history.replaceState(null, '', `/#${PORTFOLIO_ID}`);
   };
+
+  // Watch the projects section on the homepage: My work lights up while it
+  // crosses the middle of the screen.
+  useEffect(() => {
+    setAtWork(false);
+    if (pathname !== '/') return;
+    const section = document.getElementById(PORTFOLIO_ID);
+    if (!section) return;
+    const io = new IntersectionObserver(([e]) => setAtWork(e.isIntersecting), { rootMargin: '-50% 0px -50% 0px' });
+    io.observe(section);
+    return () => io.disconnect();
+  }, [pathname]);
+
+  /* The mark: one dark pill behind the items, cut to the current item with
+     clip-path. Its two edges are separate animated lengths, and the leading
+     edge moves first, so it stretches towards the next item and then catches
+     up, a small jump. The items keep their own background until it is placed. */
+  const placed = useRef(false);
+  useEffect(() => {
+    const pill = linksRef.current;
+    const mark = markRef.current;
+    if (!pill || !mark) return;
+    const place = () => {
+      const item = active ? pill.querySelector<HTMLElement>(`[data-key="${active}"]`) : null;
+      if (!item) { pill.classList.remove('has-mark'); placed.current = false; return; }
+      const l = item.offsetLeft;
+      const r = pill.clientWidth - (item.offsetLeft + item.offsetWidth);
+      const prevL = parseFloat(mark.style.getPropertyValue('--mark-l')) || 0;
+      mark.classList.toggle('to-right', l > prevL);
+      mark.style.setProperty('--mark-l', `${l}px`);
+      mark.style.setProperty('--mark-r', `${r}px`);
+      if (!placed.current) {
+        // first placement: no slide in from nowhere
+        mark.classList.remove('is-live');
+        pill.classList.add('has-mark');
+        placed.current = true;
+        requestAnimationFrame(() => requestAnimationFrame(() => mark.classList.add('is-live')));
+      }
+    };
+    place();
+    document.fonts?.ready.then(place);
+    window.addEventListener('resize', place);
+    return () => window.removeEventListener('resize', place);
+  }, [active]);
 
   // The phone menu closes on Escape (focus returns to its button) or a tap outside it.
   useEffect(() => {
@@ -105,7 +161,7 @@ export default function Nav() {
     let on = false;
 
     const measure = () => {
-      const all = [logoRef.current, linksRef.current, ctaRef.current, menuRef.current];
+      const all = [logoRef.current, linksRef.current, menuRef.current];
       all.forEach((el) => { if (el) el.style.translate = ''; });
       sheet.style.translate = '';
       const shown = all.filter((el): el is HTMLElement => !!el && el.getClientRects().length > 0);
@@ -120,7 +176,10 @@ export default function Nav() {
       const total = pieces.reduce((sum, q) => sum + q.w, 0) - MERGED_OVERLAP * (pieces.length - 1);
       let x = (window.innerWidth - total) / 2;
       for (const q of pieces) { q.dx = x - q.x0; x += q.w - MERGED_OVERLAP; }
+      // the phone dropdown follows the menu button, but never past the left edge of the screen
       menuDx = pieces.find((q) => q.el === menuRef.current)?.dx ?? 0;
+      const sheetBox = sheet.getBoundingClientRect();
+      if (sheetBox.width) menuDx = Math.max(menuDx, 14 - (sheetBox.right - sheet.offsetWidth));
     };
 
     const draw = () => {
@@ -157,7 +216,7 @@ export default function Nav() {
       if (!on) {
         cancelAnimationFrame(frame);
         frame = 0;
-        [logoRef.current, linksRef.current, ctaRef.current, menuRef.current, sheet].forEach((el) => { if (el) el.style.translate = ''; });
+        [logoRef.current, linksRef.current, menuRef.current, sheet].forEach((el) => { if (el) el.style.translate = ''; });
         return;
       }
       measure();
@@ -182,14 +241,15 @@ export default function Nav() {
     };
   }, [pathname]);
 
-  const links = (onClick?: () => void) =>
+  const links = () =>
     LINKS.map((l) => (
       <Link
-        key={l.href}
+        key={l.key}
         href={l.href}
-        className={`pnav-item${isActive(l.href) ? ' is-active' : ''}`}
-        aria-current={isActive(l.href) ? 'page' : undefined}
-        onClick={onClick}
+        data-key={l.key}
+        className={`pnav-item${active === l.key ? ' is-active' : ''}`}
+        aria-current={active === l.key ? (l.key === 'work' ? 'location' : 'page') : undefined}
+        onClick={l.key === 'home' || l.key === 'work' ? (e) => scrollTo(e, l.key as 'home' | 'work') : close}
       >
         {l.label}
       </Link>
@@ -235,18 +295,16 @@ export default function Nav() {
         </svg>
       </div>
 
-      <Link href="/" className="pnav-logo" onClick={close} ref={logoRef}>
+      <Link href="/" className="pnav-logo" onClick={(e) => scrollTo(e, 'home')} ref={logoRef}>
         <img src="/images/logo.webp" alt="Chiambucket home" />
       </Link>
 
       <nav className="pnav-pill pnav-links" aria-label="Main" ref={linksRef}>
+        <span className="pnav-mark" ref={markRef} aria-hidden="true" />
         {links()}
       </nav>
 
       <div className="pnav-right">
-        <Link href={`/#${PORTFOLIO_ID}`} className="pnav-pill pnav-cta" onClick={goToPortfolio} ref={ctaRef}>
-          View my work
-        </Link>
         <button
           ref={menuRef}
           type="button"
@@ -262,7 +320,7 @@ export default function Nav() {
       </div>
 
       <div ref={sheetRef} id="pnav-sheet" className={`pnav-sheet${open ? ' is-open' : ''}`}>
-        <nav aria-label="Main (menu)">{links(close)}</nav>
+        <nav aria-label="Main (menu)">{links()}</nav>
       </div>
     </header>
   );
