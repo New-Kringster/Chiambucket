@@ -13,6 +13,7 @@
      /contact      noon     clear blue midday
      /homelab      teal     cool, misty teal morning
      /credits      mist     soft lilac haze (also /comingsoon)
+     /ai-use       dusk     just after sunset, violet sky, first stars (dark glass)
      everything else (the articles and the 404 page): night, moon and stars
    ──────────────────────────────────────────────────────────────── */
 export const THEME_MAP: Record<string, string> = {
@@ -22,6 +23,7 @@ export const THEME_MAP: Record<string, string> = {
   '/homelab': 'teal',
   '/credits': 'mist',
   '/comingsoon': 'mist',
+  '/ai-use': 'dusk',
 };
 
 export const DEFAULT_THEME = 'night';
@@ -31,7 +33,8 @@ export function themeForPath(pathname: string): string {
   return THEME_MAP[p] ?? DEFAULT_THEME;
 }
 
-export const isNight = (theme: string) => theme === 'night';
+// Pages whose scene is dark enough for the dark glass (app/scenes.css .is-night).
+export const isNight = (theme: string) => theme === 'night' || theme === 'dusk';
 
 /** Write the theme to <html>: data-theme plus .is-day or .is-night. */
 export function applyTheme(theme: string) {

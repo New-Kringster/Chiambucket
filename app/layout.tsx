@@ -35,7 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Set the page's theme (and .is-day / .is-night) before paint to avoid a colour flash */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){var m=${JSON.stringify(THEME_MAP)};var p=location.pathname;if(p.length>1&&p.slice(-1)==='/')p=p.slice(0,-1);var d=document.documentElement;var t=m[p]||${JSON.stringify(DEFAULT_THEME)};d.setAttribute('data-theme',t);d.classList.add('sensory-active',t==='night'?'is-night':'is-day');var u=navigator.userAgentData;if(u&&u.brands&&u.brands.some(function(b){return /Chrom/.test(b.brand)}))d.classList.add('lg-refract');})();`,
+            __html: `(function(){var m=${JSON.stringify(THEME_MAP)};var p=location.pathname;if(p.length>1&&p.slice(-1)==='/')p=p.slice(0,-1);var d=document.documentElement;var t=m[p]||${JSON.stringify(DEFAULT_THEME)};d.setAttribute('data-theme',t);d.classList.add('sensory-active',(t==='night'||t==='dusk')?'is-night':'is-day');var u=navigator.userAgentData;if(u&&u.brands&&u.brands.some(function(b){return /Chrom/.test(b.brand)}))d.classList.add('lg-refract');})();`,
           }}
         />
         <link rel="stylesheet" href="/mainstyle.css" />

@@ -116,6 +116,33 @@ html[data-theme="night"] {
   }
 }
 
+/* ── Dusk (AI use): the sun just set behind the hill on the left ── */
+html[data-theme="dusk"] {
+  --sl-sky: #3a3560;
+  & .sl-sky {
+    background:
+      radial-gradient(ellipse 120vmax 55vmax at 14% 82%,
+        #ffc89e 0%, #f7a585 8%, #d98493 18%, #a8749f 30%, rgba(120, 100, 160, 0.55) 44%, rgba(70, 66, 120, 0) 62%),
+      linear-gradient(180deg, #1d1f42 0%, #2c2b55 30%, #4a3f70 60%, #7d5c86 82%, #b07a8c 100%);
+  }
+  & .sl-wash {
+    background:
+      radial-gradient(70% 50% at 90% 6%, rgba(40, 46, 100, 0.45) 0%, rgba(40, 46, 100, 0) 70%),
+      radial-gradient(95% 26% at 40% 76%, rgba(255, 170, 130, 0.32) 0%, rgba(255, 170, 130, 0) 72%);
+  }
+  & .sl-sun-bloom {
+    background: radial-gradient(circle 40vmax at 14% 82%,
+      rgba(255, 210, 170, 0.55) 0%, rgba(255, 180, 150, 0.22) 30%, rgba(255, 170, 140, 0) 70%);
+    transform-origin: 14% 82%;
+  }
+}
+/* at dusk only the brightest stars are out, high in the sky */
+.sl-stars.is-faint {
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.6) 26%, transparent 48%);
+  mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.6) 26%, transparent 48%);
+}
+.sl-scene.is-drawn .sl-stars.is-faint:not(.sl-twinkle) { opacity: 0.55; }
+
 /* Stars, and the few brighter ones that twinkle (SunlitScene drawStars) */
 .sl-stars { opacity: 0; transition: opacity 1.2s ease-out; }
 .sl-scene.is-drawn .sl-stars { opacity: 1; }

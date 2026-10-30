@@ -77,6 +77,7 @@ export type Preset = {
   clouds: CloudSpot[];
   grass: Grade[];
   night?: boolean; // the moon instead of the sun, stars, fireflies instead of birds
+  stars?: boolean; // the first faint stars (dusk), without the moon
 };
 
 const MORNING_CLOUDS: CloudSpot[] = [
@@ -166,6 +167,29 @@ export const PRESETS: Record<string, Preset> = {
       { x: 0.5, y: 0.765, w: 0.95, h: 0.05, k: 0.46, drift: 2.5, secs: 120 },
     ],
     grass: [{ op: 'saturation', color: 'rgba(128,128,128,0.45)' }, { op: 'multiply', color: 'rgba(228,216,234,0.55)' }],
+  },
+  // AI use: dusk. The sun just set behind the hill on the left, a warm glow
+  // along the horizon, a violet sky and the first stars, clouds lit from below.
+  dusk: {
+    sun: { x: 0.14, y: 0.8 },
+    haze: '255,176,140',
+    tints: ['120,96,168', '168,110,150', '96,90,160', '214,138,128', '140,104,170'],
+    beam: '255,190,150',
+    ray: ['255,190,160', '255,214,186'],
+    rays: 0.35,
+    cloud: { stops: ['#f4c2ae', '#c793a6', '#7c678f', '#4a4670'], rim: '255,204,176', under: '58,54,96', k: 0.85 },
+    clouds: [
+      { x: 0.7, y: 0.2, w: 0.6, h: 0.09, k: 0.55, drift: 4, secs: 90 },
+      { x: 0.28, y: 0.4, w: 0.42, h: 0.07, k: 0.5, drift: 5, secs: 100 },
+      { x: 0.5, y: 0.3, w: 0.26, h: 0.05, k: 0.34, drift: 6, secs: 70 },
+      { x: 0.5, y: 0.765, w: 0.95, h: 0.045, k: 0.4, drift: 2.5, secs: 126 },
+    ],
+    grass: [
+      { op: 'multiply', color: '#5a5272' },
+      { op: 'multiply', color: 'rgba(120,104,150,0.5)' },
+      { op: 'screen', band: ['rgba(255,150,110,0.3)', 'rgba(255,150,110,0)'], depth: 0.12 },
+    ],
+    stars: true,
   },
   // Articles: night. The moon high on the right, stars, moonlit clouds, dark grass.
   night: {
@@ -807,7 +831,7 @@ export default function SunlitScene({ theme, home }: SceneProps) {
       drawnH = h;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       drawSky(sky, w, h, dpr, p);
-      if (p.night && starsRef.current && twinkleRef.current) {
+      if ((p.night || p.stars) && starsRef.current && twinkleRef.current) {
         drawStars(starsRef.current, w, h, dpr, false);
         drawStars(twinkleRef.current, w, h, dpr, true);
       }
@@ -1016,8 +1040,8 @@ export default function SunlitScene({ theme, home }: SceneProps) {
         <div className="sl-sky" />
         <div className="sl-wash" />
         <canvas className="sl-sky-canvas" ref={skyRef} />
-        {preset.night && <canvas className="sl-stars" ref={starsRef} />}
-        {preset.night && <canvas className="sl-stars sl-twinkle" ref={twinkleRef} />}
+        {(preset.night || preset.stars) && <canvas className={`sl-stars${preset.stars ? ' is-faint' : ''}`} ref={starsRef} />}
+        {(preset.night || preset.stars) && <canvas className={`sl-stars sl-twinkle${preset.stars ? ' is-faint' : ''}`} ref={twinkleRef} />}
         <div className="sl-clouds">
           {preset.clouds.map((c, i) => (
             <canvas
