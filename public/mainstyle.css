@@ -3242,25 +3242,32 @@ html.sensory-active .hp-pf-card.is-soon:hover {
 
 /* =========================================================
    AI MARKS (components/AiMark.tsx)
-   A project's level on the Scale of AI use, as the official icon mark,
-   linking to that level on /ai-use. On a project image it sits in the
-   top-right corner, like a rating on a game box, above the peek overlay;
-   in a tag row it sits beside the tags.
+   A project's level on the Scale of AI use, as the official label mark
+   (84 x 94: the level, then its words), linking to that level on /ai-use.
+   On a project image it sits in the top-right corner, like a rating on a
+   game box, above the peek overlay; in a tag or action row it sits beside
+   the tags. The label's small line needs about 72px of height to stay
+   legible, so only the compact cards go smaller.
    ========================================================= */
-.ai-mark { --ai-h: 30px; position: relative; z-index: 5; display: inline-flex; flex: none; align-self: center; line-height: 0; border-radius: 9px;
+.ai-mark { --ai-h: 72px; position: relative; z-index: 5; display: inline-flex; flex: none; align-self: center; line-height: 0; border-radius: 9px;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
 .ai-mark img, .hp-pf-thumb .ai-mark img, .hp-spot-media .ai-mark img, .hp-rd-hero .ai-mark img {
-  display: block; width: auto; height: var(--ai-h); object-fit: contain; transform: none; transition: none;
-  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.38)); }
-.ai-mark:hover { transform: translateY(-1px) scale(1.06); }
-.ai-mark:active { transform: scale(0.96); }
+  display: block; width: auto; max-width: none; height: var(--ai-h); object-fit: contain; transform: none; transition: none;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.4)); }
+.ai-mark:hover { transform: translateY(-1px) scale(1.04); }
+.ai-mark:active { transform: scale(0.97); }
 .ai-mark:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 .hp-pf-thumb > .ai-mark, .hp-spot-media > .ai-mark { position: absolute; top: 12px; right: 12px; }
-.hp-spot-media > .ai-mark { --ai-h: 36px; top: 14px; right: 14px; }
-.hp-pf-card.is-compact .hp-pf-thumb > .ai-mark { --ai-h: 22px; top: 8px; right: 8px; border-radius: 6px; }
-.hp-rd-hero-tags .ai-mark { --ai-h: 30px; }
-.art-tags .ai-mark { --ai-h: 32px; }
+.hp-spot-media > .ai-mark { --ai-h: 88px; top: 14px; right: 14px; }
+.hp-pf-card.is-compact .hp-pf-thumb > .ai-mark { --ai-h: 58px; top: 8px; right: 8px; border-radius: 7px; }
+.hp-rd-hero-tags { align-items: flex-end; }
+.hp-rd-hero-tags .ai-mark { --ai-h: 68px; align-self: flex-end; }
+.art-tags { align-items: center; }
+.art-tags .ai-mark { --ai-h: 76px; }
+/* OCR Reader hero: under the lead, on the lead's left edge (the copy column is right-aligned) */
+.ws-hero-copy > .ai-mark { --ai-h: 76px; align-self: flex-end; margin: 2.6vh calc(min(100%, 440px) - var(--ai-h) * 84 / 94) 0 0; }
 @media (max-width: 560px) {
-  .hp-spot-media > .ai-mark { --ai-h: 30px; top: 10px; right: 10px; }
+  .hp-spot-media > .ai-mark { --ai-h: 68px; top: 10px; right: 10px; }
+  .art-tags .ai-mark, .ws-hero-copy > .ai-mark { --ai-h: 68px; }
 }
 @media (prefers-reduced-motion: reduce) { .ai-mark { transition: none; } .ai-mark:hover { transform: none; } }

@@ -491,6 +491,7 @@ export default function HomeClient() {
               <div className="hp-spot-media">
                 <img src="/images/ocr-reader-flagship.webp" alt="OCR Reader with DrumNet: a fully vertically-integrated OCR water meter solution, built on an ESP32-S3 with LoRaWAN and a KiCad PCB" loading="lazy" />
                 <span className="hp-spot-badge">Flagship project</span>
+                <AiMark project="proj-waterslop" />
               </div>
               <div className="hp-spot-solo-body">
                 <div className="hp-spot-stats">

@@ -12,6 +12,7 @@ import PairCompare from './Compare';
 import { LoopRing, AgentBadges } from './Agents';
 import PageFx from './PageFx';
 import { IcRead, IcOut } from '../../components/Icons';
+import AiMark from '../../components/AiMark';
 import './waterslop.css';
 import './article.css';
 import './story.css';
@@ -386,6 +387,7 @@ export default function WaterslopPage() {
           <div className="ws-hero-copy">
             <h1><span>OCR</span><span>Reader</span></h1>
             <p className="ws-hero-lead">A low-cost, low-power, vision-based OCR water meter reader. A 693K-parameter neural network, DrumNet V10, runs entirely on the reader&rsquo;s ESP32-S3: it finds the digit window, reads each drum, and sends the number home over LoRaWAN in about 2 seconds. The target is 99 % accuracy on a 2-year battery; the current build reads 56 % of readings correctly, with plans to improve.</p>
+            <AiMark project="proj-waterslop" />
             <Contents />
             <div className="ws-hero-actions">
               <a className="ws-btn" href="#brief"><IcRead /> Start reading</a>
