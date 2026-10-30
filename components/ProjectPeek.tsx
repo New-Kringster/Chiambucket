@@ -18,13 +18,13 @@ import { IcRead, IcScreen, iconForUrl } from './Icons';
 
 /* Project order = the homepage gallery order (also the ALL_PROJECTS order). */
 export const PEEK_ORDER: string[] = [
-  'proj-june', 'proj-beadreader', 'proj-lora', 'proj-lumen', 'proj-ema', 'proj-pandus', 'proj-elecf',
+  'proj-june', 'proj-beadreader', 'proj-lora', 'proj-waterslop', 'proj-lumen', 'proj-ema', 'proj-pandus', 'proj-elecf',
   'proj-kauli', 'proj-sol', 'proj-copyboard', 'proj-webdev', 'proj-mc',
 ];
 
 const TITLES: Record<string, string> = {
   'proj-june': 'Project June', 'proj-lora': 'LoRA Messenger', 'proj-lumen': 'LUMEN',
-  'proj-beadreader': 'BeadReader',
+  'proj-beadreader': 'BeadReader', 'proj-waterslop': 'OCR Reader',
   'proj-ema': 'EMA Smart Home', 'proj-pandus': 'Pandus Dispenser', 'proj-elecf': 'ELEC-F Concept',
   'proj-kauli': 'Kauli Concept', 'proj-sol': 'Series One Light', 'proj-copyboard': 'Copy Board',
   'proj-webdev': 'Web Development', 'proj-mc': 'Minecraft Live Map',
@@ -109,6 +109,20 @@ export function PeekModalContent({ id }: { id: string }) {
           {chapter('02', 'Fitting it on a no-PSRAM board', <><p>The WROOM left about 33&nbsp;KB of free RAM with WiFi up, and a voice clip is roughly 96&nbsp;KB, so the audio is streamed over a raw socket as it records, never held whole. Peak memory during an upload is around 10&nbsp;KB.</p><img className="hp-rd-fig" src="/images/lumen-mic.webp" alt="The INMP441 microphone wired to the ESP32" loading="lazy" /></>)}
           {chapter('03', 'A room you can talk to', <><p>Lights, a NeoPixel, a fan, a servo and a buzzer respond, with a local auto-mode and a web dashboard. Ask it to &ldquo;set the brightness to the humidity&rdquo; and it reads the live sensor and does exactly that.</p><img className="hp-rd-fig" src="/images/lumen-dashboard.webp" alt="The LUMEN web dashboard" loading="lazy" /></>)}
           {cta('See the full build', 'The memory wall, the wiring and the interactive demo.', 'Read the full article', '/lumen')}
+        </div>
+      </>
+    );
+    case 'proj-waterslop': return (
+      <>
+        {hero('/images/waterslop-pf-context.webp', 'OCR Reader: a water meter register seen through the reader\u2019s camera', ['School Project'], 'highlight')}
+        <div className="hp-rd-body">
+          <h2 className="hp-md-title">OCR Reader</h2>
+          <p className="hp-md-meta">NYP ECE · ESP32-S3 · OV2640 · DrumNet · LoRaWAN · KiCad · Onshape</p>
+          <p className="hp-rd-lead">A low-cost, battery-powered camera that mounts over a mechanical water meter and reads the drums with a 693K-parameter neural network running entirely on an ESP32-S3, then sends the number home over LoRaWAN.</p>
+          {chapter('01', 'DrumNet, on the chip', <><p>A spotter finds the digit window, a refiner pins its edges by averaging feature-map columns and rows, and three readers vote on every drum, carry rule included. All INT8, about 2 seconds per reading.</p><img className="hp-rd-fig" src="/images/waterslop/dia-vote.webp" alt="The DrumNet ensemble vote and reading" loading="lazy" /></>)}
+          {chapter('02', 'Trained by six agents', <><p>MeterSim renders labelled meters, SimGen2 fakes the camera, and six AI agents booked a scheduler for the GPU and the Jetson rig, running 24/7 over Tailscale and T3 Code.</p><img className="hp-rd-fig" src="/images/waterslop/metersim-designs.webp" alt="The nine meter designs in MeterSim" loading="lazy" /></>)}
+          {chapter('03', 'A board, a shell, a 9-hour reflow', <><p>A 4-layer KiCad PCB with battery management, LoRa and PWM LEDs, assembled by hand, debugged under a microscope, and housed in a toolless 3D-printed enclosure and meter adapter.</p><img className="hp-rd-fig" src="/images/waterslop/pcb-3d-top.webp" alt="3D render of the Prototype V2 board" loading="lazy" /></>)}
+          {cta('Walk the whole pipeline', 'A scroll-driven story: the DrumNet run step by step, the 3D board tour, a ConfigKing simulator and the full report.', 'Read the full article', '/waterslop')}
         </div>
       </>
     );
@@ -265,6 +279,7 @@ function PeekItem({ id, first, index }: { id: string; first: boolean; index: num
 /* The cover each project's reader opens with, for the peek of the next one. */
 const COVERS: Record<string, string> = {
   'proj-june': '/images/ProjJuneBanner1.webp', 'proj-lora': '/images/borlocator-pf-context.webp',
+  'proj-waterslop': '/images/waterslop-pf-context.webp',
   'proj-lumen': '/images/lumen-pf-context.webp', 'proj-beadreader': '/images/beadreader-pf-context.webp',
   'proj-ema': '/images/Ema-pf-context.webp', 'proj-pandus': '/images/pandusarticle.webp',
   'proj-elecf': '/images/elef2-pf-context.webp', 'proj-kauli': '/images/kauli3-pf-context.webp',
