@@ -4,9 +4,8 @@ import Script from 'next/script';
 import InfoModal, { type InfoItem } from '../components/InfoModal';
 import LazyVideo from '../components/LazyVideo';
 import { PeekFeed } from '../components/ProjectPeek';
-import SunlitScene, { SunlitField } from '../components/SunlitScene';
+import { SunlitField } from '../components/SunlitScene';
 import PosterHero from './PosterHero';
-import './sunlit.css';
 import './about.css';
 
 /* About bento tiles → detail pop-ups. Each skill tile lists where it was used;
@@ -304,7 +303,6 @@ export default function HomeClient() {
 
   return (
     <>
-      <SunlitScene />
       <Script src="https://photos.chiambucket.com/embed/lychee-embed.js?v=1.0.0" strategy="afterInteractive" onLoad={initLychee} />
 
       {/* SVG symbol definitions */}
@@ -316,10 +314,9 @@ export default function HomeClient() {
         <symbol id="icon-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 6.05 6.6.78-4.87 4.5 1.28 6.52L12 17.9 6.09 20.85l1.28-6.52L2.5 9.33l6.6-.78z"/></symbol>
       </svg>
 
-      {/* Atmosphere backdrop + page-agnostic reskin are global now:
-          Backdrop mounts in app/layout.tsx, tokens/panels/nav/footer live in
-          the DARK SENSORY section of mainstyle.css. Only homepage-specific
-          retuning stays here. */}
+      {/* The painted scene and the page-agnostic styles are global: SceneShell
+          mounts the scene in app/layout.tsx, and the day glass lives in
+          app/sunlit.css. Only homepage-specific retuning stays here. */}
       <main>
 
         {/* ═══════ DARK SENSORY, homepage-specific retuning ═══════ */}

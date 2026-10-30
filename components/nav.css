@@ -53,8 +53,7 @@
 /* set on the links themselves: a global `a` rule would otherwise win over inheritance */
 .pnav-item { font-family: 'dmsans', system-ui, sans-serif; }
 
-html[data-theme="indigo"] .pnav,
-html[data-theme="datacenter"] .pnav {
+html.is-night .pnav {
   --nv-glass:
     radial-gradient(130% 90% at 0% 0%, rgba(226, 233, 255, 0.14) 0%, rgba(226, 233, 255, 0) 50%),
     linear-gradient(160deg, rgba(26, 31, 50, 0.7), rgba(11, 14, 24, 0.62));
@@ -72,7 +71,7 @@ html[data-theme="datacenter"] .pnav {
   --nv-blob-rim: rgba(226, 233, 255, 0.32);
   --nv-blob-rim2: rgba(226, 233, 255, 0.1);
 }
-html[data-theme="sunlit"] .pnav {
+html.is-day .pnav {
   --nv-glass:
     radial-gradient(130% 90% at 0% 0%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 50%),
     linear-gradient(160deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.56));
@@ -159,8 +158,29 @@ html[data-theme="sunlit"] .pnav {
 /* the items paint over the mark */
 :is(.pnav-links, .pnav-work) > .pnav-item { position: relative; }
 
-/* My work: one more option, in a pill of its own until it merges onto the list */
-.pnav-work { padding: 3px; }
+/* My work: in a pill of its own until it merges onto the list. While it stands
+   alone it is lit, a dark pill like the current item, so it reads as the way
+   in; Nav.tsx dims --lit to 0 as it joins the list and it becomes one more
+   option (the mark lights it again on the projects). */
+.pnav-work { padding: 3px; --lit: 1; --ink: 1; }
+.pnav-work > .pnav-item {
+  isolation: isolate;
+  color: color-mix(in srgb, var(--nv-active-text) calc(var(--ink) * 100%), var(--nv-text));
+}
+.pnav-work > .pnav-item:not(.is-active) { text-shadow: 0 0 6px rgba(0, 0, 0, calc(var(--ink) * 0.25)); }
+html.is-day .pnav-work > .pnav-item:not(.is-active) { text-shadow: 0 0 6px rgba(255, 255, 255, calc((1 - var(--ink)) * 0.9)); }
+.pnav-work > .pnav-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--nv-active);
+  box-shadow: inset 1px 1px 0 -0.5px rgba(255, 255, 255, 0.35);
+  opacity: var(--lit);
+  transition: filter 0.2s ease;
+}
+.pnav-work > .pnav-item:hover::before { filter: brightness(1.15); }
 
 .pnav-item {
   display: inline-flex;
@@ -317,5 +337,5 @@ html[data-theme="sunlit"] .pnav {
     -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
     background: rgba(26, 21, 15, 0.97);
   }
-  html[data-theme="sunlit"] :is(.pnav-pill, .pnav-circle, .pnav.is-scrolled .pnav-logo, .pnav-sheet) { background: rgba(248, 249, 243, 0.97); }
+  html.is-day :is(.pnav-pill, .pnav-circle, .pnav.is-scrolled .pnav-logo, .pnav-sheet) { background: rgba(248, 249, 243, 0.97); }
 }

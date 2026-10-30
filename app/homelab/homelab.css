@@ -405,3 +405,107 @@
   .hl2-map-controls { flex-direction: column; align-items: flex-start; }
   .hl2-statusbar .hl2-sep { display: none; }
 }
+
+/* ═══════════ DAY: the teal-morning scene (html.is-day, lib/theme.ts) ═══════════
+   The same page in light glass: deep teal ink for the accents, pine ink for
+   text, white glass panels with a bright rim, the status lights kept green
+   and ember. Overrides the dark values above; the tokens are re-declared on
+   the portaled modal too. */
+html.is-day :is(.hl2, .hl2-modal-scrim) {
+  --dc-cyan: #1d6f63;
+  --dc-online: #1b8f5a;
+  --dc-warn: #c2532b;
+  --dc-ink: #182c29;
+  --dc-dim: rgba(24, 44, 41, 0.74);
+  --dc-line: rgba(24, 44, 41, 0.13);
+  --dc-glass: radial-gradient(130% 90% at 0% 0%, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0) 48%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.26) 55%, rgba(255, 255, 255, 0.36) 100%);
+  --dc-grid: rgba(24, 74, 70, 0.07);
+  --hp-indigo: #4459b8;
+}
+html.is-day .hl2 ::selection { background: rgba(29, 111, 99, 0.24); color: #182c29; }
+
+/* panels: white glass with a bright rim, frosted where the browser allows */
+html.is-day :is(.hl2-pillar, .hl2-machine, .hl2-storage-col, .hl2-svc, .hl2-statusbar, .hl2-map-wrap) {
+  background: var(--dc-glass);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  -webkit-backdrop-filter: blur(14px) saturate(160%) !important; backdrop-filter: blur(14px) saturate(160%) !important;
+  box-shadow: inset 1.5px 1.5px 0 -0.5px rgba(255, 255, 255, 0.95), inset -1px -1px 0 -0.5px rgba(255, 255, 255, 0.5), 0 18px 40px -22px rgba(24, 60, 56, 0.45);
+}
+html.is-day :is(.hl2-pillar, .hl2-machine, .hl2-svc):hover {
+  border-color: rgba(255, 255, 255, 0.95);
+  box-shadow: inset 1.5px 1.5px 0 -0.5px rgba(255, 255, 255, 0.95), 0 26px 52px -24px rgba(24, 60, 56, 0.55);
+}
+html.is-day .hl2-band-alt { background: none; border-color: rgba(24, 44, 41, 0.1); }
+html.is-day .hl2-svc.featured { border-color: rgba(29, 111, 99, 0.45); }
+
+/* headings: pine ink, the gradient ones pine to teal */
+html.is-day :is(.hl2-title, .hl2-pillar h3, .hl2-machine-head h3, .hl2-sub, .hl2-svc-name, .hl2-road-name b,
+  .hl2-rackreal-text h3, .hl2-detail-head h4, .hl2-modal-head h3, .hl2-smodal-id h3) { color: #182c29; text-shadow: none; }
+html.is-day :is(.hl2-head-title, .hl2-cta-title) {
+  background: linear-gradient(92deg, #182c29, #2f6d63); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+html.is-day .hl2-title em { background: linear-gradient(102deg, #1d6f63, #2c8f7b 60%, #3f9c84); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+html.is-day .hl2-stat b { background: linear-gradient(180deg, #182c29, #2f6d63); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+html.is-day .hl2-head-n { -webkit-text-stroke-color: rgba(29, 111, 99, 0.45); }
+html.is-day :is(.hl2-mission-lead) { color: #1f3532; }
+
+/* buttons: deep teal glass, and white glass for the ghost ones */
+html.is-day .hl2-btn {
+  color: #f2fbf8; background: linear-gradient(160deg, rgba(38, 112, 100, 0.92), rgba(24, 80, 72, 0.9));
+  border: 1px solid rgba(240, 255, 250, 0.22);
+  box-shadow: inset 1.5px 1.5px 0 -0.5px rgba(240, 255, 250, 0.45), 0 12px 26px -12px rgba(18, 64, 58, 0.65); }
+html.is-day .hl2-btn:hover { box-shadow: inset 1.5px 1.5px 0 -0.5px rgba(240, 255, 250, 0.45), 0 18px 34px -14px rgba(18, 64, 58, 0.7); filter: brightness(1.06); }
+html.is-day .hl2-btn.ghost { color: #182c29; background: rgba(255, 255, 255, 0.5); border-color: rgba(255, 255, 255, 0.85);
+  box-shadow: inset 1.5px 1.5px 0 -0.5px rgba(255, 255, 255, 0.95), 0 8px 20px -12px rgba(24, 60, 56, 0.45); }
+html.is-day .hl2-btn.ghost:hover { background: rgba(255, 255, 255, 0.72); border-color: #fff; }
+html.is-day :is(.hl2-btn, .hl2-filter, .hl2-legend-item):focus-visible { outline: 2px solid #182c29; outline-offset: 2px; }
+
+/* inner tiles and chips: whiter glass inside the panels */
+html.is-day :is(.hl2-spec > div, .hl2-smodal-facts > div) { background: rgba(255, 255, 255, 0.55); }
+html.is-day :is(.hl2-spec, .hl2-smodal-facts) { background: rgba(24, 44, 41, 0.1); border-color: rgba(24, 44, 41, 0.1); }
+html.is-day :is(.hl2-tier, .hl2-mv-step) { background: rgba(255, 255, 255, 0.4); border-color: rgba(255, 255, 255, 0.75); }
+html.is-day :is(.hl2-disk, .hl2-proto-row span, .hl2-svc-ico, .hl2-svc-expand, .hl2-road-type, .hl2-smodal-ico, .hl2-mv-chip) {
+  background: rgba(255, 255, 255, 0.5); border-color: rgba(255, 255, 255, 0.85); }
+html.is-day .hl2-disk.parity { background: rgba(194, 83, 43, 0.1); border-color: rgba(194, 83, 43, 0.4); }
+html.is-day .hl2-disk.nvme { background: rgba(29, 111, 99, 0.12); border-color: rgba(29, 111, 99, 0.4); }
+html.is-day .hl2-machine-state { background: rgba(255, 255, 255, 0.82); border-color: rgba(255, 255, 255, 0.95); }
+html.is-day .hl2-machine-photo { background: radial-gradient(120% 90% at 50% 0%, rgba(255, 255, 255, 0.5), transparent 70%); }
+html.is-day .hl2-machine-photo img, html.is-day .hl2-modal-media > img { filter: drop-shadow(0 16px 22px rgba(24, 60, 56, 0.35)); }
+html.is-day .hl2-rackreal-photo { border-color: rgba(255, 255, 255, 0.8); box-shadow: 0 30px 60px -30px rgba(24, 60, 56, 0.55); }
+html.is-day .hl2-rackreal-photo::after { background: radial-gradient(72% 76% at 50% 42%, transparent 46%, rgba(4, 7, 10, 0.35) 80%, rgba(4, 7, 10, 0.6) 100%); }
+
+/* stack filters, meters, statuses */
+html.is-day .hl2-filter { background: rgba(255, 255, 255, 0.5); border-color: rgba(255, 255, 255, 0.85); color: #2a403c; }
+html.is-day .hl2-filter:hover { color: #182c29; border-color: #fff; }
+html.is-day .hl2-filter.on { color: #f2fbf8; background: #1d6f63; border-color: #1d6f63; }
+html.is-day .hl2-meter-bar { background: rgba(29, 111, 99, 0.16); }
+html.is-day .hl2-meter-bar.on, html.is-day .hl2-pxe-list li::before { box-shadow: none; }
+html.is-day .hl2-road:hover { background: rgba(255, 255, 255, 0.3); }
+html.is-day .hl2-road-node i { background: #f4faf8; border-color: rgba(29, 111, 99, 0.45); }
+html.is-day .hl2-road-badge { color: #f2fbf8; }
+html.is-day .hl2-scrollcue { border-color: rgba(29, 111, 99, 0.4); }
+
+/* the system map: white node cards on frosted glass */
+html.is-day .hl2-map-controls, html.is-day .hl2-map-panel { background: rgba(255, 255, 255, 0.22); }
+html.is-day .hl2-legend-item { background: rgba(255, 255, 255, 0.45); }
+html.is-day .hl2-legend-item.on { color: #182c29; }
+html.is-day .hl2-edge { stroke: rgba(29, 111, 99, 0.32); }
+html.is-day .hl2-edge.redundant { stroke: rgba(29, 111, 99, 0.16); }
+html.is-day .hl2-node-box { fill: rgba(255, 255, 255, 0.9); stroke-opacity: 0.75; }
+html.is-day .hl2-node:hover .hl2-node-box, html.is-day .hl2-node-box.spot { fill: #fff; }
+html.is-day .hl2-node-label { fill: #182c29; }
+html.is-day .hl2-node-sub { fill: rgba(24, 44, 41, 0.66); }
+
+/* modals: a thick pane of white glass over a softened page */
+html.is-day .hl2-modal-scrim { background: rgba(28, 56, 52, 0.32); -webkit-backdrop-filter: blur(6px) !important; backdrop-filter: blur(6px) !important; }
+html.is-day .hl2-modal {
+  background: radial-gradient(120% 70% at 0% 0%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 50%),
+    linear-gradient(160deg, rgba(250, 253, 252, 0.9), rgba(238, 246, 243, 0.86));
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important; backdrop-filter: blur(28px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: inset 1.5px 1.5px 0 -0.5px rgba(255, 255, 255, 0.95), 0 40px 90px -36px rgba(24, 60, 56, 0.6); }
+html.is-day .hl2-modal-x { background: rgba(255, 255, 255, 0.6); border-color: rgba(255, 255, 255, 0.9); color: #182c29; }
+html.is-day .hl2-modal-x:hover { background: rgba(255, 255, 255, 0.85); }
+html.is-day .hl2-modal-media { background: radial-gradient(120% 80% at 50% 0%, rgba(255, 255, 255, 0.6), transparent 70%); }
+html.is-day .hl2-mv { background: rgba(255, 255, 255, 0.35); border-color: rgba(255, 255, 255, 0.75); }
+html.is-day .hl2-mv-step-n { color: #f2fbf8; }

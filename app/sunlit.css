@@ -1,19 +1,20 @@
 /* ═══════════════════════════════════════════════════════════════
-   SUNLIT (homepage theme, October 2026, branch task/sunlit-home)
-   The homepage rides a painted sunlit field (components/SunlitScene.tsx):
-   sage sky, sun top right, soft clouds, grass along the bottom. Same layout
-   and components as the dark design; only colours and surfaces change:
-   panels, buttons and pop-ups are Apple-style glass (frosted blur, a bright
-   rim where light catches the edge, and in Chromium real refraction from
-   components/GlassDefs.tsx), text is dark pine ink, and the honey accent
-   becomes the deep gold of the grass.
-   Every rule is scoped to html[data-theme="sunlit"] (set for "/" in
-   lib/theme.ts), so nothing here reaches other routes even after a
-   client-side navigation keeps this stylesheet loaded.
+   SUNLIT: the light glass of the day pages (October 2026, branch task/sunlit-home)
+   Every day page rides a painted scene (components/SunlitScene.tsx); the
+   homepage's is a sage morning with the sun top right, soft clouds and
+   grass along the bottom. Same layout and components as the dark design;
+   only colours and surfaces change: panels, buttons and pop-ups are
+   Apple-style glass (frosted blur, a bright rim where light catches the
+   edge, and in Chromium real refraction from components/GlassDefs.tsx),
+   text is dark pine ink, and the honey accent becomes the deep gold of the
+   grass.
+   Every rule is scoped to html.is-day (every route with a daytime scene,
+   see lib/theme.ts). The night pages are styled in app/scenes.css, which
+   also holds each scene's sky colours.
    ═══════════════════════════════════════════════════════════════ */
 
 /* ── Tokens ── */
-html.sensory-active[data-theme="sunlit"] {
+html.sensory-active.is-day {
   --sl-sky: #9ab396;
   --sl-ink: #1f2b1c;
   --sl-ink-soft: #3a4734;
@@ -153,7 +154,7 @@ html.sensory-active[data-theme="sunlit"] {
   :is(.sl-sky-canvas, .sl-clouds, .sl-rays, .sl-tree-canvas, .sl-grass-canvas) { transition: none; }
 }
 
-html.sensory-active[data-theme="sunlit"] {
+html.sensory-active.is-day {
   /* The dark static backdrop gives way to the scene. */
   & .sa-backdrop { display: none; }
   & ::selection { background: rgba(214, 191, 104, 0.45); color: var(--sl-ink); }
@@ -162,12 +163,12 @@ html.sensory-active[data-theme="sunlit"] {
 
 /* ═══════ Surfaces and type on the sunlit field ═══════
    The dark design's rules are mostly `html.sensory-active .x` (often
-   !important); prefixing [data-theme="sunlit"] outranks them. */
-html.sensory-active[data-theme="sunlit"] {
+   !important); prefixing .is-day outranks them. */
+html.sensory-active.is-day {
 
   /* ── Panels: glass over the field ── */
   & .hp-collab-card, & .hp-pf-card, & .hp-spot-card,
-  & .hp-spotlight, & .hp-tile, & .ab-photos {
+  & .hp-spotlight, & .hp-tile, & .ab-photos, & .cr-card, & .ct-email-card {
     background: var(--gl-fill) !important;
     -webkit-backdrop-filter: var(--gl-blur) !important; backdrop-filter: var(--gl-blur) !important;
     border: 1px solid var(--gl-border) !important;
@@ -335,7 +336,7 @@ html.sensory-active[data-theme="sunlit"] {
 }
 
 /* ═══════ Pop-ups: the info cards and the project reader become cream paper ═══════ */
-html.sensory-active[data-theme="sunlit"] {
+html.sensory-active.is-day {
   /* the page behind softens; the panel is a thicker pane of glass so long text stays easy to read */
   & .im-scrim { background: rgba(38, 50, 34, 0.26); -webkit-backdrop-filter: blur(6px) !important; backdrop-filter: blur(6px) !important; }
   & .hp-modal-backdrop { background: rgba(38, 50, 34, 0.32) !important; -webkit-backdrop-filter: blur(6px) !important; backdrop-filter: blur(6px) !important; }
@@ -378,7 +379,7 @@ html.sensory-active[data-theme="sunlit"] {
 
 /* Buttons and pills inside a glass card: a translucent fill and no blur of their
    own. A blur nested in another blur only sees the card's tint, so it turns grey. */
-html.sensory-active[data-theme="sunlit"] {
+html.sensory-active.is-day {
   & :is(.hp-spotlight, .hp-tile, .hp-pf-card, .hp-collab-card) :is(.hp-btn, .hp-pf-view),
   & .ab-photos .hp-album-link {
     -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
@@ -394,9 +395,9 @@ html.sensory-active[data-theme="sunlit"] {
    along its edges before the blur, so cloud edges, sun rays and grass bend
    at each rim. html.lg-refract is set by the head script in app/layout.tsx. */
 @media (prefers-reduced-transparency: no-preference) {
-  html.lg-refract.sensory-active[data-theme="sunlit"] {
+  html.lg-refract.sensory-active.is-day {
     & .hp-collab-card, & .hp-pf-card:not(.is-soon), & .hp-spot-card,
-    & .hp-spotlight, & .hp-tile, & .ab-photos {
+    & .hp-spotlight, & .hp-tile, & .ab-photos, & .cr-card, & .ct-email-card {
       -webkit-backdrop-filter: var(--gl-refract) !important; backdrop-filter: var(--gl-refract) !important; }
     & .hp-btn:not(:is(.hp-spotlight, .hp-tile, .hp-pf-card, .hp-collab-card) .hp-btn),
     & .hp-pf-search-wrap, & .hp-pf-filter, & .hp-album-link:not(.ab-photos .hp-album-link) {
@@ -406,13 +407,118 @@ html.sensory-active[data-theme="sunlit"] {
 
 /* "Reduce transparency" (macOS/iOS and others): solid frosted panels, no blur or bending */
 @media (prefers-reduced-transparency: reduce) {
-  html.sensory-active[data-theme="sunlit"] {
+  html.sensory-active.is-day {
     & .hp-collab-card, & .hp-pf-card, & .hp-spot-card, & .hp-spotlight,
-    & .hp-tile, & .ab-photos, & .hp-pf-search-wrap, & .hp-pf-filter:not(.is-active),
+    & .hp-tile, & .ab-photos, & .cr-card, & .ct-email-card, & .hp-pf-search-wrap, & .hp-pf-filter:not(.is-active),
     & .hp-album-link:not(.is-active), & .hp-btn.hp-btn-ghost, & .im-panel, & .hp-modal-panel {
       background: rgba(248, 249, 243, 0.97) !important;
       -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
     & .hp-btn:not(.hp-btn-ghost), & .hp-pf-filter.is-active, & .hp-album-link.is-active {
       background: #2b3b27 !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
   }
+}
+
+/* ═══════ Day pages: the shared page heroes and cards ═══════
+   ct-* heroes (contact, credits, coming soon, photography), the contact
+   email card and links, and the credits cards: pine ink and gold on glass. */
+html.sensory-active.is-day {
+  & .ct-kicker { color: var(--sl-label); }
+  & .ct-kicker::before, & .ct-kicker::after { background: linear-gradient(90deg, transparent, rgba(var(--sa-accent), 0.9)); }
+  & .ct-title { color: var(--sl-ink); }
+  & .ct-title em { text-shadow: none; }
+  & .ct-sub { color: var(--sl-ink-soft); }
+  /* the dark design's soft lights behind the heroes do not show on a light sky */
+  & :is(.cx-monolith, .cw-bloom) { display: none; }
+
+  & .ct-email-card .ct-email-label { color: var(--sl-label); }
+  & .ct-email-card .ct-email-addr { color: var(--sl-ink); }
+  & .ct-copy {
+    background: var(--gl-pine); border: 1px solid rgba(255, 255, 240, 0.22); color: var(--sl-cream);
+    box-shadow: var(--gl-pine-rim), 0 8px 18px -10px rgba(31, 43, 28, 0.6); }
+  & .ct-copy:hover { background: var(--gl-pine); filter: brightness(1.1); }
+  & .ct-copy:focus-visible { outline: 2px solid var(--sl-ink); outline-offset: 3px; }
+  /* the links can sit over the grass on phones: each gets a glass chip */
+  & .cx-soc {
+    color: var(--sl-ink); padding: 0.5rem 0.95rem; border-radius: 999px;
+    background: var(--gl-fill); border: 1px solid var(--gl-border); box-shadow: var(--gl-rim), 0 6px 16px -12px rgba(31, 43, 28, 0.5);
+    -webkit-backdrop-filter: var(--gl-blur); backdrop-filter: var(--gl-blur); }
+  & .cx-soc:hover { color: var(--sl-ink); text-shadow: none; border-color: #fff; }
+  & .ct-socials.cx-socials { gap: 8px; }
+  & .cx-soc:focus-visible { outline-color: var(--sl-ink); }
+
+  & .cr-h {
+    background: linear-gradient(92deg, #1f2b1c 0%, #4c5a3c 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  & .cr-card p, & .cr-list li { color: var(--sl-ink-dim); }
+  & .cr-list li b { color: var(--sl-ink); }
+  & .cr-list li::before, & .mf-card .cr-list li::before { background: #8a701e; }
+  & .cr-card a { color: #6f5a14; border-bottom-color: rgba(138, 112, 30, 0.4); }
+  & .cr-card a:hover { color: var(--sl-ink); border-bottom-color: var(--sl-ink); }
+  & .mf-head { background: linear-gradient(90deg, rgba(31, 43, 28, 0.28), rgba(31, 43, 28, 0.06) 55%, transparent 90%) left bottom / 100% 1px no-repeat; }
+}
+
+/* ═══════ Day pages: photography (app/photography/PhotographyClient.tsx) ═══════
+   The page's own block styles it for the dark design (often !important);
+   html.sensory-active.is-day outranks it. The hero montage dissolves into
+   the golden sky instead of a dark scrim. */
+html.sensory-active.is-day {
+  /* the montage hangs as a framed picture on the right, so the sky stays open */
+  & .ph-hero-scrim { display: none; }
+  & .ph-hero > .ph-hero-media {
+    inset: auto; right: clamp(24px, 6vw, 110px); top: 50%; translate: 0 -46%;
+    width: min(44vw, 620px); aspect-ratio: 4 / 3;
+    border-radius: 24px; overflow: hidden; opacity: 1;
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    box-shadow: inset 1.5px 1.5px 0 -0.5px rgba(255, 255, 255, 0.9), 0 2px 6px rgba(80, 50, 30, 0.12), 0 40px 80px -36px rgba(80, 50, 30, 0.6); }
+  & .ph-hero-media video { opacity: 1; -webkit-mask-image: none; mask-image: none; }
+  @media (max-width: 760px) {
+    & .ph-hero { padding-top: calc(clamp(132px, 18vh, 180px) + 46vw); }
+    & .ph-hero > .ph-hero-media { right: 5vw; left: 5vw; top: 96px; translate: none; width: auto; aspect-ratio: 16 / 10; border-radius: 20px; }
+  }
+  & .ph-hero .ct-kicker { color: var(--sl-label); }
+  & .ph-hero .ct-title em { text-shadow: none; }
+
+  & .ph-tool-card {
+    background: var(--gl-fill) !important;
+    -webkit-backdrop-filter: var(--gl-blur) !important; backdrop-filter: var(--gl-blur) !important;
+    border: 1px solid var(--gl-border) !important;
+    box-shadow: var(--gl-rim), var(--gl-drop) !important; }
+  & .ph-tool-card:hover { border-color: rgba(255, 255, 255, 0.9) !important; box-shadow: var(--gl-rim), var(--gl-drop-hi) !important; }
+  & .ph-tool-card::before { background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent); }
+  & .ph-tool-card:focus-visible { outline-color: var(--sl-ink); }
+  & .ph-tool-name { color: var(--sl-label) !important; }
+  & .ph-tool-desc { color: var(--sl-ink-dim); }
+  & .ph-tool-plus { color: rgba(31, 43, 28, 0.45); }
+  & .ph-tool-card:hover .ph-tool-plus { color: var(--sl-ink); }
+  & .ph-tool-icon {
+    background: linear-gradient(158deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.42)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.85) !important;
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.9), 0 8px 16px -10px rgba(31, 43, 28, 0.45); }
+
+  & .ph-figma-label { color: var(--sl-label); }
+  & .ph-figma-label::before { background: linear-gradient(90deg, transparent, rgba(var(--sa-accent), 0.9)); }
+  & .ph-figma-frame, & .ph-gallery-frame {
+    background: var(--gl-fill) !important;
+    -webkit-backdrop-filter: var(--gl-blur) !important; backdrop-filter: var(--gl-blur) !important;
+    border: 1px solid var(--gl-border) !important;
+    box-shadow: var(--gl-rim), var(--gl-drop) !important; }
+  & .ph-figma-cap { color: var(--sl-ink-dim); }
+
+  & .ph-gallery-head::after { background: linear-gradient(90deg, rgba(31, 43, 28, 0.3), rgba(31, 43, 28, 0.06) 45%, transparent) !important; }
+  & .ph-gallery-num { background: none; -webkit-text-stroke: 1px rgba(31, 43, 28, 0.32) !important; }
+  & .ph-gallery-title {
+    background: linear-gradient(92deg, #1f2b1c 0%, #4c5a3c 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  & .ph-gallery-open {
+    background: var(--gl-chip) !important; border: 1px solid var(--gl-chip-line) !important; color: var(--sl-ink) !important; }
+  & .ph-gallery-open:hover { background: rgba(255, 255, 255, 0.7) !important; border-color: #fff !important; color: var(--sl-ink) !important; }
+  /* the closed preview fades out into the glass frame, like the homepage gallery */
+  & .ph-gallery .expand-photography { background: none !important; display: flex; align-items: flex-end; padding-bottom: 12px; }
+  & .ph-gallery .photography-restrict {
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%); }
+  & .ph-gallery .expand-photography button {
+    color: var(--sl-cream); background: var(--gl-pine); border: 1px solid rgba(255, 255, 240, 0.22);
+    box-shadow: var(--gl-pine-rim), 0 10px 22px -12px rgba(31, 43, 28, 0.65); }
+  & .ph-gallery .expand-photography button:hover { color: var(--sl-cream); background: var(--gl-pine); filter: brightness(1.1); }
 }

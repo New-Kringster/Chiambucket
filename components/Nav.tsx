@@ -213,6 +213,19 @@ export default function Nav() {
         return { x0, x1: x0 + q.w, cy: q.cy, r: q.r, s: q.grows ? Math.min(1, p / 0.25) : 1 };
       });
       sheet.style.translate = `${(menuDx * move).toFixed(2)}px 0`;
+      // My work is lit (a dark pill) while it stands on its own, and turns into
+      // a plain option in the moment it joins its neighbour: over the last
+      // 30px of the gap, while the neck forms. Its text flips colour over the
+      // middle of that, so it never sits grey on grey.
+      const wi = pieces.findIndex((q) => q.el === workRef.current);
+      if (wi > 0) {
+        const gap = caps[wi].x0 - caps[wi - 1].x1;
+        const t = Math.min(1, Math.max(0, (30 - gap) / 28));
+        const lit = 1 - t * t * (3 - 2 * t);
+        const ink = Math.min(1, Math.max(0, (lit - 0.35) / 0.3));
+        workRef.current!.style.setProperty('--lit', lit.toFixed(3));
+        workRef.current!.style.setProperty('--ink', ink.toFixed(3));
+      }
       const d = blobPath(caps);
       glass.style.clipPath = `path('${d}')`;
       edge.setAttribute('d', d);
@@ -240,6 +253,8 @@ export default function Nav() {
         cancelAnimationFrame(frame);
         frame = 0;
         [logoRef.current, linksRef.current, workRef.current, menuRef.current, sheet].forEach((el) => { if (el) el.style.translate = ''; });
+        workRef.current?.style.removeProperty('--lit');
+        workRef.current?.style.removeProperty('--ink');
         placeMark.current();
         return;
       }

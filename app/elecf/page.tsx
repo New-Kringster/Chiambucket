@@ -55,7 +55,7 @@ export default function ElecfPage() {
 
       {/* ── Feature hero ── */}
       <header className="art-hero">
-        <div className="art-hero-bg"><img src="/images/elecf-prototype1.avif" alt="The ELEC-F cardboard freezer prototype with M5Stack and sensors" /></div>
+        <div className="art-hero-bg art-hero-photo"><img src="/images/elecf-prototype1.avif" alt="The ELEC-F cardboard freezer prototype with M5Stack and sensors" /></div>
         <div className="art-hero-scrim"></div>
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>

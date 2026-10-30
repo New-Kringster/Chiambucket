@@ -2,14 +2,19 @@
 import { useEffect, useRef } from 'react';
 
 /*
-  SunlitScene — the homepage background for the "sunlit" theme, painted like a
-  pastel poster: a sage sky with soft pastel washes and brush strokes, the sun
-  in the top-right corner with faint rays, drifting clouds, a lone umbrella
-  pine on the hill at the left, and a field of grass along the bottom.
+  SunlitScene — the background of every page, painted like a pastel poster: a
+  sky with soft pastel washes and brush strokes, the sun with faint rays (or,
+  at night, the moon and stars), drifting clouds, and a field of grass along
+  the bottom. Each page has its own time of day: PRESETS below holds each
+  one's colours, light and cloud layout, and app/scenes.css its sky
+  gradients. components/SceneShell.tsx mounts it for the current route.
 
-  The grass is not inside the scene. SunlitField renders it inside <main>,
-  right after the About section, so it is drawn in front of that section
-  (which rises out of it as you scroll) and behind everything after it.
+  The homepage adds the stone pine and the bird-free version of the field:
+  there SunlitField renders the grass inside <main>, right after the About
+  section, so it is drawn in front of that section (which rises out of it as
+  you scroll) and behind everything after it. On every other page the scene
+  draws its own field, behind all the content. Day scenes have tiny birds,
+  the night scene fireflies in the grass.
 
   Each part is its own layer so it can move on the compositor alone: clouds
   drift, the rays shimmer, the sun's glow breathes, the tree and the field
@@ -54,8 +59,146 @@ function softLayer(w: number, h: number, scale: number) {
   return { canvas, ctx };
 }
 
-// The sun sits just past the top-right corner.
-const sunAt = (w: number, h: number) => ({ x: w * 0.97, y: -h * 0.005 });
+/* ---------------- Presets: one per time of day ---------------- */
+
+type CloudSpot = { x: number; y: number; w: number; h: number; k: number; drift: number; secs: number };
+/* A colour grade laid over the painted field: a flat colour, or a vertical
+   band running down from the hill crest, in a canvas blend mode. */
+type Grade = { op: GlobalCompositeOperation; color: string } | { op: GlobalCompositeOperation; band: [string, string]; depth: number };
+
+export type Preset = {
+  sun: { x: number; y: number }; // the sun (or moon), as fractions of the screen
+  haze: string; // rgb of the uneven light around it
+  tints: string[]; // rgb of the sky's brushwork
+  beam: string; // rgb of the broad beams
+  ray: [string, string]; // rgb of the thin rays: halo, core
+  rays: number; // ray strength (0: none)
+  cloud: { stops: [string, string, string, string]; rim: string; under: string; k: number };
+  clouds: CloudSpot[];
+  grass: Grade[];
+  night?: boolean; // the moon instead of the sun, stars, fireflies instead of birds
+};
+
+const MORNING_CLOUDS: CloudSpot[] = [
+  { x: 0.16, y: 0.15, w: 0.64, h: 0.11, k: 0.62, drift: 4, secs: 70 },
+  { x: 0.75, y: 0.45, w: 0.42, h: 0.075, k: 0.5, drift: 6, secs: 92 },
+  { x: 0.42, y: 0.32, w: 0.28, h: 0.05, k: 0.34, drift: 7, secs: 58 },
+  { x: 0.5, y: 0.765, w: 0.95, h: 0.04, k: 0.34, drift: 2.5, secs: 120 },
+];
+
+export const PRESETS: Record<string, Preset> = {
+  // Home: a sage morning, the sun just past the top-right corner.
+  sunlit: {
+    sun: { x: 0.97, y: -0.005 },
+    haze: '250,248,228',
+    tints: ['247,226,196', '236,214,206', '214,224,230', '244,240,214', '226,232,206'],
+    beam: '250,248,226',
+    ray: ['252,250,232', '255,253,240'],
+    rays: 1,
+    cloud: { stops: ['#fcfbf1', '#f0efdd', '#d3d8bf', '#bfc9ad'], rim: '255,255,248', under: '176,190,160', k: 1 },
+    clouds: MORNING_CLOUDS,
+    grass: [],
+  },
+  // Photography: golden hour, a low sun on the left, apricot light and rose clouds.
+  golden: {
+    sun: { x: 0.05, y: 0.16 },
+    haze: '255,224,176',
+    tints: ['255,212,168', '246,194,178', '232,204,216', '255,230,192', '238,210,186'],
+    beam: '255,230,186',
+    ray: ['255,232,196', '255,244,222'],
+    rays: 1.15,
+    cloud: { stops: ['#fff1dc', '#f7d9bd', '#e3bdad', '#c9a5a2'], rim: '255,238,210', under: '190,150,150', k: 1 },
+    clouds: [
+      { x: 0.74, y: 0.12, w: 0.6, h: 0.1, k: 0.6, drift: 4, secs: 76 },
+      { x: 0.26, y: 0.46, w: 0.38, h: 0.07, k: 0.48, drift: 6, secs: 88 },
+      { x: 0.56, y: 0.3, w: 0.3, h: 0.05, k: 0.36, drift: 7, secs: 62 },
+      { x: 0.5, y: 0.765, w: 0.95, h: 0.04, k: 0.36, drift: 2.5, secs: 120 },
+    ],
+    grass: [{ op: 'soft-light', color: 'rgba(255,140,60,0.55)' }, { op: 'multiply', color: 'rgba(255,220,180,0.45)' }],
+  },
+  // Contact: a clear blue midday, the sun high on the right, bright white clouds.
+  noon: {
+    sun: { x: 0.8, y: -0.06 },
+    haze: '255,255,250',
+    tints: ['224,236,246', '240,244,236', '212,228,240', '246,246,236', '220,234,228'],
+    beam: '255,255,252',
+    ray: ['250,252,255', '255,255,255'],
+    rays: 0.7,
+    cloud: { stops: ['#ffffff', '#f2f6f8', '#d7e2e9', '#bccbd6'], rim: '255,255,255', under: '168,188,206', k: 1.25 },
+    clouds: [
+      { x: 0.22, y: 0.2, w: 0.5, h: 0.1, k: 0.7, drift: 5, secs: 70 },
+      { x: 0.68, y: 0.36, w: 0.36, h: 0.08, k: 0.62, drift: 6, secs: 84 },
+      { x: 0.45, y: 0.1, w: 0.26, h: 0.05, k: 0.45, drift: 8, secs: 60 },
+      { x: 0.5, y: 0.765, w: 0.95, h: 0.04, k: 0.4, drift: 2.5, secs: 120 },
+    ],
+    grass: [{ op: 'multiply', color: 'rgba(208,232,186,0.6)' }, { op: 'soft-light', color: 'rgba(120,170,90,0.25)' }],
+  },
+  // HomeLab: a cool, misty teal morning, the sun somewhere behind the haze on the left.
+  teal: {
+    sun: { x: 0.12, y: -0.03 },
+    haze: '236,248,242',
+    tints: ['210,232,226', '226,240,232', '204,224,228', '234,242,228', '208,228,222'],
+    beam: '238,250,246',
+    ray: ['236,250,246', '246,255,252'],
+    rays: 0.55,
+    cloud: { stops: ['#f5fbf8', '#e2eee9', '#c1d3ce', '#a7bdb8'], rim: '250,255,252', under: '146,174,170', k: 1 },
+    clouds: [
+      { x: 0.78, y: 0.16, w: 0.62, h: 0.1, k: 0.6, drift: 4, secs: 80 },
+      { x: 0.3, y: 0.4, w: 0.44, h: 0.07, k: 0.5, drift: 5, secs: 96 },
+      { x: 0.6, y: 0.3, w: 0.26, h: 0.05, k: 0.36, drift: 7, secs: 64 },
+      { x: 0.5, y: 0.765, w: 0.95, h: 0.045, k: 0.42, drift: 2.5, secs: 120 },
+    ],
+    grass: [{ op: 'multiply', color: 'rgba(184,212,200,0.65)' }, { op: 'soft-light', color: 'rgba(30,96,96,0.3)' }],
+  },
+  // Credits and coming soon: a soft lilac haze, the sun a pale disc high in the middle.
+  mist: {
+    sun: { x: 0.5, y: 0.02 },
+    haze: '252,248,252',
+    tints: ['236,226,240', '244,236,236', '226,228,240', '240,238,230', '232,226,236'],
+    beam: '252,248,252',
+    ray: ['250,246,252', '255,252,255'],
+    rays: 0.4,
+    cloud: { stops: ['#fbf8fb', '#ebe5ee', '#d1cbd8', '#bab3c4'], rim: '255,252,255', under: '172,164,188', k: 1 },
+    clouds: [
+      { x: 0.2, y: 0.18, w: 0.56, h: 0.09, k: 0.55, drift: 4, secs: 84 },
+      { x: 0.78, y: 0.32, w: 0.46, h: 0.07, k: 0.5, drift: 5, secs: 96 },
+      { x: 0.5, y: 0.46, w: 0.3, h: 0.05, k: 0.34, drift: 6, secs: 70 },
+      { x: 0.5, y: 0.765, w: 0.95, h: 0.05, k: 0.46, drift: 2.5, secs: 120 },
+    ],
+    grass: [{ op: 'saturation', color: 'rgba(128,128,128,0.45)' }, { op: 'multiply', color: 'rgba(228,216,234,0.55)' }],
+  },
+  // Articles: night. The moon high on the right, stars, moonlit clouds, dark grass.
+  night: {
+    sun: { x: 0.84, y: 0.14 },
+    haze: '150,176,226',
+    tints: ['60,82,132', '84,76,128', '56,96,126', '96,100,146', '72,104,118'],
+    beam: '170,196,240',
+    ray: ['170,196,240', '210,226,255'],
+    rays: 0,
+    cloud: { stops: ['#a9b8d0', '#7184a0', '#46566f', '#2f3b54'], rim: '206,220,246', under: '24,32,52', k: 0.75 },
+    clouds: [
+      { x: 0.24, y: 0.14, w: 0.58, h: 0.09, k: 0.5, drift: 4, secs: 90 },
+      { x: 0.62, y: 0.38, w: 0.42, h: 0.07, k: 0.42, drift: 5, secs: 104 },
+      { x: 0.4, y: 0.27, w: 0.26, h: 0.05, k: 0.3, drift: 6, secs: 72 },
+      { x: 0.5, y: 0.765, w: 0.95, h: 0.04, k: 0.3, drift: 2.5, secs: 130 },
+    ],
+    grass: [
+      { op: 'multiply', color: '#33475e' },
+      { op: 'multiply', color: 'rgba(70,92,124,0.55)' },
+      { op: 'screen', band: ['rgba(150,178,212,0.32)', 'rgba(150,178,212,0)'], depth: 0.16 },
+    ],
+    night: true,
+  },
+};
+
+export const presetFor = (theme: string) => PRESETS[theme] ?? PRESETS.sunlit;
+
+const sunAt = (w: number, h: number, p: Preset) => ({ x: w * p.sun.x, y: h * p.sun.y });
+// The direction the light falls in: from the sun towards the middle of the field.
+const lightAngle = (w: number, h: number, p: Preset) => {
+  const s = sunAt(w, h, p);
+  return Math.atan2(h * 0.7 - s.y, w * 0.45 - s.x);
+};
 
 /* ---------------- Sky: haze, brush strokes, beams, grain ---------------- */
 
@@ -133,84 +276,133 @@ function grainPattern(ctx: Ctx, rand: Rand) {
   return ctx.createPattern(tile, 'repeat')!;
 }
 
-function drawSky(canvas: HTMLCanvasElement, w: number, h: number, dpr: number) {
+function drawSky(canvas: HTMLCanvasElement, w: number, h: number, dpr: number, p: Preset) {
   const ctx = prepare(canvas, w, h, dpr);
   ctx.clearRect(0, 0, w, h);
   const rand = seeded(20261018);
-  const sun = sunAt(w, h);
+  const sun = sunAt(w, h, p);
+  const fall = lightAngle(w, h, p);
   const reach = Math.hypot(w, h);
 
   const { canvas: soft, ctx: s } = softLayer(w, h, 0.5);
 
-  // Uneven light around the sun.
+  // Uneven light around the sun (or the moon).
   for (let i = 0; i < 30; i++) {
-    const a = between(rand, Math.PI * 0.5, Math.PI * 1.0);
-    const d = Math.pow(rand(), 0.8) * reach * 0.45;
-    puff(s, sun.x + Math.cos(a) * d, sun.y + Math.sin(a) * d, between(rand, 0.04, 0.1) * reach, '250,248,228', between(rand, 0.05, 0.12));
+    const a = fall + between(rand, -Math.PI / 4, Math.PI / 4);
+    const d = Math.pow(rand(), 0.8) * reach * (p.night ? 0.3 : 0.45);
+    puff(s, sun.x + Math.cos(a) * d, sun.y + Math.sin(a) * d, between(rand, 0.04, 0.1) * reach, p.haze, between(rand, 0.05, 0.12) * (p.night ? 0.6 : 1));
   }
 
   // Pastel brushwork, as if the sky were painted: long soft strokes, more of
   // them low in the sky where the light is warmest.
-  const tints = ['247,226,196', '236,214,206', '214,224,230', '244,240,214', '226,232,206'];
   for (let i = 0; i < Math.round(14 + w / 90); i++) {
     const y = h * Math.pow(rand(), 0.7) * 0.74;
     const len = w * between(rand, 0.25, 0.75);
     const x = between(rand, -0.2, 1) * w - len * 0.3;
-    stroke(s, x, y, len, h * between(rand, 0.02, 0.06), between(rand, -0.14, 0.1), pick(rand, tints), between(rand, 0.05, 0.12));
+    stroke(s, x, y, len, h * between(rand, 0.02, 0.06), between(rand, -0.14, 0.1), pick(rand, p.tints), between(rand, 0.05, 0.12));
   }
 
   // Broad, faint beams.
-  s.globalCompositeOperation = 'screen';
-  for (let i = 0; i < 7; i++) {
-    const angle = between(rand, Math.PI * 0.58, Math.PI * 0.97);
-    beam(s, sun, angle, reach * between(rand, 0.5, 0.9), 0, reach * 0.003, reach * between(rand, 0.02, 0.05), '250,248,226', between(rand, 0.05, 0.1));
+  if (p.rays > 0) {
+    s.globalCompositeOperation = 'screen';
+    for (let i = 0; i < 7; i++) {
+      const angle = fall + between(rand, -0.6, 0.6);
+      beam(s, sun, angle, reach * between(rand, 0.5, 0.9), 0, reach * 0.003, reach * between(rand, 0.02, 0.05), p.beam, between(rand, 0.05, 0.1) * Math.min(1, p.rays));
+    }
+    s.globalCompositeOperation = 'source-over';
   }
-  s.globalCompositeOperation = 'source-over';
 
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = 'high';
   ctx.drawImage(soft, 0, 0, w, h);
 
+  if (p.night) drawMoon(ctx, w, h, sun, rand);
+
   ctx.fillStyle = grainPattern(ctx, rand);
   ctx.fillRect(0, 0, w, h);
 }
 
-// Thin rays on their own layer, so they can shimmer: faint, uneven, and
-// starting at different distances from the sun.
-function drawRays(canvas: HTMLCanvasElement, w: number, h: number, dpr: number) {
+// The moon: a pale disc lit from one side, with faint seas and a soft rim.
+function drawMoon(ctx: Ctx, w: number, h: number, at: { x: number; y: number }, rand: Rand) {
+  const r = Math.max(14, Math.min(w, h) * 0.042);
+  const glow = ctx.createRadialGradient(at.x, at.y, r * 0.9, at.x, at.y, r * 4.5);
+  glow.addColorStop(0, 'rgba(214,226,250,0.32)');
+  glow.addColorStop(1, 'rgba(214,226,250,0)');
+  ctx.fillStyle = glow;
+  ctx.beginPath();
+  ctx.arc(at.x, at.y, r * 4.5, 0, Math.PI * 2);
+  ctx.fill();
+  const disc = ctx.createRadialGradient(at.x - r * 0.35, at.y - r * 0.35, r * 0.1, at.x, at.y, r);
+  disc.addColorStop(0, '#fbf8ec');
+  disc.addColorStop(0.7, '#ece8d8');
+  disc.addColorStop(1, '#cfcfc6');
+  ctx.fillStyle = disc;
+  ctx.beginPath();
+  ctx.arc(at.x, at.y, r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(at.x, at.y, r, 0, Math.PI * 2);
+  ctx.clip();
+  for (let i = 0; i < 7; i++) {
+    puff(ctx, at.x + between(rand, -0.55, 0.5) * r, at.y + between(rand, -0.5, 0.55) * r, r * between(rand, 0.18, 0.36), '150,156,160', between(rand, 0.18, 0.32));
+  }
+  ctx.restore();
+}
+
+/* Stars: many faint ones, denser and brighter towards the top of the sky.
+   `bright` paints only the few brighter stars that twinkle on their own layer. */
+function drawStars(canvas: HTMLCanvasElement, w: number, h: number, dpr: number, bright: boolean) {
   const ctx = prepare(canvas, w, h, dpr);
   ctx.clearRect(0, 0, w, h);
+  const rand = seeded(bright ? 8821 : 4410);
+  const count = Math.round((w * h) / (bright ? 26000 : 2600));
+  for (let i = 0; i < count; i++) {
+    const x = rand() * w;
+    const y = Math.pow(rand(), 1.7) * h * 0.72;
+    const r = bright ? between(rand, 0.9, 1.6) : between(rand, 0.35, 0.9);
+    const a = (bright ? between(rand, 0.7, 1) : between(rand, 0.25, 0.75)) * (1 - y / (h * 0.8));
+    ctx.fillStyle = `rgba(${pick(rand, ['255,255,255', '226,236,255', '255,244,226'])},${a.toFixed(3)})`;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+    if (bright) puff(ctx, x, y, r * 5, '210,226,255', 0.12);
+  }
+}
+
+// Thin rays on their own layer, so they can shimmer: faint, uneven, and
+// starting at different distances from the sun.
+function drawRays(canvas: HTMLCanvasElement, w: number, h: number, dpr: number, p: Preset) {
+  const ctx = prepare(canvas, w, h, dpr);
+  ctx.clearRect(0, 0, w, h);
+  if (p.rays <= 0) return;
   const rand = seeded(7071);
-  const sun = sunAt(w, h);
+  const sun = sunAt(w, h, p);
+  const fall = lightAngle(w, h, p);
   const reach = Math.hypot(w, h);
   for (let i = 0; i < 17; i++) {
-    const angle = between(rand, Math.PI * 0.57, Math.PI * 0.99);
+    const angle = fall + between(rand, -0.66, 0.66);
     const length = reach * between(rand, 0.3, 0.8);
     const gap = length * between(rand, 0, 0.35);
     const width = between(rand, 0.6, 1.8);
-    const alpha = between(rand, 0.06, 0.18);
-    beam(ctx, sun, angle, length, gap, 0.4, width * 3.5, '252,250,232', alpha * 0.4);
-    beam(ctx, sun, angle, length, gap, 0.2, width, '255,253,240', alpha);
+    const alpha = between(rand, 0.06, 0.18) * p.rays;
+    beam(ctx, sun, angle, length, gap, 0.4, width * 3.5, p.ray[0], alpha * 0.4);
+    beam(ctx, sun, angle, length, gap, 0.2, width, p.ray[1], alpha);
   }
 }
 
 /* ---------------- Clouds ---------------- */
 
-/* Where the clouds sit (centre x/y as a fraction of the screen, size as a
-   fraction of the shorter side), how bright they are, and how they drift. */
-const CLOUDS = [
-  { x: 0.16, y: 0.15, w: 0.64, h: 0.11, k: 0.62, drift: 4, secs: 70 },
-  { x: 0.75, y: 0.45, w: 0.42, h: 0.075, k: 0.5, drift: 6, secs: 92 },
-  { x: 0.42, y: 0.32, w: 0.28, h: 0.05, k: 0.34, drift: 7, secs: 58 },
-  { x: 0.5, y: 0.765, w: 0.95, h: 0.04, k: 0.34, drift: 2.5, secs: 120 },
-];
+/* Each preset's `clouds` gives where they sit (centre x/y as a fraction of the
+   screen, size as a fraction of the shorter side), how bright they are, and
+   how they drift. */
 
 /* One fair-weather cloud on its own canvas: round lobes with a flat base,
    shaded from a warm lit top to a sage underside. It is painted at a modest
    resolution and softened by a CSS blur, which stays smooth at any pixel
    density (the old version was upscaled from a few pixels and looked blocky
    on phones). */
-function paintCloud(canvas: HTMLCanvasElement, cw: number, ch: number, rand: Rand) {
+function paintCloud(canvas: HTMLCanvasElement, cw: number, ch: number, rand: Rand, look: Preset['cloud']) {
   const scale = 0.5;
   canvas.width = Math.max(2, Math.round(cw * scale));
   canvas.height = Math.max(2, Math.round(ch * scale));
@@ -236,18 +428,18 @@ function paintCloud(canvas: HTMLCanvasElement, cw: number, ch: number, rand: Ran
 
   c.globalCompositeOperation = 'source-in';
   const shade = c.createLinearGradient(0, base - h * 1.3, 0, base);
-  shade.addColorStop(0, '#fcfbf1');
-  shade.addColorStop(0.5, '#f0efdd');
-  shade.addColorStop(0.85, '#d3d8bf');
-  shade.addColorStop(1, '#bfc9ad');
+  shade.addColorStop(0, look.stops[0]);
+  shade.addColorStop(0.5, look.stops[1]);
+  shade.addColorStop(0.85, look.stops[2]);
+  shade.addColorStop(1, look.stops[3]);
   c.fillStyle = shade;
   c.fillRect(0, 0, cw, ch);
 
   // Brighter rims on the sun side, a little volume underneath.
   c.globalCompositeOperation = 'source-atop';
   for (let i = 0; i < lobes; i++) {
-    puff(c, ox + between(rand, -0.2, 0.5) * w, base - h * between(rand, 0.6, 1.2), h * between(rand, 0.25, 0.5), '255,255,248', 0.5);
-    puff(c, ox + between(rand, -0.45, 0.3) * w, base - h * between(rand, 0.05, 0.35), h * between(rand, 0.2, 0.4), '176,190,160', 0.28);
+    puff(c, ox + between(rand, -0.2, 0.5) * w, base - h * between(rand, 0.6, 1.2), h * between(rand, 0.25, 0.5), look.rim, 0.5);
+    puff(c, ox + between(rand, -0.45, 0.3) * w, base - h * between(rand, 0.05, 0.35), h * between(rand, 0.2, 0.4), look.under, 0.28);
   }
 
   // Fade the underside out so it reads flat without a hard edge.
@@ -308,7 +500,7 @@ const CREST = ['#dcc66f', '#e3d085', '#cdb862', '#c2b05b', '#b6a755'];
    rises to reach above the footer. */
 const FIELD_TOP = 0.6;
 
-function drawGrass(canvas: HTMLCanvasElement, w: number, h: number, full: number, dpr: number) {
+function drawGrass(canvas: HTMLCanvasElement, w: number, h: number, full: number, dpr: number, p: Preset) {
   const origin = h * FIELD_TOP;
   const ctx = prepare(canvas, w, full - origin, dpr);
   ctx.clearRect(0, 0, w, full - origin);
@@ -415,6 +607,40 @@ function drawGrass(canvas: HTMLCanvasElement, w: number, h: number, full: number
   foot.addColorStop(1, 'rgba(62,58,16,0.4)');
   ctx.fillStyle = foot;
   ctx.fillRect(0, h - band * 0.45, w, full - h + band * 0.45);
+
+  gradeField(canvas, p.grass, h, origin, dpr);
+}
+
+/* Lay a preset's colour grade over the painted field. Blend modes also paint
+   where the canvas is empty, so the field's own shape is stamped back on
+   afterwards from a copy taken first. */
+function gradeField(canvas: HTMLCanvasElement, grades: Grade[], h: number, origin: number, dpr: number) {
+  if (!grades.length) return;
+  const ctx = canvas.getContext('2d')!;
+  const shape = document.createElement('canvas');
+  shape.width = canvas.width;
+  shape.height = canvas.height;
+  shape.getContext('2d')!.drawImage(canvas, 0, 0);
+  ctx.save();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1;
+  for (const g of grades) {
+    ctx.globalCompositeOperation = g.op;
+    if ('color' in g) {
+      ctx.fillStyle = g.color;
+    } else {
+      // a band running down from just above the hill crest
+      const y0 = (h * (HILL - 0.03) - origin) * dpr;
+      const band = ctx.createLinearGradient(0, y0, 0, y0 + h * g.depth * dpr);
+      band.addColorStop(0, g.band[0]);
+      band.addColorStop(1, g.band[1]);
+      ctx.fillStyle = band;
+    }
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+  ctx.globalCompositeOperation = 'destination-in';
+  ctx.drawImage(shape, 0, 0);
+  ctx.restore();
 }
 
 /* ---------------- The tree ---------------- */
@@ -513,30 +739,65 @@ export function SunlitField() {
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
-export default function SunlitScene() {
+/* Fireflies for the night scene: small glowing points drifting and blinking
+   in the grass, each on its own CSS animation (app/scenes.css .sl-firefly). */
+function addFireflies(field: HTMLElement, h: number) {
+  const rand = seeded(9090);
+  const flies: HTMLElement[] = [];
+  for (let i = 0; i < 16; i++) {
+    const el = document.createElement('span');
+    el.className = 'sl-firefly';
+    el.style.left = `${(between(rand, 0.02, 0.98) * 100).toFixed(2)}%`;
+    el.style.top = `${(h * between(rand, HILL - 0.04, 0.97)).toFixed(1)}px`;
+    el.style.setProperty('--dx', `${between(rand, -40, 40).toFixed(0)}px`);
+    el.style.setProperty('--dy', `${between(rand, -28, 10).toFixed(0)}px`);
+    el.style.setProperty('--drift', `${between(rand, 6, 11).toFixed(1)}s`);
+    el.style.setProperty('--blink', `${between(rand, 2.2, 4.5).toFixed(1)}s`);
+    el.style.setProperty('--delay', `${(-between(rand, 0, 10)).toFixed(1)}s`);
+    field.appendChild(el);
+    flies.push(el);
+  }
+  return flies;
+}
+
+type SceneProps = {
+  theme: string;
+  /** The homepage: the stone pine, the grass rendered by the page (SunlitField), the About section rising out of it. */
+  home: boolean;
+};
+
+export default function SunlitScene({ theme, home }: SceneProps) {
   const sceneRef = useRef<HTMLDivElement>(null);
   const skyRef = useRef<HTMLCanvasElement>(null);
+  const starsRef = useRef<HTMLCanvasElement>(null);
+  const twinkleRef = useRef<HTMLCanvasElement>(null);
   const raysRef = useRef<HTMLCanvasElement>(null);
   const treeRef = useRef<HTMLCanvasElement>(null);
   const cloudRefs = useRef<(HTMLCanvasElement | null)[]>([]);
+  const preset = presetFor(theme);
 
   useEffect(() => {
+    const p = preset;
     const scene = sceneRef.current;
     const sky = skyRef.current;
     const rays = raysRef.current;
-    const tree = treeRef.current;
-    // SunlitField renders in the same commit, so its canvases are already in the page.
+    const tree = home ? treeRef.current : null;
+    // The field: on the homepage SunlitField renders it in <main> (same commit, so it is in the page
+    // already); elsewhere it is rendered right after the scene.
     const field = document.querySelector<HTMLElement>('.sl-grass');
-    const grass = document.querySelector<HTMLCanvasElement>('.sl-grass .sl-grass-canvas');
+    const grass = field?.querySelector<HTMLCanvasElement>('.sl-grass-canvas');
     const flock = scene?.querySelector<HTMLElement>('.sl-birds');
-    if (!scene || !sky || !rays || !tree || !field || !grass || !flock) return;
-    const treeLayer = tree.parentElement as HTMLElement;
-    const treeImg = new Image();
-    treeImg.decoding = 'async';
-    treeImg.src = TREE.src;
+    if (!scene || !sky || !rays || !field || !grass || !flock) return;
+    const treeLayer = tree?.parentElement ?? null;
+    const treeImg = home ? new Image() : null;
+    if (treeImg) {
+      treeImg.decoding = 'async';
+      treeImg.src = TREE.src;
+    }
 
     let drawnW = 0;
     let drawnH = 0;
+    let flies: HTMLElement[] = [];
     const draw = () => {
       const rect = scene.getBoundingClientRect();
       const w = Math.round(rect.width);
@@ -545,14 +806,19 @@ export default function SunlitScene() {
       drawnW = w;
       drawnH = h;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      drawSky(sky, w, h, dpr);
-      drawRays(rays, w, h, dpr);
-      if (treeImg.complete) drawTree(tree, w, h, dpr, treeImg, nameBox(w, h));
-      drawGrass(grass, w, h, Math.max(h, Math.round(field.getBoundingClientRect().height)), dpr);
+      drawSky(sky, w, h, dpr, p);
+      if (p.night && starsRef.current && twinkleRef.current) {
+        drawStars(starsRef.current, w, h, dpr, false);
+        drawStars(twinkleRef.current, w, h, dpr, true);
+      }
+      drawRays(rays, w, h, dpr, p);
+      if (tree && treeImg?.complete) drawTree(tree, w, h, dpr, treeImg, nameBox(w, h));
+      drawGrass(grass, w, h, Math.max(h, Math.round(field.getBoundingClientRect().height)), dpr, p);
+      if (p.night) { flies.forEach((f) => f.remove()); flies = addFireflies(field, h); }
 
       const unit = Math.min(w, h * 1.15);
       const rand = seeded(5150);
-      CLOUDS.forEach((c, i) => {
+      p.clouds.forEach((c, i) => {
         const el = cloudRefs.current[i];
         if (!el) return;
         const cw = c.w * unit * 1.4;
@@ -561,9 +827,9 @@ export default function SunlitScene() {
         el.style.height = `${ch}px`;
         el.style.left = `${c.x * w - cw / 2}px`;
         el.style.top = `${c.y * h - ch * 0.8}px`;
-        el.style.opacity = String(c.k);
+        el.style.opacity = String(Math.min(1, c.k * p.cloud.k));
         el.style.filter = `blur(${Math.max(2, c.h * unit * 0.07).toFixed(1)}px)`;
-        paintCloud(el, cw, ch, rand);
+        paintCloud(el, cw, ch, rand, p.cloud);
       });
       scene.classList.add('is-drawn');
       field.classList.add('is-drawn');
@@ -571,11 +837,11 @@ export default function SunlitScene() {
     draw();
     // The painting may arrive after the first draw, and the name moves a little once its font loads.
     const redrawTree = () => {
-      if (!drawnW || !treeImg.complete) return;
+      if (!tree || !treeImg || !drawnW || !treeImg.complete) return;
       drawTree(tree, drawnW, drawnH, Math.min(window.devicePixelRatio || 1, 2), treeImg, nameBox(drawnW, drawnH));
     };
-    treeImg.addEventListener('load', redrawTree);
-    document.fonts?.ready.then(redrawTree);
+    treeImg?.addEventListener('load', redrawTree);
+    if (home) document.fonts?.ready.then(redrawTree);
 
     let timer = 0;
     const onResize = () => {
@@ -585,17 +851,16 @@ export default function SunlitScene() {
     window.addEventListener('resize', onResize);
 
     /* Scrolling, written at most once a frame:
-       - The About section rises out of the grass. Each .sl-emerge block is
-         soft and faint while it is still near the crest and comes into focus
-         as it clears it.
-       - Then the field and the tree sink a little and dissolve into the haze,
-         so the middle of the page sits in open sky.
-       - Near the end they come back for the closing section, and the field
-         rises until its crest is above the footer, so the footer stands in
-         the grass on any screen. */
+       - On the homepage the About section rises out of the grass. Each
+         .sl-emerge block is soft and faint while it is still near the crest
+         and comes into focus as it clears it.
+       - Then the field (and the tree) sink a little and dissolve into the
+         haze, so the middle of the page sits in open sky.
+       - Near the end the field comes back and rises until its crest is above
+         the footer, so the footer stands in the grass on any screen. */
     const root = document.documentElement;
     const footer = document.querySelector<HTMLElement>('.footer');
-    const rising = Array.from(document.querySelectorAll<HTMLElement>('#about .sl-emerge'));
+    const rising = home ? Array.from(document.querySelectorAll<HTMLElement>('#about .sl-emerge')) : [];
     const shifted = new Map<HTMLElement, number>(); // the translate we last gave each block, in px
     const still = window.matchMedia('(prefers-reduced-motion: reduce)');
     let frame = 0;
@@ -618,21 +883,23 @@ export default function SunlitScene() {
       const end = root.scrollHeight - vh;
       const crest = vh * HILL;
 
-      // The field stays solid while the section's heading comes up out of it,
-      // then drops away quickly; the tree leaves with it.
+      // The field stays solid while the first content comes up over it, then
+      // drops away quickly; the tree leaves with it.
       const back = clamp01((y - (end - vh * 1.1)) / (vh * 0.9));
       const fade = (from: number, over: number) => {
         const t = Math.max(0, clamp01((y - vh * from) / (vh * over)) - back);
         return t * t * (3 - 2 * t);
       };
       const gone = fade(0.42, 0.3);
-      const treeGone = fade(0.3, 0.38);
       const reach = footer ? Math.max(0, crest - (vh - footer.offsetHeight - 28)) : 0;
       const lift = calm ? (back > 0 ? reach : 0) : reach * back;
       field.style.opacity = gone >= 1 ? '0' : (1 - gone).toFixed(3);
       field.style.translate = `0 ${((calm ? 0 : gone * vh * 0.18) - lift).toFixed(1)}px`;
-      treeLayer.style.opacity = treeGone >= 1 ? '0' : (1 - treeGone).toFixed(3);
-      treeLayer.style.translate = calm ? '' : `0 ${(treeGone * vh * 0.04).toFixed(1)}px`;
+      if (treeLayer) {
+        const treeGone = fade(0.3, 0.38);
+        treeLayer.style.opacity = treeGone >= 1 ? '0' : (1 - treeGone).toFixed(3);
+        treeLayer.style.translate = calm ? '' : `0 ${(treeGone * vh * 0.04).toFixed(1)}px`;
+      }
 
       if (calm) { rising.forEach(settle); return; }
       const present = 1 - gone;
@@ -656,9 +923,10 @@ export default function SunlitScene() {
     window.addEventListener('resize', onScroll);
     still.addEventListener('change', onScroll);
 
-    /* The birds: an animation loop that runs only while the hero or the
-       closing section is on screen, the tab is visible and motion is allowed. */
-    const birds = [makeBird(), makeBird(), makeBird(), makeBird()];
+    /* The birds (day scenes): an animation loop that runs only while the top
+       of the page or its end is on screen, the tab is visible and motion is
+       allowed. The night scene has fireflies instead, all CSS. */
+    const birds = p.night ? [] : [makeBird(), makeBird(), makeBird(), makeBird()];
     birds.forEach((b) => flock.appendChild(b.svg));
 
     let flight: { dir: 1 | -1; alt: number; start: number; secs: number; count: number } | null = null;
@@ -678,9 +946,9 @@ export default function SunlitScene() {
       if (!flight) return;
       const w = drawnW;
       const h = drawnH;
-      const p = (now - flight.start) / (flight.secs * 1000);
-      if (p > 1) { flight = null; birds.forEach((b) => { b.svg.style.visibility = 'hidden'; }); nextFlight = now + between(Math.random, 9000, 20000); return; }
-      const lead = flight.dir > 0 ? -40 + (w + 120) * p : w + 40 - (w + 120) * p;
+      const q = (now - flight.start) / (flight.secs * 1000);
+      if (q > 1) { flight = null; birds.forEach((b) => { b.svg.style.visibility = 'hidden'; }); nextFlight = now + between(Math.random, 9000, 20000); return; }
+      const lead = flight.dir > 0 ? -40 + (w + 120) * q : w + 40 - (w + 120) * q;
       const size = Math.max(7, Math.min(11, w / 150));
       birds.forEach((b, i) => {
         if (i >= flight!.count) return;
@@ -690,8 +958,8 @@ export default function SunlitScene() {
         const lift = gliding ? 0.25 : Math.sin(b.flap);
         b.path.setAttribute('d', wings(lift));
         const x = lead - flight!.dir * b.ox;
-        const y = flight!.alt * h + b.oy + Math.sin(p * Math.PI * 3 + i) * 7;
-        b.svg.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) scale(${(size / 20).toFixed(3)})`;
+        const yy = flight!.alt * h + b.oy + Math.sin(q * Math.PI * 3 + i) * 7;
+        b.svg.style.transform = `translate3d(${x.toFixed(1)}px, ${yy.toFixed(1)}px, 0) scale(${(size / 20).toFixed(3)})`;
       });
     };
 
@@ -702,14 +970,16 @@ export default function SunlitScene() {
     };
     const showing = new Set<Element>();
     const setMotion = () => {
-      const on = showing.size > 0 && !document.hidden && !still.matches;
+      const on = showing.size > 0 && !document.hidden && !still.matches && birds.length > 0;
       root.classList.toggle('sl-alive', showing.size > 0);
       if (on && !loop) loop = requestAnimationFrame(tick);
       if (!on && loop) { cancelAnimationFrame(loop); loop = 0; }
     };
 
-    // Motion runs only while the poster hero or the closing section is in view.
-    const watched = ['.slp', '.hp-cta'].map((q) => document.querySelector(q)).filter(Boolean) as Element[];
+    // Motion runs only while the top of the page or its end is in view.
+    const first = Array.from(document.querySelector('main')?.children ?? []).find((el) => !['STYLE', 'SCRIPT'].includes(el.tagName));
+    const watched = (home ? ['.slp', '.hp-cta'].map((q) => document.querySelector(q)) : [first, footer])
+      .filter(Boolean) as Element[];
     const io = new IntersectionObserver((entries) => {
       for (const e of entries) {
         if (e.isIntersecting) showing.add(e.target);
@@ -732,34 +1002,42 @@ export default function SunlitScene() {
       io.disconnect();
       document.removeEventListener('visibilitychange', setMotion);
       still.removeEventListener('change', setMotion);
-      treeImg.removeEventListener('load', redrawTree);
+      treeImg?.removeEventListener('load', redrawTree);
       birds.forEach((b) => b.svg.remove());
+      flies.forEach((f) => f.remove());
       rising.forEach(settle);
       root.classList.remove('sl-alive');
     };
-  }, []);
+  }, [preset, home]);
 
   return (
-    <div className="sl-scene" ref={sceneRef} aria-hidden="true">
-      <div className="sl-sky" />
-      <div className="sl-wash" />
-      <canvas className="sl-sky-canvas" ref={skyRef} />
-      <div className="sl-clouds">
-        {CLOUDS.map((c, i) => (
-          <canvas
-            key={i}
-            className="sl-cloud"
-            ref={(el) => { cloudRefs.current[i] = el; }}
-            style={{ '--drift': `${c.drift}vw`, '--secs': `${c.secs}s`, '--delay': `${-c.secs * (i * 0.37 % 1)}s` } as React.CSSProperties}
-          />
-        ))}
+    <>
+      <div className="sl-scene" ref={sceneRef} aria-hidden="true">
+        <div className="sl-sky" />
+        <div className="sl-wash" />
+        <canvas className="sl-sky-canvas" ref={skyRef} />
+        {preset.night && <canvas className="sl-stars" ref={starsRef} />}
+        {preset.night && <canvas className="sl-stars sl-twinkle" ref={twinkleRef} />}
+        <div className="sl-clouds">
+          {preset.clouds.map((c, i) => (
+            <canvas
+              key={i}
+              className="sl-cloud"
+              ref={(el) => { cloudRefs.current[i] = el; }}
+              style={{ '--drift': `${c.drift}vw`, '--secs': `${c.secs}s`, '--delay': `${-c.secs * (i * 0.37 % 1)}s` } as React.CSSProperties}
+            />
+          ))}
+        </div>
+        <div className="sl-birds" />
+        {home && (
+          <div className="sl-tree">
+            <canvas className="sl-tree-canvas" ref={treeRef} />
+          </div>
+        )}
+        <canvas className="sl-rays" ref={raysRef} />
+        <div className="sl-sun-bloom" />
       </div>
-      <div className="sl-birds" />
-      <div className="sl-tree">
-        <canvas className="sl-tree-canvas" ref={treeRef} />
-      </div>
-      <canvas className="sl-rays" ref={raysRef} />
-      <div className="sl-sun-bloom" />
-    </div>
+      {!home && <SunlitField />}
+    </>
   );
 }
