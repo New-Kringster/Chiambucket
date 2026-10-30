@@ -116,26 +116,10 @@ html.sensory-active[data-theme="sunlit"] {
   position: fixed; top: 0; left: 0; width: 100%; height: 135lvh;
   overflow: visible; pointer-events: none; will-change: opacity, translate;
 }
-/* Three canvases, far, mid and near (SunlitScene FIELD_TOP: nothing is painted
-   above 60% of the screen), a little wider than the screen so the sway never
+/* The canvas starts at 60% of the screen (SunlitScene FIELD_TOP: nothing is
+   painted above it) and is a little wider than the screen, so the sway never
    opens a gap at the edges. The sway pivots on the bottom of the screen. */
 .sl-grass-canvas { position: absolute; top: 60lvh; left: -3%; width: 106%; height: 75lvh; transform-origin: 50% 40lvh; }
-
-/* The lanes between the grass layers, where the fox and the rabbit run */
-.sl-lane { position: absolute; inset: 0; pointer-events: none; }
-.sl-critter {
-  /* a point at the animal's feet: the poses hang from it (components/critters.ts) */
-  position: absolute; left: 0; top: 0; width: 0; height: 0; transform-origin: 0 0; visibility: hidden;
-  will-change: transform, filter;
-}
-/* only the current pose shows; paws fade into the grass. The mask is on the
-   poses, not the point, so the depth-of-field blur can spill past their edges */
-.sl-critter img {
-  position: absolute; max-width: none; opacity: 0; user-select: none;
-  -webkit-mask-image: linear-gradient(to top, transparent 0%, #000 14%);
-  mask-image: linear-gradient(to top, transparent 0%, #000 14%);
-}
-.sl-grass.is-calm .sl-critter { display: none; }
 
 /* Tiny birds far off in the sky */
 .sl-scene > .sl-birds { overflow: hidden; }

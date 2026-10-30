@@ -1,6 +1,5 @@
 'use client';
 import { useEffect, useRef } from 'react';
-import { createCritters } from './critters';
 
 /*
   SunlitScene — the homepage background for the "sunlit" theme, painted like a
@@ -303,25 +302,17 @@ const MID = ['#b1a452', '#a4994b', '#988f46', '#b2ab66', '#8f8944', '#bcad5c'];
 const LOW = ['#8c853c', '#807930', '#938d46', '#706824', '#a19a55', '#635a1a', '#878140'];
 const CREST = ['#dcc66f', '#e3d085', '#cdb862', '#c2b05b', '#b6a755'];
 
-/* The field is painted for a screen of height h onto three canvases, far, mid
-   and near, so the fox and the rabbit can run between the blades: each canvas
-   holds the strokes in one band of depth, and the animals are drawn between
-   them. The canvases start at FIELD_TOP (nothing is painted above it) and run
-   to `full`, below the bottom of the screen: that part is there for the end
-   of the page, where the field rises to reach above the footer. */
+/* The field is painted for a screen of height h onto a canvas that starts at
+   FIELD_TOP (nothing is painted above it) and runs to `full`, below the bottom
+   of the screen: that part is there for the end of the page, where the field
+   rises to reach above the footer. */
 const FIELD_TOP = 0.6;
-const FAR_TO_MID = 0.32;
-const MID_TO_NEAR = 0.74;
 
-function drawGrass(canvases: HTMLCanvasElement[], w: number, h: number, full: number, dpr: number) {
+function drawGrass(canvas: HTMLCanvasElement, w: number, h: number, full: number, dpr: number) {
   const origin = h * FIELD_TOP;
-  const [far, mid, near] = canvases.map((c) => {
-    const ctx = prepare(c, w, full - origin, dpr);
-    ctx.clearRect(0, 0, w, full - origin);
-    ctx.translate(0, -origin);
-    return ctx;
-  });
-  const layer = (depth: number) => (depth < FAR_TO_MID ? far : depth < MID_TO_NEAR ? mid : near);
+  const ctx = prepare(canvas, w, full - origin, dpr);
+  ctx.clearRect(0, 0, w, full - origin);
+  ctx.translate(0, -origin);
   const rand = seeded(1517);
 
   const top = h * (HILL - 0.005);
@@ -330,19 +321,19 @@ function drawGrass(canvases: HTMLCanvasElement[], w: number, h: number, full: nu
   const ridge = (x: number) => ridgeAt(Math.min(w, Math.max(0, x)), w, h);
 
   // Base body of the hill, darkening towards the bottom of the screen and on below it.
-  const body = far.createLinearGradient(0, top, 0, h);
+  const body = ctx.createLinearGradient(0, top, 0, h);
   body.addColorStop(0, '#d2bc66');
   body.addColorStop(0.12, '#bfad58');
   body.addColorStop(0.32, '#9d9448');
   body.addColorStop(0.65, '#8a833b');
   body.addColorStop(1, '#736d29');
-  far.fillStyle = body;
-  far.beginPath();
-  far.moveTo(0, full);
-  for (let x = 0; x <= w; x += 6) far.lineTo(x, ridgeAt(x, w, h) + 3);
-  far.lineTo(w, full);
-  far.closePath();
-  far.fill();
+  ctx.fillStyle = body;
+  ctx.beginPath();
+  ctx.moveTo(0, full);
+  for (let x = 0; x <= w; x += 6) ctx.lineTo(x, ridgeAt(x, w, h) + 3);
+  ctx.lineTo(w, full);
+  ctx.closePath();
+  ctx.fill();
 
   // Broad, soft brushwork underneath: pale sweeps and deep shadow sweeps.
   const { canvas: soft, ctx: s } = softLayer(w, full, 0.25);
@@ -355,29 +346,26 @@ function drawGrass(canvases: HTMLCanvasElement[], w: number, h: number, full: nu
     blade(s, x, y, between(rand, 0.4, 1.1) * band, between(rand, -0.5, -0.18), between(rand, 8, 22) * k, between(rand, -10, 10),
       dark ? '#5d5517' : pick(rand, ['#c7b763', '#b4ab62', '#d6c374']), dark ? between(rand, 0.12, 0.28) : between(rand, 0.1, 0.25));
   }
-  far.globalAlpha = 1;
-  far.drawImage(soft, 0, 0, w, full);
+  ctx.globalAlpha = 1;
+  ctx.drawImage(soft, 0, 0, w, full);
 
   // Short tufts along the crest so the hilltop is ragged rather than a clean line.
   for (let i = 0; i < Math.round(w / 1.6); i++) {
     const x = between(rand, -10, w + 10);
-    blade(far, x, ridge(x) + between(rand, 4, 12), between(rand, 0.03, 0.1) * band, between(rand, -1.6, -0.75),
+    blade(ctx, x, ridge(x) + between(rand, 4, 12), between(rand, 0.03, 0.1) * band, between(rand, -1.6, -0.75),
       between(rand, 1.2, 3.2) * k, between(rand, -3, 3), pick(rand, ['#d2bc66', '#c9b45e', '#dcc66f', '#bfad58']), between(rand, 0.7, 1));
   }
 
-  // The main field of strokes, painted back to front, each onto the canvas for
-  // its depth. Depth is measured down the visible band, so the part below the
-  // screen is all deep, darker grass. The nearer bands get a few extra strokes
-  // so an animal running through them is properly in the grass.
+  // The main field of strokes, painted back to front. Depth is measured down
+  // the visible band, so the part below the screen is all deep, darker grass.
   const strokes: { x: number; y: number; depth: number }[] = [];
   const reach = (full - top) / band;
   const count = Math.round((w * band) / 55);
   const below = Math.round(count * (reach - 1) * 0.55);
-  const extra = Math.round(count * 0.35);
-  for (let i = 0; i < count + below + extra; i++) {
+  for (let i = 0; i < count + below; i++) {
     const x = between(rand, -60, w + 10);
     const r = ridge(x);
-    const depth = i < count ? Math.pow(rand(), 0.85) : i < count + below ? between(rand, 1, reach) : between(rand, FAR_TO_MID, 1.1);
+    const depth = i < count ? Math.pow(rand(), 0.85) : between(rand, 1, reach);
     strokes.push({ x, y: r + 4 + depth * (h - r + 30), depth });
   }
   strokes.sort((a, b) => a.y - b.y);
@@ -385,7 +373,7 @@ function drawGrass(canvases: HTMLCanvasElement[], w: number, h: number, full: nu
     const t = st.depth + between(rand, -0.1, 0.1);
     const palette = t < 0.15 ? LIT : t < 0.4 ? MID : LOW;
     const lift = st.depth < 0.18 ? 0.3 : 0; // blades on the crest stand more upright
-    blade(layer(st.depth), st.x, st.y, between(rand, 0.14, 0.5) * band * (st.depth < 0.15 ? 0.75 : 1), between(rand, -0.85, -0.25) - lift,
+    blade(ctx, st.x, st.y, between(rand, 0.14, 0.5) * band * (st.depth < 0.15 ? 0.75 : 1), between(rand, -0.85, -0.25) - lift,
       between(rand, 0.8, 3) * k, between(rand, -8, 8) * k, pick(rand, palette), between(rand, 0.3, 0.75));
   }
 
@@ -394,7 +382,7 @@ function drawGrass(canvases: HTMLCanvasElement[], w: number, h: number, full: nu
     const x = rand() * w;
     const r = ridgeAt(x, w, h);
     const depth = Math.pow(rand(), 2);
-    blade(layer(depth), x, r + depth * (h - r), between(rand, 0.1, 0.32) * band, between(rand, -1.05, -0.4),
+    blade(ctx, x, r + depth * (h - r), between(rand, 0.1, 0.32) * band, between(rand, -1.05, -0.4),
       between(rand, 0.4, 1) * k, between(rand, -5, 5), pick(rand, ['#ecdd9c', '#e3d189', '#d8ca85']), between(rand, 0.25, 0.6));
   }
 
@@ -405,7 +393,7 @@ function drawGrass(canvases: HTMLCanvasElement[], w: number, h: number, full: nu
     const tall = between(rand, 0.12, 0.3) * band;
     for (let i = 0; i < 18; i++) {
       const x = cx + between(rand, -1, 1) * tall * 0.35;
-      blade(far, x, ridge(x) + between(rand, 4, band * 0.07), tall * between(rand, 0.45, 1), between(rand, -1.65, -0.8),
+      blade(ctx, x, ridge(x) + between(rand, 4, band * 0.07), tall * between(rand, 0.45, 1), between(rand, -1.65, -0.8),
         between(rand, 0.5, 1.4) * k, between(rand, -6, 6), pick(rand, [...CREST, '#a99c4f']), between(rand, 0.55, 0.95));
     }
   }
@@ -413,21 +401,20 @@ function drawGrass(canvases: HTMLCanvasElement[], w: number, h: number, full: nu
   // Stray blades standing against the sky along the crest.
   for (let i = 0; i < Math.round(w / 4); i++) {
     const x = rand() * w;
-    blade(far, x, ridgeAt(x, w, h) + between(rand, 2, band * 0.06), between(rand, 0.04, 0.2) * band, between(rand, -1.75, -0.9),
+    blade(ctx, x, ridgeAt(x, w, h) + between(rand, 2, band * 0.06), between(rand, 0.04, 0.2) * band, between(rand, -1.75, -0.9),
       between(rand, 0.3, 0.9) * k, between(rand, -5, 5), pick(rand, CREST), between(rand, 0.45, 0.9));
   }
 
-  for (const ctx of [far, mid, near]) ctx.globalAlpha = 1;
+  ctx.globalAlpha = 1;
 
   // Darken the very bottom slightly so the field sits on the edge of the screen,
-  // and keep darkening below it. It is on the near canvas, so it shades
-  // anything running low in the grass too.
-  const foot = near.createLinearGradient(0, h - band * 0.45, 0, full);
+  // and keep darkening below it.
+  const foot = ctx.createLinearGradient(0, h - band * 0.45, 0, full);
   foot.addColorStop(0, 'rgba(70,64,18,0)');
   foot.addColorStop(Math.min(0.9, (band * 0.45) / (full - h + band * 0.45)), 'rgba(70,64,18,0.26)');
   foot.addColorStop(1, 'rgba(62,58,16,0.4)');
-  near.fillStyle = foot;
-  near.fillRect(0, h - band * 0.45, w, full - h + band * 0.45);
+  ctx.fillStyle = foot;
+  ctx.fillRect(0, h - band * 0.45, w, full - h + band * 0.45);
 }
 
 /* ---------------- The tree ---------------- */
@@ -515,16 +502,11 @@ const wings = (lift: number) => {
 };
 
 
-/** The grass, with lanes between its layers for the fox and the rabbit. Render it inside <main>, after the section that should rise out of it. */
+/** The grass. Render it inside <main>, after the section that should rise out of it. */
 export function SunlitField() {
   return (
     <div className="sl-grass" aria-hidden="true">
       <canvas className="sl-grass-canvas" />
-      <div className="sl-lane" />
-      <canvas className="sl-grass-canvas" />
-      <div className="sl-lane" />
-      <canvas className="sl-grass-canvas" />
-      <div className="sl-lane" />
     </div>
   );
 }
@@ -545,10 +527,9 @@ export default function SunlitScene() {
     const tree = treeRef.current;
     // SunlitField renders in the same commit, so its canvases are already in the page.
     const field = document.querySelector<HTMLElement>('.sl-grass');
-    const grass = Array.from(document.querySelectorAll<HTMLCanvasElement>('.sl-grass .sl-grass-canvas'));
-    const lanes = Array.from(document.querySelectorAll<HTMLElement>('.sl-grass .sl-lane'));
+    const grass = document.querySelector<HTMLCanvasElement>('.sl-grass .sl-grass-canvas');
     const flock = scene?.querySelector<HTMLElement>('.sl-birds');
-    if (!scene || !sky || !rays || !tree || !field || grass.length !== 3 || lanes.length !== 3 || !flock) return;
+    if (!scene || !sky || !rays || !tree || !field || !grass || !flock) return;
     const treeLayer = tree.parentElement as HTMLElement;
     const treeImg = new Image();
     treeImg.decoding = 'async';
@@ -675,18 +656,14 @@ export default function SunlitScene() {
     window.addEventListener('resize', onScroll);
     still.addEventListener('change', onScroll);
 
-    /* The fox, the rabbit and the birds: one animation loop, running only while
-       the hero (animals and birds) or the closing section (birds) is on screen,
-       the tab is visible and motion is allowed. */
-    const critters = createCritters(lanes, ridgeAt, HILL);
-    if (process.env.NODE_ENV !== 'production') (window as unknown as { slCritters?: typeof critters }).slCritters = critters;
+    /* The birds: an animation loop that runs only while the hero or the
+       closing section is on screen, the tab is visible and motion is allowed. */
     const birds = [makeBird(), makeBird(), makeBird(), makeBird()];
     birds.forEach((b) => flock.appendChild(b.svg));
 
     let flight: { dir: 1 | -1; alt: number; start: number; secs: number; count: number } | null = null;
     let nextFlight = performance.now() + 5000;
     let loop = 0;
-    let heroShowing = false;
 
     const stepBirds = (now: number) => {
       if (!flight && now >= nextFlight) {
@@ -720,7 +697,6 @@ export default function SunlitScene() {
 
     const tick = (now: number) => {
       loop = 0;
-      if (heroShowing) critters.step(now, { w: drawnW, h: drawnH, hill: HILL });
       stepBirds(now);
       loop = requestAnimationFrame(tick);
     };
@@ -728,13 +704,8 @@ export default function SunlitScene() {
     const setMotion = () => {
       const on = showing.size > 0 && !document.hidden && !still.matches;
       root.classList.toggle('sl-alive', showing.size > 0);
-      heroShowing = on && [...showing].some((el) => el.classList.contains('slp'));
-      // a chase only plays out in the hero: one that is interrupted is dropped,
-      // so it never reappears frozen when the field comes back at the end
-      if (!heroShowing) critters.stop(performance.now());
       if (on && !loop) loop = requestAnimationFrame(tick);
       if (!on && loop) { cancelAnimationFrame(loop); loop = 0; }
-      field.classList.toggle('is-calm', still.matches);
     };
 
     // Motion runs only while the poster hero or the closing section is in view.
@@ -762,7 +733,6 @@ export default function SunlitScene() {
       document.removeEventListener('visibilitychange', setMotion);
       still.removeEventListener('change', setMotion);
       treeImg.removeEventListener('load', redrawTree);
-      critters.destroy();
       birds.forEach((b) => b.svg.remove());
       rising.forEach(settle);
       root.classList.remove('sl-alive');
