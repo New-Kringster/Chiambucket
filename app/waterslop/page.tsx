@@ -43,7 +43,7 @@ const jsonLd = {
    "Embed" dialog. Paste that src here and the viewer appears; until then the
    section links out. */
 const REPORT_LINK = 'https://1drv.ms/w/c/4eae3340327c4979/IQD6fnAtH4qnTp-LM2j2Hj_7ARKI2X_7aByE_W7eXIiQjQk?e=DOacjY';
-const REPORT_EMBED_URL = '';
+const REPORT_EMBED_URL = 'https://1drv.ms/w/c/4eae3340327c4979/IQTHPE0ITKXXRo97ze60q4LkAcIyqE0Ek_Mh2xwbOefamDk?em=2';
 
 const I = '/images/waterslop/';
 
@@ -683,7 +683,7 @@ export default function WaterslopPage() {
 
           <section id="report" className="ws-sec">
             <Head id="report" title="The report" />
-            <p>Everything above follows the project report, written for NYP Electronic and Computer Engineering. Read the full document, with its references, tables and every figure, here.</p>
+            <p>This page is the quick read. Everything above follows the project report, written for NYP Electronic and Computer Engineering. The full brief, with its references, tables and every figure, is embedded here.</p>
             {REPORT_EMBED_URL ? (
               <div className="ws-report-frame">
                 <iframe title="OCR Water Meter Reader report (Word)" src={REPORT_EMBED_URL} loading="lazy" allowFullScreen />
