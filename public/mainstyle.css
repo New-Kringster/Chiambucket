@@ -2231,6 +2231,16 @@ html[data-theme="paper"] {
   box-shadow: 0 8px 20px -7px rgba(243,180,68,0.75), inset 0 1px 0 rgba(255,255,255,0.55);
 }
 .hp-spot-badge svg { width: 13px; height: 13px; }
+/* Only the flagship wears the gold badge; the highlighted builds wear a quiet
+   smoked-glass one, so the order of importance reads at a glance. */
+.hp-spot-badge.is-highlight {
+  color: #f3ede2; font-weight: 700;
+  background: rgba(16, 16, 16, 0.62);
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+/* The OCR Reader banner is drawn on #171717, not black */
+.hp-spotlight-solo.is-flagship .hp-spot-media { background: #171717; }
 .hp-spot-body { display: flex; flex-direction: column; justify-content: center; padding: clamp(16px, 2.2vw, 30px) clamp(14px, 1.8vw, 26px); }
 .hp-spot-title {
   font-family: 'oswaldbold'; font-size: clamp(1.6rem, 3vw, 2.4rem); line-height: 1.1; letter-spacing: -0.015em;

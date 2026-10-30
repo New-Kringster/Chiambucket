@@ -5,7 +5,7 @@ import InfoModal, { type InfoItem } from '../components/InfoModal';
 import LazyVideo from '../components/LazyVideo';
 import { PeekFeed } from '../components/ProjectPeek';
 import { SunlitField } from '../components/SunlitScene';
-import { IcRead, IcPeek, IcPlay, IcGitHub, IcMail, IcGrid, IcServer, IcMore, IcExpand } from '../components/Icons';
+import { IcRead, IcPeek, IcPlay, IcGitHub, IcMail, IcGrid, IcServer, IcMore, IcExpand, IcOut } from '../components/Icons';
 import PosterHero from './PosterHero';
 import './about.css';
 
@@ -485,11 +485,33 @@ export default function HomeClient() {
               </div>
             </div>
 
-            {/* Flagship spotlight */}
+            {/* Flagship spotlight: OCR Reader, the banner carries its own title */}
+            <article className="hp-spotlight hp-spotlight-solo is-flagship" data-reveal>
+              <div className="hp-spot-media">
+                <img src="/images/ocr-reader-flagship.webp" alt="OCR Reader with DrumNet: a fully vertically-integrated OCR water meter solution, built on an ESP32-S3 with LoRaWAN and a KiCad PCB" loading="lazy" />
+                <span className="hp-spot-badge">Flagship project</span>
+              </div>
+              <div className="hp-spot-solo-body">
+                <div className="hp-spot-stats">
+                  <div className="hp-spot-stat"><b>693K</b><span>parameters on the chip</span></div>
+                  <div className="hp-spot-stat"><b>~2 s</b><span>per meter reading</span></div>
+                  <div className="hp-spot-stat"><b>4-layer</b><span>custom PCB</span></div>
+                  <div className="hp-spot-stat"><b>6</b><span>AI training agents</span></div>
+                </div>
+                <div className="hp-spot-tags"><span>ESP32-S3</span><span>OV2640</span><span>DrumNet</span><span>LoRaWAN</span><span>KiCad</span><span>Onshape</span></div>
+                <div className="hp-spot-solo-cta">
+                  <a className="hp-btn" href="/waterslop"><IcRead /> Read article</a>
+                  <button className="hp-btn hp-btn-ghost" onClick={() => openProject('proj-waterslop')}><IcPeek /> Peek summary</button>
+                  <a className="hp-btn hp-btn-ghost" href="https://1drv.ms/w/c/4eae3340327c4979/IQD6fnAtH4qnTp-LM2j2Hj_7ARKI2X_7aByE_W7eXIiQjQk?e=DOacjY" target="_blank" rel="noopener"><IcOut /> Open the report</a>
+                </div>
+              </div>
+            </article>
+
+            {/* Highlighted hardware build: Project June */}
             <article className="hp-spotlight" data-reveal>
               <div className="hp-spot-media">
                 <img src="/images/ProjJuneBanner1.webp" alt="Project June, a 5G radio-controlled vehicle" loading="lazy" />
-                <span className="hp-spot-badge">Main hardware build</span>
+                <span className="hp-spot-badge is-highlight">Highlighted hardware build</span>
               </div>
               <div className="hp-spot-body">
                 <span className="hp-key">Project June · Personal</span>
@@ -510,11 +532,11 @@ export default function HomeClient() {
               </div>
             </article>
 
-            {/* Flagship spotlight — BeadReader (software) */}
+            {/* Highlighted software build: BeadReader */}
             <article className="hp-spotlight hp-spotlight-solo" data-reveal>
               <div className="hp-spot-media">
                 <img src="/images/beadreader-flagship.webp" alt="BeadReader, a self-hosted invite-only private book reader" loading="lazy" />
-                <span className="hp-spot-badge">Main software build</span>
+                <span className="hp-spot-badge is-highlight">Highlighted software build</span>
               </div>
               <div className="hp-spot-solo-body">
                 <div className="hp-spot-stats">
@@ -567,23 +589,6 @@ export default function HomeClient() {
                   <div className="hp-pf-foot">
                     <div className="icon-stack"><img src="/images/esp-icon.webp" alt="" /><img src="/images/Kicad-icon.webp" alt="" /><img src="/images/onshape-icon.webp" alt="" /><img src="/images/PlatformIO-icon.webp" alt="" /></div>
                     <a className="hp-pf-view" href="/brolocator"><IcRead /> Read article</a>
-                  </div>
-                </div>
-              </article>
-
-              {/* OCR Reader */}
-              <article id="proj-waterslop" className="hp-pf-card" data-article="/waterslop" data-type="school" data-highlight="1" data-search="ocr reader waterslop water meter reader ocr drumnet esp32 s3 ov2640 camera lorawan neural network cnn kicad pcb onshape enclosure nyp school highlight">
-                <div className="hp-pf-thumb">
-                  <button className="hp-pf-peek" onClick={peek} aria-label="Peek at a quick summary"><span className="hp-pf-peek-pill"><SR />Peek summary</span></button>
-                  <span className="hp-pf-type school">School</span>
-                  <img src="/images/waterslop-pf-context.webp" alt="OCR Reader water meter reader" loading="lazy" />
-                </div>
-                <div className="hp-pf-info">
-                  <h3 className="hp-pf-name">OCR Reader</h3>
-                  <p className="hp-pf-blurb">A battery-powered OCR water meter reader: a 693K-parameter DrumNet pipeline on an ESP32-S3 reads the drums and reports over LoRaWAN. Custom KiCad PCB and 3D-printed shell.</p>
-                  <div className="hp-pf-foot">
-                    <div className="icon-stack"><img src="/images/esp-icon.webp" alt="" /><img src="/images/Kicad-icon.webp" alt="" /><img src="/images/onshape-icon.webp" alt="" /><img src="/images/PlatformIO-icon.webp" alt="" /></div>
-                    <a className="hp-pf-view" href="/waterslop"><IcRead /> Read article</a>
                   </div>
                 </div>
               </article>

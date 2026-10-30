@@ -18,7 +18,7 @@ import { IcRead, IcScreen, iconForUrl } from './Icons';
 
 /* Project order = the homepage gallery order (also the ALL_PROJECTS order). */
 export const PEEK_ORDER: string[] = [
-  'proj-june', 'proj-beadreader', 'proj-lora', 'proj-waterslop', 'proj-lumen', 'proj-ema', 'proj-pandus', 'proj-elecf',
+  'proj-waterslop', 'proj-june', 'proj-beadreader', 'proj-lora', 'proj-lumen', 'proj-ema', 'proj-pandus', 'proj-elecf',
   'proj-kauli', 'proj-sol', 'proj-copyboard', 'proj-webdev', 'proj-mc',
 ];
 
@@ -114,7 +114,7 @@ export function PeekModalContent({ id }: { id: string }) {
     );
     case 'proj-waterslop': return (
       <>
-        {hero('/images/waterslop-pf-context.webp', 'OCR Reader: a water meter register seen through the reader\u2019s camera', ['School Project'], 'highlight')}
+        {hero('/images/ocr-reader-pf-context.webp', 'OCR Reader with DrumNet: a fully vertically-integrated OCR water meter solution', ['School Project'], 'highlight')}
         <div className="hp-rd-body">
           <h2 className="hp-md-title">OCR Reader</h2>
           <p className="hp-md-meta">NYP ECE · ESP32-S3 · OV2640 · DrumNet · LoRaWAN · KiCad · Onshape</p>
@@ -279,7 +279,7 @@ function PeekItem({ id, first, index }: { id: string; first: boolean; index: num
 /* The cover each project's reader opens with, for the peek of the next one. */
 const COVERS: Record<string, string> = {
   'proj-june': '/images/ProjJuneBanner1.webp', 'proj-lora': '/images/borlocator-pf-context.webp',
-  'proj-waterslop': '/images/waterslop-pf-context.webp',
+  'proj-waterslop': '/images/ocr-reader-pf-context.webp',
   'proj-lumen': '/images/lumen-pf-context.webp', 'proj-beadreader': '/images/beadreader-pf-context.webp',
   'proj-ema': '/images/Ema-pf-context.webp', 'proj-pandus': '/images/pandusarticle.webp',
   'proj-elecf': '/images/elef2-pf-context.webp', 'proj-kauli': '/images/kauli3-pf-context.webp',
