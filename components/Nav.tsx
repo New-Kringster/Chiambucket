@@ -10,22 +10,24 @@ const PORTFOLIO_ID = 'portfolio-items-holder';
 type Key = 'home' | 'work' | 'photography' | 'homelab' | 'contact';
 const LINKS: { key: Key; href: string; label: string }[] = [
   { key: 'home', href: '/', label: 'Home' },
-  { key: 'work', href: `/#${PORTFOLIO_ID}`, label: 'My work' },
   { key: 'photography', href: '/photography', label: 'Photography' },
   { key: 'homelab', href: '/homelab', label: 'HomeLab' },
   { key: 'contact', href: '/contact', label: 'Contact' },
 ];
+const WORK = { key: 'work' as const, href: `/#${PORTFOLIO_ID}`, label: 'My work' };
 
 /*
   The nav is a row of separate small pieces rather than one long bar: the logo
-  on its own and a segmented pill of pages. The current one sits in a dark
-  inner pill, the mark, which slides from item to item: on the homepage it
-  moves from Home to My work while the projects section is in the middle of
-  the screen, and back again. On phones the page pill folds into a round menu
-  button that opens a small dropdown. Styles: components/nav.css.
+  on its own, a segmented pill of pages, and "My work" on its own at the
+  right. The current one sits in a dark inner pill, the mark, which slides
+  from item to item: on the homepage it jumps from Home to My work while the
+  projects section is in the middle of the screen, and back again. On phones
+  the page pill folds into a round menu button that opens a small dropdown.
+  Styles: components/nav.css.
 
   As the page scrolls, the pieces slide together and merge into one compact
-  bar in the middle, like metaballs: the logo gets a chip that swells out of a
+  bar, in the middle (on phones, at the right), like metaballs. My work joins
+  the end of the page pill and becomes one more option in the list: the logo gets a chip that swells out of a
   point, and where two pieces come close a neck of glass reaches across and
   thickens until they fuse (geometry in components/navBlob.ts). The glass for
   all of them is one layer clipped to that shape, with the rim and shadow
@@ -38,6 +40,8 @@ const LINKS: { key: Key; href: string; label: string }[] = [
 const MERGE_SPAN = 260;
 // How much neighbouring pieces overlap once merged, so the bar is one piece.
 const MERGED_OVERLAP = 4;
+// Width of the mark element (px): wide enough to reach from the page pill to My work.
+const MARK_W = 3000;
 export default function Nav() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -47,6 +51,7 @@ export default function Nav() {
   const logoRef = useRef<HTMLAnchorElement>(null);
   const linksRef = useRef<HTMLElement>(null);
   const markRef = useRef<HTMLSpanElement>(null);
+  const workRef = useRef<HTMLDivElement>(null);
   const glassRef = useRef<HTMLDivElement>(null);
   const edgeRef = useRef<SVGPathElement>(null);
   const close = () => setOpen(false);
@@ -54,7 +59,11 @@ export default function Nav() {
   const [atWork, setAtWork] = useState(false);
 
   const active: Key | null = pathname === '/' ? (atWork ? 'work' : 'home')
-    : LINKS.find((l) => l.key !== 'home' && l.key !== 'work' && pathname.startsWith(l.href))?.key ?? null;
+    : LINKS.find((l) => l.key !== 'home' && pathname.startsWith(l.href))?.key ?? null;
+  const activeRef = useRef(active);
+  activeRef.current = active;
+  // the mark's placer, so the merge can keep the mark on My work while it moves
+  const placeMark = useRef<() => void>(() => {});
 
   /* On the homepage, Home and My work scroll the page instead of navigating.
      Leaving it to the href would do nothing on a repeat click, because the URL
@@ -87,32 +96,43 @@ export default function Nav() {
     return () => io.disconnect();
   }, [pathname]);
 
-  /* The mark: one dark pill behind the items, cut to the current item with
-     clip-path. Its two edges are separate animated lengths, and the leading
-     edge moves first, so it stretches towards the next item and then catches
-     up, a small jump. The items keep their own background until it is placed. */
+  /* The mark: one dark pill living in the page pill, cut to the current item
+     with clip-path. It is far wider than the pill, so it can also reach My
+     work once that has merged onto the end of the list. Its two edges are
+     separate animated lengths measured from the pill's left edge, and the
+     leading edge moves first, so it stretches towards the next item and then
+     catches up, a small jump. Where the mark cannot show (phones, where the
+     pill is folded away, or My work standing on its own), the current item
+     keeps its own dark background instead. */
   const placed = useRef(false);
   useEffect(() => {
+    const header = headerRef.current;
     const pill = linksRef.current;
     const mark = markRef.current;
-    if (!pill || !mark) return;
+    if (!header || !pill || !mark) return;
     const place = () => {
-      const item = active ? pill.querySelector<HTMLElement>(`[data-key="${active}"]`) : null;
-      if (!item) { pill.classList.remove('has-mark'); placed.current = false; return; }
-      const l = item.offsetLeft;
-      const r = pill.clientWidth - (item.offsetLeft + item.offsetWidth);
+      const key = activeRef.current;
+      const item = key ? header.querySelector<HTMLElement>(`:is(.pnav-links, .pnav-work) > [data-key="${key}"]`) : null;
+      const pillShown = pill.getClientRects().length > 0;
+      const reachable = key !== 'work' || header.classList.contains('is-blob');
+      if (!item || !pillShown || !reachable) { header.classList.remove('has-mark'); placed.current = false; return; }
+      const box = pill.getBoundingClientRect();
+      const it = item.getBoundingClientRect();
+      const l = it.left - box.left - pill.clientLeft;
+      const r = MARK_W - (it.right - box.left - pill.clientLeft);
       const prevL = parseFloat(mark.style.getPropertyValue('--mark-l')) || 0;
-      mark.classList.toggle('to-right', l > prevL);
-      mark.style.setProperty('--mark-l', `${l}px`);
-      mark.style.setProperty('--mark-r', `${r}px`);
+      if (Math.abs(l - prevL) > 1) mark.classList.toggle('to-right', l > prevL);
+      mark.style.setProperty('--mark-l', `${l.toFixed(1)}px`);
+      mark.style.setProperty('--mark-r', `${r.toFixed(1)}px`);
       if (!placed.current) {
         // first placement: no slide in from nowhere
         mark.classList.remove('is-live');
-        pill.classList.add('has-mark');
+        header.classList.add('has-mark');
         placed.current = true;
         requestAnimationFrame(() => requestAnimationFrame(() => mark.classList.add('is-live')));
       }
     };
+    placeMark.current = place;
     place();
     document.fonts?.ready.then(place);
     window.addEventListener('resize', place);
@@ -161,7 +181,7 @@ export default function Nav() {
     let on = false;
 
     const measure = () => {
-      const all = [logoRef.current, linksRef.current, menuRef.current];
+      const all = [logoRef.current, linksRef.current, workRef.current, menuRef.current];
       all.forEach((el) => { if (el) el.style.translate = ''; });
       sheet.style.translate = '';
       const shown = all.filter((el): el is HTMLElement => !!el && el.getClientRects().length > 0);
@@ -172,9 +192,11 @@ export default function Nav() {
       // one height and one centre line for all, taken from the pills, so the merged bar is even
       const ref = pieces.find((q) => !q.grows) ?? pieces[0];
       if (ref) pieces.forEach((q) => { q.r = ref.r; q.cy = ref.cy; });
-      // the merged bar, centred, each piece overlapping the next a little
+      // the merged bar, each piece overlapping the next a little: centred, or
+      // on phones (no page pill) kept at the right where the menu button is
       const total = pieces.reduce((sum, q) => sum + q.w, 0) - MERGED_OVERLAP * (pieces.length - 1);
-      let x = (window.innerWidth - total) / 2;
+      const phone = !pieces.some((q) => q.el === linksRef.current);
+      let x = phone ? Math.max(...pieces.map((q) => q.x0 + q.w)) - total : (window.innerWidth - total) / 2;
       for (const q of pieces) { q.dx = x - q.x0; x += q.w - MERGED_OVERLAP; }
       // the phone dropdown follows the menu button, but never past the left edge of the screen
       menuDx = pieces.find((q) => q.el === menuRef.current)?.dx ?? 0;
@@ -195,6 +217,7 @@ export default function Nav() {
       glass.style.clipPath = `path('${d}')`;
       edge.setAttribute('d', d);
       header.classList.toggle('is-merged', p > 0.98);
+      if (activeRef.current === 'work') placeMark.current();
     };
 
     const tick = (now: number) => {
@@ -216,12 +239,14 @@ export default function Nav() {
       if (!on) {
         cancelAnimationFrame(frame);
         frame = 0;
-        [logoRef.current, linksRef.current, menuRef.current, sheet].forEach((el) => { if (el) el.style.translate = ''; });
+        [logoRef.current, linksRef.current, workRef.current, menuRef.current, sheet].forEach((el) => { if (el) el.style.translate = ''; });
+        placeMark.current();
         return;
       }
       measure();
       p = Math.min(1, Math.max(0, window.scrollY / MERGE_SPAN));
       draw();
+      placeMark.current();
     };
     setUp();
     document.fonts?.ready.then(setUp);
@@ -241,8 +266,7 @@ export default function Nav() {
     };
   }, [pathname]);
 
-  const links = () =>
-    LINKS.map((l) => (
+  const link = (l: { key: Key; href: string; label: string }) => (
       <Link
         key={l.key}
         href={l.href}
@@ -253,7 +277,7 @@ export default function Nav() {
       >
         {l.label}
       </Link>
-    ));
+  );
 
   return (
     <header className="pnav" ref={headerRef}>
@@ -301,10 +325,11 @@ export default function Nav() {
 
       <nav className="pnav-pill pnav-links" aria-label="Main" ref={linksRef}>
         <span className="pnav-mark" ref={markRef} aria-hidden="true" />
-        {links()}
+        {LINKS.map(link)}
       </nav>
 
       <div className="pnav-right">
+        <div className="pnav-pill pnav-work" ref={workRef}>{link(WORK)}</div>
         <button
           ref={menuRef}
           type="button"
@@ -320,7 +345,7 @@ export default function Nav() {
       </div>
 
       <div ref={sheetRef} id="pnav-sheet" className={`pnav-sheet${open ? ' is-open' : ''}`}>
-        <nav aria-label="Main (menu)">{links()}</nav>
+        <nav aria-label="Main (menu)">{LINKS.map(link)}</nav>
       </div>
     </header>
   );

@@ -1,8 +1,8 @@
 /* ═══════════════════════════════════════════════════════════════
    NAV (components/Nav.tsx): separate small pieces instead of one bar.
-   The logo on its own and a segmented pill of pages, where a dark mark slides
-   to the current one. Phones swap the page pill for a round menu button and a
-   dropdown.
+   The logo on its own, a segmented pill of pages and "My work" on its own at
+   the right; a dark mark slides to the current one. Phones swap the page pill
+   for a round menu button and a dropdown.
    Every piece is glass (blur, a bright rim, and in Chromium the refraction
    filter from components/GlassDefs.tsx). Colours come from --nv-* tokens:
    smoky warm glass by default, cool on the indigo/datacenter routes, clear
@@ -130,11 +130,13 @@ html[data-theme="sunlit"] .pnav {
 }
 .pnav-links { position: relative; padding: 3px; gap: 2px; }
 
-/* The mark: one dark pill spanning the page pill, cut down to the current item
-   by clip-path. Nav.tsx sets the two cut lengths; the edge on the side it is
-   moving towards (.to-right or not) goes first and the other follows, so it
-   stretches to the next item and then catches up. Where the lengths cannot be
-   animated (no @property) it simply moves. */
+/* The mark: one dark pill starting at the page pill's left edge and running
+   far to the right (Nav.tsx MARK_W), so it can reach My work once that has
+   merged onto the end of the list. clip-path cuts it down to the current item;
+   Nav.tsx sets the two cut lengths. The edge on the side it is moving towards
+   (.to-right or not) goes first and the other follows, so it stretches to the
+   next item and then catches up. Where the lengths cannot be animated (no
+   @property) it simply moves. */
 @property --mark-l { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @property --mark-r { syntax: '<length>'; inherits: false; initial-value: 0px; }
 .pnav-mark {
@@ -142,20 +144,23 @@ html[data-theme="sunlit"] .pnav {
   top: 3px;
   bottom: 3px;
   left: 0;
-  right: 0;
-  border-radius: 999px;
+  width: 3000px;
   background: var(--nv-active);
   box-shadow: inset 1px 1px 0 -0.5px rgba(255, 255, 255, 0.35);
   clip-path: inset(0 var(--mark-r) 0 var(--mark-l) round 999px);
   pointer-events: none;
   visibility: hidden;
 }
-.pnav-links.has-mark > .pnav-mark { visibility: visible; }
+.pnav.has-mark .pnav-mark { visibility: visible; }
 /* moving left: the left edge leads, the right edge follows a beat later */
 .pnav-mark.is-live { transition: --mark-l 0.32s cubic-bezier(0.3, 1, 0.3, 1.18), --mark-r 0.42s cubic-bezier(0.5, 0, 0.25, 1.18) 0.06s; }
 /* moving right: the right edge leads */
 .pnav-mark.is-live.to-right { transition: --mark-r 0.32s cubic-bezier(0.3, 1, 0.3, 1.18), --mark-l 0.42s cubic-bezier(0.5, 0, 0.25, 1.18) 0.06s; }
-.pnav-links > .pnav-item { position: relative; }
+/* the items paint over the mark */
+:is(.pnav-links, .pnav-work) > .pnav-item { position: relative; }
+
+/* My work: one more option, in a pill of its own until it merges onto the list */
+.pnav-work { padding: 3px; }
 
 .pnav-item {
   display: inline-flex;
@@ -181,8 +186,8 @@ html[data-theme="sunlit"] .pnav {
   box-shadow: inset 1px 1px 0 -0.5px rgba(255, 255, 255, 0.35), 0 2px 6px -2px rgba(0, 0, 0, 0.3);
 }
 /* once the mark is placed it draws the current item's background */
-.pnav-links.has-mark > .pnav-item.is-active { background: transparent; box-shadow: none; }
-.pnav-links.has-mark > .pnav-item { transition: color 0.25s ease 0.08s, background-color 0.2s ease, transform 0.15s ease; }
+.pnav.has-mark :is(.pnav-links, .pnav-work) > .pnav-item.is-active { background: transparent; box-shadow: none; }
+.pnav.has-mark :is(.pnav-links, .pnav-work) > .pnav-item { transition: color 0.25s ease 0.08s, background-color 0.2s ease, transform 0.15s ease; }
 
 /* ── Right side: the menu button on phones ── */
 .pnav-right {
@@ -282,7 +287,9 @@ html[data-theme="sunlit"] .pnav {
   border-color: transparent;
   box-shadow: none;
 }
-.pnav.is-blob :is(.pnav-logo, .pnav-links, .pnav-menu), .pnav.is-blob .pnav-sheet { will-change: translate; }
+.pnav.is-blob :is(.pnav-logo, .pnav-links, .pnav-work, .pnav-menu), .pnav.is-blob .pnav-sheet { will-change: translate; }
+/* on phones, room between My work and the menu button so they start apart */
+.pnav.is-blob .pnav-right { gap: 22px; }
 
 /* Light bending where url() works inside backdrop-filter (Chromium; see GlassDefs.tsx) */
 @media (prefers-reduced-transparency: no-preference) {
