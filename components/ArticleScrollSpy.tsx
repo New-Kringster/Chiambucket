@@ -11,11 +11,13 @@ export default function ArticleScrollSpy() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            navLinks.forEach((link) => link.classList.remove('article-chapter-selected'));
-            const active = document.querySelector(
+            const actives = document.querySelectorAll(
               `.article-chapter-wrapper a[href="#${entry.target.id}"]`
             );
-            if (active) active.classList.add('article-chapter-selected');
+            // sections without a rail link (sub-sections of a chapter) keep the current selection
+            if (!actives.length) return;
+            navLinks.forEach((link) => link.classList.remove('article-chapter-selected'));
+            actives.forEach((a) => a.classList.add('article-chapter-selected'));
           }
         });
       },
