@@ -121,10 +121,13 @@ const ROWS: { q: string; a: [string, string, string, string] }[] = [
   },
 ];
 
-/* The two downloadable versions of each mark, at their SVG viewBox sizes. */
+/* The four downloadable versions of each mark, at their SVG viewBox sizes. `area` places
+   each one in the download tile's grid. Both QR versions encode https://www.chiambucket.com/ai-use. */
 const MARKS = [
-  { kind: 'label', label: 'Label', w: 84, h: 94 },
-  { kind: 'icon', label: 'Icon', w: 84, h: 67 },
+  { kind: 'label', label: 'Label', name: 'label', area: 'label', w: 84, h: 94 },
+  { kind: 'icon', label: 'Icon', name: 'icon', area: 'icon', w: 84, h: 67 },
+  { kind: 'vertical-qr', label: 'Vertical QR', name: 'vertical QR code', area: 'vqr', w: 84, h: 164 },
+  { kind: 'horizontal-qr', label: 'Horizontal QR', name: 'horizontal QR code', area: 'hqr', w: 173, h: 94 },
 ] as const;
 
 const lv = (rgb: string) => ({ '--lv': rgb } as React.CSSProperties);
@@ -268,7 +271,8 @@ export default function AiUsePage() {
           <header className="ai-intro">
             <h2 className="ai-h2" id="ai-dl-h">Download the marks</h2>
             <p>
-              Each level comes as a label and a smaller icon, both SVG. Use them to mark your own
+              Each level comes as a label, a smaller icon, and vertical and horizontal versions
+              with a QR code that links back to this page. All are SVG. Use them to mark your own
               projects.
             </p>
           </header>
@@ -279,11 +283,15 @@ export default function AiUsePage() {
                 <h3>{l.code} <span>{l.short}</span></h3>
                 <div className="ai-dl-marks">
                   {MARKS.map((m) => (
-                    <figure key={m.kind} className="ai-dl-mark">
+                    <figure
+                      key={m.kind}
+                      className="ai-dl-mark"
+                      style={{ gridArea: m.area, '--mw': m.w } as React.CSSProperties}
+                    >
                       <div className="ai-dl-well">
                         <img
                           src={`/images/ai-use/${l.code}-${m.kind}.svg`}
-                          alt={`${l.code} ${m.kind} mark`}
+                          alt={`${l.code} ${m.name} mark`}
                           width={m.w}
                           height={m.h}
                           loading="lazy"
@@ -293,7 +301,7 @@ export default function AiUsePage() {
                         href={`/images/ai-use/${l.code}-${m.kind}.svg`}
                         download={`AI-use-${l.code}-${m.kind}.svg`}
                         className="ai-dl-btn"
-                        aria-label={`Download the ${l.code} ${m.kind} mark as SVG`}
+                        aria-label={`Download the ${l.code} ${m.name} mark as SVG`}
                       >
                         <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
                           <path d="M8 2v8M4.5 6.8 8 10.3l3.5-3.5M3 13.5h10" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
@@ -385,20 +393,23 @@ export default function AiUsePage() {
         .ai-cmp td { color: rgba(236,232,226,0.74); }
         .ai-cmp tbody tr:nth-child(even) { background: rgba(255,236,210,0.022); }
 
-        /* Downloads: one tile per level, label and icon side by side */
-        .ai-dl { list-style: none; margin: 0 auto; padding: 0; display: grid;
-          grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(12px, 1.6vw, 18px); }
+        /* Downloads: one tile per level. The tall vertical QR mark takes the right column, the
+           wide horizontal one sits under the label and icon. --mw is the mark's viewBox width
+           and --s one shared scale, so the four marks keep their true relative sizes. */
+        .ai-dl { --s: 1.2; list-style: none; margin: 0 auto; padding: 0; display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(12px, 1.6vw, 18px); }
         .ai-dl-level { padding: 18px 16px 16px; border-radius: 18px; border: 1px solid var(--sa-hairline);
           border-top: 2px solid rgba(var(--lv), 0.7);
           background: linear-gradient(180deg, var(--sa-panel-hi), var(--sa-panel-lo));
           box-shadow: inset 0 1px 0 rgba(255,236,210,0.05), 0 20px 50px -30px rgba(0,0,0,0.85); }
         .ai-dl-level h3 { font-family: 'oswaldbold'; font-size: 1.2rem; line-height: 1.15; color: rgb(var(--lv)); }
         .ai-dl-level h3 span { font-family: 'dmsans'; font-weight: 500; font-size: 0.92rem; color: rgba(236,232,226,0.72); margin-left: 4px; }
-        .ai-dl-marks { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
-        .ai-dl-mark { margin: 0; display: flex; flex-direction: column; gap: 10px; }
-        .ai-dl-well { display: flex; align-items: center; justify-content: center; aspect-ratio: 1 / 1;
+        .ai-dl-marks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+          grid-template-areas: "label icon vqr" "hqr hqr vqr"; gap: 10px; margin-top: 14px; }
+        .ai-dl-mark { margin: 0; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+        .ai-dl-well { flex: 1; display: flex; align-items: center; justify-content: center; padding: 16px 8px;
           border-radius: 12px; background: rgba(0,0,0,0.28); border: 1px solid rgba(255,236,210,0.05); }
-        .ai-dl-well img { display: block; width: 62%; height: auto; }
+        .ai-dl-well img { display: block; width: calc(var(--mw) * var(--s) * 1px); max-width: 100%; height: auto; }
         .ai-dl-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px;
           padding: 6px 10px; border-radius: 10px; text-decoration: none;
           font-family: 'dmsans'; font-size: 0.86rem; font-weight: 600; color: rgba(244,240,234,0.92);
@@ -409,14 +420,16 @@ export default function AiUsePage() {
         .ai-dl-btn:focus-visible { box-shadow: 0 0 0 2px #0b0906, 0 0 0 4px rgba(var(--lv), 0.95); }
         .ai-dl-btn:active { transform: scale(0.97); }
         @media (max-width: 1000px) {
-          .ai-dl { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+          .ai-dl { --s: 0.62; }
+          .ai-dl-btn { white-space: nowrap; padding: 6px 6px; font-size: 0.8rem; gap: 4px; }
+        }
+        @media (max-width: 700px) {
+          .ai-dl { grid-template-columns: minmax(0, 1fr); }
         }
         @media (max-width: 520px) {
-          .ai-dl { gap: 10px; }
-          .ai-dl-level { padding: 14px 10px 12px; border-radius: 16px; }
-          .ai-dl-level h3 span { display: block; margin: 2px 0 0; }
+          .ai-dl-level { padding: 14px 12px 12px; border-radius: 16px; }
           .ai-dl-marks { gap: 8px; margin-top: 10px; }
-          .ai-dl-btn { padding: 6px 6px; font-size: 0.8rem; gap: 4px; }
+          .ai-dl-well { padding: 12px 6px; }
         }
 
         @media (max-width: 760px) {
