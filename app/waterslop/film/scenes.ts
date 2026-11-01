@@ -72,7 +72,7 @@ export type PanelKey = keyof typeof PAN;
 /* the scene at which each panel appears */
 export const REVEAL: Record<PanelKey, string> = { input: 'downscale', spotter: 'spot-net', ref1: 'spot-crop', ref2: 'ref-pass2', cut: 'cut', reader1: 'cut', reader2: 'readers3', reader3: 'readers3', vote: 'vote' };
 
-const PHOTO: Rect = { x: 330, y: 50, w: 480, h: 360 };
+export const PHOTO: Rect = { x: 330, y: 50, w: 480, h: 360 };
 const THUMB: Rect = { x: 1010, y: 158, w: 192, h: 144 };
 const SPOT_NET = netLayout(120, PAN.spotter.y + 40, 280, 160, 120, [
   { strip: spotStrips[0], w: 150, h: 112, n: 8, label: 'block 1', sub: '160 × 120', weights: 80 },
@@ -446,6 +446,14 @@ function voteSlot(ctx: Ctx, env: Env, i: number, g: number) {
 
 /* ── scenes ── */
 export const SCENES: Scene[] = [
+  {
+    // The photo the 3D chapter's capture just took. DrumNetFilm draws this scene
+    // full-bleed (cover), exactly like the chapter's last frame, then pulls back.
+    id: 'photo', stage: 'Capture', title: 'The photo the reader just took', dur: 2.6,
+    body: 'One 800 × 600 frame in grey. Everything from here on runs on the ESP32-S3, on this one photo.',
+    view: { ...PAN.input, y: -20, h: 500 }, until: 'downscale',
+    draw: (ctx, env) => { img(ctx, env, 'photo.webp', PHOTO); },
+  },
   {
     id: 'downscale', stage: 'Input', title: 'Downscale the capture', dur: 4,
     body: 'The reader captures the meter at 800 × 600 in grey. For the spotter it is downscaled to 320 × 240: four times fewer numbers, so the rough search runs quickly and cheaply.',

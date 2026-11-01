@@ -85,7 +85,7 @@ export const components = [
     scale: 3.5,
   },
 ];
-export const stops = [
+const baseStops = [
   { id: "pcb", label: "PCB & Enclosure", p: 0.067 },
   { id: "layers", label: "Placement", p: 0.151 },
   ...components.map((c, i) => ({
@@ -131,7 +131,7 @@ export const layerSteps = [
   { id: "F_Cu-pour", start: 0.249 },
   { id: "F_Silkscreen", start: 0.266 },
 ];
-export function sampleTimeline(p) {
+function sampleBase(p) {
   p = clamp(p);
   const idx = clamp(Math.floor((p - 0.325) / 0.064), 0, 6);
   return {
@@ -156,4 +156,38 @@ export function sampleTimeline(p) {
     finish: range(p, 0.972, 0.984),
     chapter: windowOpacity(p, 0, 0.137, 0.035),
   };
+}
+
+// ── Chiambucket addition, not in the exported WaterSlop source ──────────────
+// After the enclosure closes, the reader turns its lens to the meter, the view
+// goes through the lens, the LEDs pulse and it keeps one photo: the photo the
+// DrumNet film opens on. The exported timeline runs unchanged over
+// [0, CAPTURE_AT] (the story grew from 1100vh to 1400vh, so every original
+// stop keeps its scroll distance); the capture fills the rest.
+export const CAPTURE_AT = 1100 / 1400;
+export const stops = [
+  ...baseStops.map((s) => ({ ...s, p: s.p * CAPTURE_AT })),
+  { id: "aim", label: "Pointed at the meter", p: CAPTURE_AT + (1 - CAPTURE_AT) * 0.36 },
+  { id: "pov", label: "What the camera sees", p: CAPTURE_AT + (1 - CAPTURE_AT) * 0.6 },
+  { id: "photo", label: "One photo", p: 0.997 },
+];
+// Beats of the capture, each 0 to 1 over its own span of c (0 to 1 over the capture).
+export function captureBeats(c) {
+  return {
+    c,
+    hold: range(c, 0, 0.06), // the enclosure heading leaves
+    aim: range(c, 0.04, 0.34), // the reader turns to the meter, the meter comes in
+    beam: range(c, 0.24, 0.36) * (1 - range(c, 0.4, 0.5)), // its field of view
+    iris: range(c, 0.4, 0.58), // through the lens, onto what it sees
+    lit: range(c, 0.665, 0.7), // the LEDs light the meter
+    flash: range(c, 0.665, 0.685) * (1 - range(c, 0.685, 0.78)),
+    settle: range(c, 0.8, 0.93), // the viewfinder and words leave; the photo stays
+  };
+}
+// `p` stays on the exported scale (the scene and copy are keyed to it);
+// `raw` is the scroll progress and `capture` the capture beats.
+export function sampleTimeline(p) {
+  p = clamp(p);
+  const c = clamp((p - CAPTURE_AT) / (1 - CAPTURE_AT));
+  return { ...sampleBase(Math.min(1, p / CAPTURE_AT)), raw: p, capture: captureBeats(c) };
 }

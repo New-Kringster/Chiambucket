@@ -213,6 +213,40 @@ export function mountChapter(root, { assetBase, onCover = () => {} }) {
   window.addEventListener("resize", measure, { signal });
   motion.addEventListener("change", () => (dirty = true), { signal });
 
+  // ── Chiambucket addition: the capture overlay (markup.js .capture) ──
+  // The beats come from timeline.js; the lens position from the scene, so the
+  // field of view and the iris open from the lens itself.
+  const CAPTURE_COPY = [
+    ["Mounted", "Pointed at the meter", "The adapter holds the reader about 4 cm from the meter face, close enough that the 160° lens fills the frame with the dial."],
+    ["Through the lens", "What the camera sees", "The OV2640 sees the register in greyscale at 800 × 600. Inside the adapter it is dark until the LEDs pulse."],
+    ["Capture", "One photo", "The LEDs light the meter for the exposure and the reader keeps one frame. That frame is all DrumNet gets."],
+  ];
+  let capturePhase = -1;
+  function capture(b, lens) {
+    const st = stage.style;
+    st.setProperty("--cap", b.c.toFixed(4));
+    for (const k of ["aim", "beam", "iris", "lit", "flash", "settle"])
+      st.setProperty(`--cap-${k}`, b[k].toFixed(4));
+    if (lens) {
+      const host = $("#scene").getBoundingClientRect(),
+        box = stage.getBoundingClientRect();
+      st.setProperty("--lens-x", `${(host.left - box.left + lens.x).toFixed(1)}px`);
+      st.setProperty("--lens-y", `${(host.top - box.top + lens.y).toFixed(1)}px`);
+    }
+    stage.dataset.capture = b.c > 0 ? (b.settle >= 1 ? "done" : "on") : "off";
+    const phase = b.c <= 0 ? -1 : b.iris < 0.5 ? 0 : b.lit < 0.5 ? 1 : 2;
+    if (phase !== capturePhase) {
+      capturePhase = phase;
+      if (phase >= 0) {
+        const [eyebrow, title, body] = CAPTURE_COPY[phase];
+        $("#capture-eyebrow").textContent = eyebrow;
+        $("#capture-title").textContent = title;
+        $("#capture-body").textContent = body;
+      }
+    }
+    opacity($(".capture-copy"), b.aim * (1 - b.settle));
+  }
+
   function update(time) {
     frame = requestAnimationFrame(update);
     if (document.hidden) {
@@ -250,10 +284,10 @@ export function mountChapter(root, { assetBase, onCover = () => {} }) {
     }
     opacity($(".hero-copy"), s.hero);
     $(".hero-copy").style.transform =
-      `translateX(${motion.matches ? 0 : (1 - range(p, 0, 0.048)) * -180 - range(p, 0.105, 0.14) * 80}px)`;
+      `translateX(${motion.matches ? 0 : (1 - range(s.p, 0, 0.048)) * -180 - range(s.p, 0.105, 0.14) * 80}px)`;
     opacity($(".chapter"), s.chapter);
     $(".chapter").style.transform =
-      `translateY(${motion.matches ? 0 : (1 - range(p, 0, 0.045)) * -75}px)`;
+      `translateY(${motion.matches ? 0 : (1 - range(s.p, 0, 0.045)) * -75}px)`;
     opacity($(".halo"), Math.max(s.hero, s.finish) * 0.7);
     opacity($(".blueprint"), s.blueprint);
     // Behind iOS Safari's floating toolbar the page shows the story's own
@@ -264,13 +298,13 @@ export function mountChapter(root, { assetBase, onCover = () => {} }) {
         (lastBlueprint = s.blueprint).toFixed(3),
       );
     opacity($(".component-copy"), s.copy * s.focus);
-    opacity($(".final-copy"), s.finish);
+    opacity($(".final-copy"), s.finish * (1 - s.capture.hold));
     const next = nextStop(p);
     $("#next-frame").setAttribute(
       "aria-label",
       next ? `Next: ${next.label}` : "Next: component notes",
     );
-    $("#model-interaction").hidden = s.finish < 0.999;
+    $("#model-interaction").hidden = s.finish < 0.999 || s.capture.c > 0;
     if (showGraph) {
       if (!motion.matches && !graphRotation.touched)
         autoTurn += Math.min((time - lastTime) / 1000, 0.04) * 0.055;
@@ -280,10 +314,13 @@ export function mountChapter(root, { assetBase, onCover = () => {} }) {
     const info = scene?.render(s, motion.matches, {
       selectedRef,
       rotation: modelRotation,
-      ledIntensity: showLights
-        ? ledPulse(time / 1000, motion.matches) * s.copy
-        : 0,
+      ledIntensity: s.capture.flash > 0
+        ? s.capture.flash
+        : showLights
+          ? ledPulse(time / 1000, motion.matches) * s.copy
+          : 0,
     });
+    capture(s.capture, info?.lens);
     stage.dataset.tour = String(s.focus > 0.1);
     stage.dataset.progress = p.toFixed(5);
     stage.dataset.component = s.component.id;

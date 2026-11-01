@@ -6,11 +6,11 @@ import { Cover, Page, Plate, type Frame } from './Story';
 import DrumNetStory from './DrumNetWalk';
 import FirmwareChapter from './ReadCycle';
 import CameraChapter from './FocusLab';
-import CalibrationChapter from './CalibrationLab';
 import ConfigKingChapter from './ConfigKingStory';
 import PairCompare from './Compare';
 import { LoopRing, AgentBadges } from './Agents';
 import PageFx from './PageFx';
+import SkipToEnd from './SkipToEnd';
 import { IcRead, IcOut } from '../../components/Icons';
 import AiMark from '../../components/AiMark';
 import './waterslop.css';
@@ -59,9 +59,9 @@ const pair = (a: string, altA: string, b: string, altB: string, cls?: string) =>
 /* Chapters, in order. The PCB chapter is the exported 3D chapter plus two
    pages of its own; the roman numeral is shared. */
 const CHAPTERS: Array<[string, string]> = [
-  ['brief', 'Design brief'], ['v2', 'PCB & enclosure'], ['drumnet', 'DrumNet'], ['configking', 'ConfigKing'],
+  ['v2', 'PCB & enclosure'], ['drumnet', 'DrumNet'], ['configking', 'ConfigKing'],
   ['metersim', 'MeterSim'], ['simgen2', 'SimGen2'], ['agents', 'Agentic workflow'], ['firmware', 'Firmware'], ['power', 'Power optimisation'],
-  ['camera', 'Camera choice'], ['calibration', 'Camera calibration'], ['conclusion', 'Conclusion'], ['report', 'The report'],
+  ['camera', 'Camera choice'], ['proto', 'Prototype V2'], ['conclusion', 'Conclusion'], ['report', 'The report'],
 ];
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV'];
 const NUM: Record<string, string> = Object.fromEntries(CHAPTERS.map(([id], i) => [id, ROMAN[i]]));
@@ -72,41 +72,7 @@ const Contents = () => (
   </nav>
 );
 
-/* ── Chapter I: the brief ── */
-const SPECS: Array<[string, string]> = [
-  ['Ultra-low power', 'The meter needs to be able to run on batteries while lasting for 2 years.'],
-  ['Low cost', 'A target cost of under S$100 per piece, not inclusive of installation labour.'],
-  ['High reliability', 'Target ≥ 99 % meter accuracy (the whole reading correct) and ≥ 99.9 % digit accuracy (each drum correct).'],
-  ['Easy deployment', 'Easy to mount and configure, with minimal calibration.'],
-  ['Modularity', 'Easily repairable and upgradable.'],
-  ['Secure and safe', 'Able to resist tampering, as its readings directly affect billing.'],
-  ['Weather sealed', 'Sealed so weather changes do not cause missed readings.'],
-];
-const BRIEF: Frame[] = [
-  {
-    id: 'brief-specs', eyebrow: 'Design brief', title: 'What the reader has to be',
-    body: (
-      <>
-        <p>These are the design specifications the reader was designed around.</p>
-        <p>The ESP32-S3 with 8 MB of PSRAM was selected as the microcontroller, and the OV2640 with a 160° field of view was selected as the camera. Production readers send their readings over LoRaWAN; Wi-Fi is only used by the reader on the training rig.</p>
-      </>
-    ),
-    visual: <div className="ws-spec-list">{SPECS.map(([t, d]) => <div key={t}><b>{t}</b><span>{d}</span></div>)}</div>,
-  },
-  {
-    id: 'brief-path', eyebrow: 'Design brief', title: 'From the meter to the dashboard',
-    body: <p>The camera is pointed at the water meter and takes readings on 6-hour intervals. After the reading is made on device, the numerical reading is transmitted over LoRaWAN to a database storing the readings, which the user and the utility provider can access over a dashboard. The original image is never transmitted; only the predicted reading is.</p>,
-    visual: (
-      <div className="ws-flow-v" role="img" aria-label="Water meter, meter reader, LoRaWAN gateway, database storage, dashboard">
-        {[['Water meter', 'the mechanical register, untouched', ''], ['Meter reader', 'camera + ESP32-S3, reads on device', 'camera'], ['LoRaWAN gateway', 'receives the small uplink', 'LoRaWAN'], ['Database storage', 'stores every reading', 'internet'], ['Dashboard', '92.07 m³, for the user and the utility', '']].map(([t, s, link], i) => (
-          <div key={t} className={i === 1 ? 'lit' : undefined}>{link && <i>{link} →</i>}<b>{t}</b><span>{s}</span></div>
-        ))}
-      </div>
-    ),
-  },
-];
-
-/* ── Chapter II: MeterSim ── */
+/* ── Chapter IV: MeterSim ── */
 const METERSIM: Frame[] = [
   {
     id: 'ms-rig', eyebrow: 'MeterSim', title: 'A simulated meter for a real camera',
@@ -155,7 +121,7 @@ const METERSIM: Frame[] = [
   },
 ];
 
-/* ── Chapter III: SimGen2 ── */
+/* ── Chapter V: SimGen2 ── */
 const STAGES: Array<[string, string]> = [
   ['Display screenshot', 'MeterSim’s display, 1920 × 1080'], ['Warped', 'pose and lens, to 1600 × 1200'], ['Field blur', '1.2 to 2.2 px'], ['Gain, tone curve, vignette', 'the sensor’s response'], ['Sensor noise', 'grain where the real camera has it'], ['OV2640 JPEG', 'quality 6, as the reader compresses'],
 ];
@@ -187,7 +153,7 @@ const SIMGEN2: Frame[] = [
   },
 ];
 
-/* ── Chapter IV: the agents ── */
+/* ── Chapter VI: the agents ── */
 const AGENTIC: Frame[] = [
   {
     id: 'ag-loop', eyebrow: 'Agentic workflow', title: 'The self-improvement loop',
@@ -233,7 +199,7 @@ const AGENTIC: Frame[] = [
   },
 ];
 
-/* ── Chapter VII: power ── */
+/* ── Chapter VIII: power ── */
 const MODES: Array<{ src: string; res: string; time: string; note: string; ox: number; oy: number; on?: boolean }> = [
   { src: 'mode-1600-full.webp', res: '1600 × 1200', time: '350 ms capture', note: 'every pixel of the sensor', ox: 57, oy: 41 },
   { src: 'mode-800-crop.webp', res: '800 × 600', time: '89 ms capture', note: 'SVGA, the chosen mode', ox: 58, oy: 41, on: true },
@@ -311,7 +277,7 @@ const POWER: Frame[] = [
   },
 ];
 
-/* ── Chapter IX: Prototype V2 and the enclosure, after the 3D chapter ── */
+/* ── Chapter X: Prototype V2 and the enclosure, the written detail behind the 3D chapter ── */
 const V2: Frame[] = [
   {
     id: 'v2-intro', eyebrow: 'Prototype V2', title: 'A shrunken-down Prototype V1',
@@ -351,7 +317,7 @@ const ENCLOSURE: Frame[] = [
   },
 ];
 
-/* ── Chapter XII: conclusion ── */
+/* ── Chapter XI: conclusion ── */
 const CONCLUSION: Frame[] = [
   {
     id: 'cc-all', eyebrow: 'Conclusion', title: 'Where it stops, for now',
@@ -379,6 +345,7 @@ export default function WaterslopPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <ArticleScrollSpy />
       <PageFx />
+      <SkipToEnd />
 
       <header className="ws-hero">
         <div className="ws-hero-photo" aria-hidden="true"><img src={I + 'hero.webp'} alt="" /></div>
@@ -390,7 +357,7 @@ export default function WaterslopPage() {
             <AiMark project="proj-waterslop" />
             <Contents />
             <div className="ws-hero-actions">
-              <a className="ws-btn" href="#brief"><IcRead /> Start reading</a>
+              <a className="ws-btn" href="#v2"><IcRead /> Start reading</a>
               <a className="ws-btn ghost" href={REPORT_LINK} target="_blank" rel="noopener"><IcOut /> The report</a>
               <span className="ws-hero-meta">ESP32-S3 · OV2640 · KiCad · Onshape · PlatformIO · Tailscale</span>
             </div>
@@ -398,18 +365,13 @@ export default function WaterslopPage() {
         </div>
       </header>
 
-      <Cover id="brief" chapter={NUM.brief} title="Design brief" lines={['Design', 'brief']} contents={[{ label: 'What the reader has to be', href: '#brief-specs' }, { label: 'From the meter to the dashboard', href: '#brief-path' }]}
-        plate={<Plate src="adapter-done-b.webp" alt="The completed reader mounted on a water meter" />} />
-      <Page id="brief-body" title="Design brief" rows={BRIEF} />
-
-      {/* Chapter II: the exported 3D chapter opens it, then the board and the enclosure */}
-      <section id="v2" className="ws-pcb" aria-label="Prototype V2: PCB and enclosure in 3D">
+      {/* One flow, no covers between: the 3D board and enclosure, which ends by
+          pointing the reader at the meter and taking a photo; DrumNet reading that
+          photo; then ConfigKing showing the same reading on the setup tool. */}
+      <section id="v2" className="ws-pcb" aria-label="Prototype V2: PCB and enclosure in 3D, then the reader takes a photo of the meter">
         <WaterslopChapter numeral={NUM.v2} />
         <WaterslopChapterStyle />
       </section>
-      <Page id="v2-body" chapter={NUM.v2} title="Prototype V2" rows={V2} />
-      <Page id="enclosure" chapter={NUM.v2} title="Enclosure" rows={ENCLOSURE} />
-
       <DrumNetStory chapter={NUM.drumnet} />
       <ConfigKingChapter chapter={NUM.configking} />
 
@@ -433,8 +395,10 @@ export default function WaterslopPage() {
 
       <CameraChapter chapter={NUM.camera} />
 
-
-      <CalibrationChapter chapter={NUM.calibration} />
+      <Cover id="proto" chapter={NUM.proto} title="Prototype V2" lines={['Prototype', 'V2']} contents={[{ label: 'A shrunken-down Prototype V1', href: '#v2-intro' }, { label: 'The size of a dev board', href: '#v2-size' }, { label: 'The enclosure and adapter', href: '#en-all' }]}
+        plate={<Plate srcs={['pcb-3d-top.webp', 'v2-vs-devboard.webp']} alt="3D render of the top of the Prototype V2 board" />} />
+      <Page id="v2-body" title="Prototype V2" rows={V2} />
+      <Page id="enclosure" title="Enclosure" rows={ENCLOSURE} />
 
       <Cover id="conclusion" chapter={NUM.conclusion} title="Conclusion" lines={['Conclusion']} contents={[{ label: 'Where it stops, for now', href: '#cc-all' }, { label: 'The report', href: '#report' }]}
         plate={<Plate src="enc-final.webp" alt="The printed enclosure with the board inside" />} />

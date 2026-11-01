@@ -1,9 +1,10 @@
-import { stops, clamp, mix } from "./timeline.js";
+import { stops, clamp, mix, CAPTURE_AT } from "./timeline.js";
 
+// Chiambucket: the exported positions, scaled into the part of the story before the capture.
 export const autoplaySections = [
   { id: "layers", start: 0.105, end: 0.35, backward: 0.067, duration: 6400 },
   { id: "assembly", start: 0.77, end: 0.987, backward: 0.734, duration: 4600 },
-];
+].map((s) => ({ ...s, start: s.start * CAPTURE_AT, end: s.end * CAPTURE_AT, backward: s.backward * CAPTURE_AT }));
 const restingStates = stops
   .filter((s) => !["layers", "assembly"].includes(s.id))
   .map((s) => s.p);

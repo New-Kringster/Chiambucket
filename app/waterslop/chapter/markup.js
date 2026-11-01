@@ -39,6 +39,17 @@ export function chapterMarkup() {
     <div class="halo" aria-hidden="true"></div>
     <div id="scene" role="img" aria-label="WaterSlop PCB and enclosure"></div>
     <div class="texture" aria-hidden="true"></div>
+    <!-- Chiambucket addition: the capture. The meter is the reader's own photo, cut round. -->
+    <div class="capture" aria-hidden="true">
+      <div class="cap-beam"></div>
+      <div class="cap-meter"></div>
+      <div class="cap-pov">
+        <img src="/images/waterslop/dn/photo.webp" alt="" decoding="async" />
+        <div class="cap-finder"><i></i><i></i><i></i><i></i></div>
+        <p class="cap-hud"><span>OV2640</span><span>800 × 600</span><span>greyscale</span><span class="cap-rec">LED</span></p>
+        <div class="cap-flash"></div>
+      </div>
+    </div>
     <div class="chapter">Chapter - V</div>
     <div class="hero-copy">
       <h1><span>PCB &amp;</span><span>Enclosure</span></h1>
@@ -65,6 +76,11 @@ export function chapterMarkup() {
       </div>
     </aside>
     <div class="final-copy"><h2>Enclosure</h2></div>
+    <aside class="capture-copy">
+      <p class="eyebrow" id="capture-eyebrow"></p>
+      <h2 id="capture-title"></h2>
+      <p id="capture-body"></p>
+    </aside>
     <div id="model-interaction" tabindex="0" role="img" aria-label="Rotate the enclosure. Drag or use arrow keys." hidden></div>
     <div class="load-status" role="status">Loading the board…</div>
     <button id="next-frame" type="button" aria-label="Next frame">
