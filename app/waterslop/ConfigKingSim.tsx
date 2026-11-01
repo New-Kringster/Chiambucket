@@ -1,5 +1,6 @@
 'use client';
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type CSSProperties } from 'react';
+import { createPortal } from 'react-dom';
 import { useFrame } from './Story';
 
 /* ConfigKingSim: the Cardputer's 240 x 135 screen, drawn the way the firmware
@@ -766,17 +767,6 @@ const ROWS: KeyCap[][] = [
 /* the physical key that lights up for a key event */
 const capFor = (k: Key, raw?: string): string => k.esc ? '`' : k.enter ? 'enter' : k.tab ? 'tab' : k.del ? 'del' : k.up ? ';' : k.down ? '.' : k.left ? ',' : k.right ? '/' : raw && raw.length === 1 ? raw.toLowerCase() : '';
 
-/* The big keys beside the device: a cross of arrows, the three keys every
-   screen uses, and the letters that do something, each with its job. */
-const CLUSTER: Array<{ id: string; cap: string; sub?: string; key: Key; cls: string }> = [
-  { id: 'up', cap: '↑', key: { up: true }, cls: 'u' }, { id: 'left', cap: '←', key: { left: true }, cls: 'l' }, { id: 'down', cap: '↓', key: { down: true }, cls: 'd' }, { id: 'right', cap: '→', key: { right: true }, cls: 'r' },
-];
-const SHORTCUTS: Array<{ cap: string; sub: string; key: Key }> = [
-  { cap: 'Enter', sub: 'select', key: { enter: true } }, { cap: 'Esc', sub: 'back', key: { esc: true } }, { cap: 'Tab', sub: 'next control', key: { tab: true } },
-  { cap: '+', sub: 'zoom in', key: { ch: '+' } }, { cap: '−', sub: 'zoom out', key: { ch: '-' } }, { cap: 'i', sub: 'info', key: { ch: 'i' } }, { cap: 'p', sub: 'preset, refresh', key: { ch: 'p' } },
-  { cap: 'f', sub: 'find window', key: { ch: 'f' } }, { cap: 'd', sub: 'next digit', key: { ch: 'd' } }, { cap: 'r', sub: 'read again', key: { ch: 'r' } }, { cap: 't', sub: 'radio test', key: { ch: 't' } },
-];
-
 /* The real device: M5Stack's top-down product photo of the Cardputer, cut out
    (public/images/waterslop/cardputer.webp, 642 x 415 at 1x). Positions are shares
    of that photo: the LCD's active area, and the centre of each of the 56 rubber
@@ -793,6 +783,18 @@ const ZH = 56.25, DX = 18, DW = 64, DY = 61, DH = (DW * SHOT.h) / SHOT.w, CH = D
 export const ZOOM_SHARE = ZH / CH;
 const pct = (v: number) => `${(v * 100).toFixed(3)}%`;
 
+/* Two ways to look at it, the reader's choice, shared by every frame of the
+   chapter: the whole Cardputer at its real proportions ('full'), or its screen
+   magnified above a smaller Cardputer ('zoom'). */
+export type CkView = 'full' | 'zoom';
+export const CkViewContext = createContext<{ view: CkView; setView: (v: CkView) => void } | null>(null);
+/** Where a point of the 240 x 135 screen falls, in % of the drawing, for pointers. */
+export function screenAt(view: CkView, x: number, y: number): [number, number] {
+  return view === 'zoom'
+    ? [(x / W) * 100, (y / H) * ZOOM_SHARE * 100]
+    : [(LCD.x + (x / W) * LCD.w) * 100, (LCD.y + (y / H) * LCD.h) * 100];
+}
+
 /* A key press the frame plays on its way in: the key lights on the photo and a
    chip names it, then the screen moves on. `cap` is the ROWS id of the key. */
 export type Press = { key: Key; cap: string; name: string; label: string; wait?: number };
@@ -804,6 +806,14 @@ let entered = { index: -1, from: -1 };
 export default function ConfigKingSim({ scene = 'free', keys = true, className, large = false, from, via }: { scene?: SimScene; keys?: boolean; className?: string; large?: boolean; from?: SimScene; via?: Press[] }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const small = useRef<HTMLCanvasElement>(null);
+  const off = useRef<HTMLCanvasElement | null>(null);
+  const shared = useContext(CkViewContext);
+  const [ownView, setOwnView] = useState<CkView>('full');
+  const view = shared?.view ?? ownView;
+  const setView = shared?.setView ?? setOwnView;
+  // Full screen: 'manual' from the button, 'auto' while a phone is held sideways.
+  const [full, setFull] = useState<false | 'manual' | 'auto'>(false);
+  const fsRef = useRef<HTMLDivElement>(null);
   const [chip, setChip] = useState<Press | null>(null);
   const box = useRef<HTMLDivElement>(null);
   const [sim, setSim] = useState<Sim>(() => preset(scene));
@@ -845,20 +855,24 @@ export default function ConfigKingSim({ scene = 'free', keys = true, className, 
     return () => clearTimeout(t);
   }, [sim, active, scene]);
 
-  // Draw on every state change, and once the photo arrives.
+  // Draw on every state change, and once the photo arrives: render the frame once
+  // (into the magnified screen, or offscreen when it is not shown), then copy it
+  // onto the Cardputer's own screen.
   useEffect(() => {
-    const cv = canvas.current; if (!cv) return;
     const draw = () => {
+      const dpr = window.devicePixelRatio || 1;
+      const big = view === 'zoom' ? canvas.current : null;
+      const cv = big ?? (off.current ??= document.createElement('canvas'));
       const g = cv.getContext('2d'); if (!g) return;
-      const k = Math.max(1, Math.ceil((cv.clientWidth * (window.devicePixelRatio || 1)) / W));
+      const want = big ? big.clientWidth : (small.current?.clientWidth ?? W) * 1.5;
+      const k = Math.max(2, Math.ceil((want * dpr) / W));
       if (cv.width !== W * k) { cv.width = W * k; cv.height = H * k; }
       g.setTransform(k, 0, 0, k, 0, 0);
       g.imageSmoothingEnabled = false;
       render(g, simRef.current, Date.now());
-      // the device's own screen shows the same picture, at its real size
       const sc = small.current, sg = sc?.getContext('2d');
-      if (sc && sg) {
-        const w = Math.max(1, Math.round(sc.clientWidth * (window.devicePixelRatio || 1))), h = Math.round((w * H) / W);
+      if (sc && sg && sc.clientWidth) {
+        const w = Math.max(1, Math.round(sc.clientWidth * dpr)), h = Math.round((w * H) / W);
         if (sc.width !== w) { sc.width = w; sc.height = h; }
         sg.imageSmoothingEnabled = true;
         sg.drawImage(cv, 0, 0, w, h);
@@ -866,9 +880,39 @@ export default function ConfigKingSim({ scene = 'free', keys = true, className, 
     };
     draw();
     loadPhoto(draw);
-    const ro = new ResizeObserver(draw); ro.observe(cv);
+    const ro = new ResizeObserver(draw);
+    if (canvas.current) ro.observe(canvas.current);
+    if (small.current) ro.observe(small.current);
     return () => ro.disconnect();
-  }, [sim]);
+  }, [sim, view, full]);
+
+  // Sideways on a phone, the active frame's Cardputer fills the screen.
+  useEffect(() => {
+    const mq = window.matchMedia('(orientation: landscape) and (pointer: coarse) and (max-height: 540px)');
+    const set = () => setFull((f) => (active && mq.matches ? f || 'auto' : f === 'auto' ? false : f));
+    set();
+    mq.addEventListener('change', set);
+    return () => mq.removeEventListener('change', set);
+  }, [active]);
+  // While full screen: the page underneath stays put, Esc leaves, and the button
+  // asks the browser for real full screen where it can (not on iPhone).
+  useEffect(() => {
+    if (!full) return;
+    const html = document.documentElement, prev = html.style.overflow;
+    html.style.overflow = 'hidden';
+    const key = (e: KeyboardEvent) => { if (e.key === 'Escape' && !armed) setFull(false); };
+    window.addEventListener('keydown', key);
+    const el = fsRef.current;
+    if (full === 'manual' && el?.requestFullscreen && !document.fullscreenElement) el.requestFullscreen().catch(() => {});
+    const left = () => { if (!document.fullscreenElement) setFull((f) => (f === 'manual' ? false : f)); };
+    document.addEventListener('fullscreenchange', left);
+    return () => {
+      html.style.overflow = prev;
+      window.removeEventListener('keydown', key);
+      document.removeEventListener('fullscreenchange', left);
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    };
+  }, [full, armed]);
   // The connecting screen counts seconds.
   useEffect(() => {
     if (sim.screen !== 'connecting' && !sim.scanning) return;
@@ -930,7 +974,7 @@ export default function ConfigKingSim({ scene = 'free', keys = true, className, 
   // The screen is a touch screen: taps hit what is drawn, drags pan the picture.
   const drag = useRef<{ x: number; y: number; moved: boolean; id: number } | null>(null);
   const toScreen = (e: React.PointerEvent) => {
-    const r = canvas.current!.getBoundingClientRect();
+    const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
     return { x: ((e.clientX - r.left) / r.width) * W, y: ((e.clientY - r.top) / r.height) * H };
   };
   const onDown = (e: React.PointerEvent) => {
@@ -977,108 +1021,149 @@ export default function ConfigKingSim({ scene = 'free', keys = true, className, 
     press(k.key, k.cap);
   };
 
+  const zoom = view === 'zoom';
   const lcdL = DX + LCD.x * DW, lcdR = DX + (LCD.x + LCD.w) * DW, lcdT = DY + LCD.y * DH;
-  return (
-    <div ref={box} className={`ck${large ? ' ck-large' : ''}${keys ? ' ck-live' : ''}${className ? ` ${className}` : ''}`} style={{ '--ck-ar': (100 / CH).toFixed(4) } as CSSProperties} data-no-zoom>
-      <div className="ck-dev" role="application" aria-label="ConfigKing simulator on an M5Stack Cardputer. Click the screen or the keys, then use the arrow keys, Enter, Escape and Tab." tabIndex={keys ? 0 : -1} onFocus={() => { if (keys) setArmed(true); }}>
-        <div className="ck-zoom" style={{ height: pct(ZH / CH) }}>
-          <canvas ref={canvas} className="ck-screen" width={W * 3} height={H * 3} aria-hidden="true" onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={() => { drag.current = null; }} />
-          {keys && !armed && <div className="ck-hint" aria-hidden="true"><span>Tap the screen or a key to take over</span></div>}
-        </div>
-        <svg className="ck-callout" viewBox={`0 0 100 ${CH.toFixed(3)}`} preserveAspectRatio="none" aria-hidden="true">
-          <path d={`M0.4 ${ZH} L${lcdL.toFixed(2)} ${lcdT.toFixed(2)} M99.6 ${ZH} L${lcdR.toFixed(2)} ${lcdT.toFixed(2)}`} />
-        </svg>
-        <div className="ck-unit" style={{ left: pct(DX / 100), top: pct(DY / CH), width: pct(DW / 100), height: pct(DH / CH) }}>
-          <img src="/images/waterslop/cardputer.webp" alt="" draggable={false} />
-          <canvas ref={small} className="ck-lcd" aria-hidden="true" style={{ left: pct(LCD.x), top: pct(LCD.y), width: pct(LCD.w), height: pct(LCD.h) }} />
-          <div className="ck-kb" aria-label="Cardputer keyboard">
-            {ROWS.flatMap((row, r) => row.map((k, c) => (
-              <button key={k.id} type="button" tabIndex={-1} className={`ck-cap${lit === k.id ? ' lit' : ''}${k.key === 'fn' && fnHeld ? ' held' : ''}`}
-                style={{ left: pct(CAP_X(c) - 20.5 / SHOT.w), top: pct(CAP_Y[r] - 40 / SHOT.h), width: pct(41 / SHOT.w), height: pct(52 / SHOT.h) }}
-                onClick={() => capClick(k)} aria-label={k.sub ? `${k.cap}, ${k.sub}` : k.cap}>
-                <i />
-              </button>
-            )))}
+  const ar = zoom ? 100 / CH : SHOT.w / SHOT.h;
+  const unit = zoom ? { left: pct(DX / 100), top: pct(DY / CH), width: pct(DW / 100), height: pct(DH / CH) } : { left: 0, top: 0, width: '100%', height: '100%' };
+  const touch = keys ? { onPointerDown: onDown, onPointerMove: onMove, onPointerUp: onUp, onPointerCancel: () => { drag.current = null; } } : {};
+  const hint = keys && !armed && <div className="ck-hint" aria-hidden="true"><span>Tap the screen or a key to take over</span></div>;
+  const device = (
+    <div className="ck-dev" style={{ '--ck-ar': ar.toFixed(4) } as CSSProperties} role="application" aria-label="ConfigKing simulator on an M5Stack Cardputer. Click the screen or the keys, then use the arrow keys, Enter, Escape and Tab." tabIndex={keys ? 0 : -1} onFocus={() => { if (keys) setArmed(true); }}>
+      {zoom && (
+        <>
+          <div className="ck-zoom" style={{ height: pct(ZH / CH) }}>
+            <canvas ref={canvas} className="ck-screen" width={W * 3} height={H * 3} aria-hidden="true" {...touch} />
+            {hint}
           </div>
-        </div>
-        <div className={`ck-press${chip ? ' on' : ''}`} aria-live="polite" style={{ top: pct((DY + DH * 0.62) / CH) }}>
-          {chip && <><kbd>{chip.name}</kbd><span>{chip.label}</span></>}
+          <svg className="ck-callout" viewBox={`0 0 100 ${CH.toFixed(3)}`} preserveAspectRatio="none" aria-hidden="true">
+            <path d={`M0.4 ${ZH} L${lcdL.toFixed(2)} ${lcdT.toFixed(2)} M99.6 ${ZH} L${lcdR.toFixed(2)} ${lcdT.toFixed(2)}`} />
+          </svg>
+        </>
+      )}
+      <div className="ck-unit" style={unit}>
+        <img src="/images/waterslop/cardputer.webp" alt="" draggable={false} />
+        <canvas ref={small} className={`ck-lcd${!zoom && keys ? ' live' : ''}`} aria-hidden="true" style={{ left: pct(LCD.x), top: pct(LCD.y), width: pct(LCD.w), height: pct(LCD.h) }} {...(zoom ? {} : touch)} />
+        {!zoom && <div className="ck-lcd-hint" style={{ left: pct(LCD.x), top: pct(LCD.y), width: pct(LCD.w), height: pct(LCD.h) }}>{hint}</div>}
+        <div className="ck-kb" aria-label="Cardputer keyboard">
+          {ROWS.flatMap((row, r) => row.map((k, c) => (
+            <button key={k.id} type="button" tabIndex={-1} className={`ck-cap${lit === k.id ? ' lit' : ''}${k.key === 'fn' && fnHeld ? ' held' : ''}`}
+              style={{ left: pct(CAP_X(c) - 20.5 / SHOT.w), top: pct(CAP_Y[r] - 40 / SHOT.h), width: pct(41 / SHOT.w), height: pct(52 / SHOT.h) }}
+              onClick={() => capClick(k)} aria-label={k.sub ? `${k.cap}, ${k.sub}` : k.cap}>
+              <i />
+            </button>
+          )))}
         </div>
       </div>
-      {keys && (
-        <div className="ck-cluster" aria-label="Keys">
-          <div className="ck-dpad">
-            {CLUSTER.map((k) => <button key={k.id} type="button" className={`ck-key ${k.cls}${lit === capFor(k.key) ? ' lit' : ''}`} onClick={() => { setArmed(true); press(k.key); }} aria-label={k.id}>{k.cap}</button>)}
-          </div>
-          <div className="ck-short">
-            {SHORTCUTS.map((k) => <button key={k.cap} type="button" className={`ck-key${lit === capFor(k.key, k.key.ch) ? ' lit' : ''}`} onClick={() => { setArmed(true); press(k.key, k.key.ch); }}><b>{k.cap}</b><small>{k.sub}</small></button>)}
-          </div>
-          <p className="ck-tip">Shift with an arrow moves ×10. Drag the picture to pan it.</p>
+      <div className={`ck-press${chip ? ' on' : ''}`} aria-live="polite" style={zoom ? { left: `calc(${DX + DW}% + 1.6cqw)`, top: pct((DY + DH * 0.62) / CH) } : { left: '57%', top: '9%' }}>
+        {chip && <><kbd>{chip.name}</kbd><span>{chip.label}</span></>}
+      </div>
+    </div>
+  );
+  const tools = (
+    <div className="ck-tools">
+      <div className="ck-seg" role="group" aria-label="View">
+        <button type="button" aria-pressed={!zoom} onClick={() => setView('full')}>Full view</button>
+        <button type="button" aria-pressed={zoom} onClick={() => setView('zoom')}>Magnified</button>
+      </div>
+      <button type="button" className="ck-fsbtn" onClick={() => setFull((f) => (f ? false : 'manual'))} aria-label={full ? 'Exit full screen' : 'Full screen'}>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">{full
+          ? <path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+          : <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />}</svg>
+        <span>{full ? 'Exit full screen' : 'Full screen'}</span>
+      </button>
+    </div>
+  );
+  const cls = `ck${large ? ' ck-large' : ''}${keys ? ' ck-live' : ''}${zoom ? ' ck-zoomed' : ''}${className ? ` ${className}` : ''}`;
+  if (full) {
+    return (
+      <>
+        <div className={cls} style={{ '--ck-ar': ar.toFixed(4) } as CSSProperties} data-no-zoom>
+          <div className="ck-dev ck-ghost" style={{ '--ck-ar': ar.toFixed(4) } as CSSProperties} />
         </div>
-      )}
+        {createPortal(
+          <div ref={fsRef} className="ck-fs" data-no-zoom data-native-scroll>
+            <div className={`${cls} ck-in-fs`} style={{ '--ck-ar': ar.toFixed(4) } as CSSProperties}>{device}</div>
+            {tools}
+            <style>{CK_STYLE}</style>
+          </div>,
+          document.body,
+        )}
+      </>
+    );
+  }
+  return (
+    <div ref={box} className={cls} style={{ '--ck-ar': ar.toFixed(4) } as CSSProperties} data-no-zoom>
+      {device}
+      {tools}
     </div>
   );
 }
 
 export const CK_STYLE = `
-  .ck { display: flex; gap: clamp(14px, 1.6vw, 28px); align-items: center; justify-content: center; width: min(var(--vw, 48vw), calc((100svh - var(--ws-nav, 0px) - 18svh) * var(--ck-ar))); }
-  .ck.ck-live { width: auto; max-width: 92vw; }
-  .ck-dev { position: relative; flex: 1 1 0; width: 100%; min-width: 0; aspect-ratio: var(--ck-ar); container-type: inline-size; outline: none; }
-  .ck-live .ck-dev { flex: none; width: min(64vw, calc((100svh - var(--ws-nav, 0px) - 26svh) * var(--ck-ar))); }
+  .ck { position: relative; display: flex; flex-direction: column; align-items: center; width: min(var(--vw, 48vw), calc((100svh - var(--ws-nav, 0px) - 32svh) * var(--ck-ar))); }
+  .ck.ck-live { width: min(86vw, calc((100svh - var(--ws-nav, 0px) - 36svh) * var(--ck-ar))); max-width: none; }
+  .ck-dev { position: relative; width: 100%; aspect-ratio: var(--ck-ar); container-type: inline-size; outline: none; }
   .ck-dev:focus-visible { box-shadow: 0 0 0 1px var(--ink, #d8cbb8); border-radius: 1cqw; }
-  /* the screen, magnified: the firmware's 240 x 135 pixels, big enough to read */
+  .ck-ghost { visibility: hidden; }
+  /* Magnified: the firmware's 240 x 135 pixels above a smaller Cardputer */
   .ck-zoom { position: absolute; left: 0; top: 0; width: 100%; border-radius: 1.2cqw; overflow: hidden; background: #000; box-shadow: 0 0 0 1px #d8cbb833, 0 0 0 0.9cqw #0b0b0b, 0 24px 50px #000b; }
   .ck-screen { display: block; width: 100%; height: 100%; background: #000; touch-action: none; cursor: default; }
   .ck-live .ck-screen { cursor: pointer; }
   .ck-hint { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; padding: 0 0 2cqw; pointer-events: none; background: linear-gradient(to top, #000000b0, transparent 45%); }
   .ck-hint span { font: 500 2.3cqw/1.3 Manrope, Arial, sans-serif; color: #fff0db; letter-spacing: 0.04em; background: #181716e6; border: 1px solid #d8cbb84d; padding: 0.6cqw 1.2cqw; border-radius: 0.4cqw; }
-  /* the zoom callout from the device's own screen up to the big one */
+  .ck-lcd-hint { position: absolute; pointer-events: none; }
+  .ck-lcd-hint .ck-hint { padding-bottom: 0.7cqw; }
+  .ck-lcd-hint .ck-hint span { font-size: 1.3cqw; padding: 0.35cqw 0.7cqw; white-space: nowrap; }
   .ck-callout { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
   .ck-callout path { fill: none; stroke: #d8cbb84d; stroke-width: 1; stroke-dasharray: 3 4; vector-effect: non-scaling-stroke; }
-  /* the real Cardputer, with its own screen live and every key pressable */
+  /* the real Cardputer, its own screen live and every key pressable */
   .ck-unit { position: absolute; filter: drop-shadow(0 22px 34px #000b); }
   .ck-unit > img { display: block; width: 100%; height: 100%; user-select: none; -webkit-user-drag: none; }
   .ck-lcd { position: absolute; display: block; background: #000; border-radius: 0.2cqw; }
-  .ck-kb { position: absolute; inset: 0; }
-  .ck-cap { position: absolute; padding: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .ck-lcd.live { cursor: pointer; touch-action: none; }
+  .ck-kb { position: absolute; inset: 0; pointer-events: none; }
+  .ck-cap { position: absolute; padding: 0; border: 0; background: none; cursor: pointer; pointer-events: auto; -webkit-tap-highlight-color: transparent; }
   .ck-cap i { position: absolute; left: 50%; bottom: 13%; width: 74%; height: 36%; transform: translateX(-50%); border-radius: 0.55cqw; transition: background 0.12s, box-shadow 0.12s, transform 0.12s; }
   .ck-cap:hover i { background: #ffffff1c; }
   .ck-cap:active i, .ck-cap.lit i { background: #ffa600b3; box-shadow: 0 0 0 0.25cqw #ffa60066, 0 0 1.6cqw #ffa600aa; transform: translateX(-50%) scale(0.9); }
   .ck-cap.held i { background: #ffa60080; }
   .ck-cap:focus-visible { outline: 1px solid var(--ink, #d8cbb8); outline-offset: 1px; }
   /* the key a frame presses on its way in, named */
-  .ck-press { position: absolute; left: calc(${(DX + DW) }% + 1.6cqw); display: flex; flex-direction: column; align-items: flex-start; gap: 0.6cqw; opacity: 0; transform: translateY(0.8cqw); transition: opacity 0.18s, transform 0.18s; pointer-events: none; }
+  .ck-press { position: absolute; display: flex; flex-direction: column; align-items: flex-start; gap: 0.6cqw; opacity: 0; transform: translateY(0.8cqw); transition: opacity 0.18s, transform 0.18s; pointer-events: none; z-index: 2; }
   .ck-press.on { opacity: 1; transform: none; }
   .ck-press kbd { font: 600 2.2cqw/1 Manrope, Arial, sans-serif; color: #181716; background: #ffa600; border-radius: 0.5cqw; padding: 0.7cqw 1.1cqw; box-shadow: 0 0 1.4cqw #ffa60080; }
-  .ck-press span { font: 500 1.9cqw/1.2 Manrope, Arial, sans-serif; color: #fff0db; letter-spacing: 0.02em; white-space: nowrap; }
-  /* the big keys */
-  .ck-cluster { flex: 0 0 auto; display: flex; flex-direction: column; gap: 14px; width: clamp(150px, 15vw, 230px); }
-  .ck-dpad { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: 1fr 1fr; gap: 5px; width: 100%; max-width: 160px; margin: 0 auto; }
-  .ck-dpad .u { grid-column: 2; grid-row: 1; } .ck-dpad .l { grid-column: 1; grid-row: 2; } .ck-dpad .d { grid-column: 2; grid-row: 2; } .ck-dpad .r { grid-column: 3; grid-row: 2; }
-  .ck-key { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 42px; padding: 6px 4px; border: 1px solid #d8cbb875; border-radius: 5px; background: #d8cbb80d; color: var(--ink, #d8cbb8); font: 500 16px/1 Manrope, Arial, sans-serif; cursor: pointer; transition: background 0.12s, color 0.12s, transform 0.08s; -webkit-tap-highlight-color: transparent; }
-  .ck-key b { font-weight: 500; font-size: 15px; }
-  .ck-key small { font: 400 9.5px/1.2 Manrope, Arial, sans-serif; color: #ada496; letter-spacing: 0.02em; }
-  .ck-key:hover { background: #d8cbb822; color: #fff0db; }
-  .ck-key:active, .ck-key.lit { background: #eee4d5; color: #28231e; transform: translateY(1px); }
-  .ck-key.lit small, .ck-key:active small { color: #28231e; }
-  .ck-short { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
-  .ck-short .ck-key { min-height: 44px; }
-  .ck-tip { margin: 0; font: 400 11px/1.4 Manrope, Arial, sans-serif; color: #7d766e; text-align: center; }
+  .ck-press span { font: 500 1.9cqw/1.2 Manrope, Arial, sans-serif; color: #fff0db; letter-spacing: 0.02em; white-space: nowrap; text-shadow: 0 1px 6px #000; }
+  /* the view switch and full screen, under the device */
+  .ck-tools { position: absolute; top: calc(100% + 12px); right: 0; display: flex; align-items: center; gap: 8px; z-index: 3; }
+  .ck-seg { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid #d8cbb859; border-radius: 999px; background: #181716cc; }
+  .ck-seg button, .ck-fsbtn { font: 500 12px/1 Manrope, Arial, sans-serif; letter-spacing: 0.02em; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background 0.15s, color 0.15s; }
+  .ck-seg button { min-height: 30px; padding: 0 12px; border: 0; border-radius: 999px; background: none; color: #ada496; }
+  .ck-seg button:hover { color: #fff0db; }
+  .ck-seg button[aria-pressed="true"] { background: #eee4d5; color: #28231e; }
+  .ck-fsbtn { display: inline-flex; align-items: center; gap: 7px; min-height: 38px; padding: 0 14px 0 12px; border: 1px solid #d8cbb859; border-radius: 999px; background: #181716cc; color: #d8cbb8; }
+  .ck-fsbtn:hover { background: #2a2724; color: #fff0db; }
+  .ck-seg button:focus-visible, .ck-fsbtn:focus-visible { outline: 1px solid #d8cbb8; outline-offset: 2px; }
+  /* full screen: the Cardputer alone on the page, as large as it fits */
+  .ck-fs * { font-family: inherit; }
+  .ck-fs { font-family: Manrope, Arial, sans-serif; position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; background: #0e0d0c; padding: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)); overscroll-behavior: contain; }
+  .ck-fs .ck.ck-in-fs { width: min(calc(100vw - 32px), calc((100dvh - 96px) * var(--ck-ar))); }
+  .ck-fs .ck-tools { position: static; }
+  @media (max-height: 540px) {
+    .ck-fs { flex-direction: row; gap: 12px; }
+    .ck-fs .ck.ck-in-fs { width: min(calc(100vw - 150px), calc((100dvh - 24px) * var(--ck-ar))); }
+    .ck-fs .ck-tools { flex-direction: column; align-items: stretch; }
+    .ck-fs .ck-seg { flex-direction: column; border-radius: 14px; }
+    .ck-fs .ck-seg button { border-radius: 11px; }
+  }
   @media (max-width: 900px) {
-    .ck { width: min(92vw, calc((44svh - var(--ws-nav, 0px) - 28px) * var(--ck-ar))); }
-    .ck.ck-live { width: 92vw; max-width: none; flex-direction: column; gap: 12px; align-items: stretch; }
-    .ck-dev, .ck-live .ck-dev { flex: 0 0 auto; width: 100%; }
+    .ck { width: min(92vw, calc((44svh - var(--ws-nav, 0px) - 52px) * var(--ck-ar))); }
+    .ck.ck-live { width: 92vw; }
     .ck-first .ws-note { display: none; }
     .ck-press kbd { font-size: 3cqw; }
     .ck-press span { font-size: 2.8cqw; }
-    .ck-cluster { width: 100%; flex-direction: row; flex-wrap: nowrap; justify-content: center; align-items: center; gap: 10px; }
-    .ck-dpad { flex: 0 0 auto; width: 108px; margin: 0; gap: 3px; }
-    .ck-dpad .ck-key { min-height: 32px; font-size: 14px; padding: 2px; }
-    .ck-short { flex: 1 1 auto; grid-template-columns: repeat(4, 1fr); gap: 3px; }
-    .ck-short .ck-key { min-height: 32px; padding: 3px 2px; gap: 0; }
-    .ck-short .ck-key b { font-size: 12px; }
-    .ck-short .ck-key small { font-size: 8px; }
-    .ck-tip { display: none; }
+    .ck-tools { top: calc(100% + 8px); gap: 6px; }
+    .ck-seg button { min-height: 28px; padding: 0 10px; font-size: 11px; }
+    .ck-fsbtn { min-height: 34px; padding: 0 11px 0 9px; font-size: 11px; }
   }
-  @media (prefers-reduced-motion: reduce) { .ck-cap, .ck-key { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .ck-cap i, .ck-press { transition: none; } }
 `;

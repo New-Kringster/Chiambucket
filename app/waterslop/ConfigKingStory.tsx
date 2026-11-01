@@ -1,6 +1,7 @@
 'use client';
+import { useMemo, useState } from 'react';
 import Story, { type Frame } from './Story';
-import ConfigKingSim, { CK_STYLE, ZOOM_SHARE, type Press, type SimScene } from './ConfigKingSim';
+import ConfigKingSim, { CK_STYLE, CkViewContext, screenAt, type CkView, type Press, type SimScene } from './ConfigKingSim';
 
 /* ConfigKingChapter: the setup procedure, walked on the real Cardputer (a photo,
    its screen live and magnified above it). It follows straight on from the
@@ -10,10 +11,19 @@ import ConfigKingSim, { CK_STYLE, ZOOM_SHARE, type Press, type SimScene } from '
    moves on); the last frame hands the reader the keys. Step text is the report's. */
 
 type StepFrame = { scene: SimScene; eyebrow: string; title: string; body: string; pointers: Frame['pointers']; from?: SimScene; via?: Press[] };
-/* Pointers are in % of the whole drawing; the magnified screen spans it across and its top ZOOM_SHARE down. */
-const sx = (x: number) => (x / 240) * 100;
-const sy = (y: number) => (y / 135) * ZOOM_SHARE * 100;
-const at = (x: number, y: number): [number, number] => [sx(x), sy(y)];
+/* Pointers are written in screen pixels (240 x 135) and placed for the view the
+   reader picked: on the magnified screen, or on the Cardputer's own screen with
+   the labels spread across the band above it. Every label sits above the
+   drawing, so no leader crosses the device. */
+const at = (x: number, y: number): [number, number] => [x, y];
+function place(view: CkView, list: Frame['pointers']): Frame['pointers'] {
+  if (!list) return list;
+  if (view === 'zoom') return list.map((q) => ({ ...q, at: screenAt('zoom', q.at[0], q.at[1]), edge: 'top' as const }));
+  const order = list.map((q, i) => ({ x: q.at[0], i })).sort((a, b) => a.x - b.x);
+  const cols: number[] = [];
+  order.forEach((o, k) => { cols[o.i] = 12 + ((k + 0.5) * 76) / list.length; });
+  return list.map((q, i) => ({ ...q, at: screenAt('full', q.at[0], q.at[1]), to: [cols[i], 0] as [number, number], edge: 'top' as const }));
+}
 /* The Cardputer's enter key is printed "ok". */
 const ok = (label: string, wait?: number): Press => ({ key: { enter: true }, cap: 'enter', name: 'ok ↵', label, wait });
 const STEPS: StepFrame[] = [
@@ -39,7 +49,7 @@ const STEPS: StepFrame[] = [
     pointers: [{ at: at(50, 48), label: 'read now', edge: 'top', to: [26, 0] }, { at: at(62, 66), label: 'one category at a time', edge: 'top', to: [60, 0] }, { at: at(50, 84), label: 'radio test, info, factory reset', edge: 'bottom' }] },
 ];
 
-const FRAMES: Frame[] = [
+const buildFrames = (view: CkView): Frame[] => [
   {
     // The bridge from the film: the same reading, as the setup tool shows it.
     id: 'ck-intro', eyebrow: 'Setup and configuration', title: 'The same reading, on the setup tool', cls: 'ck-first',
@@ -49,27 +59,30 @@ const FRAMES: Frame[] = [
         <p className="ws-note">DrumNet and the firmware are loaded onto Prototype V2, with the LoRa device address baked in when it is flashed. The readers are mostly asleep, so pressing the boot button wakes one up to be found. The screen is a working copy of the real firmware&rsquo;s screens, drawn from its source, on a photo of the Cardputer.</p>
       </>
     ),
-    pointers: [{ at: at(75, 70), label: 'the frame and the box it read', edge: 'top', to: [24, 0] }, { at: at(175, 45), label: '0092.07', edge: 'top', to: [78, 0] }],
+    pointers: place(view, [{ at: at(75, 70), label: 'the frame and the box it read', edge: 'top', to: [24, 0] }, { at: at(175, 45), label: '0092.07', edge: 'top', to: [78, 0] }]),
     visual: <ConfigKingSim scene="reread" keys={false} />,
   },
   ...STEPS.map((s): Frame => ({
-    // every label above the magnified screen, so no leader crosses the device below it
-    id: `ck-${s.scene}`, eyebrow: s.eyebrow, title: s.title, body: <p>{s.body}</p>, pointers: s.pointers?.map((q) => ({ ...q, edge: 'top' as const })),
+    id: `ck-${s.scene}`, eyebrow: s.eyebrow, title: s.title, body: <p>{s.body}</p>, pointers: place(view, s.pointers),
     visual: <ConfigKingSim scene={s.scene} keys={false} from={s.from} via={s.via} />,
   })),
   {
     id: 'ck-free', eyebrow: 'Try it', title: 'Set up a reader yourself', wide: true, cls: 'tall',
-    body: <p>The same screens, keys and wizard, talking to a simulated reader. Press the keys on the Cardputer itself, or the big ones beside it. A reader will turn up nearby in a moment.</p>,
+    body: <p>The same screens, keys and wizard, talking to a simulated reader. Press the keys on the Cardputer, tap its screen, or type on your own keyboard. A reader will turn up nearby in a moment.</p>,
     visual: <ConfigKingSim scene="free" keys large />,
   },
 ];
 
 /* No cover: the chapter carries straight on from the DrumNet film. */
 export default function ConfigKingChapter({ chapter }: { chapter: string }) {
+  // Full view by default; the choice carries across every frame of the chapter.
+  const [view, setView] = useState<CkView>('full');
+  const frames = useMemo(() => buildFrames(view), [view]);
+  const ctx = useMemo(() => ({ view, setView }), [view]);
   return (
-    <>
-      <Story id="configking" chapter={chapter} title="ConfigKing" frames={FRAMES} per={0.85} />
+    <CkViewContext.Provider value={ctx}>
+      <Story id="configking" chapter={chapter} title="ConfigKing" frames={frames} per={0.85} />
       <style>{CK_STYLE}</style>
-    </>
+    </CkViewContext.Provider>
   );
 }
