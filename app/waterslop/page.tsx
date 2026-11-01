@@ -11,6 +11,7 @@ import PairCompare from './Compare';
 import { LoopRing, AgentBadges } from './Agents';
 import PageFx from './PageFx';
 import SkipToEnd from './SkipToEnd';
+import PdfEmbed from '../../components/PdfEmbed';
 import { IcRead, IcOut } from '../../components/Icons';
 import AiMark from '../../components/AiMark';
 import './waterslop.css';
@@ -44,11 +45,10 @@ const jsonLd = {
   mainEntityOfPage: 'https://www.chiambucket.com/waterslop',
 };
 
-/* The report on OneDrive. The share link cannot be framed (its CSP only allows
-   OneDrive's own origins); the embed URL is the one OneDrive's Embed dialog
-   produces. Clear it and the section links out instead. */
-const REPORT_LINK = 'https://1drv.ms/w/c/4eae3340327c4979/IQD6fnAtH4qnTp-LM2j2Hj_7ARKI2X_7aByE_W7eXIiQjQk?e=DOacjY';
-const REPORT_EMBED_URL = 'https://1drv.ms/w/c/4eae3340327c4979/IQTHPE0ITKXXRo97ze60q4LkAcIyqE0Ek_Mh2xwbOefamDk?em=2';
+/* The report, a PDF hosted with the site (public/downloadable; .vercelignore
+   lets this one PDF through). It used to be a OneDrive embed, which stopped
+   opening for anyone not signed in. */
+const REPORT_PDF = '/downloadable/ocr-reader-report.pdf';
 
 const I = '/images/waterslop/';
 const img = (src: string, alt: string, cls?: string) => <img src={I + src} alt={alt} loading="lazy" decoding="async" className={cls} />;
@@ -358,7 +358,7 @@ export default function WaterslopPage() {
             <Contents />
             <div className="ws-hero-actions">
               <a className="ws-btn" href="#v2"><IcRead /> Start reading</a>
-              <a className="ws-btn ghost" href={REPORT_LINK} target="_blank" rel="noopener"><IcOut /> The report</a>
+              <a className="ws-btn ghost" href={REPORT_PDF} target="_blank" rel="noopener"><IcOut /> The report</a>
               <span className="ws-hero-meta">ESP32-S3 · OV2640 · KiCad · Onshape · PlatformIO · Tailscale</span>
             </div>
           </div>
@@ -409,17 +409,17 @@ export default function WaterslopPage() {
           <div className="ws-content">
             <span className="ws-sec-n">Chapter - {NUM.report}</span>
             <h2 className="ws-report-h2">The report</h2>
-            {REPORT_EMBED_URL ? (
+            {REPORT_PDF ? (
               <div className="ws-report-frame">
-                <iframe title="OCR Water Meter Reader report (Word)" src={REPORT_EMBED_URL} loading="lazy" allowFullScreen />
+                <PdfEmbed src={REPORT_PDF} title="OCR Water Meter Reader report (PDF)" />
               </div>
             ) : null}
             <div className="ws-report-card">
               <div className="ws-report-text">
                 <b>OCR Water Meter Reader</b>
-                <span>Low cost and power vision-based OCR solution for reading water meters. Braven Chiam, NYP Electronic and Computer Engineering. Opens in Word on OneDrive.</span>
+                <span>Low cost and power vision-based OCR solution for reading water meters. Braven Chiam, NYP Electronic and Computer Engineering. 58 pages, PDF, 6.8 MB.</span>
               </div>
-              <a className="ws-btn" href={REPORT_LINK} target="_blank" rel="noopener"><IcOut /> Open the report</a>
+              <a className="ws-btn" href={REPORT_PDF} target="_blank" rel="noopener"><IcOut /> Open the report</a>
             </div>
             <p className="ws-note ws-report-note">AI tools were used heavily in the development of this project. Most of the report was written by me in my own words, except for the introduction section and certain graphs; other AI use includes research, chart generation and data verification. This project scores a Level 3 on my scale of AI use.</p>
           </div>
