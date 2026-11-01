@@ -593,7 +593,9 @@
 .ws-chapter .capture {
   --d: min(46vh, 34vw);
   --mx: 74%;
-  --my: 56%;
+  /* the dial sits level with the lens, so the cone meets it square */
+  --my: var(--lens-y, 54%);
+  --turn: rotateY(46deg);
   position: absolute;
   inset: 0;
   z-index: 3;
@@ -615,7 +617,8 @@
   box-shadow: 0 0 0 1px #d8cbb833, 0 0 0 calc(var(--d) * 0.035) #2a2826, 0 30px 60px #000a;
   filter: brightness(0.82) contrast(1.05);
   opacity: var(--cap-aim, 0);
-  transform: translateX(calc((1 - var(--cap-aim, 0)) * 26vw)) rotate(calc((1 - var(--cap-aim, 0)) * 18deg));
+  /* turned in perspective so its face looks back at the lens */
+  transform: perspective(1100px) translateX(calc((1 - var(--cap-aim, 0)) * 26vw)) var(--turn) rotate(calc((1 - var(--cap-aim, 0)) * 18deg));
 }
 .ws-chapter .cap-beam {
   position: absolute;
@@ -623,8 +626,8 @@
   background: linear-gradient(90deg, #fff0db30, #fff0db08 70%, transparent);
   clip-path: polygon(
     var(--lens-x, 30%) var(--lens-y, 50%),
-    calc(var(--mx) - var(--d) * 0.1) calc(var(--my) - var(--d) * 0.47),
-    calc(var(--mx) - var(--d) * 0.1) calc(var(--my) + var(--d) * 0.47)
+    var(--mx) calc(var(--my) - var(--d) * 0.42),
+    var(--mx) calc(var(--my) + var(--d) * 0.42)
   );
   opacity: var(--cap-beam, 0);
 }
@@ -731,18 +734,20 @@
 @media (max-width: 760px) {
   .ws-chapter .capture {
     --d: min(60vw, 30svh);
-    --mx: 50%;
+    /* the dial sits right under the lens */
+    --mx: var(--lens-x, 50%);
     --my: 75%;
+    --turn: rotateX(44deg);
   }
   .ws-chapter .cap-meter {
-    transform: translateY(calc((1 - var(--cap-aim, 0)) * 30vh)) rotate(calc((1 - var(--cap-aim, 0)) * 18deg));
+    transform: perspective(900px) translateY(calc((1 - var(--cap-aim, 0)) * 30vh)) var(--turn) rotate(calc((1 - var(--cap-aim, 0)) * 18deg));
   }
   .ws-chapter .cap-beam {
     background: linear-gradient(180deg, #fff0db30, #fff0db08 70%, transparent);
     clip-path: polygon(
       var(--lens-x, 50%) var(--lens-y, 40%),
-      calc(var(--mx) - var(--d) * 0.47) calc(var(--my) - var(--d) * 0.1),
-      calc(var(--mx) + var(--d) * 0.47) calc(var(--my) - var(--d) * 0.1)
+      calc(var(--mx) - var(--d) * 0.42) var(--my),
+      calc(var(--mx) + var(--d) * 0.42) var(--my)
     );
   }
   .ws-chapter .stage:not([data-capture="off"]) .cap-pov::after {

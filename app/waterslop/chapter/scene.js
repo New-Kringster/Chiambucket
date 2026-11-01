@@ -633,8 +633,10 @@ export async function createScene(host, onProgress, { assetBase }) {
   const tmp = new THREE.Vector3(),
     focusPoint = new THREE.Vector3();
   // Chiambucket addition: the capture pose [rx, ry, rz, x %, y %, scale] and the lens.
-  const AIM = [0.2, -2.1, 0.05, -20, -18, 0.64],
-    AIM_MOBILE = [-2.04, 0.3, 0, 0, 10, 0.44],
+  // The lens looks along the content's -z: AIM turns it to face right (the meter),
+  // AIM_MOBILE to face down (the meter below), each a little toward the viewer.
+  const AIM = [0.1, -1.85, 0, -24, -15, 0.7],
+    AIM_MOBILE = [-1.72, 0.12, 0, 0, 12, 0.46],
     LENS = [-1.48, 3.12, -11.5],
     qFrom = new THREE.Quaternion(),
     qTo = new THREE.Quaternion(),

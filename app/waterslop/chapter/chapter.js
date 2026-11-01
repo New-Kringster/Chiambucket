@@ -1,6 +1,6 @@
 import { sampleTimeline, stops, clamp, range, ledPulse } from "./timeline.js";
 import { createGraph } from "./graph.js";
-import { createScrollController, nextStop } from "./scroll-controller.js";
+import { createScrollController, nextStop, chapterStep } from "./scroll-controller.js";
 import { rotationInput } from "./interaction.js";
 import { powerChips } from "./power-data.js";
 
@@ -114,6 +114,8 @@ export function mountChapter(root, { assetBase, onCover = () => {} }) {
       return pixels / storyLength;
     },
     onChange: (mode) => (stage.dataset.motion = mode),
+    // Chiambucket: one gesture, one step (scroll-controller.js chapterStep).
+    step: chapterStep,
   });
   function navigate(id, immediate = false) {
     const s = stops.find((s) => s.id === id);

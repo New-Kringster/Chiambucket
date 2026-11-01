@@ -240,6 +240,16 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
   }, [ended]);
   const faster = useCallback(() => { const i = (SPEEDS.indexOf(speedRef.current) + 1) % SPEEDS.length; speedRef.current = SPEEDS[i]; setSpeed(SPEEDS[i]); if (!playingRef.current && !reducedRef.current && !ended) { playingRef.current = true; setPlaying(true); } }, [ended]);
   const zoom = useCallback(() => { zoomRef.current = !zoomRef.current; setZoomOut(zoomRef.current); }, []);
+  // Leave the film for the next chapter: lets the hold go and glides to ConfigKing.
+  const skipChapter = useCallback(() => {
+    const next = document.getElementById('configking');
+    if (!next) return;
+    const html = document.documentElement;
+    html.setAttribute('data-ws-skipping', '');
+    window.setTimeout(() => html.removeAttribute('data-ws-skipping'), 2400);
+    playingRef.current = false; setPlaying(false);
+    window.scrollTo({ top: next.getBoundingClientRect().top + window.scrollY, behavior: reducedRef.current ? 'auto' : 'smooth' });
+  }, []);
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
@@ -280,7 +290,7 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
           <button type="button" className="primary" onClick={toggle} aria-label={playing ? 'Pause' : ended ? 'Replay' : 'Play'} title="Play / pause (space)">{playing ? '❚❚' : ended ? '↺' : '▶'}</button>
           <button type="button" onClick={() => seekScene(k + 1)} aria-label="Next scene" title="Next (→)">›</button>
           <button type="button" className={speed > 1 ? 'fast' : undefined} onClick={faster} aria-label={`Fast forward, now ${speed} times`} title="Fast forward (f)">{speed}× {speed === 1 ? '▸' : speed === 2 ? '▸▸' : '▸▸▸'}</button>
-          <button type="button" className={zoomOut ? 'fast' : undefined} onClick={zoom} aria-pressed={zoomOut} title="Zoom out to the map so far (z)">{zoomOut ? 'Zoom in' : 'Zoom out'}</button>
+          <button type="button" className="skip" onClick={skipChapter} title="Skip to the next chapter, ConfigKing">Skip chapter</button>
         </div>
       </div>
       <style>{`
@@ -324,6 +334,7 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
           .dnf-ctl { width: 100%; justify-content: space-between; }
           .dnf-ctl button { min-width: 36px; height: 36px; padding: 0 8px; font-size: 12px; flex: 1; }
           .dnf-ctl button.primary { min-width: 44px; }
+          .dnf-ctl button.skip { flex: 2.1; }
         }
         @media (prefers-reduced-motion: reduce) { .dnf-rail button::before { transition: none; } }
       `}</style>
