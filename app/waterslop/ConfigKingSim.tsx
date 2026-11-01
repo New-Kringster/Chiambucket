@@ -1120,11 +1120,18 @@ export const CK_STYLE = `
   .ck-dev { position: relative; width: 100%; aspect-ratio: var(--ck-ar); container-type: inline-size; outline: none; }
   .ck-dev:focus-visible { box-shadow: 0 0 0 1px var(--ink, #d8cbb8); border-radius: 1cqw; }
   .ck-ghost { visibility: hidden; }
-  /* Zoom in: the photo cropped to the screen and its bezel, the screen big enough to read */
   .ws-copy-body .ck-skipsim { margin: 0.4em 0 1.1em; color: var(--btn-ink, #28231e); }
   .ws-copy-body .ck-skipsim .btn-ico { width: 16px; height: 16px; }
-  .ck-close .ck-dev { overflow: hidden; border-radius: 2cqw; box-shadow: 0 0 0 1px #d8cbb833, 0 24px 50px #000b; }
-  .ck-close .ck-unit { filter: none; }
+  /* Zoom in: no box. The whole Cardputer, scaled so its screen fills the frame,
+     runs on past it and fades out into the page from around the screen. */
+  .ck-close .ck-unit { filter: none; -webkit-mask-image: radial-gradient(ellipse 34% 31% at 40.2% 20.2%, #000 52%, transparent 100%); mask-image: radial-gradient(ellipse 34% 31% at 40.2% 20.2%, #000 52%, transparent 100%); }
+  /* ...so the words on the slide get a gradient between them and the device:
+     beside the copy on wide screens, under it on phones, and along the bottom
+     for the dots and buttons. Labels and the view switch keep their own fills. */
+  .ws-frame.ck-bleed::before { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background: linear-gradient(90deg, rgba(24,23,22,0) 57.5%, rgba(24,23,22,0.9) 61.5%, #181716 68%), linear-gradient(0deg, #181716 0, rgba(24,23,22,0.82) 7%, rgba(24,23,22,0) 14%); }
+  .ws-frame.ck-bleed.tall::before { background: linear-gradient(0deg, #181716 0, #181716 8%, rgba(24,23,22,0.92) 13%, rgba(24,23,22,0) 21%); }
+  .ws-frame.ck-bleed .ws-ptr-label { z-index: 2; }
   .ck-close .ck-lcd { border-radius: 0.5cqw; }
   .ck-close .ck-lcd-hint .ck-hint { padding-bottom: 2cqw; }
   .ck-close .ck-lcd-hint .ck-hint span { font-size: 2.3cqw; padding: 0.6cqw 1.2cqw; }
@@ -1184,7 +1191,12 @@ export const CK_STYLE = `
     .ck-fs .ck-seg button { border-radius: 11px; }
   }
   @media (max-width: 900px) {
-    .ck { width: min(92vw, calc((44svh - var(--ws-nav, 0px) - 52px) * var(--ck-ar))); }
+    /* On phones the picture area ends just above the slide's words: the device sits at
+       its top and leaves room inside it for the view switch underneath (44px). */
+    .ws-frame.ckf .ws-visual { align-items: flex-start; }
+    .ws-frame.ck-bleed::before { background: linear-gradient(180deg, rgba(24,23,22,0) 41%, rgba(24,23,22,0.92) 47.5%, #181716 53%); }
+    .ws-frame.ck-bleed.tall::before { background: linear-gradient(0deg, #181716 0, rgba(24,23,22,0.92) 12%, rgba(24,23,22,0) 22%); }
+    .ck { width: min(92vw, calc((44svh - var(--ws-nav, 0px) - 72px) * var(--ck-ar))); }
     .ck.ck-live { width: 92vw; }
     .ck-first .ws-note { display: none; }
     .ck-press kbd { font-size: 3cqw; }

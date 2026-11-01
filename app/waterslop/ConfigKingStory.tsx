@@ -70,7 +70,7 @@ const STEPS: StepFrame[] = [
 const buildFrames = (view: CkView): Frame[] => [
   {
     // The bridge from the film: the same reading, as the setup tool shows it.
-    id: 'ck-intro', eyebrow: 'Setup and configuration', title: 'The same reading, on the setup tool', cls: 'ck-first',
+    id: 'ck-intro', eyebrow: 'Setup and configuration', title: 'The same reading, on the setup tool', cls: `ck-first ckf${view === 'close' ? ' ck-bleed' : ''}`,
     body: (
       <>
         <p>That reading, 0092.07 with the frame it came from, is what ConfigKing shows when it asks a reader to Read. ConfigKing is the firmware I wrote for an M5Stack Cardputer: it finds readers nearby over BLE and ESP-NOW, sets up new ones step by step and reconfigures the rest.</p>
@@ -82,11 +82,11 @@ const buildFrames = (view: CkView): Frame[] => [
     visual: <ConfigKingSim scene="reread" keys={false} />,
   },
   ...STEPS.map((s): Frame => ({
-    id: `ck-${s.scene}`, eyebrow: s.eyebrow, title: s.title, body: <p>{s.body}</p>, pointers: place(view, s.pointers),
+    id: `ck-${s.scene}`, eyebrow: s.eyebrow, title: s.title, body: <p>{s.body}</p>, pointers: place(view, s.pointers), cls: `ckf${view === 'close' ? ' ck-bleed' : ''}`,
     visual: <ConfigKingSim scene={s.scene} keys={false} from={s.from} via={s.via} />,
   })),
   {
-    id: 'ck-free', eyebrow: 'Try it', title: 'Set up a reader yourself', wide: true, cls: 'tall',
+    id: 'ck-free', eyebrow: 'Try it', title: 'Set up a reader yourself', wide: true, cls: `tall ckf${view === 'close' ? ' ck-bleed' : ''}`,
     body: <p>The same screens, keys and wizard, talking to a simulated reader. Press the keys on the Cardputer, tap its screen, or type on your own keyboard. A reader will turn up nearby in a moment.</p>,
     visual: <ConfigKingSim scene="free" keys large />,
   },
