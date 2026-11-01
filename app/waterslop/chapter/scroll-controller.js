@@ -1,10 +1,14 @@
-import { stops, clamp, mix, CAPTURE_AT } from "./timeline.js";
+import { stops, clamp, mix, CAPTURE_AT, SHUTTER_AT } from "./timeline.js";
 
-// Chiambucket: the exported positions, scaled into the part of the story before the capture.
+// Chiambucket: the exported positions, scaled into the part of the story before the
+// capture, then the shutter: once past the viewfinder it plays on into the film.
 export const autoplaySections = [
-  { id: "layers", start: 0.105, end: 0.35, backward: 0.067, duration: 6400 },
-  { id: "assembly", start: 0.77, end: 0.987, backward: 0.734, duration: 4600 },
-].map((s) => ({ ...s, start: s.start * CAPTURE_AT, end: s.end * CAPTURE_AT, backward: s.backward * CAPTURE_AT }));
+  ...[
+    { id: "layers", start: 0.105, end: 0.35, backward: 0.067, duration: 6400 },
+    { id: "assembly", start: 0.77, end: 0.987, backward: 0.734, duration: 4600 },
+  ].map((s) => ({ ...s, start: s.start * CAPTURE_AT, end: s.end * CAPTURE_AT, backward: s.backward * CAPTURE_AT })),
+  { id: "shutter", start: SHUTTER_AT, end: 1, backward: stops.at(-1).p, duration: 1300 },
+];
 const restingStates = stops
   .filter((s) => !["layers", "assembly"].includes(s.id))
   .map((s) => s.p);

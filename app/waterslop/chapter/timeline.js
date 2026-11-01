@@ -167,21 +167,23 @@ function sampleBase(p) {
 export const CAPTURE_AT = 1100 / 1400;
 export const stops = [
   ...baseStops.map((s) => ({ ...s, p: s.p * CAPTURE_AT })),
-  { id: "aim", label: "Pointed at the meter", p: CAPTURE_AT + (1 - CAPTURE_AT) * 0.36 },
-  { id: "pov", label: "What the camera sees", p: CAPTURE_AT + (1 - CAPTURE_AT) * 0.6 },
-  { id: "photo", label: "One photo", p: 0.997 },
+  { id: "aim", label: "Pointed at the meter", p: CAPTURE_AT + (1 - CAPTURE_AT) * 0.32 },
+  { id: "pov", label: "What the camera sees", p: CAPTURE_AT + (1 - CAPTURE_AT) * 0.5 },
 ];
+// Past the viewfinder the chapter plays itself into the DrumNet film: the shutter,
+// the photo, and the film's first frame (scroll-controller.js autoplays from here).
+export const SHUTTER_AT = CAPTURE_AT + (1 - CAPTURE_AT) * 0.51;
 // Beats of the capture, each 0 to 1 over its own span of c (0 to 1 over the capture).
 export function captureBeats(c) {
   return {
     c,
-    hold: range(c, 0, 0.06), // the enclosure heading leaves
-    aim: range(c, 0.04, 0.34), // the reader turns to the meter, the meter comes in
-    beam: range(c, 0.24, 0.36) * (1 - range(c, 0.4, 0.5)), // its field of view
-    iris: range(c, 0.4, 0.58), // through the lens, onto what it sees
-    lit: range(c, 0.665, 0.7), // the LEDs light the meter
-    flash: range(c, 0.665, 0.685) * (1 - range(c, 0.685, 0.78)),
-    settle: range(c, 0.8, 0.93), // the viewfinder and words leave; the photo stays
+    hold: range(c, 0, 0.05), // the enclosure heading leaves
+    aim: range(c, 0.03, 0.3), // the reader turns to the meter, the meter comes in
+    beam: range(c, 0.2, 0.3) * (1 - range(c, 0.34, 0.42)), // its field of view
+    iris: range(c, 0.34, 0.48), // through the lens, onto what it sees
+    lit: range(c, 0.58, 0.62), // the LEDs light the meter
+    flash: range(c, 0.58, 0.6) * (1 - range(c, 0.6, 0.68)),
+    settle: range(c, 0.66, 0.76), // the viewfinder and words leave; the photo stays
   };
 }
 // `p` stays on the exported scale (the scene and copy are keyed to it);

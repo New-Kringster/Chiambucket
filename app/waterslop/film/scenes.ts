@@ -449,7 +449,7 @@ export const SCENES: Scene[] = [
   {
     // The photo the 3D chapter's capture just took. DrumNetFilm draws this scene
     // full-bleed (cover), exactly like the chapter's last frame, then pulls back.
-    id: 'photo', stage: 'Capture', title: 'The photo the reader just took', dur: 2.6,
+    id: 'photo', stage: 'Capture', title: 'The photo the reader just took', dur: 0.4,
     body: 'One 800 × 600 frame in grey. Everything from here on runs on the ESP32-S3, on this one photo.',
     view: { ...PAN.input, y: -20, h: 500 }, until: 'downscale',
     draw: (ctx, env) => { img(ctx, env, 'photo.webp', PHOTO); },

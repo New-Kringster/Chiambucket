@@ -97,8 +97,12 @@ export function mountChapter(root, { assetBase, onCover = () => {} }) {
     // The whole page scrolls smoothly, not only the chapter.
     bounds: () => [
       -storyTop / storyLength,
-      (document.documentElement.scrollHeight - innerHeight - storyTop) /
-        storyLength,
+      // Chiambucket: while the DrumNet film holds the page (data-ws-hold), the
+      // chapter cannot carry the reader past it; p = 1 is the film's top.
+      document.documentElement.dataset.wsHold === "1" && scrollY <= storyTop + storyLength + 2
+        ? 1
+        : (document.documentElement.scrollHeight - innerHeight - storyTop) /
+          storyLength,
     ],
     tolerance: () => 1.5 / storyLength,
     wheelDelta: (event) => {

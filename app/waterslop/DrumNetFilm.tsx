@@ -38,6 +38,10 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
   const inView = useRef(false);
   const started = useRef(false);
   const raf = useRef(0);
+  // The film holds the page: scrolling past it waits until it reaches its finale.
+  const holdRef = useRef(true);
+  const [nudge, setNudge] = useState(false);
+  const nudgeTimer = useRef(0);
   const last = useRef(0);
   const [k, setK] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -68,12 +72,13 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
     const pad = mobile ? 12 : 28;
     // wide views sit beside the caption, in the right half at full height
     const side = wide && !mobile;
-    const ax = side ? cw * 0.5 : pad, ay = nav + 72, aw = side ? cw * 0.5 - pad : cw - 2 * pad, ah = side ? ch - ay - 90 : ch - ay - (copyH + (mobile ? 96 : 100));
+    const below = copy.current ? ch - copy.current.offsetTop + (mobile ? 4 : 16) : copyH + (mobile ? 96 : 100);
+    const ax = side ? cw * 0.5 : pad, ay = nav + 72, aw = side ? cw * 0.5 - pad : cw - 2 * pad, ah = side ? ch - ay - 90 : ch - ay - below;
     let scale = Math.min(aw / view.w, ah / view.h);
     let tx = ax + (aw - view.w * scale) / 2 - view.x * scale, ty = (mobile && !wide ? ay + 8 : ay + (ah - view.h * scale) / 2) - view.y * scale;
     // The opening: the photo fills the screen (cover), as the 3D chapter's capture
     // left it, then the camera pulls back to the normal framing.
-    const bleed = reducedRef.current ? 0 : now < STARTS[1] ? 1 : 1 - ease(clamp01((now - STARTS[1]) / 1.6));
+    const bleed = reducedRef.current ? 0 : now < STARTS[1] ? 1 : 1 - ease(clamp01((now - STARTS[1]) / 0.9));
     if (bleed > 0) {
       const sB = Math.max(cw / PHOTO.w, ch / PHOTO.h);
       const from = { x: tx + PHOTO.x * scale, y: ty + PHOTO.y * scale, w: PHOTO.w * scale, h: PHOTO.h * scale };
@@ -107,7 +112,7 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
     g.fillStyle = 'rgba(24,23,22,0.97)'; g.fillRect(0, 0, cw, topEnd - 40);
     g.fillStyle = gt; g.fillRect(0, topEnd - 40, cw, 40);
     if (!side) {
-      const top = ch - (copyH + (mobile ? 96 : 100)) - 50;
+      const top = ch - below - 50;
       const gr = g.createLinearGradient(0, top, 0, top + 110);
       gr.addColorStop(0, 'rgba(24,23,22,0)'); gr.addColorStop(1, 'rgba(24,23,22,0.94)');
       g.fillStyle = gr; g.fillRect(0, top, cw, 110);
@@ -126,6 +131,7 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
       if (t.current >= TOTAL) { t.current = TOTAL - 0.001; playingRef.current = false; setPlaying(false); setEnded(true); }
     }
     const ki = sceneAt(t.current);
+    if (ki >= FINALE && holdRef.current) { holdRef.current = false; document.documentElement.removeAttribute('data-ws-hold'); }
     setK((v) => (v === ki ? v : ki));
     setFrac(clamp01((t.current - STARTS[ki]) / SCENES[ki].dur));
     draw(dt);
@@ -162,6 +168,47 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
     place();
     window.addEventListener('scroll', onScrollPlace, { passive: true });
     window.addEventListener('resize', onScrollPlace);
+
+    /* The hold: until the film reaches its finale, the page stops with the film
+       filling the screen. Scrolling down is held there (wheel, touch, keys, and
+       anything else snaps back); scrolling up, the film's own controls, and the
+       Skip to the end button still work. Reduced motion never holds. */
+    const html = document.documentElement;
+    if (reducedRef.current) holdRef.current = false;
+    else html.setAttribute('data-ws-hold', '1');
+    const holding = () => holdRef.current && !html.hasAttribute('data-ws-skipping');
+    const covering = () => { const r = el.getBoundingClientRect(); return r.top <= 1 && r.top >= -2; };
+    const topY = () => el.getBoundingClientRect().top + window.scrollY;
+    const poke = () => { setNudge(true); window.clearTimeout(nudgeTimer.current); nudgeTimer.current = window.setTimeout(() => setNudge(false), 2600); };
+    const onWheel = (e: WheelEvent) => {
+      if (holding() && e.deltaY > 0 && covering()) { e.preventDefault(); e.stopPropagation(); poke(); }
+    };
+    let touchY = 0;
+    const onTouchStart = (e: TouchEvent) => { touchY = e.touches[0]?.clientY ?? 0; };
+    const onTouchMove = (e: TouchEvent) => {
+      const y = e.touches[0]?.clientY ?? touchY;
+      if (holding() && y < touchY - 2 && covering() && e.cancelable) { e.preventDefault(); poke(); }
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (!holding() || !covering()) return;
+      if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === 'End' || (e.key === ' ' && e.shiftKey === false && !inView.current)) { e.preventDefault(); e.stopPropagation(); poke(); }
+    };
+    // anything else (a scrollbar drag, momentum, a nudge from another script) snaps back,
+    // but a long jump (a contents link, Skip to the end) is let through
+    let lastY = window.scrollY;
+    const onScrollHold = () => {
+      const y = window.scrollY, top = topY();
+      if (holding() && y > top + 2 && lastY <= top + 2 && y - lastY < window.innerHeight * 1.5) {
+        window.scrollTo({ top, behavior: 'instant' as ScrollBehavior });
+        lastY = top; poke(); return;
+      }
+      lastY = y;
+    };
+    window.addEventListener('wheel', onWheel, { passive: false, capture: true });
+    window.addEventListener('touchstart', onTouchStart, { passive: true, capture: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: false, capture: true });
+    window.addEventListener('keydown', onKey, { capture: true });
+    window.addEventListener('scroll', onScrollHold, { passive: true });
     const io = new IntersectionObserver(([e]) => {
       inView.current = e.isIntersecting;
       if (e.isIntersecting && !under && !started.current && !reducedRef.current) { started.current = true; playingRef.current = true; setPlaying(true); }
@@ -170,7 +217,14 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
     io.observe(el);
     const w = window as unknown as { __dnf?: unknown };
     w.__dnf = { seek: (s: number) => { t.current = Math.max(0, Math.min(TOTAL - 0.001, s)); cam.current = null; }, pause: () => { playingRef.current = false; setPlaying(false); }, play: () => { playingRef.current = true; setPlaying(true); }, zoom: (z: boolean) => { zoomRef.current = z; setZoomOut(z); }, starts: STARTS, total: TOTAL };
-    return () => { cancelAnimationFrame(raf.current); cancelAnimationFrame(sraf); io.disconnect(); window.removeEventListener('scroll', onScrollPlace); window.removeEventListener('resize', onScrollPlace); delete w.__dnf; };
+    return () => {
+      cancelAnimationFrame(raf.current); cancelAnimationFrame(sraf); io.disconnect();
+      window.removeEventListener('scroll', onScrollPlace); window.removeEventListener('resize', onScrollPlace);
+      window.removeEventListener('wheel', onWheel, { capture: true }); window.removeEventListener('touchstart', onTouchStart, { capture: true });
+      window.removeEventListener('touchmove', onTouchMove, { capture: true }); window.removeEventListener('keydown', onKey, { capture: true });
+      window.removeEventListener('scroll', onScrollHold); window.clearTimeout(nudgeTimer.current);
+      html.removeAttribute('data-ws-hold'); delete w.__dnf;
+    };
   }, [tick]);
 
   const seekScene = useCallback((i: number) => {
@@ -212,6 +266,7 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
         <h2>{sc.title}</h2>
         <p className="dnf-body">{sc.body}</p>
       </div>
+      <p className={`dnf-nudge${nudge ? ' on' : ''}`} role="status">The page carries on when the film ends. › skips a scene, {SPEEDS[SPEEDS.length - 1]}× speeds it up.</p>
       <div className="dnf-bar">
         <div className="dnf-rail" role="list" aria-label="Scenes">
           {SCENES.map((s, i) => (
@@ -232,6 +287,10 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
         .dnf { position: relative; z-index: 6; height: 100svh; min-height: 560px; margin-top: -100svh; background: var(--bg); overflow: hidden; isolation: isolate; transition: opacity 0.12s linear; }
         .dnf[data-under="true"] { opacity: 0; pointer-events: none; }
         .dnf-chapter, .dnf-copy, .dnf-bar { opacity: calc(1 - var(--bleed, 0)); }
+        .dnf-nudge { position: absolute; z-index: 5; left: 50%; top: calc(var(--ws-nav, 56px) + 16px); margin: 0; padding: 9px 16px; border: 1px solid var(--line-strong); border-radius: 999px; background: #181716e6; color: var(--hi); font: 500 13px/1.3 var(--sans); letter-spacing: 0.01em; white-space: nowrap; opacity: 0; transform: translate(-50%, -6px); transition: opacity 0.2s, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: none; }
+        .dnf-nudge.on { opacity: 1; transform: translate(-50%, 0); }
+        /* room for the floating Skip to the end button in the bottom-left corner */
+        html[data-ws-skip="on"] .dnf-bar { left: calc(var(--ws-skip-x, 20px) + var(--ws-skip-w, 150px) + 20px); }
         .dnf canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
         .dnf-chapter { position: absolute; }
         .dnf-copy { position: absolute; left: 4%; bottom: 84px; width: min(46%, 640px); pointer-events: none; z-index: 3; }
@@ -255,6 +314,9 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
         .dnf-ctl button:focus-visible { outline: 1px solid var(--ink); outline-offset: 3px; }
         @media (max-width: 900px) {
           .dnf-copy { left: 5%; right: 5%; width: auto; bottom: 92px; }
+          html[data-ws-skip="on"] .dnf-bar { left: 5%; }
+          html[data-ws-skip="on"] .dnf-copy { bottom: 136px; }
+          .dnf-nudge { white-space: normal; width: 88%; text-align: center; font-size: 12px; }
           .dnf-copy h2 { font-size: clamp(19px, 5.6vw, 26px); }
           .dnf-body { font-size: 12.5px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
           .dnf-bar { left: 5%; right: 5%; bottom: 18px; gap: 10px; flex-wrap: wrap; }
