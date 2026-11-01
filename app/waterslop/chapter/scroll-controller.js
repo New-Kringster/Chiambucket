@@ -1,8 +1,13 @@
-import { stops, clamp, mix } from "./timeline.js";
+import { stops, clamp, mix, CAPTURE_AT, SHUTTER_AT } from "./timeline.js";
 
+// Chiambucket: the exported positions, scaled into the part of the story before the
+// capture, then the shutter: once past the viewfinder it plays on into the film.
 export const autoplaySections = [
-  { id: "layers", start: 0.105, end: 0.35, backward: 0.067, duration: 6400 },
-  { id: "assembly", start: 0.77, end: 0.987, backward: 0.734, duration: 4600 },
+  ...[
+    { id: "layers", start: 0.105, end: 0.35, backward: 0.067, duration: 6400 },
+    { id: "assembly", start: 0.77, end: 0.987, backward: 0.734, duration: 4600 },
+  ].map((s) => ({ ...s, start: s.start * CAPTURE_AT, end: s.end * CAPTURE_AT, backward: s.backward * CAPTURE_AT })),
+  { id: "shutter", start: SHUTTER_AT, end: 1, backward: stops.at(-1).p, duration: 1300 },
 ];
 const restingStates = stops
   .filter((s) => !["layers", "assembly"].includes(s.id))
@@ -31,6 +36,24 @@ export function snapTarget(p, direction = 0) {
   return travelled >= threshold ? ahead : behind;
 }
 
+// Chiambucket: one gesture, one step, from the title card (0) through every stop
+// to the DrumNet film's top (1). Going back into an autoplay section lands where
+// that section starts. Outside the chapter (and past the film) it is null, so
+// the page scrolls as usual there.
+export function chapterStep(p, dir) {
+  const eps = 0.004,
+    points = [0, ...stops.map((s) => s.p), 1];
+  if (dir > 0) {
+    if (p < -0.0005 || p >= 1 - 0.0005) return null;
+    return points.find((x) => x > p + eps) ?? null;
+  }
+  if (p <= 0.0005 || p > 1 + 0.0005) return null;
+  let to = [...points].reverse().find((x) => x < p - eps) ?? 0;
+  const section = autoplaySections.find((a) => to > a.start && to < a.end);
+  if (section) to = section.backward;
+  return to;
+}
+
 export function nextStop(p) {
   return stops.find((s) => s.p > p + 0.008) ?? null;
 }
@@ -51,6 +74,10 @@ export function createScrollController({
   wheelDelta = () => null,
   onChange = () => {},
   idleDelay = 160,
+  // Chiambucket: step mode. `step(p, direction)` returns the position one step
+  // on from p, or null where scrolling stays continuous (outside the chapter).
+  // One wheel gesture, one touch swipe or one arrow key moves one step.
+  step = null,
   // Tests pass a virtual clock; the browser uses its own.
   clock = {
     now: () => performance.now(),
@@ -65,7 +92,10 @@ export function createScrollController({
     idle = 0,
     previous = read(),
     direction = 1,
-    pointer = false;
+    pointer = false,
+    lastWheelAt = -1e9,
+    stepped = false,
+    touch = null;
 
   function stop() {
     clock.clearTimeout(idle);
@@ -73,6 +103,25 @@ export function createScrollController({
     velocity = 0;
     onChange("manual");
   }
+  // Chiambucket: where a step is measured from. A navigation in flight counts as
+  // arrived, so a quick second swipe goes on to the stop after it.
+  const here = () => (motion?.kind === "navigating" ? motion.to : read());
+  function stepTo(to, dir) {
+    direction = dir;
+    begin({
+      kind: "navigating",
+      from: motion ? position : read(),
+      to,
+      duration: 900,
+      ease: quintic,
+    });
+  }
+  // Drags on the chapter's own draggable controls (the enclosure, the comparison
+  // graph) and keys in form fields are theirs, not steps. A swipe that starts on
+  // a link or a button still steps; a tap on one still clicks it.
+  const own = (t) =>
+    t instanceof Element &&
+    Boolean(t.closest("input, textarea, select, [contenteditable], #model-interaction, #comparison, [data-no-step]"));
   // Positions this controller wrote recently. iOS Safari can apply a
   // programmatic scroll a frame or more late, so its scroll event reports an
   // older write rather than the latest one.
@@ -127,6 +176,22 @@ export function createScrollController({
   }
   function input(e) {
     if (
+      step &&
+      e.type === "keydown" &&
+      ["ArrowDown", "PageDown", "ArrowUp", "PageUp"].includes(e.key) &&
+      !e.altKey && !e.ctrlKey && !e.metaKey &&
+      !own(e.target) &&
+      !reduced()
+    ) {
+      const dir = e.key === "ArrowDown" || e.key === "PageDown" ? 1 : -1;
+      const to = step(here(), dir);
+      if (to !== null) {
+        e.preventDefault();
+        stepTo(to, dir);
+        return;
+      }
+    }
+    if (
       e.type === "keydown" &&
       ![
         "ArrowDown",
@@ -150,6 +215,22 @@ export function createScrollController({
     }
     e.preventDefault();
     if (!delta) return;
+    if (step) {
+      // A gesture is a run of wheel events less than 220 ms apart: the first
+      // one steps, the rest (a trackpad's momentum) are swallowed.
+      const now = clock.now(),
+        fresh = now - lastWheelAt > 220;
+      lastWheelAt = now;
+      if (!fresh && stepped) return;
+      const dir = delta > 0 ? 1 : -1,
+        to = step(here(), dir);
+      if (to !== null) {
+        stepped = true;
+        stepTo(to, dir);
+        return;
+      }
+      stepped = false;
+    }
     direction = delta > 0 ? 1 : -1;
     const [lo, hi] = bounds();
     const from =
@@ -167,6 +248,28 @@ export function createScrollController({
     previous = p;
     schedule();
   }
+  // Chiambucket: a swipe steps once it has moved 8 px; the page does not scroll
+  // under it. Where `step` returns null the touch scrolls natively as before.
+  function touchStart(e) {
+    input(e);
+    touch =
+      step && e.touches.length === 1 && !own(e.target) && !reduced()
+        ? { y: e.touches[0].clientY, p: here(), dir: 0, to: null }
+        : null;
+  }
+  function touchMove(e) {
+    if (!touch) return;
+    const dy = touch.y - e.touches[0].clientY;
+    if (!touch.dir && Math.abs(dy) > 8) {
+      touch.dir = dy > 0 ? 1 : -1;
+      touch.to = step(touch.p, touch.dir);
+    }
+    if (touch.to !== null && touch.dir && e.cancelable) e.preventDefault();
+  }
+  function touchEnd() {
+    if (touch?.dir && touch.to !== null) stepTo(touch.to, touch.dir);
+    touch = null;
+  }
   const release = () => {
     pointer = false;
     schedule();
@@ -177,7 +280,10 @@ export function createScrollController({
   };
   const listeners = [
     ["wheel", wheel, { passive: false }],
-    ["touchstart", input, { passive: true }],
+    ["touchstart", touchStart, { passive: true }],
+    ["touchmove", touchMove, { passive: false }],
+    ["touchend", touchEnd, { passive: true }],
+    ["touchcancel", () => (touch = null), { passive: true }],
     ["keydown", input],
     ["pointerdown", press, { passive: true }],
     ["pointerup", release, { passive: true }],

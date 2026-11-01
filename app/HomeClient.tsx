@@ -504,7 +504,7 @@ export default function HomeClient() {
                 <div className="hp-spot-solo-cta">
                   <a className="hp-btn" href="/waterslop"><IcRead /> Read article</a>
                   <button className="hp-btn hp-btn-ghost" onClick={() => openProject('proj-waterslop')}><IcPeek /> Peek summary</button>
-                  <a className="hp-btn hp-btn-ghost" href="https://1drv.ms/w/c/4eae3340327c4979/IQD6fnAtH4qnTp-LM2j2Hj_7ARKI2X_7aByE_W7eXIiQjQk?e=DOacjY" target="_blank" rel="noopener"><IcOut /> Open the report</a>
+                  <a className="hp-btn hp-btn-ghost" href="/downloadable/ocr-reader-report.pdf" target="_blank" rel="noopener"><IcOut /> Open the report</a>
                 </div>
               </div>
             </article>

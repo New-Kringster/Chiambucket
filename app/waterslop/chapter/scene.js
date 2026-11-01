@@ -632,6 +632,17 @@ export async function createScene(host, onProgress, { assetBase }) {
   observer.observe(frame);
   const tmp = new THREE.Vector3(),
     focusPoint = new THREE.Vector3();
+  // Chiambucket addition: the capture pose [rx, ry, rz, x %, y %, scale] and the lens.
+  // The lens looks along the content's -z: AIM turns it to face right (the meter),
+  // AIM_MOBILE to face down (the meter below), each a little toward the viewer.
+  const AIM = [0.1, -1.85, 0, -24, -15, 0.7],
+    AIM_MOBILE = [-1.72, 0.12, 0, 0, 12, 0.46],
+    LENS = [-1.48, 3.12, -11.5],
+    qFrom = new THREE.Quaternion(),
+    qTo = new THREE.Quaternion(),
+    eAim = new THREE.Euler(),
+    lensPoint = new THREE.Vector3();
+  let lastLens = null;
   function render(state, reduced = false, interaction = {}) {
     lastRender = [state, reduced, interaction];
     const { p, componentIndex, focus } = state;
@@ -652,6 +663,7 @@ export async function createScene(host, onProgress, { assetBase }) {
       reduced,
       width,
       height,
+      state.capture?.c.toFixed(5),
     ].join();
     let [x, y, rx, ry, rz, scale] = state.pose;
     const mobile = width <= 760,
@@ -681,7 +693,7 @@ export async function createScene(host, onProgress, { assetBase }) {
       mesh.userData.weight = weight;
     }
     if (frame === lastFrame)
-      return { highlighted: [...highlighted], ledIntensity };
+      return { highlighted: [...highlighted], ledIntensity, lens: lastLens };
     lastFrame = frame;
 
     for (const { halo, light } of ledLights) {
@@ -733,6 +745,18 @@ export async function createScene(host, onProgress, { assetBase }) {
     rig.position.set((x / 100) * viewW, (y / 100) * viewH, 0);
     rig.rotation.set(rx, ry, rz);
     rig.scale.setScalar(scale);
+    // Chiambucket addition: the capture turns the closed reader to point its
+    // lens at the meter (slerped, so it takes the short way round).
+    const aim = state.capture?.aim ?? 0;
+    if (aim > 0) {
+      const A = globalThis.__wsAim || (mobile ? AIM_MOBILE : AIM);
+      qFrom.copy(rig.quaternion);
+      qTo.setFromEuler(eAim.set(A[0], A[1], A[2]));
+      rig.quaternion.slerpQuaternions(qFrom, qTo, aim);
+      const short = mobile && height < 740;
+      rig.position.set((mix(x, A[3], aim) / 100) * viewW, (mix(y, A[4] - (short ? 6 : 0), aim) / 100) * viewH, 0);
+      rig.scale.setScalar(mix(scale, A[5] * (mobile ? Math.min(1, viewW / 58) * (short ? 0.85 : 1) : 1), aim));
+    }
     // Move the focal component to the rig origin so zooming cannot leave it off-screen.
     content.position.set(
       mix(-0.17, -focusPoint.x, focus),
@@ -774,7 +798,11 @@ export async function createScene(host, onProgress, { assetBase }) {
       });
     }
     renderer.render(scene, camera);
-    return { highlighted: [...highlighted], ledIntensity };
+    // Where the lens is on screen, in px of the canvas, for the capture overlay.
+    lensPoint.fromArray(LENS);
+    content.localToWorld(lensPoint).project(camera);
+    lastLens = { x: ((lensPoint.x + 1) / 2) * width, y: ((1 - lensPoint.y) / 2) * host.clientHeight };
+    return { highlighted: [...highlighted], ledIntensity, lens: lastLens };
   }
   return {
     render,

@@ -1,7 +1,7 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { SCENES, REVEAL, skeleton, revealedBounds, type PanelKey } from './film/scenes';
-import { C, clamp01, lerpRect, type Env, type Rect } from './film/draw';
+import { SCENES, REVEAL, PHOTO, skeleton, revealedBounds, type PanelKey } from './film/scenes';
+import { C, clamp01, ease, lerpRect, type Env, type Rect } from './film/draw';
 
 /* DrumNetFilm: a full-screen canvas that walks the whole DrumNet V10
    architecture. One world map holds every stage; panels appear as the film
@@ -68,9 +68,21 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
     const pad = mobile ? 12 : 28;
     // wide views sit beside the caption, in the right half at full height
     const side = wide && !mobile;
-    const ax = side ? cw * 0.5 : pad, ay = nav + 72, aw = side ? cw * 0.5 - pad : cw - 2 * pad, ah = side ? ch - ay - 90 : ch - ay - (copyH + (mobile ? 96 : 100));
-    const scale = Math.min(aw / view.w, ah / view.h);
-    const tx = ax + (aw - view.w * scale) / 2 - view.x * scale, ty = (mobile && !wide ? ay + 8 : ay + (ah - view.h * scale) / 2) - view.y * scale;
+    const below = copy.current ? ch - copy.current.offsetTop + (mobile ? 4 : 16) : copyH + (mobile ? 96 : 100);
+    const ax = side ? cw * 0.5 : pad, ay = nav + 72, aw = side ? cw * 0.5 - pad : cw - 2 * pad, ah = side ? ch - ay - 90 : ch - ay - below;
+    let scale = Math.min(aw / view.w, ah / view.h);
+    let tx = ax + (aw - view.w * scale) / 2 - view.x * scale, ty = (mobile && !wide ? ay + 8 : ay + (ah - view.h * scale) / 2) - view.y * scale;
+    // The opening: the photo fills the screen (cover), as the 3D chapter's capture
+    // left it, then the camera pulls back to the normal framing.
+    const bleed = reducedRef.current ? 0 : now < STARTS[1] ? 1 : 1 - ease(clamp01((now - STARTS[1]) / 0.9));
+    if (bleed > 0) {
+      const sB = Math.max(cw / PHOTO.w, ch / PHOTO.h);
+      const from = { x: tx + PHOTO.x * scale, y: ty + PHOTO.y * scale, w: PHOTO.w * scale, h: PHOTO.h * scale };
+      const to = { x: (cw - PHOTO.w * sB) / 2, y: (ch - PHOTO.h * sB) / 2, w: PHOTO.w * sB, h: PHOTO.h * sB };
+      const r = lerpRect(from, to, bleed);
+      scale = r.w / PHOTO.w; tx = r.x - PHOTO.x * scale; ty = r.y - PHOTO.y * scale;
+    }
+    section.current?.style.setProperty('--bleed', bleed.toFixed(3));
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     g.fillStyle = C.bg; g.fillRect(0, 0, cw, ch);
     g.setTransform(dpr * scale, 0, 0, dpr * scale, dpr * tx, dpr * ty);
@@ -89,13 +101,14 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
     }
     // scrims under the nav and the caption, so the map never collides with the words
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.globalAlpha = 1 - bleed;
     const topEnd = ay + 4;
     const gt = g.createLinearGradient(0, topEnd - 40, 0, topEnd);
     gt.addColorStop(0, 'rgba(24,23,22,0.97)'); gt.addColorStop(1, 'rgba(24,23,22,0)');
     g.fillStyle = 'rgba(24,23,22,0.97)'; g.fillRect(0, 0, cw, topEnd - 40);
     g.fillStyle = gt; g.fillRect(0, topEnd - 40, cw, 40);
     if (!side) {
-      const top = ch - (copyH + (mobile ? 96 : 100)) - 50;
+      const top = ch - below - 50;
       const gr = g.createLinearGradient(0, top, 0, top + 110);
       gr.addColorStop(0, 'rgba(24,23,22,0)'); gr.addColorStop(1, 'rgba(24,23,22,0.94)');
       g.fillStyle = gr; g.fillRect(0, top, cw, 110);
@@ -103,6 +116,7 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
     } else {
       g.fillStyle = 'rgba(24,23,22,0.94)'; g.fillRect(0, ch - 90, cw, 90);
     }
+    g.globalAlpha = 1;
   }, []);
 
   const tick = useCallback((ts: number) => {
@@ -125,15 +139,44 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
     last.current = performance.now();
     raf.current = requestAnimationFrame(tick);
     const el = section.current!;
+    // The film sits over the end of the 3D chapter (margin-top: -100svh) and stays
+    // invisible until its top reaches the top of the screen, where its first frame
+    // is the chapter's last: the same photo, full-bleed. It starts there, not before,
+    // so the hand-over always lands on that frame.
+    let under = true, sraf = 0;
+    const place = () => {
+      sraf = 0;
+      const top = el.getBoundingClientRect().top;
+      const now = top > 1;
+      if (now !== under) {
+        under = now;
+        el.dataset.under = String(now);
+        if (now) {
+          if (playingRef.current) { playingRef.current = false; setPlaying(false); }
+          // back under the chapter early on: rewind, so coming back lands on the photo again
+          if (t.current < STARTS[2]) { t.current = 0; cam.current = null; started.current = false; }
+        } else if (inView.current && !started.current && !reducedRef.current) { started.current = true; playingRef.current = true; setPlaying(true); }
+      }
+    };
+    const onScrollPlace = () => { if (!sraf) sraf = requestAnimationFrame(place); };
+    el.dataset.under = 'true';
+    place();
+    window.addEventListener('scroll', onScrollPlace, { passive: true });
+    window.addEventListener('resize', onScrollPlace);
+
     const io = new IntersectionObserver(([e]) => {
       inView.current = e.isIntersecting;
-      if (e.isIntersecting && !started.current && !reducedRef.current) { started.current = true; playingRef.current = true; setPlaying(true); }
+      if (e.isIntersecting && !under && !started.current && !reducedRef.current) { started.current = true; playingRef.current = true; setPlaying(true); }
       if (!e.isIntersecting && playingRef.current) { playingRef.current = false; setPlaying(false); }
     }, { threshold: 0.5 });
     io.observe(el);
     const w = window as unknown as { __dnf?: unknown };
     w.__dnf = { seek: (s: number) => { t.current = Math.max(0, Math.min(TOTAL - 0.001, s)); cam.current = null; }, pause: () => { playingRef.current = false; setPlaying(false); }, play: () => { playingRef.current = true; setPlaying(true); }, zoom: (z: boolean) => { zoomRef.current = z; setZoomOut(z); }, starts: STARTS, total: TOTAL };
-    return () => { cancelAnimationFrame(raf.current); io.disconnect(); delete w.__dnf; };
+    return () => {
+      cancelAnimationFrame(raf.current); cancelAnimationFrame(sraf); io.disconnect();
+      window.removeEventListener('scroll', onScrollPlace); window.removeEventListener('resize', onScrollPlace);
+      delete w.__dnf;
+    };
   }, [tick]);
 
   const seekScene = useCallback((i: number) => {
@@ -149,6 +192,13 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
   }, [ended]);
   const faster = useCallback(() => { const i = (SPEEDS.indexOf(speedRef.current) + 1) % SPEEDS.length; speedRef.current = SPEEDS[i]; setSpeed(SPEEDS[i]); if (!playingRef.current && !reducedRef.current && !ended) { playingRef.current = true; setPlaying(true); } }, [ended]);
   const zoom = useCallback(() => { zoomRef.current = !zoomRef.current; setZoomOut(zoomRef.current); }, []);
+  // Leave the film for the next chapter: glides to ConfigKing.
+  const skipChapter = useCallback(() => {
+    const next = document.getElementById('configking');
+    if (!next) return;
+    playingRef.current = false; setPlaying(false);
+    window.scrollTo({ top: next.getBoundingClientRect().top + window.scrollY, behavior: reducedRef.current ? 'auto' : 'smooth' });
+  }, []);
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
@@ -167,7 +217,7 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
 
   const sc = SCENES[k];
   return (
-    <section ref={section} id="drumnet-body" className="dnf" aria-label="DrumNet V10, the whole architecture animated">
+    <section ref={section} id="drumnet" className="dnf" aria-label="DrumNet V10, the whole architecture animated">
       <canvas ref={canvas} aria-hidden="true" />
       <div className="ws-stage-chapter dnf-chapter">{`Chapter - ${chapter}`}<span>DrumNet</span></div>
       <div ref={copy} className="dnf-copy" aria-live="polite">
@@ -188,11 +238,15 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
           <button type="button" className="primary" onClick={toggle} aria-label={playing ? 'Pause' : ended ? 'Replay' : 'Play'} title="Play / pause (space)">{playing ? '❚❚' : ended ? '↺' : '▶'}</button>
           <button type="button" onClick={() => seekScene(k + 1)} aria-label="Next scene" title="Next (→)">›</button>
           <button type="button" className={speed > 1 ? 'fast' : undefined} onClick={faster} aria-label={`Fast forward, now ${speed} times`} title="Fast forward (f)">{speed}× {speed === 1 ? '▸' : speed === 2 ? '▸▸' : '▸▸▸'}</button>
-          <button type="button" className={zoomOut ? 'fast' : undefined} onClick={zoom} aria-pressed={zoomOut} title="Zoom out to the map so far (z)">{zoomOut ? 'Zoom in' : 'Zoom out'}</button>
+          <button type="button" className="skip" onClick={skipChapter} title="Skip to the next chapter, ConfigKing">Skip chapter</button>
         </div>
       </div>
       <style>{`
-        .dnf { position: relative; z-index: 2; height: 100svh; min-height: 560px; background: var(--bg); overflow: hidden; isolation: isolate; }
+        .dnf { position: relative; z-index: 6; height: 100svh; min-height: 560px; margin-top: -100svh; background: var(--bg); overflow: hidden; isolation: isolate; transition: opacity 0.12s linear; }
+        .dnf[data-under="true"] { opacity: 0; pointer-events: none; }
+        .dnf-chapter, .dnf-copy, .dnf-bar { opacity: calc(1 - var(--bleed, 0)); }
+        /* room for the floating Skip to the end button in the bottom-left corner */
+        html[data-ws-skip="on"] .dnf-bar { left: calc(var(--ws-skip-x, 20px) + var(--ws-skip-w, 150px) + 20px); }
         .dnf canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
         .dnf-chapter { position: absolute; }
         .dnf-copy { position: absolute; left: 4%; bottom: 84px; width: min(46%, 640px); pointer-events: none; z-index: 3; }
@@ -216,6 +270,8 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
         .dnf-ctl button:focus-visible { outline: 1px solid var(--ink); outline-offset: 3px; }
         @media (max-width: 900px) {
           .dnf-copy { left: 5%; right: 5%; width: auto; bottom: 92px; }
+          html[data-ws-skip="on"] .dnf-bar { left: 5%; }
+          html[data-ws-skip="on"] .dnf-copy { bottom: 136px; }
           .dnf-copy h2 { font-size: clamp(19px, 5.6vw, 26px); }
           .dnf-body { font-size: 12.5px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
           .dnf-bar { left: 5%; right: 5%; bottom: 18px; gap: 10px; flex-wrap: wrap; }
@@ -223,6 +279,7 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
           .dnf-ctl { width: 100%; justify-content: space-between; }
           .dnf-ctl button { min-width: 36px; height: 36px; padding: 0 8px; font-size: 12px; flex: 1; }
           .dnf-ctl button.primary { min-width: 44px; }
+          .dnf-ctl button.skip { flex: 2.1; }
         }
         @media (prefers-reduced-motion: reduce) { .dnf-rail button::before { transition: none; } }
       `}</style>

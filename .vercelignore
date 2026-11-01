@@ -2,6 +2,8 @@
 shot.mjs
 temporary screenshots/
 *.pdf
+# ...except the OCR Reader report, which the article embeds (the other PDFs live on content.chiambucket.com)
+!public/downloadable/ocr-reader-report.pdf
 
 # GIFs are never served — the site uses .webm/.mp4 twins instead (see CLAUDE.md).
 # Backstop so a stray GIF can't re-bloat the deploy.

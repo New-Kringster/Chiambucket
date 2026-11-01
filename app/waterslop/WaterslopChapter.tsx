@@ -38,8 +38,9 @@ export default function WaterslopChapter({ numeral = 'XI' }: { numeral?: string 
    not removed, though: at the last stop the chapter's Next button scrolls it into
    view, so it stays as an empty, invisible anchor at the chapter's end, and Next
    carries the reader on to the section after the chapter. With display: none,
-   Next had nowhere to go and did nothing. */
+   Next had nowhere to go and did nothing. It sits 100svh up, where the DrumNet
+   film (pulled up over the chapter's last screen) takes over on the same photo. */
 export function WaterslopChapterStyle() {
   /* Its top-anchored titles clear the fixed site nav: PageFx measures the nav as --ws-nav. */
-  return <style>{`.ws-chapter .skip { display: none; } .ws-pcb .ws-chapter #reading { display: block; height: 0; margin: 0; padding: 0; border: 0; overflow: hidden; visibility: hidden; } .ws-chapter { --ws-top-inset: var(--ws-nav, 0px); }`}</style>;
+  return <style>{`.ws-chapter .skip { display: none; } .ws-pcb .ws-chapter #reading { display: block; position: relative; top: -100svh; height: 0; margin: 0; padding: 0; border: 0; overflow: hidden; visibility: hidden; } .ws-chapter { --ws-top-inset: var(--ws-nav, 0px); }`}</style>;
 }

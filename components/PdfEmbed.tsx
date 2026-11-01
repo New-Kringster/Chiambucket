@@ -10,7 +10,12 @@ import { useEffect, useState } from 'react';
 */
 export default function PdfEmbed({ src, title }: { src: string; title: string }) {
   const [touch, setTouch] = useState(false);
-  useEffect(() => { setTouch(window.matchMedia('(pointer: coarse)').matches); }, []);
-  const url = touch ? `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(src)}` : src;
+  const [abs, setAbs] = useState(src);
+  useEffect(() => {
+    setTouch(window.matchMedia('(pointer: coarse)').matches);
+    // Google's viewer fetches the file itself, so a path on this site needs its full address.
+    setAbs(new URL(src, window.location.href).href);
+  }, [src]);
+  const url = touch ? `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(abs)}` : src;
   return <iframe key={url} src={url} title={title} loading="lazy" />;
 }
