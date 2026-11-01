@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useCallback, useContext, useEffect, useRef, useState, type CSSProperties } from 'react';
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import { useFrame } from './Story';
 
@@ -790,6 +790,28 @@ const pct = (v: number) => `${(v * 100).toFixed(3)}%`;
    ('zoom'). */
 export type CkView = 'close' | 'full' | 'zoom';
 export const CkViewContext = createContext<{ view: CkView; setView: (v: CkView) => void } | null>(null);
+/* Switching views animates: just before the switch every Cardputer and switch on
+   the page notes where it is on screen; after it, each glides and scales from
+   there to its new place (FLIP). */
+const flipFrom = new Map<Element, DOMRect>();
+function noteFlip() {
+  flipFrom.clear();
+  document.querySelectorAll('.ck-unit, .ck-tools').forEach((el) => flipFrom.set(el, el.getBoundingClientRect()));
+}
+function playFlip(el: Element | null, scale: boolean) {
+  const from = el && flipFrom.get(el);
+  if (!el || !from) return;
+  flipFrom.delete(el);
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const to = el.getBoundingClientRect();
+  if (!to.width || !from.width) return;
+  const dx = from.left - to.left, dy = from.top - to.top, sx = scale ? from.width / to.width : 1, sy = scale ? from.height / to.height : 1;
+  if (Math.abs(dx) < 1 && Math.abs(dy) < 1 && Math.abs(sx - 1) < 0.01) return;
+  (el as HTMLElement).animate(
+    [{ transformOrigin: '0 0', transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})` }, { transformOrigin: '0 0', transform: 'none' }],
+    { duration: 560, easing: 'cubic-bezier(0.2, 0.75, 0.2, 1)' },
+  );
+}
 /** The 'close' crop of the photo: the screen with a little of its bezel, as shares of the photo. */
 const CROP = { x: 144 / 642, y: 16 / 415, w: 228 / 642, h: 138 / 415 };
 /** Where a point of the 240 x 135 screen falls, in % of the drawing, for pointers. */
@@ -814,7 +836,11 @@ export default function ConfigKingSim({ scene = 'free', keys = true, className, 
   const shared = useContext(CkViewContext);
   const [ownView, setOwnView] = useState<CkView>('close');
   const view = shared?.view ?? ownView;
-  const setView = shared?.setView ?? setOwnView;
+  const applyView = shared?.setView ?? setOwnView;
+  const setView = (v: CkView) => { if (v === view) return; noteFlip(); applyView(v); };
+  const unitRef = useRef<HTMLDivElement>(null);
+  const toolsRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => { playFlip(unitRef.current, true); playFlip(toolsRef.current, false); }, [view]);
   // Full screen: 'manual' from the button, 'auto' while a phone is held sideways.
   const [full, setFull] = useState<false | 'manual' | 'auto'>(false);
   const fsRef = useRef<HTMLDivElement>(null);
@@ -1055,7 +1081,7 @@ export default function ConfigKingSim({ scene = 'free', keys = true, className, 
           </svg>
         </>
       )}
-      <div className="ck-unit" style={unit}>
+      <div ref={unitRef} className="ck-unit" style={unit}>
         <img src="/images/waterslop/cardputer.webp" alt="" draggable={false} />
         <canvas ref={small} className={`ck-lcd${!zoom && keys ? ' live' : ''}`} aria-hidden="true" style={{ left: pct(LCD.x), top: pct(LCD.y), width: pct(LCD.w), height: pct(LCD.h) }} {...(zoom ? {} : touch)} />
         {!zoom && <div className="ck-lcd-hint" style={{ left: pct(LCD.x), top: pct(LCD.y), width: pct(LCD.w), height: pct(LCD.h) }}>{hint}</div>}
@@ -1073,7 +1099,7 @@ export default function ConfigKingSim({ scene = 'free', keys = true, className, 
     </div>
   );
   const tools = (
-    <div className="ck-tools">
+    <div ref={toolsRef} className="ck-tools">
       <div className="ck-seg" role="group" aria-label="View">
         <button type="button" aria-pressed={close} onClick={() => setView('close')}>Zoom in</button>
         <button type="button" aria-pressed={view === 'full'} onClick={() => setView('full')}>Full view</button>
@@ -1124,14 +1150,18 @@ export const CK_STYLE = `
   .ws-copy-body .ck-skipsim .btn-ico { width: 16px; height: 16px; }
   /* Zoom in: no box. The whole Cardputer, scaled so its screen fills the frame,
      runs on past it and fades out into the page from around the screen. */
-  .ck-close .ck-unit { filter: none; -webkit-mask-image: radial-gradient(ellipse 34% 31% at 40.2% 20.2%, #000 52%, transparent 100%); mask-image: radial-gradient(ellipse 34% 31% at 40.2% 20.2%, #000 52%, transparent 100%); }
+  .ck-close .ck-unit { filter: none; --ck-mx: 34%; --ck-my: 31%; }
   /* ...so the words on the slide get a gradient between them and the device:
      beside the copy on wide screens, under it on phones, and along the bottom
      for the dots and buttons. Labels and the view switch keep their own fills. */
-  .ws-frame.ck-bleed::before { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  .ws-frame.ckf::before { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity 0.45s ease; }
+  .ws-frame.ck-bleed::before { opacity: 1;
     background: linear-gradient(90deg, rgba(24,23,22,0) 57.5%, rgba(24,23,22,0.9) 61.5%, #181716 68%), linear-gradient(0deg, #181716 0, rgba(24,23,22,0.82) 7%, rgba(24,23,22,0) 14%); }
   .ws-frame.ck-bleed.tall::before { background: linear-gradient(0deg, #181716 0, #181716 8%, rgba(24,23,22,0.92) 13%, rgba(24,23,22,0) 21%); }
   .ws-frame.ck-bleed .ws-ptr-label { z-index: 2; }
+  /* the labels step aside while the device moves, then come back at their new places */
+  .ws-frame.ckf .ws-ptr { transition: opacity 0.3s ease 0.2s; }
+  .ws-frame.ck-switching .ws-ptr { opacity: 0; transition: none; }
   .ck-close .ck-lcd { border-radius: 0.5cqw; }
   .ck-close .ck-lcd-hint .ck-hint { padding-bottom: 2cqw; }
   .ck-close .ck-lcd-hint .ck-hint span { font-size: 2.3cqw; padding: 0.6cqw 1.2cqw; }
@@ -1152,7 +1182,17 @@ export const CK_STYLE = `
   .ck-callout { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
   .ck-callout path { fill: none; stroke: #d8cbb84d; stroke-width: 1; stroke-dasharray: 3 4; vector-effect: non-scaling-stroke; }
   /* the real Cardputer, its own screen live and every key pressable */
-  .ck-unit { position: absolute; filter: drop-shadow(0 22px 34px #000b); }
+  /* the fade around the screen in Zoom in is a mask whose size animates, so it
+     opens out to the whole device (and closes in) as the views switch */
+  @property --ck-mx { syntax: '<percentage>'; inherits: true; initial-value: 220%; }
+  @property --ck-my { syntax: '<percentage>'; inherits: true; initial-value: 220%; }
+  .ck-unit { position: absolute; filter: drop-shadow(0 22px 34px #000b); --ck-mx: 220%; --ck-my: 220%;
+    transition: --ck-mx 0.56s cubic-bezier(0.2, 0.75, 0.2, 1), --ck-my 0.56s cubic-bezier(0.2, 0.75, 0.2, 1); }
+  /* masked inside the unit (the photo and the key glows), so the unit's own shadow is not clipped */
+  .ck-unit > img, .ck-unit > .ck-kb { -webkit-mask-image: radial-gradient(ellipse var(--ck-mx) var(--ck-my) at 40.2% 20.2%, #000 52%, transparent 100%); mask-image: radial-gradient(ellipse var(--ck-mx) var(--ck-my) at 40.2% 20.2%, #000 52%, transparent 100%); }
+  /* the magnified screen and its callout fade in as the device moves down under them */
+  .ck-zoom, .ck-callout { animation: ck-in 0.5s cubic-bezier(0.2, 0.75, 0.2, 1) both; }
+  @keyframes ck-in { from { opacity: 0; transform: translateY(10px) scale(0.97); } to { opacity: 1; transform: none; } }
   .ck-unit > img { display: block; width: 100%; height: 100%; user-select: none; -webkit-user-drag: none; }
   .ck-lcd { position: absolute; display: block; background: #000; border-radius: 0.2cqw; }
   .ck-lcd.live { cursor: pointer; }
@@ -1205,5 +1245,5 @@ export const CK_STYLE = `
     .ck-seg button { min-height: 28px; padding: 0 10px; font-size: 11px; }
     .ck-fsbtn { min-height: 34px; padding: 0 11px 0 9px; font-size: 11px; }
   }
-  @media (prefers-reduced-motion: reduce) { .ck-cap i, .ck-press { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .ck-cap i, .ck-press, .ck-unit, .ws-frame.ckf::before, .ws-frame.ckf .ws-ptr { transition: none; } .ck-zoom, .ck-callout { animation: none; } }
 `;

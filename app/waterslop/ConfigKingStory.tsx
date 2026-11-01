@@ -1,5 +1,5 @@
 'use client';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Story, { type Frame } from './Story';
 import ConfigKingSim, { CK_STYLE, CkViewContext, screenAt, type CkView, type Press, type SimScene } from './ConfigKingSim';
 import { IcScreen } from '../../components/Icons';
@@ -96,7 +96,16 @@ const buildFrames = (view: CkView): Frame[] => [
 export default function ConfigKingChapter({ chapter }: { chapter: string }) {
   // Zoomed in by default; the choice carries across every frame of the chapter.
   const [view, setView] = useState<CkView>('close');
-  const frames = useMemo(() => buildFrames(view), [view]);
+  // While the views switch the pointer labels step aside (see .ck-switching).
+  const [switching, setSwitching] = useState(false);
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) { first.current = false; return; }
+    setSwitching(true);
+    const t = window.setTimeout(() => setSwitching(false), 520);
+    return () => window.clearTimeout(t);
+  }, [view]);
+  const frames = useMemo(() => buildFrames(view).map((f) => (switching ? { ...f, cls: `${f.cls ?? ''} ck-switching` } : f)), [view, switching]);
   const ctx = useMemo(() => ({ view, setView }), [view]);
   return (
     <CkViewContext.Provider value={ctx}>

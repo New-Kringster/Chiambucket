@@ -2,15 +2,18 @@
 import { useEffect, useRef, useState } from 'react';
 
 /* SkipToEnd: a floating button in the bottom-left corner, on the OCR Reader
-   article only, that skips the long walk-through and lands on its ending (the
-   conclusion, then the report). It appears once the reader is past the hero and
-   goes away when the ending is on screen.
+   article only. Through the walk-through it is "Skip to the end" and lands on
+   the ending (the conclusion, then the report); once the ending is on screen it
+   becomes "Back to top". It appears once the reader is past the hero. Both set
+   data-ws-skipping while they travel, which lets the jump through the DrumNet
+   film's short hold and the detent at its top.
 
    While it shows, <html data-ws-skip="on"> and --ws-skip-x / --ws-skip-w tell the
    stages to keep their dots and the film its player bar clear of it. On phones it
    rises above the film's player bar while the film fills the screen. */
 export default function SkipToEnd({ target = 'conclusion' }: { target?: string }) {
   const [show, setShow] = useState(false);
+  const [atEnd, setAtEnd] = useState(false);
   const [lift, setLift] = useState(false);
   const btn = useRef<HTMLButtonElement>(null);
 
@@ -23,8 +26,11 @@ export default function SkipToEnd({ target = 'conclusion' }: { target?: string }
       const hero = document.querySelector('.ws-hero');
       if (!end) return;
       const past = hero ? hero.getBoundingClientRect().bottom < window.innerHeight * 0.4 : window.scrollY > window.innerHeight;
-      const on = past && end.getBoundingClientRect().top > window.innerHeight * 0.6;
-      setShow(on);
+      const ending = end.getBoundingClientRect().top <= window.innerHeight * 0.6;
+      setShow(past);
+      setAtEnd(ending);
+      // the stages and the film make room only while it can sit over them
+      const on = past && !ending;
       const film = document.getElementById('drumnet');
       const fr = film?.getBoundingClientRect();
       setLift(Boolean(fr && fr.top < window.innerHeight * 0.5 && fr.bottom > window.innerHeight * 0.5));
@@ -43,9 +49,22 @@ export default function SkipToEnd({ target = 'conclusion' }: { target?: string }
     };
   }, [target]);
 
+  const travel = () => {
+    const html = document.documentElement;
+    html.setAttribute('data-ws-skipping', '');
+    window.setTimeout(() => html.removeAttribute('data-ws-skipping'), 3200);
+  };
+  const toTop = () => {
+    travel();
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduced) window.scrollTo({ top: Math.min(window.scrollY, window.innerHeight), behavior: 'instant' as ScrollBehavior });
+    window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
+    history.replaceState(null, '', window.location.pathname);
+  };
   const skip = () => {
     const end = document.getElementById(target);
     if (!end) return;
+    travel();
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     // A long way down through pinned stages: jump most of it at once, then glide the
     // last screen. Pictures above may still be loading and move the ending, so check
@@ -64,9 +83,9 @@ export default function SkipToEnd({ target = 'conclusion' }: { target?: string }
 
   return (
     <>
-      <button ref={btn} type="button" className={`ws-skip${show ? ' on' : ''}${lift ? ' lift' : ''}`} onClick={skip} tabIndex={show ? 0 : -1} aria-hidden={!show}>
+      <button ref={btn} type="button" className={`ws-skip${show ? ' on' : ''}${lift ? ' lift' : ''}${atEnd ? ' top' : ''}`} onClick={atEnd ? toTop : skip} tabIndex={show ? 0 : -1} aria-hidden={!show}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l6 6 6-6M6 13l6 6 6-6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
-        <span>Skip to the end</span>
+        <span>{atEnd ? 'Back to top' : 'Skip to the end'}</span>
       </button>
       <style>{`
         .ws-skip { position: fixed; z-index: 60; left: clamp(14px, 1.6vw, 28px); bottom: max(20px, env(safe-area-inset-bottom)); display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px 0 13px; border: 1px solid #d8cbb859; border-radius: 999px; background: #181716d9; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); color: #d8cbb8; font: 500 12.5px/1 Manrope, Arial, sans-serif; letter-spacing: 0.02em; cursor: pointer; box-shadow: 0 10px 26px -12px #000c; opacity: 0; transform: translateY(6px); pointer-events: none; transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), bottom 0.25s cubic-bezier(0.16, 1, 0.3, 1), background 0.15s, color 0.15s; }
@@ -74,7 +93,8 @@ export default function SkipToEnd({ target = 'conclusion' }: { target?: string }
         .ws-skip:hover { background: #2a2724ee; color: #fff0db; }
         .ws-skip:active { transform: scale(0.97); }
         .ws-skip:focus-visible { outline: 1px solid #d8cbb8; outline-offset: 3px; }
-        .ws-skip svg { flex: none; }
+        .ws-skip svg { flex: none; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .ws-skip.top svg { transform: rotate(180deg); }
         /* the pinned stages keep their progress dots clear of it */
         html[data-ws-skip="on"] .ws-stage-dots { left: calc(var(--ws-skip-x, 20px) + var(--ws-skip-w, 150px) + 24px); width: min(28vw, 380px); }
         @media (max-width: 900px) {
