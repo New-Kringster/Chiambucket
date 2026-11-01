@@ -38,6 +38,11 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
   const inView = useRef(false);
   const started = useRef(false);
   const raf = useRef(0);
+  // When the film starts, the page holds on it for a moment, so a reader who
+  // scrolls on (thinking that is how it starts) sees it play instead of leaving.
+  const holdUntil = useRef(0);
+  const [nudge, setNudge] = useState(false);
+  const nudgeTimer = useRef(0);
   const last = useRef(0);
   const [k, setK] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -144,6 +149,16 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
     // is the chapter's last: the same photo, full-bleed. It starts there, not before,
     // so the hand-over always lands on that frame.
     let under = true, sraf = 0;
+    const html = document.documentElement;
+    const HOLD_MS = 3000;
+    const skipping = () => html.hasAttribute('data-ws-skipping');
+    // Start (or pick up again) when the film reaches the top of the screen.
+    const go = () => {
+      if (reducedRef.current || t.current >= TOTAL - 0.01) return;
+      const first = !started.current;
+      started.current = true; playingRef.current = true; setPlaying(true);
+      if (first && !skipping()) holdUntil.current = performance.now() + HOLD_MS;
+    };
     const place = () => {
       sraf = 0;
       const top = el.getBoundingClientRect().top;
@@ -153,9 +168,10 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
         el.dataset.under = String(now);
         if (now) {
           if (playingRef.current) { playingRef.current = false; setPlaying(false); }
+          holdUntil.current = 0;
           // back under the chapter early on: rewind, so coming back lands on the photo again
           if (t.current < STARTS[2]) { t.current = 0; cam.current = null; started.current = false; }
-        } else if (inView.current && !started.current && !reducedRef.current) { started.current = true; playingRef.current = true; setPlaying(true); }
+        } else if (inView.current) go();
       }
     };
     const onScrollPlace = () => { if (!sraf) sraf = requestAnimationFrame(place); };
@@ -166,15 +182,50 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
 
     const io = new IntersectionObserver(([e]) => {
       inView.current = e.isIntersecting;
-      if (e.isIntersecting && !under && !started.current && !reducedRef.current) { started.current = true; playingRef.current = true; setPlaying(true); }
+      if (e.isIntersecting && !under && !started.current) go();
       if (!e.isIntersecting && playingRef.current) { playingRef.current = false; setPlaying(false); }
     }, { threshold: 0.5 });
     io.observe(el);
+
+    /* The hold: for HOLD_MS after the film starts, scrolling down stays on it
+       (wheel, swipe, keys; anything else snaps back unless it is a long jump
+       such as a contents link). Up, the film's controls and the skip buttons
+       still work, and reduced motion never holds. */
+    const holding = () => performance.now() < holdUntil.current && !skipping();
+    const covering = () => { const r = el.getBoundingClientRect(); return r.top <= 1 && r.top >= -2; };
+    const topY = () => el.getBoundingClientRect().top + window.scrollY;
+    const poke = () => { setNudge(true); window.clearTimeout(nudgeTimer.current); nudgeTimer.current = window.setTimeout(() => setNudge(false), 2000); };
+    const onWheel = (e: WheelEvent) => { if (e.deltaY > 0 && holding() && covering()) { e.preventDefault(); e.stopPropagation(); poke(); } };
+    let touchY = 0;
+    const onTouchStart = (e: TouchEvent) => { touchY = e.touches[0]?.clientY ?? 0; };
+    const onTouchMove = (e: TouchEvent) => {
+      const y = e.touches[0]?.clientY ?? touchY;
+      if (y < touchY - 2 && holding() && covering() && e.cancelable) { e.preventDefault(); e.stopPropagation(); poke(); }
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === 'End') && holding() && covering()) { e.preventDefault(); e.stopPropagation(); poke(); }
+    };
+    let lastY = window.scrollY;
+    const onScrollHold = () => {
+      const y = window.scrollY, top = topY();
+      if (holding() && y > top + 2 && lastY <= top + 2 && y - lastY < window.innerHeight * 1.5) {
+        window.scrollTo({ top, behavior: 'instant' as ScrollBehavior }); lastY = top; poke(); return;
+      }
+      lastY = y;
+    };
+    window.addEventListener('wheel', onWheel, { passive: false, capture: true });
+    window.addEventListener('touchstart', onTouchStart, { passive: true, capture: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: false, capture: true });
+    window.addEventListener('keydown', onKey, { capture: true });
+    window.addEventListener('scroll', onScrollHold, { passive: true });
     const w = window as unknown as { __dnf?: unknown };
     w.__dnf = { seek: (s: number) => { t.current = Math.max(0, Math.min(TOTAL - 0.001, s)); cam.current = null; }, pause: () => { playingRef.current = false; setPlaying(false); }, play: () => { playingRef.current = true; setPlaying(true); }, zoom: (z: boolean) => { zoomRef.current = z; setZoomOut(z); }, starts: STARTS, total: TOTAL };
     return () => {
       cancelAnimationFrame(raf.current); cancelAnimationFrame(sraf); io.disconnect();
       window.removeEventListener('scroll', onScrollPlace); window.removeEventListener('resize', onScrollPlace);
+      window.removeEventListener('wheel', onWheel, { capture: true }); window.removeEventListener('touchstart', onTouchStart, { capture: true });
+      window.removeEventListener('touchmove', onTouchMove, { capture: true }); window.removeEventListener('keydown', onKey, { capture: true });
+      window.removeEventListener('scroll', onScrollHold); window.clearTimeout(nudgeTimer.current);
       delete w.__dnf;
     };
   }, [tick]);
@@ -192,10 +243,14 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
   }, [ended]);
   const faster = useCallback(() => { const i = (SPEEDS.indexOf(speedRef.current) + 1) % SPEEDS.length; speedRef.current = SPEEDS[i]; setSpeed(SPEEDS[i]); if (!playingRef.current && !reducedRef.current && !ended) { playingRef.current = true; setPlaying(true); } }, [ended]);
   const zoom = useCallback(() => { zoomRef.current = !zoomRef.current; setZoomOut(zoomRef.current); }, []);
-  // Leave the film for the next chapter: glides to ConfigKing.
+  // Leave the film for the next chapter: glides to ConfigKing (past the hold).
   const skipChapter = useCallback(() => {
     const next = document.getElementById('configking');
     if (!next) return;
+    const html = document.documentElement;
+    html.setAttribute('data-ws-skipping', '');
+    window.setTimeout(() => html.removeAttribute('data-ws-skipping'), 2400);
+    holdUntil.current = 0;
     playingRef.current = false; setPlaying(false);
     window.scrollTo({ top: next.getBoundingClientRect().top + window.scrollY, behavior: reducedRef.current ? 'auto' : 'smooth' });
   }, []);
@@ -225,6 +280,7 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
         <h2>{sc.title}</h2>
         <p className="dnf-body">{sc.body}</p>
       </div>
+      <p className={`dnf-nudge${nudge ? ' on' : ''}`} role="status">It plays on its own. The page carries on in a moment.</p>
       <div className="dnf-bar">
         <div className="dnf-rail" role="list" aria-label="Scenes">
           {SCENES.map((s, i) => (
@@ -242,7 +298,11 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
         </div>
       </div>
       <style>{`
-        .dnf { position: relative; z-index: 6; height: 100svh; min-height: 560px; margin-top: -100svh; background: var(--bg); overflow: hidden; isolation: isolate; transition: opacity 0.12s linear; }
+        .dnf { position: relative; z-index: 6; height: 100svh; min-height: 560px; margin-top: -100svh; background: var(--bg); overflow: hidden; isolation: isolate; transform: translateY(calc(var(--ws-resist, 0) * 10svh)); transition: opacity 0.12s linear, transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1); }
+        /* pulled down a little while a reader pushes up from it, so they see it resist */
+        html[data-ws-resisting] .dnf { transition: opacity 0.12s linear, transform 0.08s linear; }
+        .dnf-nudge { position: absolute; z-index: 5; left: 50%; top: calc(var(--ws-nav, 56px) + 16px); margin: 0; padding: 9px 16px; border: 1px solid var(--line-strong); border-radius: 999px; background: #181716e6; color: var(--hi); font: 500 13px/1.3 var(--sans); letter-spacing: 0.01em; white-space: nowrap; opacity: 0; transform: translate(-50%, -6px); transition: opacity 0.2s, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: none; }
+        .dnf-nudge.on { opacity: 1; transform: translate(-50%, 0); }
         .dnf[data-under="true"] { opacity: 0; pointer-events: none; }
         .dnf-chapter, .dnf-copy, .dnf-bar { opacity: calc(1 - var(--bleed, 0)); }
         /* room for the floating Skip to the end button in the bottom-left corner */
@@ -271,6 +331,7 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
         @media (max-width: 900px) {
           .dnf-copy { left: 5%; right: 5%; width: auto; bottom: 92px; }
           html[data-ws-skip="on"] .dnf-bar { left: 5%; }
+          .dnf-nudge { top: calc(var(--ws-nav, 52px) + 44px); white-space: normal; width: 86%; text-align: center; font-size: 12px; }
           html[data-ws-skip="on"] .dnf-copy { bottom: 136px; }
           .dnf-copy h2 { font-size: clamp(19px, 5.6vw, 26px); }
           .dnf-body { font-size: 12.5px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }

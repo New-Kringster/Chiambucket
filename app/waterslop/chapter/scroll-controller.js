@@ -9,9 +9,12 @@ export const autoplaySections = [
   ].map((s) => ({ ...s, start: s.start * CAPTURE_AT, end: s.end * CAPTURE_AT, backward: s.backward * CAPTURE_AT })),
   { id: "shutter", start: SHUTTER_AT, end: 1, backward: stops.at(-1).p, duration: 1300 },
 ];
+// Chiambucket: the DrumNet film's top (p = 1) is a resting place too, so a scroll
+// that settles just above it lands on the film, not back on the viewfinder.
 const restingStates = stops
   .filter((s) => !["layers", "assembly"].includes(s.id))
-  .map((s) => s.p);
+  .map((s) => s.p)
+  .concat(1);
 const epsilon = 0.00015;
 
 // Spring rates in radians per second. Higher follows the input more tightly.
@@ -78,6 +81,13 @@ export function createScrollController({
   // on from p, or null where scrolling stays continuous (outside the chapter).
   // One wheel gesture, one touch swipe or one arrow key moves one step.
   step = null,
+  // Chiambucket: a detent at `detent.at` (the film's top). Coming up from below,
+  // scrolling stops there however hard it was going; going on up from there
+  // takes a fresh, firmer push (`push()` in p units for the wheel, 140 px for a
+  // swipe), shown through `onResist(0..1)`. `span()` is how far a native scroll
+  // may jump and still be held at the detent (longer jumps, like contents links,
+  // go through), and `skip()` lets the page's own skip buttons through.
+  detent = null,
   // Tests pass a virtual clock; the browser uses its own.
   clock = {
     now: () => performance.now(),
@@ -95,7 +105,21 @@ export function createScrollController({
     pointer = false,
     lastWheelAt = -1e9,
     stepped = false,
-    touch = null;
+    touch = null,
+    gesture = 0,
+    heldGesture = -1,
+    pushed = 0,
+    resistTimer = 0;
+  const atDetent = (p) => detent && Math.abs(p - detent.at) < 0.003;
+  function resist(r) {
+    detent?.onResist?.(r);
+    clock.clearTimeout(resistTimer);
+    if (r > 0)
+      resistTimer = clock.setTimeout(() => {
+        pushed = 0;
+        detent?.onResist?.(0);
+      }, 450);
+  }
 
   function stop() {
     clock.clearTimeout(idle);
@@ -221,9 +245,26 @@ export function createScrollController({
       const now = clock.now(),
         fresh = now - lastWheelAt > 220;
       lastWheelAt = now;
+      if (fresh) gesture++;
+      const dir = delta > 0 ? 1 : -1;
+      // At the detent going up: the gesture that brought the reader here is
+      // spent; a new one has to push past the threshold before it steps back.
+      if (dir < 0 && atDetent(here()) && !detent.skip?.()) {
+        if (gesture === heldGesture) return;
+        pushed += -delta;
+        if (pushed < detent.push()) {
+          resist(pushed / detent.push());
+          return;
+        }
+        pushed = 0;
+        resist(0);
+        stepped = true;
+        // measured from the detent itself: the page may rest a few px off it
+        stepTo(step(detent.at, -1) ?? detent.at, -1);
+        return;
+      }
       if (!fresh && stepped) return;
-      const dir = delta > 0 ? 1 : -1,
-        to = step(here(), dir);
+      const to = step(here(), dir);
       if (to !== null) {
         stepped = true;
         stepTo(to, dir);
@@ -235,7 +276,14 @@ export function createScrollController({
     const [lo, hi] = bounds();
     const from =
       motion?.kind === "scrolling" ? motion.to : motion ? position : read();
-    begin({ kind: "scrolling", to: clamp(from + delta, lo, hi) });
+    let to = clamp(from + delta, lo, hi);
+    // Scrolling up from below stops at the detent, and the rest of this gesture
+    // is spent there.
+    if (detent && delta < 0 && from >= detent.at - 0.0005 && to < detent.at && !detent.skip?.()) {
+      to = detent.at;
+      heldGesture = gesture;
+    }
+    begin({ kind: "scrolling", to });
     schedule();
   }
   function scroll() {
@@ -243,6 +291,25 @@ export function createScrollController({
     // Our own writes echo back as scroll events, sometimes late. Anything
     // else is the reader taking over, e.g. the scrollbar or find in page.
     if (ours(p)) return;
+    // A native scroll (a swipe's momentum, the scrollbar) that runs up through
+    // the detent from just below it is held there. Never while this controller
+    // is moving the page itself: on a slow frame its own writes can echo back
+    // late enough to look foreign.
+    if (
+      detent &&
+      !motion &&
+      previous >= detent.at - 0.0005 &&
+      p < detent.at - 0.003 &&
+      previous - p < detent.span() &&
+      !touch?.dir &&
+      !detent.skip?.()
+    ) {
+      stop();
+      write(detent.at);
+      remember(detent.at);
+      previous = detent.at;
+      return;
+    }
     if (motion) stop();
     if (Math.abs(p - previous) > epsilon) direction = p > previous ? 1 : -1;
     previous = p;
@@ -262,12 +329,19 @@ export function createScrollController({
     const dy = touch.y - e.touches[0].clientY;
     if (!touch.dir && Math.abs(dy) > 8) {
       touch.dir = dy > 0 ? 1 : -1;
-      touch.to = step(touch.p, touch.dir);
+      touch.to = step(atDetent(touch.p) && touch.dir < 0 ? detent.at : touch.p, touch.dir);
     }
     if (touch.to !== null && touch.dir && e.cancelable) e.preventDefault();
+    // Up from the detent: the swipe has to travel 140 px.
+    if (touch.dir < 0 && touch.to !== null && atDetent(touch.p)) resist(Math.min(1, -dy / 140));
+    touch.dy = dy;
   }
   function touchEnd() {
-    if (touch?.dir && touch.to !== null) stepTo(touch.to, touch.dir);
+    if (touch?.dir && touch.to !== null) {
+      const held = touch.dir < 0 && atDetent(touch.p) && !detent.skip?.() && -(touch.dy ?? 0) < 140;
+      resist(0);
+      if (!held) stepTo(atDetent(touch.p) && touch.dir < 0 ? (step(detent.at, -1) ?? touch.to) : touch.to, touch.dir);
+    }
     touch = null;
   }
   const release = () => {

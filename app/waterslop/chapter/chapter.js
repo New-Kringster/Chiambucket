@@ -112,6 +112,18 @@ export function mountChapter(root, { assetBase, onCover = () => {} }) {
     onChange: (mode) => (stage.dataset.motion = mode),
     // Chiambucket: one gesture, one step (scroll-controller.js chapterStep).
     step: chapterStep,
+    // Chiambucket: hold at the DrumNet film's top on the way up; going on up to
+    // the capture takes a firmer push, shown by the film pulling down a little.
+    detent: {
+      at: 1,
+      push: () => 460 / storyLength,
+      span: () => (1.6 * innerHeight) / storyLength,
+      skip: () => document.documentElement.hasAttribute("data-ws-skipping"),
+      onResist: (r) => {
+        document.documentElement.style.setProperty("--ws-resist", r.toFixed(3));
+        document.documentElement.toggleAttribute("data-ws-resisting", r > 0);
+      },
+    },
   });
   function navigate(id, immediate = false) {
     const s = stops.find((s) => s.id === id);
