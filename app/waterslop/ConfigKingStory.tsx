@@ -2,6 +2,21 @@
 import { useMemo, useState } from 'react';
 import Story, { type Frame } from './Story';
 import ConfigKingSim, { CK_STYLE, CkViewContext, screenAt, type CkView, type Press, type SimScene } from './ConfigKingSim';
+import { IcScreen } from '../../components/Icons';
+
+/* On the chapter's first slide: past the eight steps, straight to the last frame,
+   where the simulator is the reader's to use. Lands where the stage's own dots do. */
+function SkipToSim() {
+  const go = () => {
+    const el = document.getElementById('configking');
+    if (!el) return;
+    const n = el.querySelectorAll('.ws-frame').length;
+    const top = el.getBoundingClientRect().top + window.scrollY;
+    const y = top + ((n - 1 + 0.3) / n) * (el.offsetHeight - window.innerHeight);
+    window.scrollTo({ top: y, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  };
+  return <button type="button" className="ws-btn ck-skipsim" onClick={go}><IcScreen /> Skip to the simulator</button>;
+}
 
 /* ConfigKingChapter: the setup procedure, walked on the real Cardputer (a photo,
    its screen live and magnified above it). It follows straight on from the
@@ -12,13 +27,16 @@ import ConfigKingSim, { CK_STYLE, CkViewContext, screenAt, type CkView, type Pre
 
 type StepFrame = { scene: SimScene; eyebrow: string; title: string; body: string; pointers: Frame['pointers']; from?: SimScene; via?: Press[] };
 /* Pointers are written in screen pixels (240 x 135) and placed for the view the
-   reader picked: on the magnified screen, or on the Cardputer's own screen with
-   the labels spread across the band above it. Every label sits above the
+   reader picked: on the zoomed-in or magnified screen, or on the whole
+   Cardputer with the labels spread across the band above it. Every label sits above the
    drawing, so no leader crosses the device. */
 const at = (x: number, y: number): [number, number] => [x, y];
 function place(view: CkView, list: Frame['pointers']): Frame['pointers'] {
   if (!list) return list;
-  if (view === 'zoom') return list.map((q) => ({ ...q, at: screenAt('zoom', q.at[0], q.at[1]), edge: 'top' as const }));
+  if (view !== 'full') return list.map((q) => ({
+    ...q, at: screenAt(view, q.at[0], q.at[1]), edge: 'top' as const,
+    to: q.to ? [screenAt(view, (q.to[0] / 100) * 240, 0)[0], 0] as [number, number] : undefined,
+  }));
   const order = list.map((q, i) => ({ x: q.at[0], i })).sort((a, b) => a.x - b.x);
   const cols: number[] = [];
   order.forEach((o, k) => { cols[o.i] = 12 + ((k + 0.5) * 76) / list.length; });
@@ -56,6 +74,7 @@ const buildFrames = (view: CkView): Frame[] => [
     body: (
       <>
         <p>That reading, 0092.07 with the frame it came from, is what ConfigKing shows when it asks a reader to Read. ConfigKing is the firmware I wrote for an M5Stack Cardputer: it finds readers nearby over BLE and ESP-NOW, sets up new ones step by step and reconfigures the rest.</p>
+        <SkipToSim />
         <p className="ws-note">DrumNet and the firmware are loaded onto Prototype V2, with the LoRa device address baked in when it is flashed. The readers are mostly asleep, so pressing the boot button wakes one up to be found. The screen is a working copy of the real firmware&rsquo;s screens, drawn from its source, on a photo of the Cardputer.</p>
       </>
     ),
@@ -75,8 +94,8 @@ const buildFrames = (view: CkView): Frame[] => [
 
 /* No cover: the chapter carries straight on from the DrumNet film. */
 export default function ConfigKingChapter({ chapter }: { chapter: string }) {
-  // Full view by default; the choice carries across every frame of the chapter.
-  const [view, setView] = useState<CkView>('full');
+  // Zoomed in by default; the choice carries across every frame of the chapter.
+  const [view, setView] = useState<CkView>('close');
   const frames = useMemo(() => buildFrames(view), [view]);
   const ctx = useMemo(() => ({ view, setView }), [view]);
   return (

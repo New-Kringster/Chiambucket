@@ -4,9 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 /* SkipToEnd: a floating button in the bottom-left corner, on the OCR Reader
    article only, that skips the long walk-through and lands on its ending (the
    conclusion, then the report). It appears once the reader is past the hero and
-   goes away when the ending is on screen. It is also the way out of the DrumNet
-   film's hold (DrumNetFilm.tsx): pressing it sets data-ws-skipping, which lets
-   the jump through.
+   goes away when the ending is on screen.
 
    While it shows, <html data-ws-skip="on"> and --ws-skip-x / --ws-skip-w tell the
    stages to keep their dots and the film its player bar clear of it. On phones it
@@ -48,9 +46,6 @@ export default function SkipToEnd({ target = 'conclusion' }: { target?: string }
   const skip = () => {
     const end = document.getElementById(target);
     if (!end) return;
-    const html = document.documentElement;
-    html.setAttribute('data-ws-skipping', '');
-    window.setTimeout(() => html.removeAttribute('data-ws-skipping'), 3200);
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     // A long way down through pinned stages: jump most of it at once, then glide the
     // last screen. Pictures above may still be loading and move the ending, so check

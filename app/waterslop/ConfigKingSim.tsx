@@ -783,16 +783,20 @@ const ZH = 56.25, DX = 18, DW = 64, DY = 61, DH = (DW * SHOT.h) / SHOT.w, CH = D
 export const ZOOM_SHARE = ZH / CH;
 const pct = (v: number) => `${(v * 100).toFixed(3)}%`;
 
-/* Two ways to look at it, the reader's choice, shared by every frame of the
-   chapter: the whole Cardputer at its real proportions ('full'), or its screen
-   magnified above a smaller Cardputer ('zoom'). */
-export type CkView = 'full' | 'zoom';
+/* Three ways to look at it, the reader's choice, shared by every frame of the
+   chapter: zoomed in on the Cardputer's own screen ('close', the default: the
+   same photo, cropped to the screen and its bezel), the whole Cardputer at its
+   real proportions ('full'), or its screen magnified above a smaller Cardputer
+   ('zoom'). */
+export type CkView = 'close' | 'full' | 'zoom';
 export const CkViewContext = createContext<{ view: CkView; setView: (v: CkView) => void } | null>(null);
+/** The 'close' crop of the photo: the screen with a little of its bezel, as shares of the photo. */
+const CROP = { x: 144 / 642, y: 16 / 415, w: 228 / 642, h: 138 / 415 };
 /** Where a point of the 240 x 135 screen falls, in % of the drawing, for pointers. */
 export function screenAt(view: CkView, x: number, y: number): [number, number] {
-  return view === 'zoom'
-    ? [(x / W) * 100, (y / H) * ZOOM_SHARE * 100]
-    : [(LCD.x + (x / W) * LCD.w) * 100, (LCD.y + (y / H) * LCD.h) * 100];
+  if (view === 'zoom') return [(x / W) * 100, (y / H) * ZOOM_SHARE * 100];
+  const px = LCD.x + (x / W) * LCD.w, py = LCD.y + (y / H) * LCD.h;
+  return view === 'close' ? [((px - CROP.x) / CROP.w) * 100, ((py - CROP.y) / CROP.h) * 100] : [px * 100, py * 100];
 }
 
 /* A key press the frame plays on its way in: the key lights on the photo and a
@@ -808,7 +812,7 @@ export default function ConfigKingSim({ scene = 'free', keys = true, className, 
   const small = useRef<HTMLCanvasElement>(null);
   const off = useRef<HTMLCanvasElement | null>(null);
   const shared = useContext(CkViewContext);
-  const [ownView, setOwnView] = useState<CkView>('full');
+  const [ownView, setOwnView] = useState<CkView>('close');
   const view = shared?.view ?? ownView;
   const setView = shared?.setView ?? setOwnView;
   // Full screen: 'manual' from the button, 'auto' while a phone is held sideways.
@@ -894,12 +898,14 @@ export default function ConfigKingSim({ scene = 'free', keys = true, className, 
     mq.addEventListener('change', set);
     return () => mq.removeEventListener('change', set);
   }, [active]);
-  // While full screen: the page underneath stays put, Esc leaves, and the button
-  // asks the browser for real full screen where it can (not on iPhone).
+  // While full screen from the button: the page underneath stays put, Esc leaves,
+  // and the browser is asked for real full screen where it can (not on iPhone).
+  // Sideways full screen never locks the page: scrolling carries on through the
+  // chapter, and the Cardputer follows whichever step is current.
   useEffect(() => {
     if (!full) return;
     const html = document.documentElement, prev = html.style.overflow;
-    html.style.overflow = 'hidden';
+    if (full === 'manual') html.style.overflow = 'hidden';
     const key = (e: KeyboardEvent) => { if (e.key === 'Escape' && !armed) setFull(false); };
     window.addEventListener('keydown', key);
     const el = fsRef.current;
@@ -1021,12 +1027,21 @@ export default function ConfigKingSim({ scene = 'free', keys = true, className, 
     press(k.key, k.cap);
   };
 
-  const zoom = view === 'zoom';
+  const zoom = view === 'zoom', close = view === 'close';
   const lcdL = DX + LCD.x * DW, lcdR = DX + (LCD.x + LCD.w) * DW, lcdT = DY + LCD.y * DH;
-  const ar = zoom ? 100 / CH : SHOT.w / SHOT.h;
-  const unit = zoom ? { left: pct(DX / 100), top: pct(DY / CH), width: pct(DW / 100), height: pct(DH / CH) } : { left: 0, top: 0, width: '100%', height: '100%' };
+  const ar = zoom ? 100 / CH : close ? (CROP.w * SHOT.w) / (CROP.h * SHOT.h) : SHOT.w / SHOT.h;
+  const unit = zoom ? { left: pct(DX / 100), top: pct(DY / CH), width: pct(DW / 100), height: pct(DH / CH) }
+    : close ? { left: pct(-CROP.x / CROP.w), top: pct(-CROP.y / CROP.h), width: pct(1 / CROP.w), height: pct(1 / CROP.h) }
+    : { left: 0, top: 0, width: '100%', height: '100%' };
   const touch = keys ? { onPointerDown: onDown, onPointerMove: onMove, onPointerUp: onUp, onPointerCancel: () => { drag.current = null; } } : {};
   const hint = keys && !armed && <div className="ck-hint" aria-hidden="true"><span>Tap the screen or a key to take over</span></div>;
+  // The key a frame presses on its way in. In Zoom in the keys are out of the
+  // frame, so the tag sits under it, outside the crop.
+  const pressTag = (
+    <div className={`ck-press${chip ? ' on' : ''}`} aria-live="polite" style={zoom ? { left: `calc(${DX + DW}% + 1.6cqw)`, top: pct((DY + DH * 0.62) / CH) } : close ? { left: 0, top: 'calc(100% + 12px)' } : { left: '57%', top: '9%' }}>
+      {chip && <><kbd>{chip.name}</kbd><span>{chip.label}</span></>}
+    </div>
+  );
   const device = (
     <div className="ck-dev" style={{ '--ck-ar': ar.toFixed(4) } as CSSProperties} role="application" aria-label="ConfigKing simulator on an M5Stack Cardputer. Click the screen or the keys, then use the arrow keys, Enter, Escape and Tab." tabIndex={keys ? 0 : -1} onFocus={() => { if (keys) setArmed(true); }}>
       {zoom && (
@@ -1054,15 +1069,14 @@ export default function ConfigKingSim({ scene = 'free', keys = true, className, 
           )))}
         </div>
       </div>
-      <div className={`ck-press${chip ? ' on' : ''}`} aria-live="polite" style={zoom ? { left: `calc(${DX + DW}% + 1.6cqw)`, top: pct((DY + DH * 0.62) / CH) } : { left: '57%', top: '9%' }}>
-        {chip && <><kbd>{chip.name}</kbd><span>{chip.label}</span></>}
-      </div>
+      {!close && pressTag}
     </div>
   );
   const tools = (
     <div className="ck-tools">
       <div className="ck-seg" role="group" aria-label="View">
-        <button type="button" aria-pressed={!zoom} onClick={() => setView('full')}>Full view</button>
+        <button type="button" aria-pressed={close} onClick={() => setView('close')}>Zoom in</button>
+        <button type="button" aria-pressed={view === 'full'} onClick={() => setView('full')}>Full view</button>
         <button type="button" aria-pressed={zoom} onClick={() => setView('zoom')}>Magnified</button>
       </div>
       <button type="button" className="ck-fsbtn" onClick={() => setFull((f) => (f ? false : 'manual'))} aria-label={full ? 'Exit full screen' : 'Full screen'}>
@@ -1073,7 +1087,7 @@ export default function ConfigKingSim({ scene = 'free', keys = true, className, 
       </button>
     </div>
   );
-  const cls = `ck${large ? ' ck-large' : ''}${keys ? ' ck-live' : ''}${zoom ? ' ck-zoomed' : ''}${className ? ` ${className}` : ''}`;
+  const cls = `ck${large ? ' ck-large' : ''}${keys ? ' ck-live' : ''}${zoom ? ' ck-zoomed' : ''}${close ? ' ck-close' : ''}${className ? ` ${className}` : ''}`;
   if (full) {
     return (
       <>
@@ -1081,8 +1095,8 @@ export default function ConfigKingSim({ scene = 'free', keys = true, className, 
           <div className="ck-dev ck-ghost" style={{ '--ck-ar': ar.toFixed(4) } as CSSProperties} />
         </div>
         {createPortal(
-          <div ref={fsRef} className="ck-fs" data-no-zoom data-native-scroll>
-            <div className={`${cls} ck-in-fs`} style={{ '--ck-ar': ar.toFixed(4) } as CSSProperties}>{device}</div>
+          <div ref={fsRef} className="ck-fs" data-no-zoom>
+            <div className={`${cls} ck-in-fs`} style={{ '--ck-ar': ar.toFixed(4) } as CSSProperties}>{device}{close && pressTag}</div>
             {tools}
             <style>{CK_STYLE}</style>
           </div>,
@@ -1094,6 +1108,7 @@ export default function ConfigKingSim({ scene = 'free', keys = true, className, 
   return (
     <div ref={box} className={cls} style={{ '--ck-ar': ar.toFixed(4) } as CSSProperties} data-no-zoom>
       {device}
+      {close && pressTag}
       {tools}
     </div>
   );
@@ -1105,9 +1120,22 @@ export const CK_STYLE = `
   .ck-dev { position: relative; width: 100%; aspect-ratio: var(--ck-ar); container-type: inline-size; outline: none; }
   .ck-dev:focus-visible { box-shadow: 0 0 0 1px var(--ink, #d8cbb8); border-radius: 1cqw; }
   .ck-ghost { visibility: hidden; }
+  /* Zoom in: the photo cropped to the screen and its bezel, the screen big enough to read */
+  .ws-copy-body .ck-skipsim { margin: 0.4em 0 1.1em; color: var(--btn-ink, #28231e); }
+  .ws-copy-body .ck-skipsim .btn-ico { width: 16px; height: 16px; }
+  .ck-close .ck-dev { overflow: hidden; border-radius: 2cqw; box-shadow: 0 0 0 1px #d8cbb833, 0 24px 50px #000b; }
+  .ck-close .ck-unit { filter: none; }
+  .ck-close .ck-lcd { border-radius: 0.5cqw; }
+  .ck-close .ck-lcd-hint .ck-hint { padding-bottom: 2cqw; }
+  .ck-close .ck-lcd-hint .ck-hint span { font-size: 2.3cqw; padding: 0.6cqw 1.2cqw; }
+  .ck-close .ck-press { flex-direction: row; align-items: center; gap: 10px; }
+  .ck-close .ck-press kbd { font-size: 13px; padding: 6px 9px; border-radius: 5px; }
+  .ck-close .ck-press span { font-size: 12.5px; }
   /* Magnified: the firmware's 240 x 135 pixels above a smaller Cardputer */
   .ck-zoom { position: absolute; left: 0; top: 0; width: 100%; border-radius: 1.2cqw; overflow: hidden; background: #000; box-shadow: 0 0 0 1px #d8cbb833, 0 0 0 0.9cqw #0b0b0b, 0 24px 50px #000b; }
-  .ck-screen { display: block; width: 100%; height: 100%; background: #000; touch-action: none; cursor: default; }
+  .ck-screen { display: block; width: 100%; height: 100%; background: #000; cursor: default; }
+  /* the live screen takes taps and sideways drags (panning the picture); an up or down swipe still scrolls the page */
+  .ck-live .ck-screen, .ck-lcd.live { touch-action: pan-y; }
   .ck-live .ck-screen { cursor: pointer; }
   .ck-hint { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; padding: 0 0 2cqw; pointer-events: none; background: linear-gradient(to top, #000000b0, transparent 45%); }
   .ck-hint span { font: 500 2.3cqw/1.3 Manrope, Arial, sans-serif; color: #fff0db; letter-spacing: 0.04em; background: #181716e6; border: 1px solid #d8cbb84d; padding: 0.6cqw 1.2cqw; border-radius: 0.4cqw; }
@@ -1120,7 +1148,7 @@ export const CK_STYLE = `
   .ck-unit { position: absolute; filter: drop-shadow(0 22px 34px #000b); }
   .ck-unit > img { display: block; width: 100%; height: 100%; user-select: none; -webkit-user-drag: none; }
   .ck-lcd { position: absolute; display: block; background: #000; border-radius: 0.2cqw; }
-  .ck-lcd.live { cursor: pointer; touch-action: none; }
+  .ck-lcd.live { cursor: pointer; }
   .ck-kb { position: absolute; inset: 0; pointer-events: none; }
   .ck-cap { position: absolute; padding: 0; border: 0; background: none; cursor: pointer; pointer-events: auto; -webkit-tap-highlight-color: transparent; }
   .ck-cap i { position: absolute; left: 50%; bottom: 13%; width: 74%; height: 36%; transform: translateX(-50%); border-radius: 0.55cqw; transition: background 0.12s, box-shadow 0.12s, transform 0.12s; }
@@ -1145,7 +1173,7 @@ export const CK_STYLE = `
   .ck-seg button:focus-visible, .ck-fsbtn:focus-visible { outline: 1px solid #d8cbb8; outline-offset: 2px; }
   /* full screen: the Cardputer alone on the page, as large as it fits */
   .ck-fs * { font-family: inherit; }
-  .ck-fs { font-family: Manrope, Arial, sans-serif; position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; background: #0e0d0c; padding: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)); overscroll-behavior: contain; }
+  .ck-fs { font-family: Manrope, Arial, sans-serif; position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; background: #0e0d0c; padding: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)); }
   .ck-fs .ck.ck-in-fs { width: min(calc(100vw - 32px), calc((100dvh - 96px) * var(--ck-ar))); }
   .ck-fs .ck-tools { position: static; }
   @media (max-height: 540px) {
