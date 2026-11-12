@@ -373,6 +373,12 @@ html.sensory-active.is-day {
   & .hp-rd-cta { background: linear-gradient(135deg, rgba(214, 191, 104, 0.24), rgba(214, 191, 104, 0.1)); border-color: rgba(138, 112, 30, 0.3); }
   & .hp-rd-cta-text strong { color: var(--sl-ink); }
   & .hp-rd-cta-text span { color: var(--sl-ink-dim); }
+  /* each project is a whiter sheet on the cream tray */
+  & .hp-modal-content { background: rgba(31, 43, 28, 0.045); }
+  & .hp-rd-feed-item {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.6));
+    border-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 1px 2px rgba(31, 43, 28, 0.06), 0 22px 44px -28px rgba(31, 43, 28, 0.5); }
   & .hp-rd-feed-sep::before, & .hp-rd-feed-sep::after {
     background: linear-gradient(90deg, transparent, rgba(31, 43, 28, 0.25), transparent); }
   & .hp-rd-feed-sep span { color: var(--sl-label); }

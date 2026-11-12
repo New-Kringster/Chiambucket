@@ -2096,7 +2096,7 @@ html[data-theme="paper"] {
   color: #e8e8e8; font-size: 1.3rem; line-height: 1; transition: background 0.3s ease, transform 0.2s ease;
 }
 .hp-modal-close:hover { background: rgba(255,255,255,0.16); transform: rotate(90deg); }
-.hp-modal-content { box-sizing: border-box; padding: 30px clamp(22px, 4vw, 38px) 34px; max-height: inherit; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.hp-modal-content { --pad: clamp(12px, 2.4vw, 24px); box-sizing: border-box; padding: 18px var(--pad) 30px; max-height: inherit; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .hp-md-tag { font-family: 'inter'; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.3rem 0.7rem; border-radius: 999px; }
 .hp-md-tag.personal { background: rgba(239,122,5,0.18); color: #f0a868; border: 1px solid rgba(239,122,5,0.38); }
 .hp-md-tag.school { background: rgba(94,178,196,0.16); color: #93d6e4; border: 1px solid rgba(94,178,196,0.42); }
@@ -2348,9 +2348,18 @@ html[data-theme="paper"] {
 .hp-rd-cta-text strong { font-family: 'oswaldbold'; font-size: 1.1rem; color: #f2f2f2; letter-spacing: -0.01em; }
 .hp-rd-cta-text span { font-family: 'dmsans'; font-size: 0.82rem; color: rgba(232,232,232,0.6); }
 
-/* ── Peek feed: scroll from one project's reader straight into the next ── */
-.hp-rd-feed-item + .hp-rd-feed-item { margin-top: 6px; }
-.hp-rd-feed-sep { display: flex; align-items: center; gap: 16px; margin: 44px 0 30px; }
+/* ── Peek feed: scroll from one project's reader straight into the next ──
+   Each project is a card of its own, a raised sheet on the reader's tray,
+   with a labelled gap before the next one, so the feed reads as separate
+   write-ups and not as one long page. */
+.hp-rd-feed-item {
+  position: relative; padding: clamp(12px, 1.8vw, 18px); border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 24px 46px -30px rgba(0,0,0,0.85);
+}
+.hp-rd-feed-item .hp-rd-hero { border-radius: 14px; }
+.hp-rd-feed-sep { display: flex; align-items: center; gap: 16px; margin: 34px 0 22px; }
 .hp-rd-feed-sep::before, .hp-rd-feed-sep::after {
   content: ''; flex: 1; height: 1px;
   background: linear-gradient(90deg, transparent, rgba(var(--sa-accent, 150,178,255), 0.34), transparent);
@@ -2374,7 +2383,6 @@ html[data-theme="paper"] {
    finger pulling past the end: the card rises, sharpens and grows; let go
    early and it springs back, past the line it pops open. */
 .hp-rd-pull {
-  --pad: clamp(22px, 4vw, 38px);
   position: relative; height: 176px; overflow: hidden;
   margin: 36px calc(-1 * var(--pad)) -34px; padding: 0 var(--pad);
 }

@@ -36,10 +36,11 @@ const WORK = { key: 'work' as const, href: `/#${PORTFOLIO_ID}`, label: 'My work'
   where they are, each with its own glass.
 
   On phones My work is also the first row of the menu. Opening the menu drops
-  the pill into that row: the row starts at the pill's place, size and colour
-  and slides and widens into the list while the rest of the menu fades in,
-  and the pill's own glass shrinks out of the bar (the logo slides over to
-  close the gap). Closing it lifts the row back up into the pill.
+  the words into that row: they start where the pill's label is and slide
+  down into the list while the rest of the menu fades in. The pill's dark
+  fill fades out where it is and its glass shrinks out of the bar (the logo
+  slides over to close the gap). Closing it lifts the words back up into the
+  pill, and the fill fades back in under them.
 */
 
 // How far the page scrolls (px) for the pieces to come all the way together.
@@ -170,11 +171,10 @@ export default function Nav() {
   }, [open]);
 
   /* My work drops into the menu and rises back out of it (phones only). The
-     menu's row is moved onto the pill with translate and cut down to the
-     pill's size with clip-path, then let go, so it slides and widens into
-     its place; closing runs the same thing backwards. It runs before paint,
-     so the row is never seen in its place before it has been moved onto the
-     pill. */
+     menu's row is moved with translate so its label sits on the pill's
+     label, then let go, so the words slide down into their row; closing runs
+     the same thing backwards. It runs before paint, so the row is never seen
+     in its place before it has been moved onto the pill. */
   useLayoutEffect(() => {
     const header = headerRef.current;
     const sheet = sheetRef.current;
@@ -185,21 +185,19 @@ export default function Nav() {
     const phone = pill.getClientRects().length > 0 && sheet.getClientRects().length > 0;
     const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     window.clearTimeout(dropTimer.current);
-    // put the row on the pill: its place, size, and how lit the pill is right now
+    // put the row's label on the pill's label, in the pill's ink
     const aim = () => {
       const a = item.getBoundingClientRect();
       const b = row.getBoundingClientRect();
-      const lit = item.classList.contains('is-active') ? 1 : parseFloat(getComputedStyle(pill).getPropertyValue('--lit'));
       const ink = item.classList.contains('is-active') ? 1 : parseFloat(getComputedStyle(pill).getPropertyValue('--ink'));
-      row.style.setProperty('--fx', `${(a.left - b.left).toFixed(1)}px`);
+      const pad = (el: HTMLElement) => parseFloat(getComputedStyle(el).paddingLeft) || 0;
+      row.style.setProperty('--fx', `${(a.left + pad(item) - (b.left + pad(row))).toFixed(1)}px`);
       row.style.setProperty('--fy', `${(a.top + a.height / 2 - (b.top + b.height / 2)).toFixed(1)}px`);
-      row.style.setProperty('--fw', `${a.width.toFixed(1)}px`);
-      row.style.setProperty('--fh', `${a.height.toFixed(1)}px`);
-      row.style.setProperty('--flit', `${Number.isFinite(lit) ? lit : 1}`);
       row.style.setProperty('--fink', `${Number.isFinite(ink) ? ink : 1}`);
     };
     const settle = (from: boolean) => {
       sheet.classList.add('no-anim');
+      sheet.classList.remove('is-landed');
       sheet.classList.toggle('is-from', from);
       void row.offsetWidth;
       sheet.classList.remove('no-anim');
@@ -208,6 +206,7 @@ export default function Nav() {
     if (open) {
       if (!phone) return;
       dropped.current = true;
+      header.classList.remove('is-lifting');
       header.classList.add('is-dropped');
       dropPill.current(1);
       if (calm) return;
@@ -224,11 +223,16 @@ export default function Nav() {
     sheet.classList.remove('is-from');
     aim();
     sheet.classList.add('is-from');
-    // the pill comes back the moment the row arrives on it; the row goes home
-    // once the menu has hidden (nav.css hides it 420ms after it closes)
+    // the pill's words come back the moment the row's arrive on them, and the
+    // row hides; it goes home once the menu has hidden (420ms after it closes)
     dropTimer.current = window.setTimeout(() => {
+      sheet.classList.add('is-landed');
+      header.classList.add('is-lifting');
       header.classList.remove('is-dropped');
-      dropTimer.current = window.setTimeout(() => settle(false), 160);
+      dropTimer.current = window.setTimeout(() => {
+        header.classList.remove('is-lifting');
+        settle(false);
+      }, 260);
     }, DROP_MS);
   }, [open]);
   useEffect(() => () => window.clearTimeout(dropTimer.current), []);

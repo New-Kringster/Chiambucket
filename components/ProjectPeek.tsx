@@ -266,15 +266,19 @@ function PeekItem({ id, first, index }: { id: string; first: boolean; index: num
     return () => io.disconnect();
   }, [seen]);
 
+  // Each project is its own card, with a labelled gap before the next one,
+  // so the feed reads as separate write-ups rather than one long page.
   return (
-    <div className="hp-rd-feed-item" ref={ref}>
+    <>
       {!first && (
         <div className="hp-rd-feed-sep" aria-hidden="true">
           <span>Next: {TITLES[id] ?? `Project ${index + 1}`}</span>
         </div>
       )}
-      {seen ? <PeekModalContent id={id} /> : <div className="hp-rd-feed-skel" />}
-    </div>
+      <article className="hp-rd-feed-item" ref={ref} aria-label={TITLES[id] ?? `Project ${index + 1}`}>
+        {seen ? <PeekModalContent id={id} /> : <div className="hp-rd-feed-skel" />}
+      </article>
+    </>
   );
 }
 
@@ -291,12 +295,22 @@ const COVERS: Record<string, string> = {
 
 // How far (px) the next project has to be pulled up before it pops open.
 const PULL_POP = 130;
+// A scroll that arrives at the end may only lift the next project this far
+// (as a share of PULL_POP) before it springs back: the end resists first.
+const ARRIVAL_LIFT = 0.28;
+// Wheel events closer together than this (ms) belong to one gesture,
+// including the momentum a trackpad or a flicked wheel keeps sending.
+const GESTURE_GAP = 220;
 
 /*
   PullNext — the next project peeks up, blurred, at the end of the reader. Keep
   scrolling past the end (wheel, trackpad or a finger) and it rises with some
   resistance and sharpens; let go early and it springs back; pull it past
   PULL_POP and it pops open with a spring. A click or Enter opens it too.
+  The scroll that brings the reader to its end cannot open it, however fast:
+  that gesture only lifts the card a little and lets it spring back, so the
+  end is felt first. Opening takes a fresh scroll or swipe that starts at the
+  end.
 */
 function PullNext({ id, scroller, onOpen }: { id: string; scroller: () => HTMLElement | null; onOpen: () => void }) {
   const cardRef = useRef<HTMLButtonElement | null>(null);
@@ -311,6 +325,11 @@ function PullNext({ id, scroller, onOpen }: { id: string; scroller: () => HTMLEl
     let idle = 0;
     let startY: number | null = null;
     let done = false;
+    // the current wheel gesture, and whether it started away from the end
+    let lastWheel = 0;
+    let arrival = false;
+    // the same for a finger
+    let touchArrival = false;
 
     const atEnd = () => sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 4;
     const set = (v: number) => {
@@ -337,24 +356,31 @@ function PullNext({ id, scroller, onOpen }: { id: string; scroller: () => HTMLEl
 
     let raw = 0;
     const onWheel = (e: WheelEvent) => {
+      const now = performance.now();
+      if (now - lastWheel > GESTURE_GAP) arrival = !atEnd();
+      lastWheel = now;
       if (done || e.deltaY <= 0 || !atEnd()) { if (e.deltaY < 0 && raw > 0) { raw = 0; release(); } return; }
-      raw += Math.min(e.deltaY, 120) * 0.8;
-      set(resist(raw));
-      if (pull >= PULL_POP) { pop(); return; }
+      raw += Math.min(e.deltaY, 120) * 0.7;
       window.clearTimeout(idle);
-      idle = window.setTimeout(() => { raw = 0; release(); }, 220);
+      idle = window.setTimeout(() => { raw = 0; release(); }, GESTURE_GAP);
+      if (arrival) { set(Math.min(resist(raw), PULL_POP * ARRIVAL_LIFT)); return; }
+      set(resist(raw));
+      if (pull >= PULL_POP) pop();
     };
-    const onTouchStart = (e: TouchEvent) => { startY = atEnd() ? e.touches[0].clientY : null; };
+    const onTouchStart = (e: TouchEvent) => {
+      touchArrival = !atEnd();
+      startY = touchArrival ? null : e.touches[0].clientY;
+    };
     const onTouchMove = (e: TouchEvent) => {
       if (done) return;
       if (startY === null) { if (atEnd()) startY = e.touches[0].clientY; return; }
-      const up = startY - e.touches[0].clientY;
-      set(resist(Math.max(0, up)));
+      const lift = resist(Math.max(0, startY - e.touches[0].clientY));
+      set(touchArrival ? Math.min(lift, PULL_POP * ARRIVAL_LIFT) : lift);
     };
     const onTouchEnd = () => {
       if (startY === null || done) return;
       startY = null;
-      if (pull >= PULL_POP * 0.8) pop(); else release();
+      if (!touchArrival && pull >= PULL_POP * 0.8) pop(); else release();
     };
     sc.addEventListener('wheel', onWheel, { passive: true });
     sc.addEventListener('touchstart', onTouchStart, { passive: true });
