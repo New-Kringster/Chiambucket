@@ -301,6 +301,9 @@ const ARRIVAL_LIFT = 0.28;
 // Wheel events closer together than this (ms) belong to one gesture,
 // including the momentum a trackpad or a flicked wheel keeps sending.
 const GESTURE_GAP = 220;
+// How long (ms) after the last wheel event a part-pulled card springs back.
+// Longer than GESTURE_GAP, so slow single clicks of a wheel still add up.
+const PULL_IDLE = 360;
 
 /*
   PullNext — the next project peeks up, blurred, at the end of the reader. Keep
@@ -310,7 +313,10 @@ const GESTURE_GAP = 220;
   The scroll that brings the reader to its end cannot open it, however fast:
   that gesture only lifts the card a little and lets it spring back, so the
   end is felt first. Opening takes a fresh scroll or swipe that starts at the
-  end.
+  end. A trackpad keeps sending momentum events for a second or more after
+  the fingers lift, so a new swipe often arrives with no pause before it; it
+  is told apart by its speed climbing again after the momentum has been
+  slowing down.
 */
 function PullNext({ id, scroller, onOpen }: { id: string; scroller: () => HTMLElement | null; onOpen: () => void }) {
   const cardRef = useRef<HTMLButtonElement | null>(null);
@@ -325,9 +331,12 @@ function PullNext({ id, scroller, onOpen }: { id: string; scroller: () => HTMLEl
     let idle = 0;
     let startY: number | null = null;
     let done = false;
-    // the current wheel gesture, and whether it started away from the end
+    // the current wheel gesture, whether it started away from the end, and
+    // how its speed has been going (for telling a new swipe from momentum)
     let lastWheel = 0;
     let arrival = false;
+    let prevSpeed = 0;
+    let slowing = 0;
     // the same for a finger
     let touchArrival = false;
 
@@ -353,17 +362,38 @@ function PullNext({ id, scroller, onOpen }: { id: string; scroller: () => HTMLEl
     };
     // Each extra pixel takes a little more effort than the last.
     const resist = (raw: number) => PULL_POP * 1.4 * (1 - Math.exp(-raw / (PULL_POP * 1.4)));
+    // and back: the effort that lifts the card to a given height
+    const effort = (px: number) => -PULL_POP * 1.4 * Math.log(1 - Math.min(px, PULL_POP * 1.39) / (PULL_POP * 1.4));
 
     let raw = 0;
     const onWheel = (e: WheelEvent) => {
       const now = performance.now();
-      if (now - lastWheel > GESTURE_GAP) arrival = !atEnd();
+      const speed = Math.abs(e.deltaY);
+      if (now - lastWheel > GESTURE_GAP) {
+        // a new gesture: it arrives if it starts away from the end, and pulls
+        // on from wherever the card is now
+        arrival = !atEnd();
+        slowing = 0;
+        raw = effort(pull);
+      } else {
+        // a new swipe inside the momentum: after a few events that kept
+        // slowing down, the speed jumps up again. Like any new gesture it
+        // only pulls if it starts at the end.
+        const push = arrival && slowing >= 3 && speed >= Math.max(6, prevSpeed * 1.5);
+        slowing = speed <= prevSpeed * 1.05 + 1 ? slowing + 1 : 0;
+        if (push) { arrival = !atEnd(); slowing = 0; raw = effort(pull); }
+      }
+      prevSpeed = speed;
       lastWheel = now;
       if (done || e.deltaY <= 0 || !atEnd()) { if (e.deltaY < 0 && raw > 0) { raw = 0; release(); } return; }
       raw += Math.min(e.deltaY, 120) * 0.7;
       window.clearTimeout(idle);
-      idle = window.setTimeout(() => { raw = 0; release(); }, GESTURE_GAP);
-      if (arrival) { set(Math.min(resist(raw), PULL_POP * ARRIVAL_LIFT)); return; }
+      idle = window.setTimeout(() => { raw = 0; release(); }, PULL_IDLE);
+      if (arrival) {
+        raw = Math.min(raw, effort(PULL_POP * ARRIVAL_LIFT));
+        set(resist(raw));
+        return;
+      }
       set(resist(raw));
       if (pull >= PULL_POP) pop();
     };

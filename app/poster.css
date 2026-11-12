@@ -16,8 +16,11 @@
   z-index: 2;
 }
 
+/* As wide as the screen: the name is sized to the screen (below), so a
+   narrower stage would let it run off the right edge on big screens, and the
+   tree, which stands just left of the name, would drift to the middle. */
 .slp-stage {
-  width: min(1600px, 94vw);
+  width: 94vw;
   margin-top: -8vh;
   text-align: center;
 }
