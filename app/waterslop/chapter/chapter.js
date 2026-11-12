@@ -1,6 +1,6 @@
 import { sampleTimeline, stops, clamp, range, ledPulse } from "./timeline.js";
 import { createGraph } from "./graph.js";
-import { createScrollController, nextStop, chapterStep } from "./scroll-controller.js";
+import { createScrollController, nextStop } from "./scroll-controller.js";
 import { rotationInput } from "./interaction.js";
 import { powerChips } from "./power-data.js";
 
@@ -90,6 +90,40 @@ export function mountChapter(root, { assetBase, onCover = () => {} }) {
   const rawProgress = () => (scrollY - storyTop) / storyLength;
   const progress = () => clamp(rawProgress());
   const target = (p) => storyTop + p * storyLength;
+
+  // Chiambucket: the page scrolls natively and the chapter's animation follows
+  // the scroll position through a critically damped spring, so it speeds up
+  // with the scroll, eases out after it, and stays smooth through a jerky wheel
+  // or a fast fling. A jump (a contents link, the scrollbar) lands at once
+  // rather than fast-forwarding through everything in between. Reduced motion
+  // follows the scroll exactly.
+  const FOLLOW = 11; // rad/s: higher follows the scroll more tightly
+  const JUMP = 0.12; // a change in one frame larger than this lands at once
+  let shown = null,
+    shownVelocity = 0,
+    followTarget = 0,
+    followTime = 0;
+  function follow(time) {
+    const goal = progress();
+    if (shown === null || motion.matches || Math.abs(goal - followTarget) > JUMP) {
+      shown = goal;
+      shownVelocity = 0;
+    } else {
+      const dt = clamp((time - followTime) / 1000, 0, 0.05),
+        offset = shown - goal,
+        decay = Math.exp(-FOLLOW * dt),
+        k = (shownVelocity + FOLLOW * offset) * dt;
+      shown = goal + (offset + k) * decay;
+      shownVelocity = (shownVelocity - FOLLOW * k) * decay;
+      if (Math.abs(shown - goal) < 0.00002 && Math.abs(shownVelocity) < 0.0005) {
+        shown = goal;
+        shownVelocity = 0;
+      }
+    }
+    followTarget = goal;
+    followTime = time;
+    return shown;
+  }
   const controller = createScrollController({
     read: rawProgress,
     write: (p) => window.scrollTo({ top: target(p), behavior: "instant" }),
@@ -110,20 +144,13 @@ export function mountChapter(root, { assetBase, onCover = () => {} }) {
       return pixels / storyLength;
     },
     onChange: (mode) => (stage.dataset.motion = mode),
-    // Chiambucket: one gesture, one step (scroll-controller.js chapterStep).
-    step: chapterStep,
-    // Chiambucket: hold at the DrumNet film's top on the way up; going on up to
-    // the capture takes a firmer push, shown by the film pulling down a little.
-    detent: {
-      at: 1,
-      push: () => 460 / storyLength,
-      span: () => (1.6 * innerHeight) / storyLength,
-      skip: () => document.documentElement.hasAttribute("data-ws-skipping"),
-      onResist: (r) => {
-        document.documentElement.style.setProperty("--ws-resist", r.toFixed(3));
-        document.documentElement.toggleAttribute("data-ws-resisting", r > 0);
-      },
-    },
+    // Chiambucket: the wheel, touch and keys scroll the page natively; nothing
+    // steps, plays on by itself or snaps. The controller only glides to a stop
+    // for Next and the contents links, and any input takes over from that.
+    wheelDelta: () => null,
+    takeWheel: false,
+    autoplay: false,
+    snap: false,
   });
   function navigate(id, immediate = false) {
     const s = stops.find((s) => s.id === id);
@@ -268,7 +295,7 @@ export function mountChapter(root, { assetBase, onCover = () => {} }) {
       return;
     }
     controller.tick(time);
-    const p = progress(),
+    const p = follow(time),
       s = sampleTimeline(p),
       showGraph = s.focus > 0.1 && s.componentIndex === 0,
       showLights = s.focus > 0.1 && s.component.id === "leds";

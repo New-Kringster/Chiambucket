@@ -152,45 +152,13 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
     const html = document.documentElement;
     const HOLD_MS = 3000;
     const skipping = () => html.hasAttribute('data-ws-skipping');
-    // Start (or pick up again) when the film reaches the top of the screen.
-    const go = () => {
-      if (reducedRef.current || t.current >= TOTAL - 0.01) return;
-      const first = !started.current;
-      started.current = true; playingRef.current = true; setPlaying(true);
-      if (first && !skipping()) holdUntil.current = performance.now() + HOLD_MS;
-    };
-    const place = () => {
-      sraf = 0;
-      const top = el.getBoundingClientRect().top;
-      const now = top > 1;
-      if (now !== under) {
-        under = now;
-        el.dataset.under = String(now);
-        if (now) {
-          if (playingRef.current) { playingRef.current = false; setPlaying(false); }
-          holdUntil.current = 0;
-          // back under the chapter early on: rewind, so coming back lands on the photo again
-          if (t.current < STARTS[2]) { t.current = 0; cam.current = null; started.current = false; }
-        } else if (inView.current) go();
-      }
-    };
-    const onScrollPlace = () => { if (!sraf) sraf = requestAnimationFrame(place); };
-    el.dataset.under = 'true';
-    place();
-    window.addEventListener('scroll', onScrollPlace, { passive: true });
-    window.addEventListener('resize', onScrollPlace);
-
-    const io = new IntersectionObserver(([e]) => {
-      inView.current = e.isIntersecting;
-      if (e.isIntersecting && !under && !started.current) go();
-      if (!e.isIntersecting && playingRef.current) { playingRef.current = false; setPlaying(false); }
-    }, { threshold: 0.5 });
-    io.observe(el);
 
     /* The hold: for HOLD_MS after the film starts, scrolling down stays on it
        (wheel, swipe, keys; anything else snaps back unless it is a long jump
        such as a contents link). Up, the film's controls and the skip buttons
-       still work, and reduced motion never holds. */
+       still work, and reduced motion never holds. The listeners that can cancel
+       a scroll are attached only for the hold itself: left on, they would make
+       every scroll on the page wait for the main thread. */
     const holding = () => performance.now() < holdUntil.current && !skipping();
     const covering = () => { const r = el.getBoundingClientRect(); return r.top <= 1 && r.top >= -2; };
     const topY = () => el.getBoundingClientRect().top + window.scrollY;
@@ -213,19 +181,71 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
       }
       lastY = y;
     };
-    window.addEventListener('wheel', onWheel, { passive: false, capture: true });
-    window.addEventListener('touchstart', onTouchStart, { passive: true, capture: true });
-    window.addEventListener('touchmove', onTouchMove, { passive: false, capture: true });
-    window.addEventListener('keydown', onKey, { capture: true });
-    window.addEventListener('scroll', onScrollHold, { passive: true });
+    let armed = false, disarmTimer = 0;
+    const disarm = () => {
+      window.clearTimeout(disarmTimer);
+      if (!armed) return;
+      armed = false;
+      window.removeEventListener('wheel', onWheel, { capture: true }); window.removeEventListener('touchstart', onTouchStart, { capture: true });
+      window.removeEventListener('touchmove', onTouchMove, { capture: true }); window.removeEventListener('keydown', onKey, { capture: true });
+      window.removeEventListener('scroll', onScrollHold);
+    };
+    const arm = () => {
+      if (!armed) {
+        armed = true;
+        lastY = window.scrollY;
+        window.addEventListener('wheel', onWheel, { passive: false, capture: true });
+        window.addEventListener('touchstart', onTouchStart, { passive: true, capture: true });
+        window.addEventListener('touchmove', onTouchMove, { passive: false, capture: true });
+        window.addEventListener('keydown', onKey, { capture: true });
+        window.addEventListener('scroll', onScrollHold, { passive: true });
+      }
+      window.clearTimeout(disarmTimer);
+      disarmTimer = window.setTimeout(disarm, Math.max(0, holdUntil.current - performance.now()) + 50);
+    };
+
+    // Start (or pick up again) when the film reaches the top of the screen.
+    const go = () => {
+      if (reducedRef.current || t.current >= TOTAL - 0.01) return;
+      const first = !started.current;
+      started.current = true; playingRef.current = true; setPlaying(true);
+      if (first && !skipping()) { holdUntil.current = performance.now() + HOLD_MS; arm(); }
+    };
+    const place = () => {
+      sraf = 0;
+      const top = el.getBoundingClientRect().top;
+      const now = top > 1;
+      if (now !== under) {
+        under = now;
+        el.dataset.under = String(now);
+        if (now) {
+          if (playingRef.current) { playingRef.current = false; setPlaying(false); }
+          holdUntil.current = 0;
+          disarm();
+          // back under the chapter early on: rewind, so coming back lands on the photo again
+          if (t.current < STARTS[2]) { t.current = 0; cam.current = null; started.current = false; }
+        } else if (inView.current) go();
+      }
+    };
+    const onScrollPlace = () => { if (!sraf) sraf = requestAnimationFrame(place); };
+    el.dataset.under = 'true';
+    place();
+    window.addEventListener('scroll', onScrollPlace, { passive: true });
+    window.addEventListener('resize', onScrollPlace);
+
+    const io = new IntersectionObserver(([e]) => {
+      inView.current = e.isIntersecting;
+      if (e.isIntersecting && !under && !started.current) go();
+      if (!e.isIntersecting && playingRef.current) { playingRef.current = false; setPlaying(false); }
+    }, { threshold: 0.5 });
+    io.observe(el);
+
     const w = window as unknown as { __dnf?: unknown };
     w.__dnf = { seek: (s: number) => { t.current = Math.max(0, Math.min(TOTAL - 0.001, s)); cam.current = null; }, pause: () => { playingRef.current = false; setPlaying(false); }, play: () => { playingRef.current = true; setPlaying(true); }, zoom: (z: boolean) => { zoomRef.current = z; setZoomOut(z); }, starts: STARTS, total: TOTAL };
     return () => {
       cancelAnimationFrame(raf.current); cancelAnimationFrame(sraf); io.disconnect();
       window.removeEventListener('scroll', onScrollPlace); window.removeEventListener('resize', onScrollPlace);
-      window.removeEventListener('wheel', onWheel, { capture: true }); window.removeEventListener('touchstart', onTouchStart, { capture: true });
-      window.removeEventListener('touchmove', onTouchMove, { capture: true }); window.removeEventListener('keydown', onKey, { capture: true });
-      window.removeEventListener('scroll', onScrollHold); window.clearTimeout(nudgeTimer.current);
+      disarm(); window.clearTimeout(nudgeTimer.current);
       delete w.__dnf;
     };
   }, [tick]);

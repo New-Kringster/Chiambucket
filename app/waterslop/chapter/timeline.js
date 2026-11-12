@@ -170,10 +170,12 @@ export const stops = [
   { id: "aim", label: "Pointed at the meter", p: CAPTURE_AT + (1 - CAPTURE_AT) * 0.32 },
   { id: "pov", label: "What the camera sees", p: CAPTURE_AT + (1 - CAPTURE_AT) * 0.5 },
 ];
-// Past the viewfinder the chapter plays itself into the DrumNet film: the shutter,
-// the photo, and the film's first frame (scroll-controller.js autoplays from here).
+// Past the viewfinder: the shutter, the photo, and the film's first frame. Only
+// the exported autoplay uses this; the OCR Reader page scrolls through it.
 export const SHUTTER_AT = CAPTURE_AT + (1 - CAPTURE_AT) * 0.51;
 // Beats of the capture, each 0 to 1 over its own span of c (0 to 1 over the capture).
+// The shutter and the settle run on to near the end, so scrolling from the
+// viewfinder to the film is never a long stretch of a still photo.
 export function captureBeats(c) {
   return {
     c,
@@ -181,9 +183,9 @@ export function captureBeats(c) {
     aim: range(c, 0.03, 0.3), // the reader turns to the meter, the meter comes in
     beam: range(c, 0.2, 0.3) * (1 - range(c, 0.34, 0.42)), // its field of view
     iris: range(c, 0.34, 0.48), // through the lens, onto what it sees
-    lit: range(c, 0.58, 0.62), // the LEDs light the meter
-    flash: range(c, 0.58, 0.6) * (1 - range(c, 0.6, 0.68)),
-    settle: range(c, 0.66, 0.76), // the viewfinder and words leave; the photo stays
+    lit: range(c, 0.6, 0.66), // the LEDs light the meter
+    flash: range(c, 0.6, 0.63) * (1 - range(c, 0.63, 0.74)),
+    settle: range(c, 0.72, 0.9), // the viewfinder and words leave; the photo stays
   };
 }
 // `p` stays on the exported scale (the scene and copy are keyed to it);

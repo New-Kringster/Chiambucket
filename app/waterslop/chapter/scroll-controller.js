@@ -88,6 +88,16 @@ export function createScrollController({
   // may jump and still be held at the detent (longer jumps, like contents links,
   // go through), and `skip()` lets the page's own skip buttons through.
   detent = null,
+  // Chiambucket: after input stops, play an autoplay section on to its end, and
+  // otherwise snap to the nearest resting state. Both on by default (the exported
+  // behaviour); the OCR Reader page turns them off so the scroll position alone
+  // drives the chapter.
+  autoplay = true,
+  snap = true,
+  // Chiambucket: whether wheel input is taken over (smooth scrolling, steps).
+  // Off, the wheel and touch listeners are passive and the page scrolls natively;
+  // input still stops a glide in flight.
+  takeWheel = true,
   // Tests pass a virtual clock; the browser uses its own.
   clock = {
     now: () => performance.now(),
@@ -175,7 +185,7 @@ export function createScrollController({
     if (pointer || reduced() || (motion && motion.kind !== "scrolling")) return;
     // Decide from where the wheel is heading, not from the lagging spring.
     const p = motion?.to ?? read();
-    const section = autoplaySections.find(
+    const section = autoplay && autoplaySections.find(
       (s) => p >= s.start && p < s.end - epsilon,
     );
     if (section) {
@@ -194,6 +204,7 @@ export function createScrollController({
       });
       return;
     }
+    if (!snap) return;
     const to = snapTarget(p, direction);
     if (to !== null && Math.abs(to - p) > epsilon)
       begin({ kind: "snapping", to });
@@ -353,9 +364,11 @@ export function createScrollController({
     input({ type: "pointerdown" });
   };
   const listeners = [
-    ["wheel", wheel, { passive: false }],
+    // Passive unless they may cancel the scroll: a blocking listener makes every
+    // scroll wait for the main thread.
+    ["wheel", wheel, { passive: !takeWheel }],
     ["touchstart", touchStart, { passive: true }],
-    ["touchmove", touchMove, { passive: false }],
+    ["touchmove", touchMove, { passive: !step }],
     ["touchend", touchEnd, { passive: true }],
     ["touchcancel", () => (touch = null), { passive: true }],
     ["keydown", input],
