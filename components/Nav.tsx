@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { blobPath, type Capsule } from './navBlob';
@@ -34,6 +34,12 @@ const WORK = { key: 'work' as const, href: `/#${PORTFOLIO_ID}`, label: 'My work'
   drawn by an SVG filter from the same shape. Scrolling back up pulls them
   apart again. With reduced motion or reduced transparency the pieces stay
   where they are, each with its own glass.
+
+  On phones My work is also the first row of the menu. Opening the menu drops
+  the pill into that row: the row starts at the pill's place, size and colour
+  and slides and widens into the list while the rest of the menu fades in,
+  and the pill's own glass shrinks out of the bar (the logo slides over to
+  close the gap). Closing it lifts the row back up into the pill.
 */
 
 // How far the page scrolls (px) for the pieces to come all the way together.
@@ -42,6 +48,8 @@ const MERGE_SPAN = 260;
 const MERGED_OVERLAP = 4;
 // Width of the mark element (px): wide enough to reach from the page pill to My work.
 const MARK_W = 3000;
+// How long the menu's My work row takes to drop from the pill, or rise back (ms); nav.css matches it.
+const DROP_MS = 380;
 export default function Nav() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -64,6 +72,10 @@ export default function Nav() {
   activeRef.current = active;
   // the mark's placer, so the merge can keep the mark on My work while it moves
   const placeMark = useRef<() => void>(() => {});
+  // tells the merge that My work has dropped into the menu (1) or come back (0)
+  const dropPill = useRef<(v: number) => void>(() => {});
+  const dropTimer = useRef(0);
+  const dropped = useRef(false);
 
   /* On the homepage, Home and My work scroll the page instead of navigating.
      Leaving it to the href would do nothing on a repeat click, because the URL
@@ -157,6 +169,70 @@ export default function Nav() {
     };
   }, [open]);
 
+  /* My work drops into the menu and rises back out of it (phones only). The
+     menu's row is moved onto the pill with translate and cut down to the
+     pill's size with clip-path, then let go, so it slides and widens into
+     its place; closing runs the same thing backwards. It runs before paint,
+     so the row is never seen in its place before it has been moved onto the
+     pill. */
+  useLayoutEffect(() => {
+    const header = headerRef.current;
+    const sheet = sheetRef.current;
+    const pill = workRef.current;
+    const item = pill?.querySelector<HTMLElement>('.pnav-item');
+    const row = sheet?.querySelector<HTMLElement>('.pnav-sheet-work');
+    if (!header || !sheet || !pill || !item || !row) return;
+    const phone = pill.getClientRects().length > 0 && sheet.getClientRects().length > 0;
+    const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.clearTimeout(dropTimer.current);
+    // put the row on the pill: its place, size, and how lit the pill is right now
+    const aim = () => {
+      const a = item.getBoundingClientRect();
+      const b = row.getBoundingClientRect();
+      const lit = item.classList.contains('is-active') ? 1 : parseFloat(getComputedStyle(pill).getPropertyValue('--lit'));
+      const ink = item.classList.contains('is-active') ? 1 : parseFloat(getComputedStyle(pill).getPropertyValue('--ink'));
+      row.style.setProperty('--fx', `${(a.left - b.left).toFixed(1)}px`);
+      row.style.setProperty('--fy', `${(a.top + a.height / 2 - (b.top + b.height / 2)).toFixed(1)}px`);
+      row.style.setProperty('--fw', `${a.width.toFixed(1)}px`);
+      row.style.setProperty('--fh', `${a.height.toFixed(1)}px`);
+      row.style.setProperty('--flit', `${Number.isFinite(lit) ? lit : 1}`);
+      row.style.setProperty('--fink', `${Number.isFinite(ink) ? ink : 1}`);
+    };
+    const settle = (from: boolean) => {
+      sheet.classList.add('no-anim');
+      sheet.classList.toggle('is-from', from);
+      void row.offsetWidth;
+      sheet.classList.remove('no-anim');
+      void row.offsetWidth;
+    };
+    if (open) {
+      if (!phone) return;
+      dropped.current = true;
+      header.classList.add('is-dropped');
+      dropPill.current(1);
+      if (calm) return;
+      settle(false);
+      aim();
+      settle(true);
+      requestAnimationFrame(() => sheet.classList.remove('is-from'));
+      return;
+    }
+    if (!dropped.current) return;
+    dropped.current = false;
+    dropPill.current(0);
+    if (calm || !phone) { header.classList.remove('is-dropped'); return; }
+    sheet.classList.remove('is-from');
+    aim();
+    sheet.classList.add('is-from');
+    // the pill comes back the moment the row arrives on it; the row goes home
+    // once the menu has hidden (nav.css hides it 420ms after it closes)
+    dropTimer.current = window.setTimeout(() => {
+      header.classList.remove('is-dropped');
+      dropTimer.current = window.setTimeout(() => settle(false), 160);
+    }, DROP_MS);
+  }, [open]);
+  useEffect(() => () => window.clearTimeout(dropTimer.current), []);
+
   // A route change always closes the menu.
   useEffect(() => { setOpen(false); }, [pathname]);
 
@@ -175,7 +251,11 @@ export default function Nav() {
     type Piece = { el: HTMLElement; x0: number; w: number; cy: number; r: number; dx: number; grows: boolean };
     let pieces: Piece[] = [];
     let menuDx = 0;
+    let phone = false;
     let p = 0;
+    // how far My work has dropped into the phone menu, 0 to 1, and where it is heading
+    let drop = 0;
+    let dropTo = 0;
     let frame = 0;
     let last = 0;
     let on = false;
@@ -195,7 +275,7 @@ export default function Nav() {
       // the merged bar, each piece overlapping the next a little: centred, or
       // on phones (no page pill) kept at the right where the menu button is
       const total = pieces.reduce((sum, q) => sum + q.w, 0) - MERGED_OVERLAP * (pieces.length - 1);
-      const phone = !pieces.some((q) => q.el === linksRef.current);
+      phone = !pieces.some((q) => q.el === linksRef.current);
       let x = phone ? Math.max(...pieces.map((q) => q.x0 + q.w)) - total : (window.innerWidth - total) / 2;
       for (const q of pieces) { q.dx = x - q.x0; x += q.w - MERGED_OVERLAP; }
       // the phone dropdown follows the menu button, but never past the left edge of the screen
@@ -207,10 +287,22 @@ export default function Nav() {
     const draw = () => {
       // ease out: quick to set off, slow as they meet, so the necks can be seen forming
       const move = 1 - Math.pow(1 - p, 4);
+      /* While My work is down in the phone menu its glass leaves the bar. In
+         the merged bar it narrows from the left into the menu button and the
+         logo slides over with its left edge, so the necks stay whole and the
+         logo ends up joined to the menu button; on its own (top of the page)
+         it shrinks to a point. */
+      const wq = phone ? pieces.find((q) => q.el === workRef.current) : undefined;
+      const slide = wq ? drop * move * (wq.w - MERGED_OVERLAP) : 0;
       const caps: Capsule[] = pieces.map((q) => {
-        const x0 = q.x0 + q.dx * move;
-        q.el.style.translate = `${(q.dx * move).toFixed(2)}px 0`;
-        return { x0, x1: x0 + q.w, cy: q.cy, r: q.r, s: q.grows ? Math.min(1, p / 0.25) : 1 };
+        let x0 = q.x0 + q.dx * move;
+        let x1 = x0 + q.w;
+        let s = q.grows ? Math.min(1, p / 0.25) : 1;
+        let tx = q.dx * move;
+        if (q.grows) { x0 += slide; x1 += slide; tx += slide; }
+        if (q === wq) { x0 += slide; s = 1 - drop * (1 - move); }
+        q.el.style.translate = `${tx.toFixed(2)}px 0`;
+        return { x0, x1, cy: q.cy, r: q.r, s };
       });
       sheet.style.translate = `${(menuDx * move).toFixed(2)}px 0`;
       // My work is lit (a dark pill) while it stands on its own, and turns into
@@ -226,7 +318,7 @@ export default function Nav() {
         workRef.current!.style.setProperty('--lit', lit.toFixed(3));
         workRef.current!.style.setProperty('--ink', ink.toFixed(3));
       }
-      const d = blobPath(caps);
+      const d = blobPath(wq && drop > 0.999 ? caps.filter((_, i) => pieces[i] !== wq) : caps);
       glass.style.clipPath = `path('${d}')`;
       edge.setAttribute('d', d);
       header.classList.toggle('is-merged', p > 0.98);
@@ -240,11 +332,14 @@ export default function Nav() {
       last = now;
       p += (target - p) * (1 - Math.exp(-dt * 9));
       if (Math.abs(target - p) < 0.0005) p = target;
+      drop += (dropTo - drop) * (1 - Math.exp(-dt * 14));
+      if (Math.abs(dropTo - drop) < 0.001) drop = dropTo;
       draw();
-      if (p !== target) frame = requestAnimationFrame(tick);
+      if (p !== target || drop !== dropTo) frame = requestAnimationFrame(tick);
       else last = 0;
     };
     const wake = () => { if (on && !frame) frame = requestAnimationFrame(tick); };
+    dropPill.current = (v: number) => { dropTo = v; if (on) wake(); else drop = v; };
 
     const setUp = () => {
       on = !calm.matches && !clear.matches;
@@ -278,15 +373,16 @@ export default function Nav() {
       window.removeEventListener('resize', onResize);
       calm.removeEventListener('change', setUp);
       clear.removeEventListener('change', setUp);
+      dropPill.current = () => {};
     };
   }, [pathname]);
 
-  const link = (l: { key: Key; href: string; label: string }) => (
+  const link = (l: { key: Key; href: string; label: string }, extra = '') => (
       <Link
         key={l.key}
         href={l.href}
         data-key={l.key}
-        className={`pnav-item${active === l.key ? ' is-active' : ''}`}
+        className={`pnav-item${extra}${active === l.key ? ' is-active' : ''}`}
         aria-current={active === l.key ? (l.key === 'work' ? 'location' : 'page') : undefined}
         onClick={l.key === 'home' || l.key === 'work' ? (e) => scrollTo(e, l.key as 'home' | 'work') : close}
       >
@@ -340,7 +436,7 @@ export default function Nav() {
 
       <nav className="pnav-pill pnav-links" aria-label="Main" ref={linksRef}>
         <span className="pnav-mark" ref={markRef} aria-hidden="true" />
-        {LINKS.map(link)}
+        {LINKS.map((l) => link(l))}
       </nav>
 
       <div className="pnav-right">
@@ -360,7 +456,10 @@ export default function Nav() {
       </div>
 
       <div ref={sheetRef} id="pnav-sheet" className={`pnav-sheet${open ? ' is-open' : ''}`}>
-        <nav aria-label="Main (menu)">{LINKS.map(link)}</nav>
+        <nav aria-label="Main (menu)">
+          {link(WORK, ' pnav-sheet-work')}
+          {LINKS.map((l) => link(l))}
+        </nav>
       </div>
     </header>
   );

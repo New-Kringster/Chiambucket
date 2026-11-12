@@ -250,7 +250,11 @@ html.is-day .pnav-work > .pnav-item:not(.is-active) { text-shadow: 0 0 6px rgba(
   outline-offset: 2px;
 }
 
-/* ── Phone dropdown ── */
+/* ── Phone dropdown ──
+   Its glass is a layer of its own (::before) that fades in, and so do the
+   rows, one after another, so the My work row can stay solid while it drops
+   in from the pill (Nav.tsx). Closing keeps the menu visible until that row
+   is back up in the pill (DROP_MS). */
 .pnav-sheet {
   position: absolute;
   top: calc(100% + 8px);
@@ -259,25 +263,82 @@ html.is-day .pnav-work > .pnav-item:not(.is-active) { text-shadow: 0 0 6px rgba(
   padding: 6px;
   box-sizing: border-box;
   border-radius: 22px;
+  visibility: hidden;
+  pointer-events: none;
+  transition: visibility 0s linear 0.42s;
+}
+.pnav-sheet.is-open {
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0s;
+}
+.pnav-sheet::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
   /* thicker glass than the pills: the menu sits over busy page content */
   background: var(--nv-sheet);
   -webkit-backdrop-filter: blur(24px) saturate(170%) !important; backdrop-filter: blur(24px) saturate(170%) !important;
   border: 1px solid var(--nv-border);
   box-shadow: var(--nv-rim), var(--nv-shadow), 0 24px 48px -24px rgba(0, 0, 0, 0.5);
-  visibility: hidden;
   opacity: 0;
   transform: translateY(-6px) scale(0.98);
   transform-origin: top right;
-  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0.18s;
+  transition: opacity 0.18s ease, transform 0.18s ease;
 }
-.pnav-sheet.is-open {
-  visibility: visible;
+.pnav-sheet.is-open::before { opacity: 1; transform: none; transition-duration: 0.22s, 0.3s; }
+.pnav-sheet nav { position: relative; display: grid; gap: 2px; }
+.pnav-sheet .pnav-item { height: 44px; padding: 0 16px; font-size: 0.95rem; }
+.pnav-sheet .pnav-item:not(.pnav-sheet-work) {
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.14s ease, transform 0.18s ease, color 0.2s ease, background-color 0.2s ease;
+}
+.pnav-sheet.is-open .pnav-item:not(.pnav-sheet-work) {
   opacity: 1;
   transform: none;
-  transition-delay: 0s;
+  transition: opacity 0.22s ease var(--d, 0s), transform 0.3s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s), color 0.2s ease, background-color 0.2s ease;
 }
-.pnav-sheet nav { display: grid; gap: 2px; }
-.pnav-sheet .pnav-item { height: 44px; padding: 0 16px; font-size: 0.95rem; }
+.pnav-sheet.is-open .pnav-item:not(.pnav-sheet-work):active { transform: scale(0.96); }
+.pnav-sheet nav > :nth-child(2) { --d: 0.05s; }
+.pnav-sheet nav > :nth-child(3) { --d: 0.08s; }
+.pnav-sheet nav > :nth-child(4) { --d: 0.11s; }
+.pnav-sheet nav > :nth-child(5) { --d: 0.14s; }
+
+/* My work, first in the menu. .is-from puts it on the pill (place from
+   --fx/--fy, size --fw/--fh, lit and ink from --flit/--fink); taking the
+   class away lets it slide and widen into its row. */
+.pnav-sheet-work {
+  position: relative;
+  isolation: isolate;
+  clip-path: inset(-8px round 999px);
+  transition: translate 0.38s cubic-bezier(0.3, 1.12, 0.4, 1), clip-path 0.38s cubic-bezier(0.25, 1, 0.35, 1),
+    color 0.3s ease 0.06s, text-shadow 0.3s ease 0.1s, background-color 0.2s ease, transform 0.15s ease;
+}
+.pnav-sheet-work::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--nv-active);
+  box-shadow: inset 1px 1px 0 -0.5px rgba(255, 255, 255, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease 0.06s;
+}
+.pnav-sheet.is-from .pnav-sheet-work {
+  translate: var(--fx, 0) var(--fy, 0);
+  clip-path: inset(calc((100% - var(--fh, 100%)) / 2) calc(100% - var(--fw, 100%)) calc((100% - var(--fh, 100%)) / 2) 0 round 999px);
+  color: color-mix(in srgb, var(--nv-active-text) calc(var(--fink, 1) * 100%), var(--nv-text));
+  text-shadow: none;
+}
+.pnav-sheet.is-from .pnav-sheet-work::before { opacity: var(--flit, 1); transition-delay: 0s; }
+.pnav-sheet.no-anim .pnav-sheet-work, .pnav-sheet.no-anim .pnav-sheet-work::before { transition: none; }
+/* while it is down in the menu, the pill is gone from the bar (phones only,
+   so a phone turned wide with the menu open still shows it) */
+@media (max-width: 760px) { .pnav.is-dropped .pnav-work { visibility: hidden; } }
 
 /* ── The merging glass ──
    While .is-blob is set (Nav.tsx turns it on unless motion or transparency is
@@ -329,13 +390,15 @@ html.is-day .pnav-work > .pnav-item:not(.is-active) { text-shadow: 0 0 6px rgba(
   .pnav-sheet { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .pnav-sheet, .pnav-menu span, .pnav-item, .pnav-mark.is-live { transition: none; }
+  .pnav-sheet, .pnav-sheet::before, .pnav-sheet .pnav-item:not(.pnav-sheet-work), .pnav-sheet.is-open .pnav-item:not(.pnav-sheet-work),
+  .pnav-sheet-work, .pnav-sheet-work::before,
+  .pnav-menu span, .pnav-item, .pnav-mark.is-live { transition: none; }
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .pnav-pill, .pnav-circle, .pnav.is-scrolled .pnav-logo, .pnav-sheet {
+  .pnav-pill, .pnav-circle, .pnav.is-scrolled .pnav-logo, .pnav-sheet::before {
     -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
     background: rgba(26, 21, 15, 0.97);
   }
-  html.is-day :is(.pnav-pill, .pnav-circle, .pnav.is-scrolled .pnav-logo, .pnav-sheet) { background: rgba(248, 249, 243, 0.97); }
+  html.is-day :is(.pnav-pill, .pnav-circle, .pnav.is-scrolled .pnav-logo), html.is-day .pnav-sheet::before { background: rgba(248, 249, 243, 0.97); }
 }

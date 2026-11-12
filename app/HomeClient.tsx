@@ -369,7 +369,7 @@ export default function HomeClient() {
                 </dl>
                 <div className="ab-intro-copy">
                   <h3 className="hp-tile-h">Hi, I&apos;m Braven.</h3>
-                  <p className="hp-tile-p">I design circuit boards, write the software that runs on them, and model the cases they go in. Most of it I taught myself through these projects.</p>
+                  <p className="hp-tile-p">I design every part of my projects myself, from the circuits to the software that runs on them, end-to-end. Most of which I learnt from trial and error through these projects.</p>
                 </div>
               </div>
 
@@ -495,10 +495,10 @@ export default function HomeClient() {
               </div>
               <div className="hp-spot-solo-body">
                 <div className="hp-spot-stats">
-                  <div className="hp-spot-stat"><b>693K</b><span>parameters on the chip</span></div>
+                  <div className="hp-spot-stat"><b>693K</b><span>parameter model</span></div>
                   <div className="hp-spot-stat"><b>~2 s</b><span>per meter reading</span></div>
                   <div className="hp-spot-stat"><b>4-layer</b><span>custom PCB</span></div>
-                  <div className="hp-spot-stat"><b>LoRaWAN</b><span>sends just the number</span></div>
+                  <div className="hp-spot-stat"><b>LoRaWAN</b><span>Low-power communication</span></div>
                 </div>
                 <div className="hp-spot-tags"><span>ESP32-S3</span><span>OV2640</span><span>DrumNet</span><span>KiCad</span><span>Onshape</span><span>PlatformIO</span></div>
                 <div className="hp-spot-solo-cta">
@@ -509,54 +509,61 @@ export default function HomeClient() {
               </div>
             </article>
 
-            {/* Highlighted hardware build: Project June */}
-            <article className="hp-spotlight" data-reveal>
-              <div className="hp-spot-media">
-                <img src="/images/ProjJuneBanner1.webp" alt="Project June, a 5G radio-controlled vehicle" loading="lazy" />
-                <span className="hp-spot-badge is-highlight">Highlighted hardware build</span>
-                <AiMark project="proj-june" />
-              </div>
-              <div className="hp-spot-body">
-                <span className="hp-key">Project June · Personal</span>
-                <h3 className="hp-spot-title">A 5G rover with three live cameras.</h3>
-                <p className="hp-spot-lead">I drive it over 5G from anywhere with signal. Three phones on board stream the video, and an ESP32-S3 reads GPS and the other sensors and drives the motor through a MOSFET driver I built. Three weeks from start to first drive.</p>
-                <div className="hp-spot-stats">
-                  <div className="hp-spot-stat"><b>3</b><span>live video streams</span></div>
-                  <div className="hp-spot-stat"><b>5G</b><span>cellular link</span></div>
-                  <div className="hp-spot-stat"><b>8+</b><span>onboard sensors</span></div>
-                  <div className="hp-spot-stat"><b>3 wks</b><span>concept to drive</span></div>
+            {/* The highlighted builds: a smaller pair under the flagship, so the
+                flagship carries the section */}
+            <div className="hp-spot-pair">
+              {/* Highlighted hardware build: Project June */}
+              <article className="hp-spotlight hp-spot-mini" data-reveal>
+                <div className="hp-spot-media">
+                  <img src="/images/ProjJuneBanner1.webp" alt="Project June, a 5G radio-controlled vehicle" loading="lazy" />
+                  <span className="hp-spot-badge is-highlight">Highlighted hardware build</span>
+                  <AiMark project="proj-june" />
                 </div>
-                <div className="hp-spot-tags"><span>ESP32-S3</span><span>WebRTC</span><span>MQTT</span><span>KiCAD</span><span>Onshape</span><span>PlatformIO</span></div>
-                <div className="hp-spot-cta">
-                  <a className="hp-btn" href="/project-june"><IcRead /> Read article</a>
-                  <button className="hp-btn hp-btn-ghost" onClick={() => openProject('proj-june')}><IcPeek /> Peek summary</button>
-                  <a className="hp-btn hp-btn-ghost" href="https://youtu.be/MnkJsx-nwoE?si=kd1n5bYct6dWTcQC" target="_blank" rel="noopener"><IcPlay /> Watch the build</a>
+                <div className="hp-spot-body">
+                  <span className="hp-key">Project June · Personal</span>
+                  <h3 className="hp-spot-title">A 5G rover with three live cameras.</h3>
+                  <p className="hp-spot-lead">I can drive Project June wherever cellular can reach. Three phones are used to stream the rover&apos;s view to the dashboard, while a multitude of sensors send back data about its environment.</p>
+                  <div className="hp-spot-stats">
+                    <div className="hp-spot-stat"><b>3</b><span>live video streams</span></div>
+                    <div className="hp-spot-stat"><b>5G</b><span>cellular link</span></div>
+                    <div className="hp-spot-stat"><b>8+</b><span>onboard sensors</span></div>
+                    <div className="hp-spot-stat"><b>3 wks</b><span>concept to drive</span></div>
+                  </div>
+                  <div className="hp-spot-tags"><span>ESP32-S3</span><span>WebRTC</span><span>MQTT</span><span>KiCAD</span><span>Onshape</span><span>PlatformIO</span></div>
+                  <div className="hp-spot-cta">
+                    <a className="hp-btn" href="/project-june"><IcRead /> Read article</a>
+                    <button className="hp-btn hp-btn-ghost" onClick={() => openProject('proj-june')}><IcPeek /> Peek summary</button>
+                    <a className="hp-btn hp-btn-ghost" href="https://youtu.be/MnkJsx-nwoE?si=kd1n5bYct6dWTcQC" target="_blank" rel="noopener"><IcPlay /> Watch the build</a>
+                  </div>
                 </div>
-              </div>
-            </article>
+              </article>
 
-            {/* Highlighted software build: BeadReader */}
-            <article className="hp-spotlight hp-spotlight-solo" data-reveal>
-              <div className="hp-spot-media">
-                <img src="/images/beadreader-flagship.webp" alt="BeadReader, a self-hosted invite-only private book reader" loading="lazy" />
-                <span className="hp-spot-badge is-highlight">Highlighted software build</span>
-                <AiMark project="proj-beadreader" />
-              </div>
-              <div className="hp-spot-solo-body">
-                <div className="hp-spot-stats">
-                  <div className="hp-spot-stat"><b>Live</b><span>read-together presence</span></div>
-                  <div className="hp-spot-stat"><b>SQL</b><span>content gate</span></div>
-                  <div className="hp-spot-stat"><b>Offline</b><span>PWA, service worker</span></div>
-                  <div className="hp-spot-stat"><b>1-click</b><span>Vercel deploy</span></div>
+              {/* Highlighted software build: BeadReader */}
+              <article className="hp-spotlight hp-spot-mini" data-reveal>
+                <div className="hp-spot-media">
+                  <img src="/images/beadreader-flagship.webp" alt="BeadReader, a self-hosted invite-only private book reader" loading="lazy" />
+                  <span className="hp-spot-badge is-highlight">Highlighted software build</span>
+                  <AiMark project="proj-beadreader" />
                 </div>
-                <div className="hp-spot-tags"><span>Next.js</span><span>Supabase</span><span>Cloudflare R2</span><span>Tailwind v4</span><span>TypeScript</span></div>
-                <div className="hp-spot-solo-cta">
-                  <a className="hp-btn" href="/beadreader"><IcRead /> Read article</a>
-                  <button className="hp-btn hp-btn-ghost" onClick={() => openProject('proj-beadreader')}><IcPeek /> Peek summary</button>
-                  <a className="hp-btn hp-btn-ghost" href="https://github.com/New-Kringster/BeadReader" target="_blank" rel="noopener"><IcGitHub /> GitHub</a>
+                <div className="hp-spot-body">
+                  <span className="hp-key">BeadReader · Personal</span>
+                  <h3 className="hp-spot-title">A private book reader for a few friends.</h3>
+                  <p className="hp-spot-lead">The admin publishes books in Markdown or as image webtoons, readers log in with one access code, and the app remembers where each reader stopped.</p>
+                  <div className="hp-spot-stats">
+                    <div className="hp-spot-stat"><b>Live</b><span>read-together presence</span></div>
+                    <div className="hp-spot-stat"><b>SQL</b><span>content gate</span></div>
+                    <div className="hp-spot-stat"><b>Offline</b><span>PWA, service worker</span></div>
+                    <div className="hp-spot-stat"><b>1-click</b><span>Vercel deploy</span></div>
+                  </div>
+                  <div className="hp-spot-tags"><span>Next.js</span><span>Supabase</span><span>Cloudflare R2</span><span>Tailwind v4</span><span>TypeScript</span></div>
+                  <div className="hp-spot-cta">
+                    <a className="hp-btn" href="/beadreader"><IcRead /> Read article</a>
+                    <button className="hp-btn hp-btn-ghost" onClick={() => openProject('proj-beadreader')}><IcPeek /> Peek summary</button>
+                    <a className="hp-btn hp-btn-ghost" href="https://github.com/New-Kringster/BeadReader" target="_blank" rel="noopener"><IcGitHub /> GitHub</a>
+                  </div>
                 </div>
-              </div>
-            </article>
+              </article>
+            </div>
 
             <div className="hp-pf-lead" data-reveal>
               <h3>Other projects</h3><span>Search or filter, then open a card for a summary.</span>

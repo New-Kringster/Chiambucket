@@ -2272,6 +2272,53 @@ html[data-theme="paper"] {
 .hp-spot-solo-cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 1.5rem; }
 .hp-spot-solo-cta .hp-btn { padding: 0.78rem 1.3rem; font-size: 0.85rem; }
 
+/* The highlighted builds (Project June, BeadReader): a pair of smaller cards
+   under the flagship, picture on top and copy below, at about half its width,
+   so the flagship stays the one the eye lands on. The copy blocks line their
+   buttons up along the bottom. Each badge sits in a black band above its
+   picture (both pictures are drawn on black), so it never covers the art.
+   Narrower than 1000px the cards keep only the title, the lead and the
+   buttons, so they stay smaller than the flagship; one column on phones. */
+.hp-spot-pair {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(16px, 2vw, 26px);
+  align-items: stretch; margin: 0 0 clamp(42px, 6vw, 66px);
+}
+.hp-spotlight.hp-spot-mini { display: flex; flex-direction: column; gap: 0; margin: 0; padding: 10px; border-radius: 22px; }
+.hp-spot-mini .hp-spot-media { min-height: 0; padding-top: 34px; border-radius: 14px; background: #000; }
+.hp-spot-mini .hp-spot-media img { aspect-ratio: 2.08 / 1; height: auto; }
+.hp-spot-mini .hp-spot-media::after { display: none; }
+.hp-spot-mini .hp-spot-badge { top: 10px; left: 10px; font-size: 0.55rem; padding: 0.32rem 0.64rem; }
+.hp-spot-mini .hp-spot-media > .ai-mark { --ai-h: 56px; top: 10px; right: 10px; }
+.hp-spot-mini .hp-spot-body { flex: 1; justify-content: flex-start; padding: 18px 12px 8px; }
+.hp-spot-mini .hp-spot-title { font-size: clamp(1.2rem, 1.7vw, 1.55rem); margin-top: 0.4rem; }
+.hp-spot-mini .hp-spot-lead { font-size: 0.87rem; margin-top: 0.6rem; }
+.hp-spot-mini .hp-spot-stats { gap: 10px 20px; margin: 1rem 0 0; }
+.hp-spot-mini .hp-spot-stat b { font-size: 1.12rem; }
+.hp-spot-mini .hp-spot-stat span { font-size: 0.66rem; }
+.hp-spot-mini .hp-spot-tags { gap: 6px; margin-top: 0.9rem; }
+.hp-spot-mini .hp-spot-tags span { font-size: 0.62rem; padding: 0.26rem 0.6rem; }
+.hp-spot-mini .hp-spot-cta { gap: 8px; margin-top: auto; padding-top: 1.2rem; }
+.hp-spot-mini .hp-spot-cta .hp-btn { padding: 0.6rem 1rem; font-size: 0.78rem; }
+/* once the buttons wrap, each row is filled so they line up */
+@media only screen and (max-width: 1200px) {
+  .hp-spot-mini .hp-spot-cta .hp-btn { flex: 1 1 auto; justify-content: center; }
+}
+@media only screen and (max-width: 1000px) {
+  .hp-spot-mini .hp-spot-stats, .hp-spot-mini .hp-spot-tags { display: none; }
+  .hp-spot-mini .hp-spot-body { padding: 14px 8px 6px; }
+  .hp-spot-mini .hp-spot-title { font-size: 1.15rem; }
+  .hp-spot-mini .hp-spot-lead { font-size: 0.84rem; }
+  .hp-spot-mini .hp-spot-cta { padding-top: 1rem; }
+  /* Read article and Peek summary share the first row, the third button fills the second */
+  .hp-spot-mini .hp-spot-cta .hp-btn { flex: 1 1 auto; justify-content: center; padding: 0.55rem 0.62rem; font-size: 0.72rem; letter-spacing: 0; }
+}
+@media only screen and (max-width: 640px) {
+  .hp-spot-pair { grid-template-columns: 1fr; }
+}
+@media only screen and (max-width: 560px) {
+  .hp-spot-mini .hp-spot-media > .ai-mark { --ai-h: 40px; top: auto; bottom: 8px; right: 8px; }
+}
+
 
 /* ── "All projects" lead-in ── */
 .hp-pf-lead { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin: 0 0 2px; }
