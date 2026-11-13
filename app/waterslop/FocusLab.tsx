@@ -80,7 +80,6 @@ const ROWS: Frame[] = [
       </>
     ),
     visual: <img src={I + 'focus-setup.webp'} alt="The focus test box with the ESP32 cam board on the side and a ruler on the floor" loading="lazy" decoding="async" />,
-    pointers: [{ at: [37, 40], label: 'spare ESP32-S3 cam board', to: [20, 0] }, { at: [58, 36], label: 'chart on a movable stand', to: [70, 0] }, { at: [66, 70], label: 'ruler from the lens' }],
   },
   {
     id: 'cam-lab', eyebrow: 'The focus test', title: 'The chosen setup: 160° at 4 cm',

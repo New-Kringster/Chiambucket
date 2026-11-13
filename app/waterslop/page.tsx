@@ -78,13 +78,11 @@ const METERSIM: Frame[] = [
     id: 'ms-rig', eyebrow: 'MeterSim', title: 'A simulated meter for a real camera',
     body: <p>The first version of MeterSim was built alongside Prototype V0.5&rsquo;s firmware. They work in conjunction, so Prototype V0.5 can be controlled automatically by MeterSim and labelled image data can be generated for model training. All the software and firmware builds were entirely written by Claude.</p>,
     visual: img('v05-rig-a.webp', 'Prototype V0.5, an ESP32-EYE, pointed at a tablet showing the MeterSim display'),
-    pointers: [{ at: [38, 36], label: 'the MeterSim display', to: [30, 0] }, { at: [84, 40], label: 'Prototype V0.5, an ESP32-EYE', to: [76, 0] }],
   },
   {
     id: 'ms-control', eyebrow: 'MeterSim', title: 'Built for agents, watched by humans',
     body: <p>MeterSim is built to be used by agentic AI agents instead of humans, so the control panel serves as a monitoring platform for humans to see the progress made by the agents. Agents use MeterSim as a framework to build tests, collect data and verify accuracy while creating DrumNet. It replaces the most tedious task in machine learning, gathering quality data to train on, by generating the data; and since the environment is simulated, the data is naturally labelled.</p>,
     visual: img('metersim-control.webp', 'The MeterSim control interface, with sliders for reading, drums, surface and weather effects'),
-    pointers: [{ at: [30, 22], label: 'what the display shows', edge: 'top', to: [22, 0] }, { at: [30, 70], label: 'the reader’s latest capture', edge: 'bottom', to: [22, 0] }, { at: [80, 7], label: 'meter design', edge: 'top', to: [58, 0] }, { at: [80, 37], label: 'reading and drum layout', edge: 'top', to: [88, 0] }, { at: [80, 55], label: 'force a drum to half-roll', edge: 'bottom', to: [58, 0] }, { at: [80, 75], label: 'glare, smudge, shadow', edge: 'bottom', to: [88, 0] }],
   },
   {
     id: 'ms-designs', eyebrow: 'MeterSim', title: 'Nine meter designs, nine presets',
@@ -100,13 +98,11 @@ const METERSIM: Frame[] = [
     id: 'ms-halfroll', eyebrow: 'MeterSim', title: 'Half-rolled drums, on purpose',
     body: <p>It also simulates half-rolled barrels, so the model can be trained to predict the value of barrels that are in the middle of transitioning from one value to another. This is done automatically by the agent during training data collection.</p>,
     visual: img('metersim-halfroll.webp', 'The MeterSim roll control, dragging individual drums part-way between digits'),
-    pointers: [{ at: [26, 50], label: 'drag a drum part way', edge: 'top' }, { at: [66, 87], label: 'the last drum, mid-roll', edge: 'bottom' }],
   },
   {
     id: 'ms-effects', eyebrow: 'MeterSim', title: 'Weather and surface conditions',
     body: <p>MeterSim also simulates different weather and meter surface conditions to better match how a meter left out in the elements may look; this is part of the training so the reader can read in different conditions. The controls include glare, smudge, shadow, lighting, blur, sensor noise, fog, dirt and scaling.</p>,
     visual: img('metersim-effects.webp', 'The surface and weather effect sliders in MeterSim, each with a preview thumbnail'),
-    pointers: [{ at: [72, 10], label: 'glare', edge: 'top', to: [30, 0] }, { at: [72, 30], label: 'window smudge', edge: 'top', to: [58, 0] }, { at: [72, 48], label: 'shadow', edge: 'top', to: [86, 0] }, { at: [72, 60], label: 'lighting', edge: 'bottom', to: [30, 0] }, { at: [72, 72], label: 'glass and sensor: blur, noise, fog, dirt', edge: 'bottom', to: [58, 0] }, { at: [72, 90], label: 'view: scale, tilt, offset', edge: 'bottom', to: [86, 0] }],
   },
   {
     id: 'ms-eval', eyebrow: 'MeterSim', title: 'Evaluation and data collection, unattended',
@@ -117,7 +113,6 @@ const METERSIM: Frame[] = [
       </>
     ),
     visual: pair('metersim-display-rig.webp', 'A tablet showing the MeterSim display next to a laptop with the control panel, with the ESP32-EYE reader pointed at the tablet', 'v05-rig-b.webp', 'The ESP32-EYE reader on a bottle pointed at the MeterSim display, in a classroom'),
-    pointers: [{ at: [7, 62], label: '/display on the tablet', edge: 'bottom', to: [10, 0] }, { at: [28, 27], label: 'the reader, pointed at it', edge: 'top', to: [22, 0] }, { at: [44, 55], label: '/control on the laptop', edge: 'bottom', to: [40, 0] }, { at: [74, 27], label: 'the reader on its stand', edge: 'top', to: [72, 0] }, { at: [57, 52], label: 'MeterSim, waiting for the result', edge: 'bottom', to: [72, 0] }],
   },
 ];
 
@@ -184,7 +179,6 @@ const AGENTIC: Frame[] = [
         {img('scheduler-compute.webp', 'The scheduler timeline for the compute resources, with booked blocks per agent and the booked load against the budget')}
       </div>
     ),
-    pointers: [{ at: [22, 12], label: 'the Jetson rig', edge: 'top', to: [14, 0] }, { at: [78, 13], label: 'SimGen2, for Simulated and Premade', edge: 'top', to: [70, 0] }, { at: [22, 36], label: 'laptop GPU and server CPU', edge: 'top', to: [40, 0] }, { at: [50, 68], label: 'the scheduler: each agent’s bookings', edge: 'bottom', to: [40, 0] }, { at: [40, 80], label: 'booked load against the budget', edge: 'bottom', to: [72, 0] }],
   },
   {
     id: 'ag-t3', eyebrow: 'Agentic workflow', title: 'Managed with T3 Code',
@@ -195,7 +189,6 @@ const AGENTIC: Frame[] = [
       </>
     ),
     visual: img('t3-tailscale.webp', 'Diagram of T3 Code connecting the client device, the home server running the agents, the laptop GPU and the Jetson rig at school over Tailscale', 'plate'),
-    pointers: [{ at: [15, 62], label: 'the Jetson rig, at school', edge: 'bottom', to: [15, 0] }, { at: [54, 22], label: 'T3 Code', edge: 'top', to: [50, 0] }, { at: [54, 50], label: 'Tailscale', edge: 'bottom', to: [50, 0] }, { at: [82, 20], label: 'my devices', edge: 'top', to: [82, 0] }, { at: [82, 78], label: 'the server at home, running the agents', edge: 'bottom', to: [82, 0] }],
   },
 ];
 
@@ -240,7 +233,6 @@ const POWER: Frame[] = [
     id: 'pw-pwm', eyebrow: 'Power optimisation · software', title: 'PWM dimming on the LEDs',
     body: <p>I had initially dismissed PWM dimming because the OV2640 uses a rolling shutter, which could capture between the off-cycles of the PWM signal and show banding. But the OV2640 did not suffer from any banding, so I run the LEDs at 20 kHz with 50 % duty cycle. This saves some fraction of power and adds brightness control.</p>,
     visual: pair('led-banding.webp', 'A capture showing horizontal banding across the meter face', 'led-no-banding.webp', 'A capture with PWM-dimmed LEDs and no banding'),
-    pointers: [{ at: [25, 30], label: 'banding', edge: 'top' }, { at: [75, 30], label: 'PWM-dimmed, no banding', edge: 'top' }],
   },
   {
     id: 'pw-grey', eyebrow: 'Power optimisation · software', title: 'In-camera greyscale',
@@ -283,7 +275,6 @@ const V2: Frame[] = [
     id: 'v2-intro', eyebrow: 'Prototype V2', title: 'A shrunken-down Prototype V1',
     body: <p>Prototype V2 is a shrunken-down version of Prototype V1. It fits in tighter spaces and let me explore smaller components like the Wio-SX1262 LoRa module from Seeed Studio. It has built-in battery management, power circuitry for the camera and fan, PWM-dimmable LED lights and a LoRa module. I designed the board in KiCad, sourced the components from DigiKey and sent it to JLCPCB for manufacturing; it is a 4-layer board. The circuits are in the report.</p>,
     visual: img('pcb-3d-top.webp', '3D render of the top of the Prototype V2 board from KiCad'),
-    pointers: [{ at: [38, 20], label: 'ESP32-S3 WROOM1 N16R8', edge: 'top' }, { at: [60, 70], label: 'battery management and power', edge: 'bottom', to: [70, 0] }, { at: [52, 88], label: 'USB-C', edge: 'bottom', to: [30, 0] }, { at: [86, 90], label: 'camera connector', edge: 'bottom', to: [94, 0] }],
   },
   {
     id: 'v2-size', eyebrow: 'Prototype V2', title: 'The size of a dev board',
@@ -294,7 +285,6 @@ const V2: Frame[] = [
       </>
     ),
     visual: img('v2-vs-devboard.webp', 'The Prototype V2 PCB lying next to an ESP32-S3 development board of nearly the same size'),
-    pointers: [{ at: [37, 46], label: 'Prototype V2', edge: 'top', to: [30, 0] }, { at: [62, 46], label: 'an ESP32-S3 dev board', edge: 'top', to: [70, 0] }],
   },
 ];
 const ENCLOSURE: Frame[] = [

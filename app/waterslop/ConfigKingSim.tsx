@@ -779,8 +779,6 @@ const CAP_Y = [207.5, 263, 318, 374].map((y) => y / 415);
 /* The composite, in units of its width: the magnified screen on top, the device
    centred below it, and a zoom callout from the device's screen to the big one. */
 const ZH = 56.25, DX = 18, DW = 64, DY = 61, DH = (DW * SHOT.h) / SHOT.w, CH = DY + DH;
-/** The magnified screen's height as a share of the whole drawing, for pointers. */
-export const ZOOM_SHARE = ZH / CH;
 const pct = (v: number) => `${(v * 100).toFixed(3)}%`;
 
 /* Three ways to look at it, the reader's choice, shared by every frame of the
@@ -814,12 +812,6 @@ function playFlip(el: Element | null, scale: boolean) {
 }
 /** The 'close' crop of the photo: the screen with a little of its bezel, as shares of the photo. */
 const CROP = { x: 144 / 642, y: 16 / 415, w: 228 / 642, h: 138 / 415 };
-/** Where a point of the 240 x 135 screen falls, in % of the drawing, for pointers. */
-export function screenAt(view: CkView, x: number, y: number): [number, number] {
-  if (view === 'zoom') return [(x / W) * 100, (y / H) * ZOOM_SHARE * 100];
-  const px = LCD.x + (x / W) * LCD.w, py = LCD.y + (y / H) * LCD.h;
-  return view === 'close' ? [((px - CROP.x) / CROP.w) * 100, ((py - CROP.y) / CROP.h) * 100] : [px * 100, py * 100];
-}
 
 /* A key press the frame plays on its way in: the key lights on the photo and a
    chip names it, then the screen moves on. `cap` is the ROWS id of the key. */
@@ -1153,15 +1145,11 @@ export const CK_STYLE = `
   .ck-close .ck-unit { filter: none; --ck-mx: 34%; --ck-my: 31%; }
   /* ...so the words on the slide get a gradient between them and the device:
      beside the copy on wide screens, under it on phones, and along the bottom
-     for the dots and buttons. Labels and the view switch keep their own fills. */
+     for the dots and buttons. The view switch keeps its own fill. */
   .ws-frame.ckf::before { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity 0.45s ease; }
   .ws-frame.ck-bleed::before { opacity: 1;
     background: linear-gradient(90deg, rgba(24,23,22,0) 57.5%, rgba(24,23,22,0.9) 61.5%, #181716 68%), linear-gradient(0deg, #181716 0, rgba(24,23,22,0.82) 7%, rgba(24,23,22,0) 14%); }
   .ws-frame.ck-bleed.tall::before { background: linear-gradient(0deg, #181716 0, #181716 8%, rgba(24,23,22,0.92) 13%, rgba(24,23,22,0) 21%); }
-  .ws-frame.ck-bleed .ws-ptr-label { z-index: 2; }
-  /* the labels step aside while the device moves, then come back at their new places */
-  .ws-frame.ckf .ws-ptr { transition: opacity 0.3s ease 0.2s; }
-  .ws-frame.ck-switching .ws-ptr { opacity: 0; transition: none; }
   .ck-close .ck-lcd { border-radius: 0.5cqw; }
   .ck-close .ck-lcd-hint .ck-hint { padding-bottom: 2cqw; }
   .ck-close .ck-lcd-hint .ck-hint span { font-size: 2.3cqw; padding: 0.6cqw 1.2cqw; }
@@ -1245,5 +1233,5 @@ export const CK_STYLE = `
     .ck-seg button { min-height: 28px; padding: 0 10px; font-size: 11px; }
     .ck-fsbtn { min-height: 34px; padding: 0 11px 0 9px; font-size: 11px; }
   }
-  @media (prefers-reduced-motion: reduce) { .ck-cap i, .ck-press, .ck-unit, .ws-frame.ckf::before, .ws-frame.ckf .ws-ptr { transition: none; } .ck-zoom, .ck-callout { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .ck-cap i, .ck-press, .ck-unit, .ws-frame.ckf::before { transition: none; } .ck-zoom, .ck-callout { animation: none; } }
 `;

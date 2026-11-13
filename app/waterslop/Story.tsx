@@ -10,26 +10,14 @@ import { Children, createContext, useContext, useEffect, useMemo, useRef, useSta
            nothing pinned, so a reader just scrolls.
    Story   a pinned stage where scrolling advances frames; kept for the two
            chapters where one object changes step by step (the DrumNet run and
-           the ConfigKing screen).
+           the ConfigKing screen). */
 
-   Pointers name parts of a visual. Labels sit in bands above and below the
-   picture with elbow leaders down to the point, so they never cover the picture.
-   On phones they become numbered markers with a legend under the title. */
-
-export type Pointer = {
-  at: [number, number];          // the thing being named, in % of the visual's box
-  label: string;
-  to?: [number, number];         // kept for older frames: only to[0] is used, as the label's column
-  side?: 'l' | 'r';
-  edge?: 'top' | 'bottom';       // which band the label sits in; derived from `at` when absent
-};
 export type Frame = {
   id?: string;
   eyebrow?: string;
   title: string;
   body?: ReactNode;
   visual: ReactNode;
-  pointers?: Pointer[];
   wide?: boolean;                // the visual spans the stage, copy sits beneath it
   cls?: string;                  // extra class on the frame (for per-frame CSS)
 };
@@ -40,75 +28,13 @@ const FrameCtx = createContext<Ctx>({ active: true, near: true, index: 0 });
    written in the server page arrive as plain arrays, so children are keyed here. */
 export const useFrame = () => useContext(FrameCtx);
 
-const LANE = 26;   // px per label lane in a band
-
-type Placed = { p: Pointer; x: number; edge: 'top' | 'bottom'; lane: number };
-/* Labels go into the band nearer the point, in the point's own column; when two
-   columns are close the second label drops into the next lane. */
-function placeLabels(list: Pointer[]): Placed[] {
-  const items: Placed[] = list.map((p) => ({ p, x: Math.max(4, Math.min(96, p.to ? p.to[0] : p.at[0])), edge: p.edge ?? (p.at[1] < 50 ? 'top' : 'bottom'), lane: 0 }));
-  // a label's width, as a share of a typical picture (about 560 px wide)
-  const width = (p: Pointer) => Math.min(46, p.label.length * 1.25 + 3);
-  for (const edge of ['top', 'bottom'] as const) {
-    const band = items.filter((i) => i.edge === edge).sort((a, b) => a.x - b.x);
-    const taken: Array<{ l: number; r: number; lane: number }> = [];
-    for (const it of band) {
-      const w = width(it.p);
-      const l = it.x - (it.x < 14 ? w * 0.06 : it.x > 86 ? w * 0.94 : w / 2), r = l + w;
-      let lane = 0;
-      while (lane < 3 && taken.some((t) => t.lane === lane && l < t.r + 1.5 && r > t.l - 1.5)) lane++;
-      it.lane = Math.min(2, lane);
-      taken.push({ l, r, lane: it.lane });
-    }
-  }
-  return items;
-}
-export const bandLanes = (list?: Pointer[]) => {
-  if (!list?.length) return { lt: 0, lb: 0 };
-  const placed = placeLabels(list);
-  const max = (edge: 'top' | 'bottom') => placed.filter((i) => i.edge === edge).reduce((m, i) => Math.max(m, i.lane + 1), 0);
-  return { lt: max('top'), lb: max('bottom') };
-};
-
-function Pointers({ list }: { list: Pointer[] }) {
-  const placed = placeLabels(list);
+/* One visual; it fades and lifts in with its frame. */
+function Visual({ visual, show }: { visual: ReactNode; show: boolean }) {
   return (
-    <div className="ws-pointers" aria-hidden="true">
-      {placed.map(({ p, x, edge, lane }, i) => {
-        const [ax, ay] = p.at;
-        const style = {
-          '--x': x, '--ax': ax, '--ay': ay, '--lane': lane, '--i': i,
-          '--hx': Math.min(ax, x), '--hw': Math.abs(ax - x),
-          '--tx': x < 14 ? '-6%' : x > 86 ? '-94%' : '-50%',
-        } as CSSProperties;
-        return (
-          <div key={i} className={`ws-ptr ${edge}`} style={style}>
-            <i className="ws-ptr-h" /><i className="ws-ptr-v" /><i className="ws-ptr-dot" />
-            <span className="ws-ptr-label">{p.label}</span>
-            <i className="ws-ptr-n">{i + 1}</i>
-          </div>
-        );
-      })}
+    <div className="ws-pic">
+      <div className="ws-pic-in">{show ? Children.toArray(visual) : null}</div>
     </div>
   );
-}
-
-/* One visual with its pointers; the bands' height is reserved around the picture. */
-function Visual({ visual, pointers, show }: { visual: ReactNode; pointers?: Pointer[]; show: boolean }) {
-  const { lt, lb } = bandLanes(pointers);
-  return (
-    <div className="ws-pic" style={{ '--lt': lt, '--lb': lb } as CSSProperties}>
-      <div className="ws-pic-in">
-        {show ? Children.toArray(visual) : null}
-        {show && pointers?.length ? <Pointers list={pointers} /> : null}
-      </div>
-    </div>
-  );
-}
-
-function Legend({ pointers }: { pointers?: Pointer[] }) {
-  if (!pointers?.length) return null;
-  return <ol className="ws-ptr-legend" aria-hidden="true">{pointers.map((p, k) => <li key={k}><i>{k + 1}</i>{p.label}</li>)}</ol>;
 }
 
 const useReduced = () => {
@@ -185,11 +111,10 @@ export default function Story({ id, chapter, title, frames, per = 0.92, ariaLabe
           return (
             <FrameCtx.Provider key={fr.id ?? k} value={ctxs[k]}>
               <div className={`ws-frame${fr.wide ? ' wide' : ''}${fr.cls ? ` ${fr.cls}` : ''}`} data-state={state} aria-hidden={k !== i}>
-                <div className="ws-visual"><Visual visual={fr.visual} pointers={fr.pointers} show={near} /></div>
+                <div className="ws-visual"><Visual visual={fr.visual} show={near} /></div>
                 <div className="ws-copy">
                   {fr.eyebrow && <p className="ws-eyebrow">{fr.eyebrow}</p>}
                   <h2>{fr.title}</h2>
-                  <Legend pointers={fr.pointers} />
                   {fr.body && <div className="ws-copy-body">{Children.toArray(fr.body)}</div>}
                 </div>
               </div>
@@ -228,11 +153,10 @@ function Row({ frame: fr, index }: { frame: Frame; index: number }) {
   return (
     <FrameCtx.Provider value={ctx}>
       <div ref={ref} id={fr.id} className={`ws-row${fr.wide ? ' wide' : ''}${fr.cls ? ` ${fr.cls}` : ''}`} data-state={active ? 'active' : 'next'}>
-        <div className="ws-visual"><Visual visual={fr.visual} pointers={fr.pointers} show /></div>
+        <div className="ws-visual"><Visual visual={fr.visual} show /></div>
         <div className="ws-copy">
           {fr.eyebrow && <p className="ws-eyebrow">{fr.eyebrow}</p>}
           <h2>{fr.title}</h2>
-          <Legend pointers={fr.pointers} />
           {fr.body && <div className="ws-copy-body">{Children.toArray(fr.body)}</div>}
         </div>
       </div>

@@ -101,14 +101,6 @@ const ROWS: Frame[] = [
       </>
     ),
     visual: <img src={I + 'fw-setup.webp'} alt="The firmware development setup: the laptop, Jetson Nano, LoRaWAN gateway, Prototype V2 reader and the Cardputer, with the agents reaching them over the network" className="plate" loading="lazy" decoding="async" />,
-    pointers: [
-      { at: [26, 16], label: 'cellular router (LAN)' },
-      { at: [62, 18], label: 'Jetson Nano: MQTT, SQLite, dashboard' },
-      { at: [24, 44], label: 'the agents, on my laptop', edge: 'top', to: [8, 0] },
-      { at: [66, 52], label: 'LoRaWAN gateway', edge: 'bottom', to: [84, 0] },
-      { at: [17, 86], label: 'Cardputer, ConfigKing' },
-      { at: [42, 86], label: 'Prototype V2 reader' },
-    ],
   },
   {
     id: 'fw-cycle', eyebrow: 'One wake cycle', title: 'Nine steps, most readings take five',
@@ -123,12 +115,6 @@ const ROWS: Frame[] = [
     id: 'fw-dashboard', eyebrow: 'Dashboard', title: 'Where the reading lands',
     body: <p>After the reading is made it is sent to the LoRaWAN gateway, which forwards it over MQTT to the Jetson Nano, where it is stored. The Jetson serves the dashboard as a single HTML file whose JavaScript updates the values from the stored data. The dashboard is a demo and is not designed to scale to real deployments.</p>,
     visual: <img src={I + 'dashboard.webp'} alt="The reader monitor dashboard: a bench reader card reading 0092.07 cubic metres with a low confidence chip, and history charts and a table of nine readings" loading="lazy" decoding="async" />,
-    pointers: [
-      { at: [9, 21], label: '0092.07 m³, the reading', to: [12, 0] },
-      { at: [20, 11], label: 'low confidence, flagged', to: [40, 0] },
-      { at: [50, 66], label: 'RSSI, SNR and timing history' },
-      { at: [40, 94], label: 'every reading received', to: [18, 0] },
-    ],
   },
 ];
 
