@@ -37,7 +37,7 @@ Other projects:
 - Pandus Dispenser: his first school project, a 6-part 3D-printed syrup dispenser (Onshape) driven by an Arduino Uno with Python and PyFirmata. [Article](https://www.chiambucket.com/pandus)
 - ELEC-F: a school team project. An M5Stack walk-in freezer alarm: a ToF sensor watches the door, a PIR sensor checks for people inside, and a timer sounds the alarm if someone is shut in too long. [Article](https://www.chiambucket.com/elecf)
 - Copy Board: a KiCAD recreation of NYP's ATMega328 dev board, with sourced replacement parts and first hands-on reflow soldering.
-Recent work (on the bench, November 2026; no write-ups yet):
+Recent work (November 2026; no write-ups yet):
 - Shebang: his own hosting platform. One account for sign-in, static pages, file hosting, short links and a Postgres database per project, reachable through one REST API or one MCP server so coding agents can publish. Next.js 16 and self-hosted Supabase. The MCP client, shebang-mcp, is open source: https://github.com/New-Kringster/shebang-mcp
 - Pip (in progress): a desk companion on an M5Stack Tab5 (ESP32-P4) that talks to an AI agent running at home, with several desktops, small applets it can build on request, camera use and tear-free page-flipped animation.
 - NCIR thermometer demos: live infrared temperature on M5Stack screens for the NCIR and NCIR 2 sensors; the NCIR 2 firmware talks to the sensor's own I2C register map with no vendor library, on the CoreS3 and the classic Basic from one codebase.
