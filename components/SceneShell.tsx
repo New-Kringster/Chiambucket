@@ -10,5 +10,7 @@ import { themeForPath } from '../lib/theme';
 */
 export default function SceneShell() {
   const pathname = usePathname();
+  // The homepage draws its own chapters (app/_home/HomeStory.tsx), so no scene there.
+  if (pathname === '/') return null;
   return <SunlitScene key={pathname} theme={themeForPath(pathname)} home={pathname === '/'} />;
 }

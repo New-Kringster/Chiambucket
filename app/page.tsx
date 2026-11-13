@@ -1,23 +1,23 @@
 import type { Metadata, Viewport } from 'next';
-import HomeClient from './HomeClient';
+import HomeStory from './_home/HomeStory';
 
-// The phone browser bar matches the sunlit sky instead of the site-wide black.
-export const viewport: Viewport = { themeColor: '#a2b69a' };
+// The story opens on black (the entrance), so the phone browser bar does too.
+export const viewport: Viewport = { themeColor: '#000000' };
 
 export const metadata: Metadata = {
   title: 'Braven Chiam | Hardware, software and design',
-  description: 'Projects by Braven Chiam, an Electronic and Computer Engineering student at Nanyang Polytechnic: a 5G rover, a private book reader, an off-grid LoRa messenger with his own PCB, a voice-controlled room and more, each split into the hardware, software and design he did.',
-  keywords: 'Braven Chiam, Chiambucket, Project June, 5G rover, BeadReader, LoRA Messenger, ESP32, PCB design, KiCAD, Onshape, Next.js, homelab, photography, Singapore',
+  description: 'Projects by Braven Chiam, an Electronic and Computer Engineering student at Nanyang Polytechnic: a water meter reader that reads its digits on an ESP32-S3, a 5G rover, a private book reader, his own hosting platform and more, from the circuit board to the cloud.',
+  keywords: 'Braven Chiam, Chiambucket, OCR Reader, DrumNet, Project June, 5G rover, BeadReader, Shebang, M5Stack, LoRA Messenger, ESP32, PCB design, KiCad, Onshape, Next.js, homelab, photography, Singapore',
   alternates: { canonical: 'https://www.chiambucket.com/' },
   openGraph: {
     title: 'Braven Chiam | Hardware, software and design',
-    description: 'A 5G rover, a private book reader, an off-grid LoRa messenger and more, each split into the hardware, software and design I did.',
+    description: 'A water meter reader that reads on the chip, a 5G rover, a private book reader and more, from the circuit board to the cloud.',
     url: 'https://www.chiambucket.com/',
     type: 'website',
   },
   twitter: {
     title: 'Braven Chiam',
-    description: 'A 5G rover, a private book reader, an off-grid LoRa messenger and more, each split into hardware, software and design.',
+    description: 'A water meter reader that reads on the chip, a 5G rover, a private book reader and more.',
   },
 };
 
@@ -42,6 +42,7 @@ const jsonLd = [
       'https://www.youtube.com/@newkringster2564',
     ],
     subjectOf: [
+      { '@type': 'CreativeWork', name: 'OCR Reader', url: 'https://www.chiambucket.com/waterslop' },
       { '@type': 'CreativeWork', name: 'Project June', url: 'https://www.chiambucket.com/project-june' },
       { '@type': 'SoftwareApplication', name: 'BeadReader', url: 'https://www.chiambucket.com/beadreader' },
     ],
@@ -83,7 +84,7 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <HomeClient />
+      <HomeStory />
     </>
   );
 }

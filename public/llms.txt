@@ -14,7 +14,7 @@
 - The site is built with Next.js 16 (React 19) and hosted on Vercel.
 
 ## Key pages
-- [Home](https://www.chiambucket.com/): a table of every project split into hardware, software and design, the two main builds (Project June and BeadReader), a searchable project gallery with one-click summaries, collaborators, the homelab, photography and contact.
+- [Home](https://www.chiambucket.com/): a scroll story in chapters: who Braven is and the layers he builds in (firmware, hardware, software, infrastructure, design), the OCR Reader as a scroll-driven 3D model of its real board and case, Project June, BeadReader, recent work "on the bench", the other write-ups, the homelab, a strip of photos and contact.
 - [Contact](https://www.chiambucket.com/contact): email (braven@chiambucket.com) and social links.
 - [Photography](https://www.chiambucket.com/photography): galleries including Highlights, Europe, China, New Zealand, Hong Kong, 21:9 and General.
 - [HomeLab](https://www.chiambucket.com/homelab): A three-node self-hosted homelab that also runs the MQTT and TURN servers his hardware projects use. NewMain (Unraid) plus a Proxmox PXE cluster (CaCa always on, Adell on demand) run around 38 services behind a segmented UniFi network with VLANs and WPA3-Enterprise RADIUS auth. Services include Immich, Nginx Proxy Manager with CrowdSec, Lychee, Pingvin Share, PairDrop, Fireshare, Tailscale, Shadowsocks, UpStat, Paperless-NGX, coturn and Mosquitto.
@@ -37,6 +37,12 @@ Other projects:
 - Pandus Dispenser: his first school project, a 6-part 3D-printed syrup dispenser (Onshape) driven by an Arduino Uno with Python and PyFirmata. [Article](https://www.chiambucket.com/pandus)
 - ELEC-F: a school team project. An M5Stack walk-in freezer alarm: a ToF sensor watches the door, a PIR sensor checks for people inside, and a timer sounds the alarm if someone is shut in too long. [Article](https://www.chiambucket.com/elecf)
 - Copy Board: a KiCAD recreation of NYP's ATMega328 dev board, with sourced replacement parts and first hands-on reflow soldering.
+Recent work (on the bench, November 2026; no write-ups yet):
+- Shebang: his own hosting platform. One account for sign-in, static pages, file hosting, short links and a Postgres database per project, reachable through one REST API or one MCP server so coding agents can publish. Next.js 16 and self-hosted Supabase. The MCP client, shebang-mcp, is open source: https://github.com/New-Kringster/shebang-mcp
+- Pip (in progress): a desk companion on an M5Stack Tab5 (ESP32-P4) that talks to an AI agent running at home, with several desktops, small applets it can build on request, camera use and tear-free page-flipped animation.
+- NCIR thermometer demos: live infrared temperature on M5Stack screens for the NCIR and NCIR 2 sensors; the NCIR 2 firmware talks to the sensor's own I2C register map with no vendor library, on the CoreS3 and the classic Basic from one codebase.
+- Flashdeck: a firmware shelf with a browser flasher (ESP Web Tools picks the image built for the connected ESP32 chip); a dependency-free Python server.
+
 - Other projects: Kauli (a product concept rendered in Blender), Series One Light (an ultralight mouse shell, about 20 g), his first website (HTML and CSS), and a Minecraft live map hosted on the homelab.
 
 ## Contact
