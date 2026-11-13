@@ -1032,9 +1032,10 @@ function drawShoreLayers(layers: BeachLayers, w: number, h: number, sea: number,
    (public/images/sunlit/beach-palm.webp, made with GPT Image 2 in the stone
    pine's style and cut out) drawn into the field's layer so its foot stands
    in the sand in front of the sea, with a soft shadow there. On wide screens
-   it is drawn at one scale; on phones the crown is sized to sit between the
-   nav and the heading and the bare trunk is stretched down to the sand, as
-   the homepage pine does. It sways from its foot with CSS. */
+   it is drawn at one scale to the nav; on phones it keeps the painting's
+   proportions and stands about 60 % of the screen tall, since a palm the
+   screen's height would need a trunk stretched thin. It sways from its foot
+   with CSS. */
 const PALM = {
   src: '/images/sunlit/beach-palm.webp',
   split: 548 / 1011, // below this row the trunk is bare
@@ -1042,6 +1043,8 @@ const PALM = {
   crownX: 250 / 501, // the middle of the crown
   footHalf: 19 / 501, // half the trunk's width at its foot
 };
+
+const PALM_PHONE = { height: 0.6, stretch: 1.1, crownX: 0.1 };
 
 function drawPalm(canvas: HTMLCanvasElement, w: number, h: number, dpr: number, img: HTMLImageElement) {
   const ctx = prepare(canvas, w, h, dpr);
@@ -1051,12 +1054,16 @@ function drawPalm(canvas: HTMLCanvasElement, w: number, h: number, dpr: number, 
   if (!iw || !ih) return;
   const portrait = w < h * 0.9;
   const footY = h * 0.985;
-  const top = Math.max(64, h * (portrait ? 0.08 : 0.075)); // below the nav
-  let s: number, crownCx: number;
+  let s: number, crownCx: number, top: number;
   if (portrait) {
-    s = (w * 0.46) / iw; // the crown a little under half the screen wide
-    crownCx = w * 0.09; // far enough in that the trunk shows along the edge
+    // a phone is too narrow for a palm the screen's height: keep the painting's
+    // own proportions (the trunk a touch longer at most) and let it stand lower
+    const tall = h * PALM_PHONE.height;
+    s = tall / (PALM.split * ih + (1 - PALM.split) * ih * PALM_PHONE.stretch);
+    top = footY - tall;
+    crownCx = w * PALM_PHONE.crownX;
   } else {
+    top = Math.max(64, h * 0.075); // below the nav
     s = (footY - top) / ih;
     crownCx = Math.min(w * 0.16, h * 0.26);
   }
