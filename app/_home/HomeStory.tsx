@@ -548,7 +548,7 @@ export default function HomeStory() {
               <ul className="hs-build-list" onPointerLeave={() => setPreview(null)}>
                 {BUILDS.map((b) => (
                   <li key={b.id} className="hs-rise">
-                    <a href={b.href} onPointerEnter={(e) => e.pointerType === 'mouse' && setPreview(b.img)} onFocus={() => setPreview(null)}>
+                    <a href={b.href} onPointerEnter={(e) => { if (e.pointerType !== 'mouse') return; onBuildsMove(e); setPreview(b.img); }} onFocus={() => setPreview(null)}>
                       <img className="hs-build-thumb" src={b.img} alt="" loading="lazy" />
                       <span className="hs-build-name">{b.name}</span>
                       <span className="hs-build-line">{b.line}</span>

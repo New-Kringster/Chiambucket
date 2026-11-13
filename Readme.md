@@ -10,6 +10,7 @@ Personal portfolio and website for Braven Chiam. Dark-themed ("Dark Sensory / Si
 
 - **Next.js 15 (App Router) + React 19 + TypeScript** — `app/` directory, server components by default
 - **framer-motion** — available for React animations (CSS handles most transitions)
+- **GSAP ScrollTrigger + Lenis** — the homepage scroll story only (scrubbed progress and smooth wheel scrolling); **three.js** draws its 3D OCR Reader
 - **Background** — one static CSS layer (`components/Backdrop.tsx`, styles at the end of `mainstyle.css`); no canvas or animation, so idle and scrolling pages do no background work
 - **Vercel Analytics + Speed Insights** — loaded in `app/layout.tsx`
 - **Lychee** — self-hosted photo galleries embedded via a remote script (loaded after paint, non-blocking)
@@ -30,7 +31,7 @@ Opens at `http://localhost:3000`. Use `npx tsc --noEmit` to type-check without d
 | Path | Purpose |
 |------|---------|
 | `app/layout.tsx` | Root layout — stylesheet links, loader, Nav/Footer, Analytics, sets per-page theme |
-| `app/page.tsx` → `app/HomeClient.tsx` | Homepage — hero, disciplines, About bento, Projects, HomeLab, photography, CTA |
+| `app/page.tsx` → `app/_home/HomeStory.tsx` | Homepage — a scroll story in chapters: entrance, Hello, the OCR Reader in 3D, Project June, BeadReader, On the bench, Other builds, HomeLab, Photos, Contact |
 | `app/<route>/page.tsx` | File-based routes (`/photography`, `/contact`, `/credits`, `/ai-use`, `/homelab`, article pages) |
 | `components/` | Shared `Nav`, `Footer`, `ClientEffects`, `SceneShell`/`SunlitScene` (the painted background), `ArticleRecommendations`, `ArticleScrollSpy` |
 | `lib/theme.ts` | Per-page accent theme map (`data-theme` on `<html>`) |
