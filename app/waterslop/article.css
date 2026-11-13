@@ -95,7 +95,7 @@
 .ws-rail-title { font: 600 11px/1.4 var(--sans); letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
 .ws-rail .ws-contents { font-size: 13px; }
 .ws-rail .ws-contents a { min-height: 1.75em; }
-.ws-content { min-width: 0; max-width: 860px; }
+.ws-content { min-width: 0; max-width: 860px; margin-inline: auto; }
 
 /* ── Sections ── */
 .ws-sec { padding: clamp(28px, 4vw, 56px) 0; border-top: 1px solid var(--line); }
