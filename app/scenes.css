@@ -159,6 +159,34 @@ html[data-theme="dusk"] {
   html.sl-alive .sl-scene.is-drawn .sl-twinkle { animation-play-state: running; }
 }
 
+/* The beach on the contact page (SunlitScene drawBeach). The sea does not
+   sway like the grass. Two sheets of surf take turns washing up the wet sand
+   and drawing back, and two sets of glints on the water twinkle out of step;
+   only while the scene is alive (html.sl-alive), still with reduced motion. */
+.sl-grass.is-beach .sl-grass-canvas { animation: none; }
+.sl-glint, .sl-surf { position: absolute; left: 0; width: 100%; pointer-events: none; opacity: 0; transition: opacity 0.9s ease-out; }
+.sl-surf { transform-origin: 50% 0; }
+.sl-grass.is-drawn .sl-glint { opacity: 0.8; }
+.sl-grass.is-drawn .sl-surf:not(.is-b) { opacity: 1; }
+@keyframes sl-swash {
+  0% { transform: translateY(-18%); opacity: 0; animation-timing-function: cubic-bezier(0.25, 0.6, 0.35, 1); }
+  12% { opacity: 1; }
+  44% { transform: translateY(0); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  76% { transform: translateY(-8%); opacity: 0.55; }
+  100% { transform: translateY(-16%); opacity: 0; }
+}
+@keyframes sl-glint { from { opacity: 0.15; } to { opacity: 1; } }
+/* the footer stands on the sand: its shade is warm sand shadow, not grass */
+html.sensory-active.is-day[data-theme="noon"] .footer {
+  background: linear-gradient(180deg, rgba(98, 74, 42, 0) 0%, rgba(98, 74, 42, 0.36) 24%, rgba(84, 62, 34, 0.66) 100%) !important; }
+@media (prefers-reduced-motion: no-preference) {
+  .sl-grass.is-drawn .sl-surf { animation: sl-swash 7.4s infinite both; animation-play-state: paused; }
+  .sl-grass.is-drawn .sl-surf.is-b { animation-delay: -3.7s; }
+  .sl-grass.is-drawn .sl-glint { animation: sl-glint 1.9s ease-in-out infinite alternate; animation-play-state: paused; }
+  .sl-grass.is-drawn .sl-glint.is-b { animation-duration: 2.6s; animation-delay: -1.1s; }
+  html.sl-alive .sl-grass.is-drawn :is(.sl-surf, .sl-glint) { animation-play-state: running; }
+}
+
 /* Fireflies in the night grass (SunlitScene addFireflies): drifting, blinking */
 .sl-firefly {
   position: absolute;

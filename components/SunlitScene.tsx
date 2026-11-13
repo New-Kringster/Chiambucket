@@ -76,6 +76,7 @@ export type Preset = {
   cloud: { stops: [string, string, string, string]; rim: string; under: string; k: number };
   clouds: CloudSpot[];
   grass: Grade[];
+  ground?: 'beach'; // sand and sea instead of the meadow
   night?: boolean; // the moon instead of the sun, stars, fireflies instead of birds
   stars?: boolean; // the first faint stars (dusk), without the moon
 };
@@ -132,7 +133,8 @@ export const PRESETS: Record<string, Preset> = {
       { x: 0.45, y: 0.1, w: 0.26, h: 0.05, k: 0.45, drift: 8, secs: 60 },
       { x: 0.5, y: 0.765, w: 0.95, h: 0.04, k: 0.4, drift: 2.5, secs: 120 },
     ],
-    grass: [{ op: 'multiply', color: 'rgba(208,232,186,0.6)' }, { op: 'soft-light', color: 'rgba(120,170,90,0.25)' }],
+    grass: [],
+    ground: 'beach',
   },
   // HomeLab: a cool, misty teal morning, the sun somewhere behind the haze on the left.
   teal: {
@@ -479,16 +481,17 @@ function paintCloud(canvas: HTMLCanvasElement, cw: number, ch: number, rand: Ran
 
 /* ---------------- Grass ---------------- */
 
-// The top of the hill, as a fraction of the screen height (it is a little higher on the left).
+// The horizon, as a fraction of the screen height (a touch higher on the left).
 const HILL = 0.795;
 
-// Hill line: a little higher on the left, with slow rolls.
+/* The far edge of the field: nearly level, with long low swells, so the
+   meadow reads as running on to the horizon rather than over a near hill. */
 function ridgeAt(x: number, w: number, h: number) {
   const t = x / w;
-  return h * (HILL + 0.03 * t)
-    + Math.sin(t * 4.3 + 0.6) * h * 0.013
-    + Math.sin(t * 11.7 + 2.1) * h * 0.006
-    + Math.sin(t * 29.3 + 1.3) * h * 0.002;
+  return h * (HILL + 0.01 * t)
+    + Math.sin(t * 3.1 + 0.6) * h * 0.004
+    + Math.sin(t * 9.7 + 2.1) * h * 0.0018
+    + Math.sin(t * 31.3 + 1.3) * h * 0.0006;
 }
 
 function blade(
@@ -524,7 +527,7 @@ function blade(
 const LIT = ['#dcc56d', '#d3bb63', '#c9b35c', '#e3d085', '#c0ab55'];
 const MID = ['#b1a452', '#a4994b', '#988f46', '#b2ab66', '#8f8944', '#bcad5c'];
 const LOW = ['#8c853c', '#807930', '#938d46', '#706824', '#a19a55', '#635a1a', '#878140'];
-const CREST = ['#dcc66f', '#e3d085', '#cdb862', '#c2b05b', '#b6a755'];
+const FAR = ['#d8c674', '#cdbb68', '#c3b263', '#e0d08a', '#b9aa5f'];
 
 /* The field is painted for a screen of height h onto a canvas that starts at
    FIELD_TOP (nothing is painted above it) and runs to `full`, below the bottom
@@ -532,7 +535,19 @@ const CREST = ['#dcc66f', '#e3d085', '#cdb862', '#c2b05b', '#b6a755'];
    rises to reach above the footer. */
 const FIELD_TOP = 0.6;
 
-function drawGrass(canvas: HTMLCanvasElement, w: number, h: number, full: number, dpr: number, p: Preset, horizon: string | null) {
+/* Where the tree stands in the field (homepage): the trunk is copied from the
+   tree's canvas into the field down to its foot, with the nearer grass laid
+   over the foot, so the tree stands partway into the meadow instead of on
+   the horizon. */
+export type TreeFoot = { canvas: HTMLCanvasElement; dpr: number; x: number; half: number; foot: number };
+// How far down the grass, from the horizon (0) to the bottom of the screen (1), the tree stands.
+const TREE_DEPTH = 0.32;
+
+/* Perspective: the ground is a plane running away to the horizon, so a blade
+   s of the way from the horizon (0) to the bottom of the screen (1) is drawn
+   at a size proportional to s. Far away there are only specks and streaks;
+   close up, long single blades. */
+function drawGrass(canvas: HTMLCanvasElement, w: number, h: number, full: number, dpr: number, p: Preset, horizon: string | null, tree?: TreeFoot | null) {
   const origin = h * FIELD_TOP;
   const ctx = prepare(canvas, w, full - origin, dpr);
   ctx.clearRect(0, 0, w, full - origin);
@@ -543,85 +558,105 @@ function drawGrass(canvas: HTMLCanvasElement, w: number, h: number, full: number
   const band = h - top;
   const k = Math.min(1.5, Math.max(0.85, band / 170));
   const ridge = (x: number) => ridgeAt(Math.min(w, Math.max(0, x)), w, h);
+  const at = (x: number, s: number) => { const r = ridge(x); return r + s * (h - r); };
 
-  // Base body of the hill, darkening towards the bottom of the screen and on below it.
+  // Base body of the field: pale where it meets the sky, deepening towards the viewer.
   const body = ctx.createLinearGradient(0, top, 0, h);
-  body.addColorStop(0, '#d2bc66');
-  body.addColorStop(0.12, '#bfad58');
-  body.addColorStop(0.32, '#9d9448');
+  body.addColorStop(0, '#d6c272');
+  body.addColorStop(0.1, '#c8b562');
+  body.addColorStop(0.32, '#a59a4c');
   body.addColorStop(0.65, '#8a833b');
   body.addColorStop(1, '#736d29');
   ctx.fillStyle = body;
   ctx.beginPath();
   ctx.moveTo(0, full);
-  for (let x = 0; x <= w; x += 6) ctx.lineTo(x, ridgeAt(x, w, h) + 3);
+  for (let x = 0; x <= w; x += 6) ctx.lineTo(x, ridgeAt(x, w, h) + 1);
   ctx.lineTo(w, full);
   ctx.closePath();
   ctx.fill();
 
-  // Broad, soft brushwork underneath: pale sweeps and deep shadow sweeps.
+  // Broad, soft brushwork underneath: pale and shadowed sweeps, flattening
+  // into thin streaks towards the horizon.
   const { canvas: soft, ctx: s } = softLayer(w, full, 0.25);
   for (let i = 0; i < Math.round((w / 14) * ((full - top) / band) * 0.6); i++) {
     const x = between(rand, -60, w);
-    const r = ridge(x);
     const depth = rand();
-    const y = r + 10 + depth * (full - r);
+    const y = at(x, 0.04 + depth * ((full - top) / band));
+    const d = Math.min(1, depth * 1.4);
     const dark = depth > 0.25 && rand() < 0.6;
-    blade(s, x, y, between(rand, 0.4, 1.1) * band, between(rand, -0.5, -0.18), between(rand, 8, 22) * k, between(rand, -10, 10),
+    blade(s, x, y, between(rand, 0.4, 1.1) * band * (0.25 + 0.75 * d), between(rand, -0.5, -0.18) * (0.35 + 0.65 * d), between(rand, 8, 22) * k * (0.2 + 0.8 * d), between(rand, -10, 10),
       dark ? '#5d5517' : pick(rand, ['#c7b763', '#b4ab62', '#d6c374']), dark ? between(rand, 0.12, 0.28) : between(rand, 0.1, 0.25));
   }
   ctx.globalAlpha = 1;
   ctx.drawImage(soft, 0, 0, w, full);
 
-  // Short tufts along the crest so the hilltop is ragged rather than a clean line.
-  for (let i = 0; i < Math.round(w / 1.6); i++) {
-    const x = between(rand, -10, w + 10);
-    blade(ctx, x, ridge(x) + between(rand, 4, 12), between(rand, 0.03, 0.1) * band, between(rand, -1.6, -0.75),
-      between(rand, 1.2, 3.2) * k, between(rand, -3, 3), pick(rand, ['#d2bc66', '#c9b45e', '#dcc66f', '#bfad58']), between(rand, 0.7, 1));
+  // The distant field: too far for single blades. Long flat dabs of light and
+  // shade, and fine upright specks that grow as the ground comes nearer.
+  for (let i = 0; i < Math.round(w / 3); i++) {
+    const sd = Math.pow(rand(), 1.5) * 0.22;
+    const x = between(rand, -40, w);
+    ctx.globalAlpha = between(rand, 0.1, 0.24);
+    ctx.fillStyle = rand() < 0.5 ? pick(rand, FAR) : '#8f8642';
+    ctx.beginPath();
+    ctx.ellipse(x, at(x, sd), between(rand, 20, 70) * (0.3 + sd * 4), 0.6 + sd * 9 * k, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  for (let i = 0; i < Math.round((w * band) / 10); i++) {
+    const sd = Math.pow(rand(), 1.4) * 0.16;
+    const x = between(rand, -4, w + 4);
+    const tall = (0.8 + sd * 30) * k * between(rand, 0.6, 1.3);
+    ctx.globalAlpha = between(rand, 0.35, 0.8);
+    ctx.fillStyle = sd < 0.03 ? pick(rand, FAR) : pick(rand, rand() < 0.6 ? FAR : MID);
+    ctx.fillRect(x, at(x, sd) - tall + 0.5, Math.max(0.6, (0.5 + sd * 6) * k), tall);
   }
 
-  // The main field of strokes, painted back to front, in perspective: the
-  // ground near the crest is far away, so its blades are small, upright and
-  // packed close; towards the bottom of the screen they grow long and wide.
-  // Depth is measured down the visible band, so the part below the screen is
-  // all near, darker grass.
+  // The main field of strokes, painted back to front. Each is sized by its
+  // distance; there are many more of them towards the horizon, where each
+  // covers so little. Depth runs past 1 below the screen, all near, darker grass.
   const strokes: { x: number; y: number; depth: number }[] = [];
   const reach = (full - top) / band;
-  const count = Math.round((w * band) / 68);
-  const below = Math.round(count * (reach - 1) * 0.26);
+  const S0 = 0.07;
+  const count = Math.round((w * band) / 48);
+  const below = Math.round(count * (reach - 1) * 0.14);
   for (let i = 0; i < count + below; i++) {
     const x = between(rand, -60, w + 10);
-    const r = ridge(x);
-    const depth = i < count ? Math.pow(rand(), 1.45) : between(rand, 1, reach);
-    strokes.push({ x, y: r + 4 + depth * (h - r + 30), depth });
+    // denser towards the horizon: s is drawn from 1/s^1.6 between S0 and 1
+    const depth = i < count ? S0 / Math.pow(1 - rand() * (1 - Math.pow(S0, 0.6)), 1 / 0.6) : between(rand, 1, reach);
+    strokes.push({ x, y: at(x, depth) + 2, depth });
   }
   strokes.sort((a, b) => a.y - b.y);
+  // The tree's foot, in the field's own x (the canvas is stretched to 106 % and starts 3 % left).
+  const treeX = tree ? (tree.x + w * 0.03) / 1.06 : 0;
+  const footY = tree ? at(treeX, TREE_DEPTH) : Infinity;
+  const front: Parameters<typeof blade>[] = [];
   for (const st of strokes) {
     const near = Math.min(1, st.depth);
-    const size = 0.4 + 1.5 * Math.pow(near, 1.5);
+    const size = 0.06 + 1.8 * near;
     const t = st.depth + between(rand, -0.1, 0.1);
     const palette = t < 0.15 ? LIT : t < 0.4 ? MID : LOW;
     // Shading is kept to the visible slope: the far rows are too small to show
     // it and the grass below the screen is already deep in shadow.
     const root = st.depth < 0.25 || st.depth > 1 ? undefined : near < 0.55 ? '#7f7731' : '#575016';
-    blade(ctx, st.x, st.y, between(rand, 0.15, 0.42) * band * size, between(rand, -1.05, -0.5) - (1 - near) * 0.4,
-      between(rand, 0.8, 2.4) * k * size, between(rand, -7, 7) * k * size, pick(rand, palette), between(rand, 0.4, 0.8), root);
+    const args: Parameters<typeof blade> = [ctx, st.x, st.y, between(rand, 0.17, 0.42) * band * size, between(rand, -1.05, -0.5) - (1 - near) * 0.45,
+      between(rand, 0.9, 2.4) * k * size, between(rand, -7, 7) * k * size, pick(rand, palette), between(rand, 0.4, 0.8), root];
+    blade(...args);
+    // strokes rooted at or in front of the tree's foot that can reach across its trunk
+    if (tree && st.y > footY - band * 0.015 && st.y < footY + band * 0.9 && st.x > treeX - band * 0.85 && st.x < treeX + band * 0.12) front.push(args);
   }
 
   // Wind running over the field: soft patches of light and shadow in rows
-  // that crowd together towards the crest, the way gusts bend a meadow.
+  // that crowd together towards the horizon, the way gusts bend a meadow.
   const { canvas: wind, ctx: wv } = softLayer(w, full, 0.1);
-  const rows = 9;
+  const rows = 10;
   for (let j = 1; j <= rows; j++) {
-    const d = Math.pow(j / rows, 1.7);
-    const y = top + band * (0.06 + d * 0.98);
-    const tall = (5 + 30 * d) * k;
+    const d = Math.pow(j / rows, 1.9);
+    const tall = (2 + 32 * d) * k;
     const lit = j % 2 === 1;
-    for (let x = between(rand, -200, 0); x < w + 200; x += between(rand, 0.6, 1.4) * (150 + 330 * d)) {
+    for (let x = between(rand, -200, 0); x < w + 200; x += between(rand, 0.6, 1.4) * (120 + 360 * d)) {
       wv.globalAlpha = lit ? between(rand, 0.08, 0.17) : between(rand, 0.12, 0.22);
       wv.fillStyle = lit ? '#f1e3a6' : '#48420f';
       wv.beginPath();
-      wv.ellipse(x, y + between(rand, -0.4, 0.4) * tall, between(rand, 70, 170) * (0.45 + d), tall, between(rand, -0.06, 0.06), 0, Math.PI * 2);
+      wv.ellipse(x, at(x, 0.02 + d * 0.98) + between(rand, -0.4, 0.4) * tall, between(rand, 70, 170) * (0.3 + d), tall, between(rand, -0.04, 0.04), 0, Math.PI * 2);
       wv.fill();
     }
   }
@@ -630,33 +665,22 @@ function drawGrass(canvas: HTMLCanvasElement, w: number, h: number, full: number
   ctx.drawImage(wind, 0, 0, w, full);
   ctx.globalCompositeOperation = 'source-over';
 
-  // A few pale highlights catching the light, mostly near the crest.
+  // A few pale highlights catching the light, sized by distance like the rest.
   for (let i = 0; i < Math.round(w / 4); i++) {
     const x = rand() * w;
-    const r = ridgeAt(x, w, h);
-    const depth = Math.pow(rand(), 2);
-    const size = 0.5 + 0.6 * depth;
-    blade(ctx, x, r + depth * (h - r), between(rand, 0.1, 0.3) * band * size, between(rand, -1.15, -0.5),
-      between(rand, 0.4, 1) * k * size, between(rand, -5, 5), pick(rand, ['#ecdd9c', '#e3d189', '#d8ca85']), between(rand, 0.25, 0.6) * (1 - depth * 0.5));
+    const depth = 0.04 + Math.pow(rand(), 1.6) * 0.96;
+    const size = 0.1 + 1.1 * depth;
+    blade(ctx, x, at(x, depth), between(rand, 0.1, 0.3) * band * size, between(rand, -1.25, -0.55),
+      between(rand, 0.4, 1) * k * size, between(rand, -5, 5) * size, pick(rand, ['#ecdd9c', '#e3d189', '#d8ca85']), between(rand, 0.25, 0.6) * (1 - depth * 0.5));
   }
 
-  // Clumps of taller blades break up the crest.
-  const clumps = Math.max(4, Math.round(w / 130));
-  for (let c = 0; c < clumps; c++) {
-    const cx = between(rand, 0, w);
-    const tall = between(rand, 0.12, 0.3) * band;
-    for (let i = 0; i < 18; i++) {
-      const x = cx + between(rand, -1, 1) * tall * 0.35;
-      blade(ctx, x, ridge(x) + between(rand, 4, band * 0.07), tall * between(rand, 0.45, 1), between(rand, -1.65, -0.8),
-        between(rand, 0.5, 1.4) * k, between(rand, -6, 6), pick(rand, [...CREST, '#a99c4f']), between(rand, 0.55, 0.95));
-    }
-  }
-
-  // Stray blades standing against the sky along the crest.
-  for (let i = 0; i < Math.round(w / 4); i++) {
-    const x = rand() * w;
-    blade(ctx, x, ridgeAt(x, w, h) + between(rand, 2, band * 0.06), between(rand, 0.04, 0.2) * band, between(rand, -1.75, -0.9),
-      between(rand, 0.3, 0.9) * k, between(rand, -5, 5), pick(rand, CREST), between(rand, 0.45, 0.9));
+  // The horizon's own edge: a fine fringe of specks standing just over it.
+  for (let i = 0; i < Math.round(w / 1.4); i++) {
+    const x = between(rand, -4, w + 4);
+    const tall = between(rand, 0.6, 2.4) * k;
+    ctx.globalAlpha = between(rand, 0.4, 0.85);
+    ctx.fillStyle = pick(rand, FAR);
+    ctx.fillRect(x, ridge(x) + 1.5 - tall, Math.max(0.6, 0.7 * k), tall);
   }
 
   // Out of focus right in front: a few long, dark blades rising from below the
@@ -681,30 +705,390 @@ function drawGrass(canvas: HTMLCanvasElement, w: number, h: number, full: number
 
   gradeField(canvas, p.grass, h, origin, dpr);
 
-  // Distance: the far grass along the crest takes on the colour of the sky
-  // just above it, and that fades out down the slope. Laid on after the grade
-  // so it matches the sky as painted.
-  if (horizon) {
-    ctx.globalCompositeOperation = 'source-atop';
-    const air = ctx.createLinearGradient(0, top - band * 0.15, 0, top + band * 0.55);
-    air.addColorStop(0, `rgba(${horizon},0.5)`);
-    air.addColorStop(0.3, `rgba(${horizon},0.22)`);
-    air.addColorStop(1, `rgba(${horizon},0)`);
-    ctx.fillStyle = air;
-    ctx.fillRect(0, top - band * 0.15, w, band * 0.7);
-    ctx.globalCompositeOperation = 'source-over';
+  // Distance: the far field takes on the colour of the sky just above it, most
+  // of all at the horizon, fading out down the slope. Laid on after the grade
+  // so it matches the sky as painted, in narrow columns that follow the horizon.
+  if (horizon) haze(ctx, 0, w, band, ridge, horizon);
+
+  // The tree, planted: its trunk down to the foot over the finished field,
+  // then the strokes in front of the foot again, graded and hazed the same way.
+  if (tree) {
+    plantTree(ctx, tree, w, ridge(treeX), footY);
+    const bx = Math.floor(treeX - band * 0.9), by = Math.floor(ridge(treeX) - 8);
+    const bw = Math.ceil(band * 1.1), bh = Math.ceil(footY + band * 0.95 - by);
+    const layer = document.createElement('canvas');
+    const lc = prepare(layer, bw, bh, dpr);
+    lc.translate(-bx, -by);
+    for (const args of front) { args[0] = lc; blade(...args); }
+    lc.globalAlpha = 1;
+    lc.drawImage(fore, 0, 0, w, full);
+    gradeField(layer, p.grass, h, by, dpr);
+    if (horizon) haze(lc, bx, bx + bw, band, ridge, horizon);
+    ctx.drawImage(layer, bx, by, bw, bh);
   }
 }
 
-/* The sky's colour just above the hill, averaged across the screen. */
+/* Distance haze over a painted field, in narrow columns that follow the horizon. */
+function haze(ctx: Ctx, x0: number, x1: number, band: number, ridge: (x: number) => number, horizon: string) {
+  ctx.globalCompositeOperation = 'source-atop';
+  const step = 24;
+  for (let x = Math.floor(x0 / step) * step; x < x1; x += step) {
+    const r = ridge(x + step / 2);
+    const air = ctx.createLinearGradient(0, r - 4, 0, r + band * 0.55);
+    air.addColorStop(0, `rgba(${horizon},0.78)`);
+    air.addColorStop(0.08, `rgba(${horizon},0.5)`);
+    air.addColorStop(0.3, `rgba(${horizon},0.2)`);
+    air.addColorStop(1, `rgba(${horizon},0)`);
+    ctx.fillStyle = air;
+    ctx.fillRect(x, r - 12, step, band * 0.6);
+  }
+  ctx.globalCompositeOperation = 'source-over';
+}
+
+/* Lay the trunk into the field where the tree stands: copied from the tree's
+   canvas (the field canvas is stretched to 106 % of the screen and starts 3 %
+   to the left, so screen x maps back through that), then the strokes after it
+   cover its foot. */
+function plantTree(ctx: Ctx, tree: TreeFoot, w: number, horizonY: number, footY: number) {
+  const sx = Math.max(0, (tree.x - tree.half * 2) * tree.dpr);
+  const sw = Math.min(tree.canvas.width - sx, tree.half * 4 * tree.dpr);
+  const y0 = horizonY - 6;
+  const y1 = footY + 4;
+  if (sw <= 0 || y1 <= y0) return;
+  // The trunk on its own layer first, so its foot can sink into shadow and fade.
+  const cw = Math.ceil(sw / tree.dpr), ch = Math.ceil(y1 - y0);
+  const piece = document.createElement('canvas');
+  const pc = prepare(piece, cw, ch, tree.dpr);
+  pc.drawImage(tree.canvas, sx, y0 * tree.dpr, sw, ch * tree.dpr, 0, 0, cw, ch);
+  pc.globalCompositeOperation = 'source-atop';
+  const dusk = pc.createLinearGradient(0, ch - 26, 0, ch);
+  dusk.addColorStop(0, 'rgba(52,46,14,0)');
+  dusk.addColorStop(1, 'rgba(52,46,14,0.55)');
+  pc.fillStyle = dusk;
+  pc.fillRect(0, ch - 26, cw, 26);
+  pc.globalCompositeOperation = 'destination-out';
+  const fade = pc.createLinearGradient(0, ch - 10, 0, ch);
+  fade.addColorStop(0, 'rgba(0,0,0,0)');
+  fade.addColorStop(1, 'rgba(0,0,0,1)');
+  pc.fillStyle = fade;
+  pc.fillRect(0, ch - 10, cw, 10);
+  ctx.save();
+  ctx.globalAlpha = 1;
+  ctx.drawImage(piece, (sx / tree.dpr + w * 0.03) / 1.06, y0, cw / 1.06, ch);
+  ctx.restore();
+}
+
+/* The sky's colour just above the horizon, averaged across the screen. */
 function horizonOf(sky: HTMLCanvasElement, h: number): string | null {
   const ctx = sky.getContext('2d');
   if (!ctx || !sky.width || !sky.height) return null;
-  const y = Math.min(sky.height - 1, Math.round(h * (HILL - 0.03) * (sky.height / h)));
+  const y = Math.min(sky.height - 1, Math.round(h * (HILL - 0.02) * (sky.height / h)));
   const row = ctx.getImageData(0, y, sky.width, 1).data;
   let r = 0, g = 0, b = 0, n = 0;
   for (let i = 0; i < row.length; i += 4 * 8) { r += row[i]; g += row[i + 1]; b += row[i + 2]; n++; }
   return n ? `${Math.round(r / n)},${Math.round(g / n)},${Math.round(b / n)}` : null;
+}
+
+/* ---------------- Beach (the contact page) ---------------- */
+
+/* Instead of the meadow, the contact page looks out to sea from the sand: a
+   level sea horizon, open water turning to turquoise over the shallows, a
+   wave breaking, the surf washing up the wet sand, and dry rippled sand in
+   front. Painted once like the field; the surf and the glints on the water
+   are their own small canvases, moved only with CSS (app/scenes.css). */
+
+// The waterline, as a share of the way from the horizon (0) down to the bottom of the screen (1).
+const shoreAt = (x: number, w: number) => 0.47 + 0.03 * Math.sin((x / w) * 2.3 + 0.8) + 0.01 * Math.sin((x / w) * 7.3 + 1.9);
+
+const SEA_BRUSH = ['#9cc0d6', '#86b2cc', '#6fa3c2', '#5b96b9', '#4f8db3'];
+const SAND_LIT = ['#f2e4c3', '#eedcb6', '#f5e9cd'];
+const SAND_SHADE = ['#d3bb8f', '#c9ae82', '#dcc59a'];
+
+export type BeachLayers = { surf: HTMLCanvasElement[]; glints: HTMLCanvasElement[] };
+
+function drawBeach(canvas: HTMLCanvasElement, w: number, h: number, full: number, dpr: number, p: Preset, horizon: string | null, layers: BeachLayers | null) {
+  const origin = h * FIELD_TOP;
+  const ctx = prepare(canvas, w, full - origin, dpr);
+  ctx.clearRect(0, 0, w, full - origin);
+  ctx.translate(0, -origin);
+  const rand = seeded(2207);
+
+  const sea = h * (HILL + 0.004); // the horizon: dead level, as only the sea is
+  const band = h - sea;
+  const k = Math.min(1.5, Math.max(0.85, band / 170));
+  const yAt = (s: number) => sea + s * band;
+  const shoreY = (x: number) => yAt(shoreAt(x, w));
+  const sunX = w * p.sun.x;
+
+  // The water: hazy at the horizon, deep blue out at sea, turquoise and pale over the shallows.
+  const water = ctx.createLinearGradient(0, sea, 0, yAt(0.52));
+  water.addColorStop(0, '#a9c8db');
+  water.addColorStop(0.08, '#7eabc8');
+  water.addColorStop(0.35, '#5b98bd');
+  water.addColorStop(0.62, '#4fa4b8');
+  water.addColorStop(0.82, '#6cc1c3');
+  water.addColorStop(1, '#9bd8cf');
+  ctx.fillStyle = water;
+  ctx.fillRect(-10, sea, w + 20, band * 0.6);
+
+  // Long, flat brushstrokes of lighter and darker water, flattening into lines towards the horizon.
+  for (let i = 0; i < Math.round(w / 2.2); i++) {
+    const s = Math.pow(rand(), 1.6) * 0.46;
+    const x = between(rand, -60, w + 60);
+    if (yAt(s) > shoreY(x) - 2) continue;
+    ctx.globalAlpha = between(rand, 0.08, 0.26);
+    ctx.fillStyle = rand() < 0.45 ? '#cfe3ec' : pick(rand, SEA_BRUSH);
+    ctx.beginPath();
+    ctx.ellipse(x, yAt(s), between(rand, 16, 60) * (0.25 + s * 4), (0.3 + s * 5) * k, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Swells rolling in: darker lines that crowd together towards the horizon.
+  const swells = 9;
+  for (let j = 1; j <= swells; j++) {
+    const s = Math.pow(j / swells, 1.8) * 0.4;
+    ctx.strokeStyle = '#3f7fa6';
+    ctx.lineWidth = (0.4 + s * 6) * k;
+    for (let x = between(rand, -200, 0); x < w + 100;) {
+      const len = between(rand, 60, 260) * (0.4 + s * 3);
+      ctx.globalAlpha = between(rand, 0.12, 0.3);
+      ctx.beginPath();
+      for (let u = 0; u <= 1.001; u += 0.1) {
+        const px = x + u * len;
+        const py = yAt(s) + Math.sin(u * Math.PI) * -1.4 * (0.3 + s * 4) * k;
+        if (u === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+      x += len + between(rand, 20, 160) * (0.4 + s * 2);
+    }
+  }
+
+  // Whitecaps: specks out at sea, short dashes nearer in.
+  for (let i = 0; i < Math.round(w / 16); i++) {
+    const s = Math.pow(rand(), 1.4) * 0.34;
+    const x = between(rand, 0, w);
+    const len = (1 + s * 30) * k * between(rand, 0.4, 1.3);
+    ctx.globalAlpha = between(rand, 0.25, 0.65) * (0.5 + s);
+    ctx.fillStyle = '#f6fbfb';
+    ctx.beginPath();
+    ctx.ellipse(x, yAt(s), len, Math.max(0.35, (0.3 + s * 3) * k), 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // The sun on the water: a soft column of light under the sun, widening towards the shore.
+  const { canvas: glow, ctx: g } = softLayer(w, full, 0.2);
+  for (let i = 0; i < 260; i++) {
+    const s = Math.pow(rand(), 0.8) * 0.42;
+    const spread = 18 + s * 520;
+    g.globalAlpha = between(rand, 0.05, 0.16);
+    g.fillStyle = '#fbfdf8';
+    g.beginPath();
+    g.ellipse(sunX + between(rand, -1, 1) * spread, yAt(s), between(rand, 10, 40) * (0.4 + s * 3), (0.6 + s * 4) * k, 0, 0, Math.PI * 2);
+    g.fill();
+  }
+  ctx.globalAlpha = 1;
+  ctx.drawImage(glow, 0, 0, w, full);
+
+  // The breaking wave: a pale, glassy face under a line of foam, then the
+  // foam left behind on the shallows, all following the waterline.
+  const line = (off: number) => (x: number) => shoreY(x) - off * band;
+  const face = line(0.085), crest = line(0.1), wash = line(0.045);
+  ctx.globalAlpha = 0.5;
+  const faceFill = ctx.createLinearGradient(0, yAt(0.33), 0, yAt(0.48));
+  faceFill.addColorStop(0, 'rgba(120,206,206,0)');
+  faceFill.addColorStop(1, 'rgba(150,222,214,0.9)');
+  ctx.fillStyle = faceFill;
+  ctx.beginPath();
+  ctx.moveTo(-10, crest(-10));
+  for (let x = 0; x <= w + 10; x += 8) ctx.lineTo(x, crest(x));
+  for (let x = w + 10; x >= -10; x -= 8) ctx.lineTo(x, face(x) + band * 0.03);
+  ctx.closePath();
+  ctx.fill();
+  // The crest: foam that swells and thins along the wave in clumps.
+  for (let x = -20; x < w + 20; x += 2) {
+    const swell = 0.5 + 0.5 * Math.sin(x / 47 + 1.3) * Math.sin(x / 131 + 0.4);
+    const thick = (0.8 + swell * 2.6) * k;
+    ctx.globalAlpha = between(rand, 0.55, 0.95);
+    ctx.fillStyle = rand() < 0.75 ? '#fbfefd' : '#dcefee';
+    ctx.beginPath();
+    ctx.ellipse(x, crest(x) + between(rand, -0.5, 0.5) * thick, between(rand, 2.4, 5) * k, thick * between(rand, 0.6, 1), 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  // What the wave leaves on the shallows: a loose lace of foam.
+  ctx.strokeStyle = '#f2fafa';
+  for (let i = 0; i < Math.round(w / 9); i++) {
+    const x = between(rand, -20, w + 20);
+    const y = between(rand, crest(x) + 3 * k, wash(x) + 2 * k);
+    const len = between(rand, 10, 40) * k;
+    ctx.globalAlpha = between(rand, 0.25, 0.6);
+    ctx.lineWidth = between(rand, 0.5, 1.2) * k;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.bezierCurveTo(x + len * 0.3, y + between(rand, -4, 4) * k, x + len * 0.7, y + between(rand, -4, 4) * k, x + len, y + between(rand, -1.5, 1.5) * k);
+    ctx.stroke();
+  }
+
+  // The sand. Wet and dark at the waterline with the sky in it, drying to pale
+  // gold, then warmer and shadowed close up.
+  const sandTop = (x: number) => shoreY(x) - 1;
+  ctx.globalAlpha = 1;
+  const sand = ctx.createLinearGradient(0, yAt(0.42), 0, h);
+  sand.addColorStop(0, '#b49b74');
+  sand.addColorStop(0.16, '#cdb68c');
+  sand.addColorStop(0.3, '#e9d7af');
+  sand.addColorStop(0.7, '#e3cc9f');
+  sand.addColorStop(1, '#d5ba8b');
+  ctx.fillStyle = sand;
+  ctx.beginPath();
+  ctx.moveTo(-10, full);
+  for (let x = -10; x <= w + 10; x += 6) ctx.lineTo(x, sandTop(x));
+  ctx.lineTo(w + 10, full);
+  ctx.closePath();
+  ctx.fill();
+  // the sky mirrored in the wet sand
+  ctx.globalCompositeOperation = 'source-atop';
+  for (let x = 0; x < w; x += 24) {
+    const top = sandTop(x + 12);
+    const sheen = ctx.createLinearGradient(0, top, 0, top + band * 0.14);
+    sheen.addColorStop(0, 'rgba(178,212,230,0.6)');
+    sheen.addColorStop(1, 'rgba(178,212,230,0)');
+    ctx.fillStyle = sheen;
+    ctx.fillRect(x, top, 24, band * 0.15);
+  }
+  ctx.globalCompositeOperation = 'source-over';
+
+  // Ripples the wind has left in the dry sand, finer and closer together further off.
+  // Soft mottling: broad patches a shade lighter or darker.
+  const { canvas: mott, ctx: m } = softLayer(w, full, 0.15);
+  for (let i = 0; i < Math.round(w / 6); i++) {
+    const x = between(rand, -60, w + 60);
+    const sd = between(rand, shoreAt(x, w) + 0.1, (full - sea) / band);
+    m.globalAlpha = between(rand, 0.08, 0.2);
+    m.fillStyle = rand() < 0.5 ? '#f6ead0' : '#c8ad80';
+    m.beginPath();
+    m.ellipse(x, yAt(sd), between(rand, 30, 110) * (0.3 + sd), between(rand, 3, 9) * (0.3 + sd) * k, 0, 0, Math.PI * 2);
+    m.fill();
+  }
+  ctx.globalAlpha = 1;
+  ctx.drawImage(mott, 0, 0, w, full);
+  for (let j = 0; j < 26; j++) {
+    const s = 0.6 + Math.pow(j / 26, 1.4) * 0.85;
+    for (let x = between(rand, -160, 0); x < w + 60;) {
+      const len = between(rand, 70, 220) * (0.5 + s);
+      const y = yAt(s) + between(rand, -3, 3) * s;
+      if (y > sandTop(x) + band * 0.1) {
+        const a1 = between(rand, -4, 4) * s * k, a2 = between(rand, -4, 4) * s * k;
+        for (const [color, dy, a] of [['#c4a97c', 0, 0.2], ['#f7ecd3', -1.3 * s * k, 0.3]] as const) {
+          ctx.globalAlpha = a * between(rand, 0.5, 1);
+          ctx.strokeStyle = color;
+          ctx.lineWidth = (0.5 + s * 1.4) * k;
+          ctx.beginPath();
+          ctx.moveTo(x, y + dy);
+          ctx.bezierCurveTo(x + len * 0.33, y + dy + a1, x + len * 0.66, y + dy + a2, x + len, y + dy);
+          ctx.stroke();
+        }
+      }
+      x += len + between(rand, 30, 120) * s;
+    }
+  }
+
+  // Grains: fine specks of light and shade, larger close up.
+  for (let i = 0; i < Math.round((w * band) / 14); i++) {
+    const x = between(rand, 0, w);
+    const s = between(rand, shoreAt(x, w) + 0.02, (full - sea) / band);
+    const size = Math.max(0.6, (0.3 + s * 1.6) * k);
+    ctx.globalAlpha = between(rand, 0.2, 0.55);
+    ctx.fillStyle = rand() < 0.5 ? pick(rand, SAND_LIT) : pick(rand, SAND_SHADE);
+    ctx.fillRect(x, yAt(s), size, size);
+  }
+
+  // Close in front: soft, out-of-focus swells of sand along the bottom edge.
+  const { canvas: fore, ctx: f } = softLayer(w, full, 0.12);
+  for (let i = 0; i < Math.round(w / 60); i++) {
+    f.globalAlpha = between(rand, 0.18, 0.34);
+    f.fillStyle = pick(rand, ['#c4a676', '#b89a6b', '#d0b484']);
+    f.beginPath();
+    f.ellipse(between(rand, -60, w + 60), h + between(rand, -0.05, 0.25) * band, between(rand, 80, 220) * k, between(rand, 14, 34) * k, 0, 0, Math.PI * 2);
+    f.fill();
+  }
+  ctx.globalAlpha = 1;
+  ctx.drawImage(fore, 0, 0, w, full);
+  const foot = ctx.createLinearGradient(0, h - band * 0.4, 0, full);
+  foot.addColorStop(0, 'rgba(120,96,58,0)');
+  foot.addColorStop(Math.min(0.9, (band * 0.4) / (full - h + band * 0.4)), 'rgba(120,96,58,0.18)');
+  foot.addColorStop(1, 'rgba(110,88,52,0.3)');
+  ctx.fillStyle = foot;
+  ctx.fillRect(0, h - band * 0.4, w, full - h + band * 0.4);
+
+  // Distance: the far sea melts into the sky.
+  if (horizon) haze(ctx, 0, w, band * 0.5, () => sea, horizon);
+
+  if (layers) drawShoreLayers(layers, w, h, sea, band, k, sunX, dpr);
+}
+
+/* The moving parts, each on a small canvas laid over the waterline or the
+   sea: two sheets of surf that take turns washing up the sand, and two sets
+   of glints under the sun that twinkle out of step. They are in screen
+   coordinates (the field canvas is stretched to 106 % from 3 % left). */
+function drawShoreLayers(layers: BeachLayers, w: number, h: number, sea: number, band: number, k: number, sunX: number, dpr: number) {
+  const toField = (x: number) => (x + w * 0.03) / 1.06;
+  const shore = (x: number) => sea + shoreAt(toField(x), w) * band;
+  const rand = seeded(4409);
+
+  const surfTop = sea + band * 0.36, surfH = band * 0.34;
+  layers.surf.forEach((el, n) => {
+    el.style.top = `${surfTop.toFixed(1)}px`;
+    el.style.height = `${surfH.toFixed(1)}px`;
+    const c = prepare(el, w, surfH, Math.min(dpr, 1.5));
+    c.clearRect(0, 0, w, surfH);
+    c.translate(0, -surfTop);
+    // the thin sheet of water running up the sand, and its lacy edge
+    const reachOf = (x: number) => shore(x) + band * (0.035 + 0.025 * Math.sin(x / (90 + n * 40) + n * 2.1) + 0.012 * Math.sin(x / 23 + n));
+    c.globalAlpha = 1;
+    for (let x = 0; x < w; x += 6) {
+      const top = shore(x) - band * 0.02, bottom = reachOf(x);
+      const sheet = c.createLinearGradient(0, top, 0, bottom);
+      sheet.addColorStop(0, 'rgba(150,214,212,0.55)');
+      sheet.addColorStop(1, 'rgba(196,232,228,0.25)');
+      c.fillStyle = sheet;
+      c.fillRect(x, top, 6.5, bottom - top);
+    }
+    for (let x = -4; x < w + 4; x += 2.2) {
+      const y = reachOf(x);
+      c.globalAlpha = between(rand, 0.5, 0.95);
+      c.fillStyle = rand() < 0.85 ? '#fbfefe' : '#e2f2f1';
+      c.beginPath();
+      c.ellipse(x, y + between(rand, -1, 0.6) * k, between(rand, 1.4, 3.6) * k, between(rand, 0.5, 1.3) * k, 0, 0, Math.PI * 2);
+      c.fill();
+      if (rand() < 0.35) {
+        c.globalAlpha = between(rand, 0.3, 0.7);
+        c.beginPath();
+        c.arc(x + between(rand, -3, 3), y - between(rand, 1, 6) * k, between(rand, 0.4, 1.1) * k, 0, Math.PI * 2);
+        c.fill();
+      }
+    }
+  });
+
+  const glintTop = sea, glintH = band * 0.45;
+  layers.glints.forEach((el) => {
+    el.style.top = `${glintTop.toFixed(1)}px`;
+    el.style.height = `${glintH.toFixed(1)}px`;
+    const c = prepare(el, w, glintH, Math.min(dpr, 1.5));
+    c.clearRect(0, 0, w, glintH);
+    c.translate(0, -glintTop);
+    c.fillStyle = '#ffffff';
+    for (let i = 0; i < 46; i++) {
+      const s = Math.pow(rand(), 0.85) * 0.38;
+      const x = sunX + between(rand, -1, 1) * (12 + s * 420);
+      const y = sea + s * band;
+      if (y > shore(x) - band * 0.14) continue;
+      const r = (0.4 + s * 3.4) * k * between(rand, 0.6, 1.2);
+      c.globalAlpha = between(rand, 0.45, 0.9);
+      c.beginPath();
+      c.ellipse(x, y, r * 2.6, Math.max(0.35, r * 0.32), 0, 0, Math.PI * 2);
+      c.fill();
+    }
+  });
 }
 
 /* Lay a preset's colour grade over the painted field. Blend modes also paint
@@ -751,16 +1135,17 @@ const TREE = {
   crownTop: 127 / 1536, // first row of needles in the painting
   split: 740 / 1536, // below this row the trunk is bare
   trunkX: 236 / 1024, // the trunk's centre, across the painting
+  trunkHalf: 30 / 820, // half the bare trunk's width, across the painting
 };
 
 type NameBox = { left: number; top: number };
 
-function drawTree(canvas: HTMLCanvasElement, w: number, h: number, dpr: number, img: HTMLImageElement, name: NameBox) {
+function drawTree(canvas: HTMLCanvasElement, w: number, h: number, dpr: number, img: HTMLImageElement, name: NameBox): TreeFoot | null {
   const ctx = prepare(canvas, w, h, dpr);
   ctx.clearRect(0, 0, w, h);
   const iw = img.naturalWidth;
   const ih = img.naturalHeight;
-  if (!iw || !ih) return;
+  if (!iw || !ih) return null;
   const portrait = w < h * 0.9;
   const crownBottom = name.top - h * 0.012;
   const below = 66; // the nav pills
@@ -771,7 +1156,11 @@ function drawTree(canvas: HTMLCanvasElement, w: number, h: number, dpr: number, 
   const trunkX = Math.max(6, name.left - Math.max(18, w * 0.045));
   const left = trunkX - TREE.trunkX * iw * s;
   const splitY = TREE.split * ih;
-  const ground = ridgeAt(Math.max(0, trunkX), w, h) + h * 0.06;
+  // The trunk runs on well past its foot in the field: the grass hides the
+  // rest, and the field sinks a little further than the tree as you scroll.
+  const horizonY = ridgeAt(Math.max(0, trunkX), w, h);
+  const foot = horizonY + (h - horizonY) * TREE_DEPTH;
+  const ground = Math.min(h, foot + h * 0.15);
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = 'high';
   ctx.drawImage(img, 0, 0, iw, splitY, left, crownBottom - splitY * s, iw * s, splitY * s);
@@ -784,6 +1173,7 @@ function drawTree(canvas: HTMLCanvasElement, w: number, h: number, dpr: number, 
   ctx.fillStyle = grainPattern(ctx, seeded(3301));
   ctx.fillRect(0, 0, w, h);
   ctx.globalCompositeOperation = 'source-over';
+  return { canvas, dpr, x: trunkX, half: TREE.trunkHalf * iw * s, foot };
 }
 
 // Where the name sits, from layout offsets so its load animation (a scale) does not skew it.
@@ -825,10 +1215,18 @@ const wings = (lift: number) => {
 
 
 /** The grass. Render it inside <main>, after the section that should rise out of it. */
-export function SunlitField() {
+export function SunlitField({ beach = false }: { beach?: boolean }) {
   return (
-    <div className="sl-grass" aria-hidden="true">
+    <div className={`sl-grass${beach ? ' is-beach' : ''}`} aria-hidden="true">
       <canvas className="sl-grass-canvas" />
+      {beach && (
+        <>
+          <canvas className="sl-glint" />
+          <canvas className="sl-glint is-b" />
+          <canvas className="sl-surf" />
+          <canvas className="sl-surf is-b" />
+        </>
+      )}
     </div>
   );
 }
@@ -893,7 +1291,21 @@ export default function SunlitScene({ theme, home }: SceneProps) {
 
     let drawnW = 0;
     let drawnH = 0;
+    let planted: TreeFoot | null = null;
     let flies: HTMLElement[] = [];
+    // The field, which carries the foot of the tree once the tree is drawn.
+    const paintField = (w: number, h: number) => {
+      const dpr = Math.min(window.devicePixelRatio || 1, window.matchMedia('(pointer: coarse)').matches ? 1.5 : 2);
+      const full = Math.max(h, Math.round(field.getBoundingClientRect().height));
+      if (p.ground === 'beach') {
+        drawBeach(grass, w, h, full, dpr, p, horizonOf(sky, h), {
+          surf: Array.from(field.querySelectorAll<HTMLCanvasElement>('.sl-surf')),
+          glints: Array.from(field.querySelectorAll<HTMLCanvasElement>('.sl-glint')),
+        });
+      } else {
+        drawGrass(grass, w, h, full, dpr, p, horizonOf(sky, h), planted);
+      }
+    };
     const draw = () => {
       const rect = scene.getBoundingClientRect();
       const w = Math.round(rect.width);
@@ -914,8 +1326,8 @@ export default function SunlitScene({ theme, home }: SceneProps) {
         drawStars(twinkleRef.current, w, h, soft, true);
       }
       drawRays(rays, w, h, soft, p);
-      if (tree && treeImg?.complete) drawTree(tree, w, h, dpr, treeImg, nameBox(w, h));
-      drawGrass(grass, w, h, Math.max(h, Math.round(field.getBoundingClientRect().height)), dpr, p, horizonOf(sky, h));
+      planted = tree && treeImg?.complete ? drawTree(tree, w, h, dpr, treeImg, nameBox(w, h)) : null;
+      paintField(w, h);
       if (p.night) { flies.forEach((f) => f.remove()); flies = addFireflies(field, h); }
 
       const unit = Math.min(w, h * 1.15);
@@ -940,7 +1352,8 @@ export default function SunlitScene({ theme, home }: SceneProps) {
     // The painting may arrive after the first draw, and the name moves a little once its font loads.
     const redrawTree = () => {
       if (!tree || !treeImg || !drawnW || !treeImg.complete) return;
-      drawTree(tree, drawnW, drawnH, Math.min(window.devicePixelRatio || 1, 2), treeImg, nameBox(drawnW, drawnH));
+      planted = drawTree(tree, drawnW, drawnH, Math.min(window.devicePixelRatio || 1, 2), treeImg, nameBox(drawnW, drawnH));
+      paintField(drawnW, drawnH);
     };
     treeImg?.addEventListener('load', redrawTree);
     if (home) document.fonts?.ready.then(redrawTree);
@@ -998,7 +1411,8 @@ export default function SunlitScene({ theme, home }: SceneProps) {
       field.style.opacity = gone >= 1 ? '0' : (1 - gone).toFixed(3);
       field.style.translate = `0 ${((calm ? 0 : gone * vh * 0.18) - lift).toFixed(1)}px`;
       if (treeLayer) {
-        const treeGone = fade(0.3, 0.38);
+        // the same fade as the field, which carries the foot of its trunk
+        const treeGone = gone;
         treeLayer.style.opacity = treeGone >= 1 ? '0' : (1 - treeGone).toFixed(3);
         treeLayer.style.translate = calm ? '' : `0 ${(treeGone * vh * 0.04).toFixed(1)}px`;
       }
@@ -1139,7 +1553,7 @@ export default function SunlitScene({ theme, home }: SceneProps) {
         <canvas className="sl-rays" ref={raysRef} />
         <div className="sl-sun-bloom" />
       </div>
-      {!home && <SunlitField />}
+      {!home && <SunlitField beach={preset.ground === 'beach'} />}
     </>
   );
 }

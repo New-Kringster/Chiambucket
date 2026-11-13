@@ -10,7 +10,7 @@
 
      /             sunlit   morning, sage sky, sun top right, the stone pine
      /photography  golden   golden hour, low sun on the left
-     /contact      noon     clear blue midday
+     /contact      noon     clear blue midday, at the beach (sand and sea)
      /homelab      teal     cool, misty teal morning
      /credits      mist     soft lilac haze (also /comingsoon)
      /ai-use       dusk     just after sunset, violet sky, first stars (dark glass)
