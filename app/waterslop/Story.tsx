@@ -173,47 +173,112 @@ export function Page({ id, chapter, title, rows, cls }: { id: string; chapter?: 
   );
 }
 
-/* ── Cover: how a chapter begins ── */
+/* ── Cover: how a chapter begins ──
+   A pinned, full-screen opening in three beats, all tied to scroll position:
+   the chapter's key visual forms out of bright glitter (the dissolve in
+   components/dissolve.ts), the giant title rises letter by letter with a one
+   line lede, then the visual breaks up again into the page's dark ground so
+   the chapter starts on a clean slate. Without WebGL, or with reduced motion,
+   it is a still picture with the copy in place. */
 export type Contents = Array<{ label: string; href?: string }>;
-export function Cover({ id, chapter, title, lines, contents, plate, cls }: { id: string; chapter: string; title: string; lines: string[]; contents?: Contents; plate: ReactNode; cls?: string }) {
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+const span = (t: number, a: number, b: number) => clamp01((t - a) / (b - a));
+
+export function Cover({ id, chapter, title, lines, contents, bg, lede, focus = [0.5, 0.5], cls }: {
+  id: string; chapter: string; title: string; lines: string[]; contents?: Contents;
+  bg: string; lede?: string; focus?: [number, number]; cls?: string;
+}) {
   const ref = useRef<HTMLElement>(null);
-  const active = useInView(ref, 0.2);
+  const glHost = useRef<HTMLDivElement>(null);
+  const [gl, setGl] = useState(false);
   const reduced = useReduced();
-  const onMove = (e: React.PointerEvent) => {
-    if (reduced || e.pointerType !== 'mouse') return;
-    const el = ref.current; if (!el) return;
-    const r = el.getBoundingClientRect();
-    el.style.setProperty('--mx', (((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3));
-    el.style.setProperty('--my', (((e.clientY - r.top) / r.height) * 2 - 1).toFixed(3));
-  };
-  const onLeave = () => { const el = ref.current; if (el) { el.style.removeProperty('--mx'); el.style.removeProperty('--my'); } };
+  const src = bg.startsWith('/') ? bg : '/images/waterslop/' + bg;
+  const n = lines.join('').length;
+  const [fX, fY] = focus;
+
+  useEffect(() => {
+    const el = ref.current, host = glHost.current;
+    if (!el || !host || reduced) return;
+    let cv: HTMLCanvasElement | null = null;
+    let fx: import('../../components/dissolve').Dissolve | null = null;
+    let raf = 0, alive = true, near = false, ready = false, last = '';
+    const t0 = performance.now();
+    const frame = () => {
+      raf = 0;
+      if (!alive || !near) return;
+      const r = el.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const t = clamp01((vh - r.top) / r.height);
+      const inP = span(t, 0.17, 0.42), outP = span(t, 0.8, 0.99);
+      el.style.setProperty('--v', inP.toFixed(4));
+      el.style.setProperty('--x', outP.toFixed(4));
+      el.style.setProperty('--t', span(t, 0.27, 0.52).toFixed(4));
+      el.style.setProperty('--l', span(t, 0.44, 0.58).toFixed(4));
+      el.style.setProperty('--o', span(t, 0.76, 0.92).toFixed(4));
+      if (fx && ready) {
+        const moving = (inP > 0 && inP < 1) || (outP > 0 && outP < 1);
+        const key = `${inP.toFixed(4)}|${outP.toFixed(4)}|${t.toFixed(4)}`;
+        if (moving || key !== last) {
+          last = key;
+          fx.draw({ inP, outP, time: (performance.now() - t0) / 1000, focus: [fX, fY], zoom: 1.1 - 0.1 * t });
+        }
+      }
+      raf = requestAnimationFrame(frame);
+    };
+    let mod: typeof import('../../components/dissolve') | null = null;
+    const io = new IntersectionObserver(([e]) => {
+      near = e.isIntersecting;
+      if (near) {
+        if (!fx && mod) {
+          cv = document.createElement('canvas');
+          cv.className = 'ws-op-gl';
+          host.appendChild(cv);
+          fx = mod.Dissolve.create(cv);
+          if (!fx) { cv.remove(); cv = null; }
+          if (fx) {
+            fx.setColor([0x18 / 255, 0x17 / 255, 0x16 / 255]);
+            mod.loadImage(src).then((im) => { if (!alive || !fx) return; fx.setImage(im, im.naturalWidth / im.naturalHeight); ready = true; last = ''; setGl(true); }).catch(() => {});
+          }
+        }
+        if (!raf) raf = requestAnimationFrame(frame);
+      } else if (fx) {
+        // far away: give the WebGL context back, the page has many of them
+        fx.destroy(); fx = null; cv?.remove(); cv = null; ready = false; setGl(false);
+      }
+    }, { rootMargin: '60% 0px 60% 0px' });
+    import('../../components/dissolve').then((m) => { mod = m; if (!alive) return; io.observe(el); });
+    const onResize = () => { fx?.resize(); last = ''; };
+    window.addEventListener('resize', onResize);
+    return () => { alive = false; io.disconnect(); cancelAnimationFrame(raf); window.removeEventListener('resize', onResize); fx?.destroy(); cv?.remove(); };
+  }, [src, reduced, fX, fY]);
+
+  let k = 0;
   return (
-    <section ref={ref} id={id} className={`ws-cover${cls ? ` ${cls}` : ''}`} data-state={active ? 'active' : 'next'} aria-label={`Chapter ${chapter}: ${title}`} onPointerMove={onMove} onPointerLeave={onLeave}>
-      <div className="ws-cover-grid" aria-hidden="true" />
-      <div className="ws-cover-halo" aria-hidden="true" />
-      <div className="ws-stage-chapter">{`Chapter - ${chapter}`}<span>{title}</span></div>
-      <div className="ws-cover-copy">
-        <h2 className="ws-cover-title">{lines.map((l) => <span key={l}>{l}</span>)}</h2>
+    <section ref={ref} id={id} className={`ws-op${gl ? ' gl' : ''}${reduced ? ' still' : ''}${cls ? ` ${cls}` : ''}`} aria-label={`Chapter ${chapter}: ${title}`}>
+      <div className="ws-op-stage">
+        <img className="ws-op-still" src={src} alt="" aria-hidden="true" loading="lazy" decoding="async" />
+        <div ref={glHost} className="ws-op-glhost" aria-hidden="true" />
+        <div className="ws-op-shade" aria-hidden="true" />
+        <div className="ws-op-copy">
+          <p className="ws-op-n">Chapter {chapter}</p>
+          <h2 className="ws-op-title" aria-label={title} style={{ '--n': n, '--w': Math.max(...lines.map((l) => l.length)) } as CSSProperties}>
+            {lines.map((l) => (
+              <span key={l} className="ws-op-line" aria-hidden="true">
+                {[...l].map((ch) => <span key={k} className="ws-op-ch" style={{ '--i': k++ } as CSSProperties}>{ch === ' ' ? '\u00a0' : ch}</span>)}
+              </span>
+            ))}
+          </h2>
+          {lede && <p className="ws-op-lede">{lede}</p>}
+        </div>
         {contents?.length ? (
-          <nav className="ws-contents ws-cover-contents" aria-label={`In chapter ${chapter}`}>
-            {contents.map((c, k) => c.href
-              ? <a key={c.label} href={c.href}><span>{c.label}</span><i /><span>({k + 1})</span></a>
-              : <span key={c.label} className="static"><span>{c.label}</span><i /><span>({k + 1})</span></span>)}
+          <nav className="ws-op-contents" aria-label={`In chapter ${chapter}`}>
+            {contents.map((c, j) => c.href
+              ? <a key={c.label} href={c.href}><span>{c.label}</span><i /><span>{j + 1}</span></a>
+              : <span key={c.label}><span>{c.label}</span><i /><span>{j + 1}</span></span>)}
           </nav>
         ) : null}
       </div>
-      <div className="ws-cover-plate" aria-hidden="true"><div className="ws-plate">{plate}</div></div>
     </section>
-  );
-}
-
-/* The plate's object: one picture, or a short stack of them in depth. */
-export function Plate({ src, srcs, alt = '', base = '/images/waterslop/', cls }: { src?: string; srcs?: string[]; alt?: string; base?: string; cls?: string }) {
-  const list = srcs ?? (src ? [src] : []);
-  return (
-    <div className={`ws-plate-obj${list.length > 1 ? ' stack' : ''}${cls ? ` ${cls}` : ''}`} style={{ '--n': list.length } as CSSProperties}>
-      {list.map((s, k) => <img key={s} src={s.startsWith('/') ? s : base + s} alt={k === 0 ? alt : ''} loading="lazy" decoding="async" style={{ '--k': k } as CSSProperties} />)}
-    </div>
   );
 }
 

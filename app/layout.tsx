@@ -5,6 +5,7 @@ import './globals.css';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 import ClientEffects from '../components/ClientEffects';
+import PageTransition from '../components/PageTransition';
 import ArticleLightbox from '../components/ArticleLightbox';
 import SceneShell from '../components/SceneShell';
 import GlassDefs from '../components/GlassDefs';
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <ClientEffects />
+        <PageTransition />
         <ArticleLightbox />
         <SceneShell />
         <GlassDefs />

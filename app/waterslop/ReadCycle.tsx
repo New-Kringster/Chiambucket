@@ -1,5 +1,5 @@
 'use client';
-import { Cover, Page, Plate, type Frame } from './Story';
+import { Cover, Page, type Frame } from './Story';
 
 /* FirmwareChapter: the firmware's story in three rows: the setup the agent wrote
    it on, the reader's flow for a typical deployment (report Figure 2.24) with
@@ -122,7 +122,7 @@ export default function FirmwareChapter({ chapter }: { chapter: string }) {
   return (
     <>
       <Cover id="firmware" chapter={chapter} title="Firmware" lines={['Reader', 'firmware']} contents={[{ label: 'Written by an agent', href: '#fw-agents' }, { label: 'One wake cycle', href: '#fw-cycle' }, { label: 'The dashboard', href: '#fw-dashboard' }]}
-        plate={<Plate srcs={['dashboard.webp', 'fw-setup.webp']} alt="The reader dashboard" />} />
+        bg="fw-setup.webp" lede="One wake cycle: wake, capture, read the drums, send the number home, sleep." />
       <Page id="firmware-body" title="Firmware" rows={ROWS} />
     </>
   );

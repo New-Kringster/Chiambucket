@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import ArticleScrollSpy from '../../components/ArticleScrollSpy';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
 import WaterslopChapter, { WaterslopChapterStyle } from './WaterslopChapter';
-import { Cover, Page, Plate, type Frame } from './Story';
+import { Cover, Page, type Frame } from './Story';
 import DrumNetStory from './DrumNetWalk';
 import FirmwareChapter from './ReadCycle';
 import CameraChapter from './FocusLab';
@@ -10,6 +10,8 @@ import ConfigKingChapter from './ConfigKingStory';
 import PairCompare from './Compare';
 import { LoopRing, AgentBadges } from './Agents';
 import PageFx from './PageFx';
+import Entrance from './Entrance';
+import 'lenis/dist/lenis.css';
 import SkipToEnd from './SkipToEnd';
 import PdfEmbed from '../../components/PdfEmbed';
 import { IcRead, IcOut } from '../../components/Icons';
@@ -334,6 +336,7 @@ export default function WaterslopPage() {
     <main className="ws-page art-body">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <ArticleScrollSpy />
+      <Entrance />
       <PageFx />
       <SkipToEnd />
 
@@ -366,32 +369,32 @@ export default function WaterslopPage() {
       <ConfigKingChapter chapter={NUM.configking} />
 
       <Cover id="metersim" chapter={NUM.metersim} title="MeterSim" lines={['Meter', 'Sim']} contents={[{ label: 'A simulated meter', href: '#ms-rig' }, { label: 'Built for agents', href: '#ms-control' }, { label: 'Designs and presets', href: '#ms-designs' }, { label: 'Half-rolled drums', href: '#ms-halfroll' }, { label: 'Weather and surfaces', href: '#ms-effects' }, { label: 'Unattended evaluation', href: '#ms-eval' }]}
-        plate={<Plate srcs={['metersim-control.webp', 'metersim-effects.webp']} alt="The MeterSim control panel" />} />
+        bg="metersim-key.webp" focus={[0.62, 0.5]} lede="A water meter drawn on a tablet, so a real camera could collect labelled readings with nobody watching." />
       <Page id="metersim-body" title="MeterSim" rows={METERSIM} />
 
       <Cover id="simgen2" chapter={NUM.simgen2} title="SimGen2" lines={['Sim', 'Gen2']} contents={[{ label: 'Six stages', href: '#sg-stages' }, { label: 'Real over synthetic', href: '#sg-overlay' }, { label: 'Compare them yourself', href: '#sg-pairs' }]}
-        plate={<Plate src="simgen2-overlay.webp" alt="A real capture tinted magenta over its SimGen2 version tinted green" />} />
+        bg="simgen2-overlay.webp" focus={[0.55, 0.55]} lede="Synthetic captures that look like the reader's own camera, made in about 2 s each, almost 5× faster than the real thing." />
       <Page id="simgen2-body" title="SimGen2" rows={SIMGEN2} />
 
       <Cover id="agents" chapter={NUM.agents} title="Agentic workflow" lines={['Agentic', 'workflow']} contents={[{ label: 'The loop', href: '#ag-loop' }, { label: 'Six agents', href: '#ag-six' }, { label: 'Resources and the scheduler', href: '#ag-resources' }, { label: 'Managed with T3 Code', href: '#ag-t3' }]}
-        plate={<Plate srcs={['agents-resources-sketch.webp', 'scheduler-compute.webp', 't3-tailscale.webp']} alt="The agents' shared resources" cls="light" />} />
+        bg="scheduler-compute.webp" focus={[0.45, 0.4]} lede="Six agents trained and tested the readers at the same time, sharing one scheduler for the compute and the test rig." />
       <Page id="agents-body" title="Agentic workflow" rows={AGENTIC} />
 
       <FirmwareChapter chapter={NUM.firmware} />
 
       <Cover id="power" chapter={NUM.power} title="Power optimisation" lines={['Saving', 'power']} contents={[{ label: 'Sub-sampling', href: '#pw-sub' }, { label: 'Capture modes, side by side', href: '#pw-modes' }, { label: 'PWM dimming', href: '#pw-pwm' }, { label: 'Greyscale', href: '#pw-grey' }, { label: 'INT8 and vector maths', href: '#pw-int8' }, { label: 'Hardware', href: '#pw-hw' }]}
-        plate={<Plate srcs={['mode-800-crop.webp', 'mode-1600-full.webp', 'mode-400-crop.webp']} alt="The meter captured at 800 by 600" />} />
+        bg="mode-1600-full.webp" focus={[0.55, 0.62]} lede="Every step of the wake cycle trimmed toward a 2-year battery: smaller captures, dimmer light, integer maths." />
       <Page id="power-body" title="Power optimisation" rows={POWER} />
 
       <CameraChapter chapter={NUM.camera} />
 
       <Cover id="proto" chapter={NUM.proto} title="Prototype V2" lines={['Prototype', 'V2']} contents={[{ label: 'A shrunken-down Prototype V1', href: '#v2-intro' }, { label: 'The size of a dev board', href: '#v2-size' }, { label: 'The enclosure and adapter', href: '#en-all' }]}
-        plate={<Plate srcs={['pcb-3d-top.webp', 'v2-vs-devboard.webp']} alt="3D render of the top of the Prototype V2 board" />} />
+        bg="v2-vs-devboard.webp" lede="Prototype V1 shrunk to the size of a dev board, in a two-part enclosure that needs no tools." />
       <Page id="v2-body" title="Prototype V2" rows={V2} />
       <Page id="enclosure" title="Enclosure" rows={ENCLOSURE} />
 
       <Cover id="conclusion" chapter={NUM.conclusion} title="Conclusion" lines={['Conclusion']} contents={[{ label: 'Where it stops, for now', href: '#cc-all' }, { label: 'The report', href: '#report' }]}
-        plate={<Plate src="enc-final.webp" alt="The printed enclosure with the board inside" />} />
+        bg="adapter-done-b.webp" lede="Right on 56 % of readings against a 99 % target, and what it would take to close the gap." />
       <Page id="conclusion-body" title="Conclusion" rows={CONCLUSION} />
 
       <section id="report" className="ws-plain">
