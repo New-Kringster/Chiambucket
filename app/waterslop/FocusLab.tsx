@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Cover, Page, Plate, type Frame } from './Story';
+import { Cover, Page, type Frame } from './Story';
 
 /* CameraChapter: the camera focus test (report Figures 3.7 and 3.8) on one page:
    the setup, then the lab, where the reader picks a lens, a distance and a chart
@@ -97,7 +97,7 @@ export default function CameraChapter({ chapter }: { chapter: string }) {
   return (
     <>
       <Cover id="camera" chapter={chapter} title="Camera choice" lines={['Camera', 'choice']} contents={[{ label: 'Two OV2640 lenses', href: '#cam-why' }, { label: 'The focus test', href: '#cam-lab' }]}
-        plate={<Plate srcs={['focus-160-4b.webp', 'focus-120-4b.webp']} alt="The 160° lens at 4 cm on the ISO 12233 chart" />} />
+        bg="focus-160-4b.webp" lede="Two OV2640 lenses, tested on a resolution chart at 3, 4 and 6 cm." />
       <Page id="camera-body" title="Camera choice" rows={ROWS} />
     </>
   );

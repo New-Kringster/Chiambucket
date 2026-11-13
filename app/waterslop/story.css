@@ -8,28 +8,29 @@
 .ws-stage-chapter { position: absolute; z-index: 4; top: max(4.5%, calc(var(--ws-nav, 0px) + 18px)); left: 3.5%; font-family: var(--serif); font-size: clamp(14px, 1.5vw, 30px); color: var(--ink); display: flex; gap: 0.6em; align-items: baseline; }
 .ws-stage-chapter span { font: 500 clamp(10px, 0.78vw, 16px)/1.4 var(--sans); letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
 
-/* ── Cover ── */
-.ws-cover { position: relative; z-index: 1; min-height: 100svh; overflow: hidden; isolation: isolate; background: var(--bg); display: grid; grid-template-columns: minmax(0, 54fr) minmax(0, 46fr); align-items: center; padding: calc(var(--ws-nav, 0px) + 9svh) 0 7svh; }
-.ws-cover-grid { position: absolute; inset: 0; z-index: 0; background-image: radial-gradient(#58789980 0.65px, transparent 0.8px); background-size: 12px 12px; opacity: 0.32; -webkit-mask-image: radial-gradient(ellipse 70% 80% at 60% 50%, #000 20%, transparent 80%); mask-image: radial-gradient(ellipse 70% 80% at 60% 50%, #000 20%, transparent 80%); }
-.ws-cover-halo { position: absolute; inset: 0; z-index: 1; background: radial-gradient(ellipse 28% 30% at 73% 52%, #be9c7830 0%, #95734e10 48%, transparent 100%); }
-.ws-cover-copy { position: relative; z-index: 4; padding-left: 6.4%; opacity: 0; transform: translateY(14px); transition: opacity 0.7s ease, transform 0.8s cubic-bezier(.2,.7,.2,1); }
-.ws-cover[data-state="active"] .ws-cover-copy { opacity: 1; transform: none; }
-.ws-cover-title { font-family: var(--serif); font-weight: 400; font-size: clamp(42px, 7.4vw, 148px); line-height: 1.1; letter-spacing: -0.025em; text-align: right; color: var(--ink); margin: 0; }
-.ws-cover-title span { display: block; white-space: nowrap; }
-.ws-cover-contents { width: 22vw; min-width: 210px; margin: 3.2vh 9.2vw 0 auto; font-size: clamp(11px, 0.85vw, 20px); }
-.ws-contents .static { display: flex; gap: 0.45em; align-items: baseline; min-height: 1.9em; color: var(--ink); }
-.ws-contents .static i { flex: 1; border-bottom: 1px dotted var(--line-strong); transform: translateY(-0.25em); }
-/* the chapter's object on a plate, in depth */
-.ws-cover-plate { position: relative; z-index: 3; height: 100%; display: flex; align-items: center; justify-content: center; perspective: 1500px; perspective-origin: 30% 50%; padding-right: 6%; }
-.ws-plate { transform-style: preserve-3d; transform: rotateY(calc(-17deg + var(--mx, 0) * 5deg)) rotateX(calc(6deg - var(--my, 0) * 4deg)); opacity: 1; transition: transform 1s cubic-bezier(.2,.7,.2,1), opacity 0.8s ease; }
-.ws-cover[data-state="next"] .ws-plate { transform: rotateY(-38deg) rotateX(8deg) translateX(90px); opacity: 0; }
-.ws-plate-obj { position: relative; width: min(36vw, 560px); transform-style: preserve-3d; animation: ws-float 8s ease-in-out infinite; }
-.ws-plate-obj img { display: block; width: 100%; height: auto; max-height: 62svh; object-fit: cover; border: 1px solid #d8cbb833; border-radius: 4px; background: #121110; box-shadow: 0 70px 90px -40px #000e, 0 24px 40px -24px #000a; }
-.ws-plate-obj img.light { background: #f2eee7; }
-.ws-plate-obj.stack img { position: absolute; inset: 0; height: 100%; transform: translate3d(calc(var(--k) * -8%), calc(var(--k) * 7%), calc(var(--k) * -110px)); filter: brightness(calc(1 - var(--k) * 0.22)); }
-.ws-plate-obj.stack img:first-child { position: relative; height: auto; }
-.ws-plate-obj.device { width: min(33vw, 540px); }
-@keyframes ws-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+/* ── Cover: the pinned opener (see Cover in Story.tsx) ──
+   --v / --x: the key visual dissolving in / out; --t: the title's letters;
+   --l: the lede and contents; --o: the copy leaving. All 0..1 from scroll. */
+.ws-op { position: relative; height: 300vh; height: 300svh; background: var(--bg); --v: 0; --x: 0; --t: 0; --l: 0; --o: 0; }
+.ws-op-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; isolation: isolate; background: var(--bg); }
+.ws-op-still, .ws-op-glhost, .ws-op-gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.ws-op-still { object-fit: cover; opacity: calc(var(--v) * (1 - var(--x))); }
+.ws-op.gl .ws-op-still { opacity: 0; }
+.ws-op-shade { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: calc(var(--v) * (1 - var(--x) * 0.6));
+  background: linear-gradient(180deg, #18171640 0%, #18171600 30%, #18171600 45%, #181716d9 100%), radial-gradient(ellipse 75% 60% at 22% 82%, #18171699, transparent 72%); }
+.ws-op-copy { position: absolute; z-index: 3; left: 4.6%; right: 34%; bottom: 10svh; transform: translate3d(0, calc(var(--o) * -14svh), 0); opacity: calc(1 - var(--o)); }
+.ws-op-n { font: 400 clamp(14px, 1.25vw, 24px)/1.2 var(--serif); color: var(--ink); margin: 0 0 1.4svh 0.4vw; opacity: var(--t); }
+.ws-page .ws-op-title { font-family: var(--sans); font-weight: 700; font-size: clamp(64px, 12.6vw, 250px); line-height: 0.84; letter-spacing: -0.058em; color: #fff6e8; text-shadow: 0 0 60px #18171666; margin: 0 0 0 -0.04em; }
+.ws-op-line { display: block; white-space: nowrap; }
+.ws-op-ch { display: inline-block; --c: clamp(0, calc((var(--t) * (var(--n) + 5) - var(--i)) / 5), 1); opacity: var(--c); transform: translate3d(0, calc((1 - var(--c)) * 0.62em), 0) rotate(calc((1 - var(--c)) * 7deg)); filter: blur(calc((1 - var(--c)) * 12px)); transform-origin: 0 100%; }
+.ws-op-lede { max-width: 32ch; margin: 3.6svh 0 0 0.4vw; font: 400 clamp(17px, 1.5vw, 27px)/1.5 var(--serif); color: #f2e7d6; opacity: var(--l); transform: translate3d(0, calc((1 - var(--l)) * 22px), 0); text-wrap: pretty; }
+.ws-op-lede::first-letter { float: left; font-size: 3.2em; line-height: 0.8; margin: 0.07em 0.1em 0 0; color: #fff6e8; }
+.ws-op-contents { position: absolute; z-index: 3; right: 4.6%; bottom: 10svh; width: min(25vw, 360px); display: grid; gap: 0.7em; font: 500 clamp(11px, 0.82vw, 15px)/1.3 var(--sans); color: var(--ink); opacity: calc(var(--l) * (1 - var(--o))); }
+.ws-op-contents > * { display: flex; align-items: baseline; gap: 0.6em; }
+.ws-op-contents i { flex: 1; border-bottom: 1px dotted #d8cbb866; transform: translateY(-0.25em); }
+.ws-op-contents a { transition: color 0.25s ease; }
+.ws-op-contents a:hover { color: var(--hi); }
+.ws-op.still { height: 100vh; height: 100svh; --v: 1; --t: 1; --l: 1; }
 
 /* ── Page: rows that scroll ── */
 .ws-single { padding: calc(var(--ws-nav, 0px) + 5svh) 0 4svh; }
@@ -196,17 +197,11 @@
   .ws-stage-pin { --vw: 92vw; }
   .ws-stage-chapter { font-size: 15px; left: 5%; top: calc(var(--ws-nav, 0px) + 12px); }
   .ws-stage-chapter span { display: none; }
-  .ws-cover { grid-template-columns: 1fr; align-content: start; gap: 5svh; padding: calc(var(--ws-nav, 0px) + 60px) 0 8svh; min-height: 100svh; }
-  .ws-cover-copy { padding: 0 6% 0 7%; }
-  .ws-cover-title { font-size: 15vw; line-height: 1.05; }
-  .ws-cover-contents { width: 60%; min-width: 180px; margin: 3vh 0 0 auto; font-size: 11px; }
-  .ws-cover-plate { height: auto; padding: 0; perspective-origin: 50% 50%; }
-  .ws-plate-obj { width: 72vw; }
-  .ws-plate-obj.device { width: 74vw; }
-  .ws-plate { transform: rotateY(calc(-9deg + var(--mx, 0) * 5deg)) rotateX(4deg); }
-  .ws-cover[data-state="next"] .ws-plate { transform: rotateY(-28deg) rotateX(6deg) translateX(40px); }
-  .ws-plate-obj img { max-height: 40svh; }
-  .ws-cover-halo { background: radial-gradient(ellipse 50% 22% at 50% 70%, #be9c7822, transparent); }
+  .ws-op-copy { left: 6%; right: 6%; bottom: 9svh; }
+  .ws-page .ws-op-title { font-size: min(19vw, calc(166vw / var(--w, 8))); }
+  .ws-op-lede { font-size: 16px; max-width: 30ch; }
+  .ws-op-contents { display: none; }
+  .ws-op-shade { background: linear-gradient(180deg, #18171640 0%, #18171600 25%, #181716e6 78%); }
   .ws-single { padding-top: calc(var(--ws-nav, 0px) + 4svh); }
   .ws-single > .ws-stage-chapter { margin: 0 0 3svh 5%; }
   .ws-row { display: flex; flex-direction: column; gap: 18px; padding: 0 4%; min-height: 0; margin-bottom: 8svh; align-items: stretch; }
@@ -269,8 +264,6 @@
   .ws-copy h2 { font-size: clamp(20px, 6vw, 28px); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ws-frame, .ws-pic, .ws-copy, .ws-plate, .ws-cover-copy { transition: none !important; }
-  .ws-plate-obj { animation: none; }
-  .ws-plate { transform: none !important; opacity: 1 !important; }
-  .ws-row .ws-copy, .ws-cover-copy { opacity: 1; transform: none; }
+  .ws-frame, .ws-pic, .ws-copy { transition: none !important; }
+  .ws-row .ws-copy { opacity: 1; transform: none; }
 }
