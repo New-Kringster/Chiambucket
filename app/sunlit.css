@@ -493,6 +493,23 @@ html.sensory-active.is-day {
     & .ph-hero { padding-top: calc(clamp(132px, 18vh, 180px) + 46vw); }
     & .ph-hero > .ph-hero-media { right: 5vw; left: 5vw; top: 96px; translate: none; width: auto; aspect-ratio: 16 / 10; border-radius: 20px; }
   }
+  /* Wide screens: the copy and the picture share one centred frame (at most
+     1480px across), both centred top to bottom, so they never drift to
+     opposite corners of a large display. */
+  @media (min-width: 761px) {
+    & .ph-hero { --ph-g: max(clamp(24px, 6vw, 110px), calc((100vw - 1480px) / 2)); --ph-w: min(46vw, 760px);
+      justify-content: center; padding-left: var(--ph-g); padding-right: calc(var(--ph-g) + var(--ph-w) + clamp(32px, 4vw, 72px)); padding-bottom: clamp(48px, 7vh, 80px); }
+    & .ph-hero > .ph-hero-media { right: var(--ph-g); top: calc(50% + 24px); translate: 0 -50%; width: var(--ph-w); }
+    & .ph-hero > .ct-kicker, & .ph-hero > .ct-title, & .ph-hero > .ct-sub, & .ph-hero > .ph-hero-btns { max-width: 100%; }
+  }
+  @media (min-width: 761px) and (max-width: 1199px) {
+    /* the copy column is narrow here: size the title to it */
+    & .ph-hero .ct-title { font-size: min(clamp(2.6rem, 8vw, 5.2rem), 5.4vw); }
+  }
+  @media (min-width: 1600px) {
+    & .ph-hero .ct-title { font-size: clamp(5.2rem, 4.6vw, 6.6rem); }
+    & .ph-hero .ct-sub { font-size: 1.12rem; }
+  }
   & .ph-hero .ct-kicker { color: var(--sl-label); }
   & .ph-hero .ct-title em { text-shadow: none; }
 
