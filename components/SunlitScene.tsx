@@ -493,7 +493,7 @@ function ridgeAt(x: number, w: number, h: number) {
 
 function blade(
   ctx: Ctx, x: number, y: number, length: number, angle: number,
-  width: number, bend: number, color: string, alpha: number,
+  width: number, bend: number, color: string, alpha: number, root?: string,
 ) {
   const dx = Math.cos(angle);
   const dy = Math.sin(angle);
@@ -504,7 +504,15 @@ function blade(
   const mx = x + dx * length * 0.5 + nx * bend;
   const my = y + dy * length * 0.5 + ny * bend;
   ctx.globalAlpha = alpha;
-  ctx.fillStyle = color;
+  if (root) {
+    // shaded at its foot, where the blades around it block the light, lit towards the tip
+    const shade = ctx.createLinearGradient(x, y, tx, ty);
+    shade.addColorStop(0, root);
+    shade.addColorStop(0.6, color);
+    ctx.fillStyle = shade;
+  } else {
+    ctx.fillStyle = color;
+  }
   ctx.beginPath();
   ctx.moveTo(x + nx * width, y + ny * width);
   ctx.quadraticCurveTo(mx + nx * width * 0.7, my + ny * width * 0.7, tx, ty);
@@ -524,7 +532,7 @@ const CREST = ['#dcc66f', '#e3d085', '#cdb862', '#c2b05b', '#b6a755'];
    rises to reach above the footer. */
 const FIELD_TOP = 0.6;
 
-function drawGrass(canvas: HTMLCanvasElement, w: number, h: number, full: number, dpr: number, p: Preset) {
+function drawGrass(canvas: HTMLCanvasElement, w: number, h: number, full: number, dpr: number, p: Preset, horizon: string | null) {
   const origin = h * FIELD_TOP;
   const ctx = prepare(canvas, w, full - origin, dpr);
   ctx.clearRect(0, 0, w, full - origin);
@@ -572,34 +580,64 @@ function drawGrass(canvas: HTMLCanvasElement, w: number, h: number, full: number
       between(rand, 1.2, 3.2) * k, between(rand, -3, 3), pick(rand, ['#d2bc66', '#c9b45e', '#dcc66f', '#bfad58']), between(rand, 0.7, 1));
   }
 
-  // The main field of strokes, painted back to front. Depth is measured down
-  // the visible band, so the part below the screen is all deep, darker grass.
+  // The main field of strokes, painted back to front, in perspective: the
+  // ground near the crest is far away, so its blades are small, upright and
+  // packed close; towards the bottom of the screen they grow long and wide.
+  // Depth is measured down the visible band, so the part below the screen is
+  // all near, darker grass.
   const strokes: { x: number; y: number; depth: number }[] = [];
   const reach = (full - top) / band;
-  const count = Math.round((w * band) / 55);
-  const below = Math.round(count * (reach - 1) * 0.55);
+  const count = Math.round((w * band) / 68);
+  const below = Math.round(count * (reach - 1) * 0.26);
   for (let i = 0; i < count + below; i++) {
     const x = between(rand, -60, w + 10);
     const r = ridge(x);
-    const depth = i < count ? Math.pow(rand(), 0.85) : between(rand, 1, reach);
+    const depth = i < count ? Math.pow(rand(), 1.45) : between(rand, 1, reach);
     strokes.push({ x, y: r + 4 + depth * (h - r + 30), depth });
   }
   strokes.sort((a, b) => a.y - b.y);
   for (const st of strokes) {
+    const near = Math.min(1, st.depth);
+    const size = 0.4 + 1.5 * Math.pow(near, 1.5);
     const t = st.depth + between(rand, -0.1, 0.1);
     const palette = t < 0.15 ? LIT : t < 0.4 ? MID : LOW;
-    const lift = st.depth < 0.18 ? 0.3 : 0; // blades on the crest stand more upright
-    blade(ctx, st.x, st.y, between(rand, 0.14, 0.5) * band * (st.depth < 0.15 ? 0.75 : 1), between(rand, -0.85, -0.25) - lift,
-      between(rand, 0.8, 3) * k, between(rand, -8, 8) * k, pick(rand, palette), between(rand, 0.3, 0.75));
+    // Shading is kept to the visible slope: the far rows are too small to show
+    // it and the grass below the screen is already deep in shadow.
+    const root = st.depth < 0.25 || st.depth > 1 ? undefined : near < 0.55 ? '#7f7731' : '#575016';
+    blade(ctx, st.x, st.y, between(rand, 0.15, 0.42) * band * size, between(rand, -1.05, -0.5) - (1 - near) * 0.4,
+      between(rand, 0.8, 2.4) * k * size, between(rand, -7, 7) * k * size, pick(rand, palette), between(rand, 0.4, 0.8), root);
   }
+
+  // Wind running over the field: soft patches of light and shadow in rows
+  // that crowd together towards the crest, the way gusts bend a meadow.
+  const { canvas: wind, ctx: wv } = softLayer(w, full, 0.1);
+  const rows = 9;
+  for (let j = 1; j <= rows; j++) {
+    const d = Math.pow(j / rows, 1.7);
+    const y = top + band * (0.06 + d * 0.98);
+    const tall = (5 + 30 * d) * k;
+    const lit = j % 2 === 1;
+    for (let x = between(rand, -200, 0); x < w + 200; x += between(rand, 0.6, 1.4) * (150 + 330 * d)) {
+      wv.globalAlpha = lit ? between(rand, 0.08, 0.17) : between(rand, 0.12, 0.22);
+      wv.fillStyle = lit ? '#f1e3a6' : '#48420f';
+      wv.beginPath();
+      wv.ellipse(x, y + between(rand, -0.4, 0.4) * tall, between(rand, 70, 170) * (0.45 + d), tall, between(rand, -0.06, 0.06), 0, Math.PI * 2);
+      wv.fill();
+    }
+  }
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-atop';
+  ctx.drawImage(wind, 0, 0, w, full);
+  ctx.globalCompositeOperation = 'source-over';
 
   // A few pale highlights catching the light, mostly near the crest.
   for (let i = 0; i < Math.round(w / 4); i++) {
     const x = rand() * w;
     const r = ridgeAt(x, w, h);
     const depth = Math.pow(rand(), 2);
-    blade(ctx, x, r + depth * (h - r), between(rand, 0.1, 0.32) * band, between(rand, -1.05, -0.4),
-      between(rand, 0.4, 1) * k, between(rand, -5, 5), pick(rand, ['#ecdd9c', '#e3d189', '#d8ca85']), between(rand, 0.25, 0.6));
+    const size = 0.5 + 0.6 * depth;
+    blade(ctx, x, r + depth * (h - r), between(rand, 0.1, 0.3) * band * size, between(rand, -1.15, -0.5),
+      between(rand, 0.4, 1) * k * size, between(rand, -5, 5), pick(rand, ['#ecdd9c', '#e3d189', '#d8ca85']), between(rand, 0.25, 0.6) * (1 - depth * 0.5));
   }
 
   // Clumps of taller blades break up the crest.
@@ -621,7 +659,16 @@ function drawGrass(canvas: HTMLCanvasElement, w: number, h: number, full: number
       between(rand, 0.3, 0.9) * k, between(rand, -5, 5), pick(rand, CREST), between(rand, 0.45, 0.9));
   }
 
+  // Out of focus right in front: a few long, dark blades rising from below the
+  // edge of the screen, painted small and scaled up so they come out soft.
+  const { canvas: fore, ctx: f } = softLayer(w, full, 0.14);
+  for (let i = 0; i < Math.round(w / 22); i++) {
+    const x = between(rand, -40, w + 40);
+    blade(f, x, h + between(rand, 0.05, 0.45) * band, between(rand, 0.35, 0.75) * band, between(rand, -1.45, -0.85),
+      between(rand, 7, 15) * k, between(rand, -16, 16) * k, pick(rand, ['#433e0f', '#4f4914', '#5c551b']), between(rand, 0.35, 0.6));
+  }
   ctx.globalAlpha = 1;
+  ctx.drawImage(fore, 0, 0, w, full);
 
   // Darken the very bottom slightly so the field sits on the edge of the screen,
   // and keep darkening below it.
@@ -633,6 +680,31 @@ function drawGrass(canvas: HTMLCanvasElement, w: number, h: number, full: number
   ctx.fillRect(0, h - band * 0.45, w, full - h + band * 0.45);
 
   gradeField(canvas, p.grass, h, origin, dpr);
+
+  // Distance: the far grass along the crest takes on the colour of the sky
+  // just above it, and that fades out down the slope. Laid on after the grade
+  // so it matches the sky as painted.
+  if (horizon) {
+    ctx.globalCompositeOperation = 'source-atop';
+    const air = ctx.createLinearGradient(0, top - band * 0.15, 0, top + band * 0.55);
+    air.addColorStop(0, `rgba(${horizon},0.5)`);
+    air.addColorStop(0.3, `rgba(${horizon},0.22)`);
+    air.addColorStop(1, `rgba(${horizon},0)`);
+    ctx.fillStyle = air;
+    ctx.fillRect(0, top - band * 0.15, w, band * 0.7);
+    ctx.globalCompositeOperation = 'source-over';
+  }
+}
+
+/* The sky's colour just above the hill, averaged across the screen. */
+function horizonOf(sky: HTMLCanvasElement, h: number): string | null {
+  const ctx = sky.getContext('2d');
+  if (!ctx || !sky.width || !sky.height) return null;
+  const y = Math.min(sky.height - 1, Math.round(h * (HILL - 0.03) * (sky.height / h)));
+  const row = ctx.getImageData(0, y, sky.width, 1).data;
+  let r = 0, g = 0, b = 0, n = 0;
+  for (let i = 0; i < row.length; i += 4 * 8) { r += row[i]; g += row[i + 1]; b += row[i + 2]; n++; }
+  return n ? `${Math.round(r / n)},${Math.round(g / n)},${Math.round(b / n)}` : null;
 }
 
 /* Lay a preset's colour grade over the painted field. Blend modes also paint
@@ -843,7 +915,7 @@ export default function SunlitScene({ theme, home }: SceneProps) {
       }
       drawRays(rays, w, h, soft, p);
       if (tree && treeImg?.complete) drawTree(tree, w, h, dpr, treeImg, nameBox(w, h));
-      drawGrass(grass, w, h, Math.max(h, Math.round(field.getBoundingClientRect().height)), dpr, p);
+      drawGrass(grass, w, h, Math.max(h, Math.round(field.getBoundingClientRect().height)), dpr, p, horizonOf(sky, h));
       if (p.night) { flies.forEach((f) => f.remove()); flies = addFireflies(field, h); }
 
       const unit = Math.min(w, h * 1.15);
