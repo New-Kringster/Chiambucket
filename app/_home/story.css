@@ -25,7 +25,6 @@
   --hs-dusk: #1b2344;
   --hs-ease: cubic-bezier(0.16, 1, 0.3, 1);
   --hs-gutter: clamp(16px, 4.5vw, 72px);
-  --hs-index-w: 0px;
   position: relative;
   background: var(--hs-black);
   color: var(--hs-silk);
@@ -33,13 +32,17 @@
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
-@media (min-width: 1100px) { .hs { --hs-index-w: 150px; } }
+/* Wide screens: the whole page scales with the screen instead of drifting
+   apart. Everything here is set in rem, so the root size carries it
+   (mainstyle steps the root down to 90.6% at 1600px; here it grows again). */
+@media (min-width: 1600px) { html:has(.hs-main) { font-size: calc(14.5px + (100vw - 1600px) * 0.0048); } }
 .hs *, .hs *::before, .hs *::after { box-sizing: border-box; }
-.hs h1, .hs h2, .hs h3, .hs p, .hs dl, .hs dd, .hs ol, .hs ul, .hs figure { margin: 0; padding: 0; }
+/* zero specificity, so every class rule below can set its own margins and padding */
+:where(.hs) :where(h1, h2, h3, p, dl, dd, ol, ul, figure) { margin: 0; padding: 0; }
 /* The site stylesheet sets a face on every element (`* { font-family }`), so inheritance never
    reaches; set ours on every element too. Serif rules below are classes, so they still win. */
 .hs, .hs * { font-family: var(--hs-sans), system-ui, sans-serif; }
-.hs ol, .hs ul { list-style: none; }
+:where(.hs) :where(ol, ul) { list-style: none; }
 :where(.hs) img { display: block; max-width: none; }
 :where(.hs) a { color: inherit; }
 .hs :focus-visible { outline: 2px solid var(--hs-gold); outline-offset: 3px; border-radius: 4px; }
@@ -55,10 +58,9 @@ html.lenis, html.lenis body { height: auto; }
 
 .hs-wrap {
   width: 100%;
-  max-width: 1280px;
+  max-width: 88rem;
   margin: 0 auto;
   padding: 0 var(--hs-gutter);
-  padding-left: max(var(--hs-gutter), calc(var(--hs-index-w) + 24px));
 }
 
 /* ── Shared type ──
@@ -91,7 +93,7 @@ html.lenis, html.lenis body { height: auto; }
 .hs-lead { font-size: clamp(1.05rem, 1.5vw, 1.3rem); line-height: 1.6; max-width: 34em; color: var(--hs-silk); }
 .hs-chars { display: inline-block; }
 .hs-c { display: inline-block; white-space: pre; }
-.hs-ctitle, .hs-op-title, .hs-reader-title, .hs-bench-title, .hs-contact-title {
+.hs-ctitle, .hs-fl-title, .hs-reader-title, .hs-bench-title, .hs-contact-title {
   font-weight: 800;
   letter-spacing: -0.055em;
   line-height: 0.92;
@@ -126,31 +128,6 @@ html.lenis, html.lenis body { height: auto; }
 .hs-paper .hs-btn { color: var(--hs-pine); border-color: rgba(29, 43, 34, 0.3); background: rgba(255, 255, 255, 0.35); }
 .hs-paper .hs-btn:hover { background: rgba(255, 255, 255, 0.7); border-color: var(--hs-pine); }
 .hs-paper .hs-btn.is-primary { background: var(--hs-pine); color: var(--hs-paper-hi); border-color: var(--hs-pine); }
-
-/* ───────────── Index ───────────── */
-.hs-index {
-  position: fixed;
-  left: 28px; bottom: 26px;
-  z-index: 40;
-  font-size: 0.8rem;
-  line-height: 1.5;
-  color: var(--hs-silk);
-  transition: color 0.4s, opacity 0.45s, transform 0.6s var(--hs-ease), visibility 0s;
-  animation: hs-fade 1s ease 1.6s backwards;
-}
-.hs-index.is-paper { color: var(--hs-pine); }
-/* over the painting the index sits on the grass: light type with a soft shadow */
-.hs-index.is-art { color: var(--hs-silk); text-shadow: 0 1px 8px rgba(20, 30, 10, 0.55); }
-/* it steps aside once the footer comes up */
-.hs-index.is-away { opacity: 0; transform: translateY(16px); visibility: hidden; pointer-events: none; transition: opacity 0.35s, transform 0.5s var(--hs-ease), visibility 0s 0.35s; }
-.hs-index a { display: flex; gap: 0.6rem; text-decoration: none; opacity: 0.45; padding: 1px 0; transition: opacity 0.25s, transform 0.35s var(--hs-ease); }
-.hs-index a:hover { opacity: 0.85; transform: translateX(3px); }
-.hs-index-n { width: 1.2em; text-align: right; font-variant-numeric: tabular-nums; opacity: 0.7; }
-.hs-index li.is-on a { opacity: 1; font-weight: 600; }
-.hs-index li.is-on .hs-index-n { color: var(--hs-gold); opacity: 1; }
-.hs-index.is-paper li.is-on .hs-index-n { color: var(--hs-gold-deep); }
-@media (max-width: 1099px) { .hs-index { display: none; } }
-@keyframes hs-fade { from { opacity: 0; } }
 
 /* ───────────── Nav and footer on the homepage ─────────────
    HomeStory sets html.is-day over the light chapters and html.is-night over
@@ -193,8 +170,10 @@ html.hs-home .footer { position: relative; z-index: 3; }
 .hs-hero { position: relative; height: 250svh; background: var(--hs-paper); }
 .hs-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; }
 .hs-under, .hs-art { position: absolute; inset: 0; }
-/* the painting's own sage until it has decoded, so the opening never shows black */
-.hs-art { background: radial-gradient(60% 60% at 84% 8%, #f4f1dc 0%, #b9c6ad 50%, #a3b59a 100%); }
+/* The painting's own sage until it has decoded, so the opening never shows
+   black. It is on the picture, not the layer: when the painting breaks up,
+   its holes must show the Hello layer underneath, never a flat colour. */
+.hs-art-img { background: radial-gradient(60% 60% at 84% 8%, #f4f1dc 0%, #b9c6ad 50%, #a3b59a 100%); }
 .hs-under { background: var(--hs-paper); color: var(--hs-pine); display: grid; place-items: center; padding: 0 var(--hs-gutter); }
 .hs-under-inner { max-width: 1000px; transform-origin: 50% 60%; }
 .hs-under-kicker { font-weight: 800; font-size: clamp(4rem, 13vw, 12rem); letter-spacing: -0.055em; line-height: 0.9; padding-bottom: 0.1em; }
@@ -270,7 +249,7 @@ html.hs-home .footer { position: relative; z-index: 3; }
   .hs-name-wrap { top: 40%; }
 }
 /* Skipping: every opening animation ends at once. */
-.hs-skip :is(.hs-hero *, .hs-index) { animation-duration: 1ms !important; animation-delay: 0s !important; }
+.hs-skip .hs-hero * { animation-duration: 1ms !important; animation-delay: 0s !important; }
 
 /* ───────────── Paper chapters and the torn edge ───────────── */
 .hs-paper { position: relative; background: var(--hs-paper); color: var(--hs-pine); }
@@ -308,9 +287,41 @@ html.hs-home .footer { position: relative; z-index: 3; }
   .hs-layer-end { right: auto; left: -1px; top: auto; bottom: 0; }
 }
 
+/* ───────────── Pinned scenes that become cards ─────────────
+   The OCR Reader, Project June and BeadReader chapters each end the same
+   way: the scene steps back (scales down 6% and rounds its corners) while a
+   frame draws in exactly where its edges land, the picture dims, and the
+   card's copy and poster come up. --k (0 to 1, eased in script) drives it.
+   --hs-edge is the left edge of the centred measure, for content that is
+   positioned inside a full-screen stage. */
+.hs { --hs-edge: max(var(--hs-gutter), calc((100vw - 88rem) / 2 + var(--hs-gutter))); }
+/* --k is set by script on the OCR stage and on the June / BeadReader sections */
+.hs-reader, .hs-fl { --k: 0; }
+.hs-reader-stage, .hs-fl-stage { --kc: clamp(0, calc((var(--k) - 0.45) / 0.55), 1); }
+.hs-reader-scene, .hs-fl-scene {
+  position: absolute; inset: 0;
+  overflow: hidden;
+  transform: scale(calc(1 - 0.06 * var(--k)));
+  border-radius: calc(var(--k) * clamp(18px, 2.2vw, 34px));
+  will-change: transform;
+}
+.hs-stagecard { position: absolute; inset: 0; pointer-events: none; }
+.hs-stagecard .hs-fc { min-height: 0; height: 100%; background: transparent; }
+.hs-stagecard .hs-fc-frame {
+  inset: 3svh 3vw;
+  border-radius: clamp(18px, 2.2vw, 34px);
+  opacity: var(--k);
+  transform: scale(calc(1.02 - 0.02 * var(--k)));
+  transition: none;
+}
+.hs-stagecard .hs-fc-body { opacity: var(--kc); transform: translate3d(0, calc((1 - var(--kc)) * 2rem), 0); }
+.hs-stagecard .hs-fc-media { opacity: var(--kc); transform: scale(calc(1.06 - 0.06 * var(--kc))); }
+.hs-stagecard.is-live .hs-fc-body { pointer-events: auto; }
+
 /* ───────────── OCR Reader ───────────── */
 .hs-reader { position: relative; height: 720svh; background: #000; }
-.hs-reader-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; background: radial-gradient(90% 70% at 66% 62%, #17110b 0%, #000 70%); }
+.hs-reader-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; background: #000; }
+.hs-reader-scene { background: radial-gradient(90% 70% at 66% 62%, #17110b 0%, #000 70%); }
 /* The MeterSim meters float behind the title, then drift up and away as the board arrives. */
 .hs-reader-meters { position: absolute; right: 0; top: 0; bottom: 0; width: min(60vw, 100svh); will-change: transform, opacity; }
 .hs-reader-meters img { width: 100%; height: 100%; object-fit: cover; object-position: 70% 50%; -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 34%), linear-gradient(0deg, transparent 0%, #000 22%); -webkit-mask-composite: source-in; mask-image: linear-gradient(90deg, transparent 0%, #000 34%), linear-gradient(0deg, transparent 0%, #000 22%); mask-composite: intersect; }
@@ -322,32 +333,26 @@ html.hs-home .footer { position: relative; z-index: 3; }
 .hs-reader-intro {
   position: absolute; inset: 0;
   display: flex; flex-direction: column; justify-content: flex-end;
-  padding: 0 var(--hs-gutter) clamp(3rem, 12vh, 8rem);
-  padding-left: max(var(--hs-gutter), calc(var(--hs-index-w) + 24px));
+  padding: 0 var(--hs-edge) clamp(3rem, 12vh, 8rem);
   pointer-events: none;
   will-change: transform, opacity;
 }
-.hs-reader-title { font-size: clamp(4.2rem, 15vw, 15rem); margin-bottom: 1rem; }
+.hs-reader-title { font-size: clamp(4.2rem, 14vw, 15rem); margin-bottom: 0.8rem; }
 .hs-beats { position: absolute; inset: 0; pointer-events: none; }
 .hs-beat {
   position: absolute;
-  left: max(var(--hs-gutter), calc(var(--hs-index-w) + 24px));
+  left: var(--hs-edge);
   top: 50%; transform: translateY(-50%);
   width: min(31rem, 38vw);
   visibility: hidden; opacity: 0;
   will-change: transform, opacity;
 }
 .hs-beat-n { display: block; font-size: 0.85rem; font-weight: 600; color: var(--hs-gold); margin-bottom: 0.8rem; font-variant-numeric: tabular-nums; }
-.hs-beat h3 { font-size: clamp(1.9rem, 3.4vw, 3.1rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1.02; margin-bottom: 1rem; padding-bottom: 0.06em; text-wrap: balance; }
+.hs-beat h3 { font-size: clamp(1.9rem, 3.4vw, 3.1rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1.04; margin-bottom: 1rem; padding-bottom: 0.08em; text-wrap: balance; }
 .hs-beat p { font-size: clamp(1.02rem, 1.35vw, 1.2rem); color: var(--hs-mute); line-height: 1.55; }
-.hs-reader-rail { position: absolute; right: clamp(16px, 2.4vw, 32px); top: 50%; height: 30vh; width: 2px; transform: translateY(-50%); background: rgba(241, 239, 232, 0.14); border-radius: 2px; overflow: hidden; }
+.hs-reader-rail { position: absolute; right: clamp(16px, 2.4vw, 32px); top: 50%; height: 30vh; width: 2px; transform: translateY(-50%); background: rgba(241, 239, 232, 0.14); border-radius: 2px; overflow: hidden; opacity: calc(1 - var(--k)); }
 .hs-reader-rail span { position: absolute; inset: 0; background: var(--hs-gold); transform-origin: 50% 0; transform: scaleY(var(--hs-rp, 0)); }
-/* The last stretch: the whole screen becomes the project card, with the
-   live reader standing in its picture slot. */
-.hs-reader-card { position: absolute; inset: 0; --hs-card: 0; visibility: hidden; pointer-events: none; }
-.hs-reader-card .hs-fc { min-height: 0; height: 100%; background: transparent; }
-.hs-reader-card .hs-fc-body { opacity: var(--hs-card); transform: translate3d(0, calc((1 - var(--hs-card)) * 2.4rem), 0); pointer-events: auto; }
-.hs-reader-card .hs-fc-frame { opacity: var(--hs-card); transform: scale(calc(1.04 - var(--hs-card) * 0.04)); }
+.hs-reader-card { visibility: hidden; }
 @media (max-width: 760px) {
   .hs-beat { left: var(--hs-gutter); right: var(--hs-gutter); width: auto; top: auto; bottom: clamp(1.5rem, 6vh, 3rem); transform: none; }
   .hs-beat h3 { font-size: 1.75rem; }
@@ -357,106 +362,91 @@ html.hs-home .footer { position: relative; z-index: 3; }
   .hs-reader-meters img { object-position: 60% 40%; -webkit-mask-image: linear-gradient(0deg, transparent 0%, #000 40%); mask-image: linear-gradient(0deg, transparent 0%, #000 40%); }
 }
 
-/* ───────────── Flagship cards ───────────── */
+/* ───────────── Project June and BeadReader ───────────── */
+.hs-fl { position: relative; height: 320svh; background: #000; }
+.hs-fl-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; }
+.hs-fl-scene { background: #050504; }
+.hs-fl-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: calc(1 - 0.95 * var(--k)); will-change: transform; }
+.hs-fl.is-bead .hs-fl-photo { object-fit: contain; object-position: 50% 34%; padding: 9vh 6vw 26vh; }
+/* a soft vignette for the title's sake: no band, the picture runs to the edges */
+.hs-fl-scene::after { content: ''; position: absolute; inset: 0; background: radial-gradient(120% 90% at 50% 30%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.5) 100%); pointer-events: none; }
+.hs-fl-head {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 0 var(--hs-edge) clamp(3rem, 11vh, 8rem);
+  opacity: calc(1 - 2.5 * var(--k));
+  transform: translate3d(0, calc(var(--k) * -6vh), 0) scale(calc(1 - 0.06 * var(--k)));
+  transform-origin: 30% 100%;
+  pointer-events: none;
+}
+.hs-fl-title { font-size: clamp(4rem, 13vw, 15rem); margin: 0 0 0.6rem -0.04em; }
+
+/* ───────────── The flagship card ───────────── */
 .hs-fc {
   position: relative;
-  min-height: 100svh;
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
-  gap: clamp(1.5rem, 4vw, 4rem);
-  padding: clamp(5.5rem, 12vh, 7rem) clamp(28px, 5vw, 80px) clamp(2.5rem, 7vh, 4.5rem);
-  padding-left: max(clamp(28px, 5vw, 80px), calc(var(--hs-index-w) + 30px));
+  gap: clamp(1.5rem, 4vw, 5rem);
+  padding: clamp(5.5rem, 12vh, 8rem) calc(3vw + clamp(28px, 4vw, 90px)) clamp(2.5rem, 7vh, 5rem);
+  max-width: 100%;
   overflow: hidden;
   isolation: isolate;
 }
-/* the frame round the whole screen that makes it read as one card */
+/* on very wide screens the card's content keeps to the centred measure */
+@media (min-width: 1700px) { .hs-fc { padding-left: max(calc(3vw + 4vw), calc((100vw - 96rem) / 2)); padding-right: max(calc(3vw + 4vw), calc((100vw - 96rem) / 2)); } }
 .hs-fc-frame {
-  position: absolute; inset: clamp(10px, 1.6vw, 20px);
-  border-radius: clamp(18px, 2.4vw, 32px);
-  border: 1px solid rgba(217, 181, 107, 0.42);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03), inset 0 40px 120px -60px rgba(217, 181, 107, 0.18), 0 0 0 100vmax rgba(0, 0, 0, 0);
+  position: absolute; inset: 3svh 3vw;
+  border-radius: clamp(18px, 2.2vw, 34px);
+  border: 1px solid rgba(241, 239, 232, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
   pointer-events: none;
   z-index: -1;
-  transition: opacity 0.9s ease, transform 1.1s var(--hs-ease);
 }
+.hs-fc.is-ocr .hs-fc-frame { border-color: rgba(217, 181, 107, 0.62); }
 .hs-fc.is-right .hs-fc-media { order: 2; }
 .hs-fc-media { position: relative; align-self: stretch; display: grid; place-items: center; min-height: 0; }
-.hs-fc-media img { width: 100%; height: 100%; max-height: 78svh; object-fit: contain; -webkit-mask-image: radial-gradient(closest-side, #000 72%, transparent 100%); mask-image: radial-gradient(closest-side, #000 72%, transparent 100%); }
-.hs-fc-body { position: relative; max-width: 36rem; }
+.hs-fc-media img { width: 100%; height: 100%; max-height: 74svh; object-fit: contain; -webkit-mask-image: radial-gradient(closest-side, #000 70%, transparent 100%); mask-image: radial-gradient(closest-side, #000 70%, transparent 100%); }
+/* the generated posters' lamplight, toned down to something believable */
+.hs-fc:is(.is-june, .is-bead) .hs-fc-media img { filter: saturate(0.72) brightness(0.86) contrast(1.06); }
+.hs-fc-body { position: relative; max-width: 38rem; }
 .hs-fc-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.4rem; }
-.hs-fc-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.42rem 0.9rem; border-radius: 999px; font-size: 0.85rem; font-weight: 600; color: var(--hs-silk); background: rgba(241, 239, 232, 0.08); border: 1px solid rgba(241, 239, 232, 0.2); }
-.hs-fc-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: 0.7; }
-.hs-fc-badge.is-gold { color: #1a1408; background: linear-gradient(135deg, #f1d69a, #d9b56b 55%, #b8914c); border-color: rgba(255, 236, 190, 0.6); box-shadow: 0 6px 20px -8px rgba(217, 181, 107, 0.7); }
+.hs-fc-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.42rem 0.9rem; border-radius: 999px; font-size: 0.85rem; font-weight: 600; color: var(--hs-silk); background: rgba(241, 239, 232, 0.07); border: 1px solid rgba(241, 239, 232, 0.2); }
+.hs-fc-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: 0.6; }
+.hs-fc-badge.is-gold { color: #1a1408; background: linear-gradient(135deg, #f1d69a, #d9b56b 55%, #b8914c); border-color: rgba(255, 236, 190, 0.6); box-shadow: 0 6px 20px -8px rgba(217, 181, 107, 0.6); }
 .hs-fc .hs-fc-ai { --ai-h: 64px; }
-.hs-fc-title { font-size: clamp(2.8rem, 6.2vw, 6rem); font-weight: 800; letter-spacing: -0.055em; line-height: 0.92; padding-bottom: 0.12em; }
-.hs-fc-kind { color: var(--hs-gold); font-weight: 600; font-size: 0.92rem; margin: 0.2rem 0 1rem; }
-.hs-fc-lead { font-size: clamp(1.02rem, 1.3vw, 1.2rem); line-height: 1.6; color: rgba(241, 239, 232, 0.86); margin-bottom: 1.6rem; }
+.hs-fc-title { font-size: clamp(2.8rem, 6vw, 6.4rem); font-weight: 800; letter-spacing: -0.055em; line-height: 0.94; padding-bottom: 0.16em; }
+.hs-fc-kind { color: var(--hs-gold); font-weight: 600; font-size: 0.92rem; margin: 0.1rem 0 1rem; }
+.hs-fc:is(.is-june, .is-bead) .hs-fc-kind { color: rgba(241, 239, 232, 0.62); }
+.hs-fc-lead { font-size: clamp(1.02rem, 1.25vw, 1.25rem); line-height: 1.6; color: rgba(241, 239, 232, 0.86); margin-bottom: 1.6rem; }
 .hs-fc-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.8rem 1.2rem; margin-bottom: 1.4rem; }
 .hs-fc-stats div { border-top: 1px solid rgba(241, 239, 232, 0.18); padding-top: 0.6rem; }
-.hs-fc-stats dt { font-size: clamp(1.2rem, 1.8vw, 1.7rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+.hs-fc-stats dt { font-size: clamp(1.2rem, 1.8vw, 1.8rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
 .hs-fc-stats dd { color: var(--hs-mute); font-size: 0.82rem; line-height: 1.35; margin-top: 0.15rem; }
 .hs-fc-tools { display: flex; gap: 0.5rem; margin-bottom: 1.6rem; }
 .hs-fc-tools img { width: 34px; height: 34px; padding: 6px; border-radius: 10px; background: rgba(241, 239, 232, 0.08); border: 1px solid rgba(241, 239, 232, 0.12); object-fit: contain; }
 .hs-fc-poster { width: 240px; max-width: 46%; height: auto; margin-top: 1.6rem; border-radius: 12px; border: 1px solid rgba(241, 239, 232, 0.16); box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.8); }
 .hs-fc-slot { display: block; }
 
-/* the three cards differ: OCR is gold on black around the live reader, June
-   is warm lamplight with the poster on the left, BeadReader honey with the
-   poster on the right */
-.hs-fc.is-ocr .hs-fc-frame { border-color: rgba(217, 181, 107, 0.7); }
-.hs-cardwrap { position: relative; z-index: 1; }
-.hs-cardwrap .hs-fc-frame { opacity: 0; transform: scale(1.03); }
-.hs-cardwrap .hs-fc.is-in .hs-fc-frame { opacity: 1; transform: none; }
-.hs-fc.is-june { background: radial-gradient(70% 80% at 22% 45%, #130d08 0%, #0a0705 55%, #050302 100%); }
-.hs-fc.is-june .hs-fc-frame { border-color: rgba(230, 170, 100, 0.45); }
-.hs-fc.is-bead { background: radial-gradient(70% 80% at 78% 45%, #15110d 0%, #0a0807 55%, #040302 100%); }
-.hs-fc.is-bead .hs-fc-frame { border-color: rgba(214, 164, 92, 0.45); }
-.hs-fc.is-bead .hs-fc-badge, .hs-fc.is-june .hs-fc-badge { color: #f3dcb4; border-color: rgba(230, 180, 110, 0.35); background: rgba(230, 180, 110, 0.08); }
-
 @media (max-width: 900px) {
-  .hs-fc { grid-template-columns: 1fr; align-content: start; gap: 1rem; padding: 5.2rem 26px 2.4rem; }
+  /* Phones: every card lives inside a fixed screen, so it is compact: the
+     picture stands in the top fifth, the facts sit four across, the tools step aside. */
+  .hs-fc { grid-template-columns: 1fr; align-content: start; gap: 0.6rem; padding: 4.4rem calc(3vw + 18px) 1.6rem; }
   .hs-fc.is-right .hs-fc-media { order: 0; }
-  .hs-fc-media img { max-height: 34svh; }
-  .hs-fc-stats { grid-template-columns: repeat(2, 1fr); }
-  .hs-fc-top { margin-bottom: 0.9rem; }
-  .hs-fc .hs-fc-ai { --ai-h: 50px; }
-  .hs-fc-title { font-size: clamp(2.6rem, 12vw, 4rem); }
-  .hs-fc-lead { font-size: 0.98rem; margin-bottom: 1.1rem; }
-  .hs-fc-poster { display: none; }
-  /* OCR: the card lives inside a fixed screen, so it is compact: the reader
-     stands in the top fifth, the facts sit four across, the tools step aside */
-  .hs-reader-card .hs-fc-media { min-height: 20svh; }
-  .hs-reader-card .hs-fc { padding-top: 4.4rem; padding-bottom: 1.6rem; gap: 0.6rem; }
-  .hs-reader-card .hs-fc-title { font-size: 2.6rem; }
-  .hs-reader-card .hs-fc-kind { margin-bottom: 0.6rem; }
-  .hs-reader-card .hs-fc-lead { font-size: 0.92rem; line-height: 1.5; margin-bottom: 0.9rem; }
-  .hs-reader-card .hs-fc-stats { grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 1rem; }
-  .hs-reader-card .hs-fc-stats dt { font-size: 1rem; }
-  .hs-reader-card .hs-fc-stats dd { font-size: 0.68rem; }
-  .hs-reader-card .hs-fc-tools { display: none; }
-  .hs-reader-card .hs-btn { min-height: 40px; padding: 0.5rem 0.9rem; font-size: 0.86rem; }
+  .hs-fc-media { min-height: 20svh; }
+  .hs-fc-media img { max-height: 24svh; }
+  .hs-fc-top { margin-bottom: 0.8rem; }
+  .hs-fc .hs-fc-ai { --ai-h: 46px; }
+  .hs-fc-title { font-size: 2.6rem; }
+  .hs-fc-kind { margin-bottom: 0.6rem; }
+  .hs-fc-lead { font-size: 0.92rem; line-height: 1.5; margin-bottom: 0.9rem; }
+  .hs-fc-stats { grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 1rem; }
+  .hs-fc-stats dt { font-size: 1rem; }
+  .hs-fc-stats dd { font-size: 0.68rem; }
+  .hs-fc-tools, .hs-fc-poster { display: none; }
+  .hs-fc .hs-btn { min-height: 40px; padding: 0.5rem 0.9rem; font-size: 0.86rem; }
+  .hs-fl.is-bead .hs-fl-photo { padding: 14vh 0 36vh; object-position: 50% 30%; }
 }
-@media (max-width: 900px) and (max-height: 700px) {
-  .hs-reader-card .hs-fc-lead { display: none; }
-}
-
-/* ───────────── Chapter openers ───────────── */
-.hs-op { position: relative; background: #000; }
-.hs-op-media { position: sticky; top: 0; height: 100svh; overflow: hidden; z-index: 0; }
-.hs-op-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; will-change: transform; }
-.hs-op-media::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 0, 0, 0) 35%, rgba(0, 0, 0, 0.55) 72%, #000 100%); }
-.hs-op.is-contain .hs-op-media img { object-fit: contain; object-position: 50% 38%; padding: 8vh 4vw 18vh; }
-.hs-op-head {
-  position: relative; z-index: 1;
-  margin-top: -46svh; min-height: 46svh;
-  padding: 0 var(--hs-gutter) clamp(3rem, 10vh, 7rem);
-  padding-left: max(var(--hs-gutter), calc(var(--hs-index-w) + 24px));
-}
-.hs-op-title { font-size: clamp(4rem, 14vw, 15rem); margin: 0 0 1.1rem -0.04em; overflow: hidden; padding-bottom: 0.16em; margin-bottom: 0.9rem; }
-@media (max-width: 860px) {
-  .hs-op.is-contain .hs-op-media img { padding: 14vh 0 34vh; object-position: 50% 30%; }
-}
+@media (max-width: 900px) and (max-height: 700px) { .hs-fc-lead { display: none; } }
 
 /* ───────────── Projects ───────────── */
 .hs-projects { padding: clamp(5rem, 14vh, 9rem) 0 clamp(3rem, 8vh, 5rem); }
@@ -506,7 +496,7 @@ html.hs-home .footer { position: relative; z-index: 3; }
 
 /* ───────────── On the bench ───────────── */
 .hs-bench { padding-bottom: clamp(7rem, 18vh, 12rem); }
-.hs-bench-pin { position: sticky; top: 0; height: 100svh; display: flex; flex-direction: column; justify-content: center; padding: 0 var(--hs-gutter); padding-left: max(var(--hs-gutter), calc(var(--hs-index-w) + 24px)); z-index: 0; }
+.hs-bench-pin { position: sticky; top: 0; height: 100svh; display: flex; flex-direction: column; justify-content: center; padding: 0 var(--hs-edge); z-index: 0; }
 .hs-bench-title { font-size: clamp(3.8rem, 12.5vw, 13rem); margin-bottom: 1.2rem; transform-origin: 0 50%; }
 .hs-cards { position: relative; z-index: 1; margin-top: -30svh; display: grid; gap: clamp(1.5rem, 5vh, 3rem); padding: 0 var(--hs-gutter); perspective: 1200px; }
 .hs-card { width: min(100%, 40rem); justify-self: end; margin-right: clamp(0px, 6vw, 120px); padding: clamp(1.5rem, 3vw, 2.4rem); border-radius: 18px; background: var(--hs-paper-hi); box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 30px 60px -28px rgba(29, 43, 34, 0.35), 0 8px 18px -10px rgba(29, 43, 34, 0.18); transform-origin: 50% 100%; }
@@ -550,103 +540,122 @@ html.hs-home .footer { position: relative; z-index: 3; }
   .hs-tile-plus { width: 28px; height: 28px; right: 0.7rem; bottom: 0.75rem; }
 }
 
-/* ───────────── HomeLab ───────────── */
-.hs-lab { padding: clamp(5rem, 12vh, 8rem) 0; background: #000; }
-.hs-lab-grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: clamp(2rem, 5vw, 5rem); align-items: center; }
+/* ───────────── HomeLab ─────────────
+   The cloud-and-N mark in ASCII fills the chapter behind the copy (to the
+   right of it on wide screens, faint behind it on phones). */
+.hs-lab { position: relative; padding: clamp(7rem, 16vh, 11rem) 0; background: #000; overflow: hidden; min-height: min(100svh, 70rem); display: flex; align-items: center; }
+.hs-lab > .hs-wrap { position: relative; z-index: 1; }
+.hs-lab-text { max-width: 34rem; }
 .hs-lab-text .hs-sub { margin-bottom: 1.6rem; }
-.hs-lab-text .hs-lead { margin-bottom: 1.8rem; font-size: 1.05rem; }
-.hs-facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-bottom: 2rem; }
+.hs-lab-text .hs-lead { margin-bottom: 2rem; font-size: 1.05rem; }
+.hs-facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
 .hs-facts div { border-top: 1px solid rgba(241, 239, 232, 0.18); padding-top: 0.8rem; }
-.hs-facts dt { font-size: clamp(1.5rem, 2.4vw, 2.2rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
+.hs-facts dt { font-size: clamp(1.5rem, 2.4vw, 2.3rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
 .hs-facts dd { color: var(--hs-mute); font-size: 0.9rem; margin-top: 0.2rem; }
-.hs-ascii { display: flex; flex-direction: column; gap: 0.9rem; }
-.hs-ascii-screen { position: relative; aspect-ratio: 4 / 3.4; border-radius: 18px; overflow: hidden; background: radial-gradient(80% 70% at 50% 45%, #0f0c08 0%, #000 80%); box-shadow: inset 0 0 0 1px rgba(217, 181, 107, 0.22), inset 0 0 80px rgba(0, 0, 0, 0.9); }
-/* faint scan lines, like a terminal */
-.hs-ascii-screen::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 3px); pointer-events: none; }
-.hs-ascii-screen canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-.hs-ascii-caps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
-.hs-ascii-caps li { display: flex; flex-direction: column; gap: 0.1rem; padding-top: 0.55rem; border-top: 2px solid rgba(241, 239, 232, 0.12); font-size: 0.8rem; line-height: 1.35; color: var(--hs-mute); transition: border-color 0.4s, color 0.4s; }
-.hs-ascii-caps b { color: var(--hs-silk); font-size: 0.92rem; }
-.hs-ascii-caps li.is-on { border-color: var(--hs-gold); }
-.hs-ascii-caps li.is-on b { color: var(--hs-gold); }
-@media (max-width: 900px) {
-  .hs-lab-grid { grid-template-columns: 1fr; }
-  .hs-ascii-caps { grid-template-columns: repeat(2, 1fr); }
+.hs-lab-cta { margin-top: clamp(2.4rem, 5vh, 3.4rem); }
+.hs-ascii { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.hs-ascii canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+@media (max-width: 899px) {
+  .hs-ascii { opacity: 0.4; }
   .hs-facts dt { font-size: 1.6rem; }
 }
 
 /* ───────────── Photos ───────────── */
-.hs-photos { padding: clamp(5rem, 12vh, 8rem) 0 clamp(4rem, 10vh, 7rem); background: #000; overflow: clip; }
-.hs-masonry { display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: clamp(8px, 1vw, 14px); padding: 0 clamp(8px, 1.4vw, 20px); padding-left: max(clamp(8px, 1.4vw, 20px), calc(var(--hs-index-w) + 24px)); align-items: start; }
-.hs-mcol { display: flex; flex-direction: column; gap: clamp(8px, 1vw, 14px); will-change: transform; }
+.hs-photos { padding: clamp(5rem, 12vh, 8rem) 0; background: #000; overflow: clip; }
+.hs-masonry { display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: clamp(8px, 1vw, 16px); max-width: 120rem; margin: 0 auto; padding: 0 clamp(8px, 1.4vw, 24px); align-items: start; position: relative; }
+/* the wall fades out at its foot, so the button below has clear space */
+.hs-masonry::after { content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 16vh; background: linear-gradient(180deg, rgba(0, 0, 0, 0), #000); pointer-events: none; }
+.hs-mcol { display: flex; flex-direction: column; gap: clamp(8px, 1vw, 16px); will-change: transform; }
 .hs-mph { position: relative; overflow: hidden; border-radius: 10px; background: #111; }
 .hs-mph img { width: 100%; height: auto; transition: transform 0.9s var(--hs-ease), filter 0.5s; }
 .hs-mph figcaption { position: absolute; left: 0.6rem; bottom: 0.5rem; font-size: 0.78rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 999px; background: rgba(0, 0, 0, 0.5); color: #f1efe8; opacity: 0; transform: translateY(6px); transition: opacity 0.3s, transform 0.4s var(--hs-ease); }
 .hs-mph:hover img { transform: scale(1.04); }
 .hs-mph:hover figcaption { opacity: 1; transform: none; }
-.hs-photos-more { margin-top: clamp(2.4rem, 6vh, 3.6rem); }
+.hs-photos-more { display: flex; justify-content: center; padding: clamp(2rem, 5vh, 3.5rem) var(--hs-gutter) 0; position: relative; z-index: 1; }
 @media (hover: none) { .hs-mph figcaption { display: none; } }
 
 /* ───────────── Contact at dusk ─────────────
-   The closing scene is the morning's field again, at dusk: the painting
-   fills the chapter (tall enough on wide screens to keep the pine's crown),
-   "Say hello." sits in its night sky, and the footer is pulled up over it
-   so it stands in the dark grass. */
+   The closing scene is the morning's field again, at dusk. On wide screens
+   it is one screen: a wide panorama (dusk-pano.webp) with the whole pine at
+   the left, "Say hello." and the address centred in the open sky, and the
+   footer pulled up over the band of grass at the foot. The title and the
+   address never break (sized to fit; on phones the title is a deliberate
+   two-word stack). Tall screens use the tall painting under the words. */
 .hs-contact {
   position: relative;
-  min-height: max(100svh, min(96vw, 1500px));
+  min-height: 100svh;
   margin-bottom: calc(-1 * var(--hs-foot, 140px));
-  padding: clamp(8rem, 22vh, 14rem) 0 calc(var(--hs-foot, 140px) + 20vh);
+  padding: clamp(6rem, 16vh, 12rem) var(--hs-gutter) calc(var(--hs-foot, 140px) + 22vh);
   background: var(--hs-dusk);
   overflow: hidden;
+  display: flex; flex-direction: column; justify-content: center;
 }
 .hs-dusk { position: absolute; inset: 0; z-index: 0; }
-.hs-dusk img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 100%; will-change: transform; transform-origin: 50% 100%; }
+.hs-dusk img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 18% 100%; will-change: transform; transform-origin: 50% 100%; }
 /* black from the chapter above fades into the night sky */
-.hs-dusk::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.72) 10%, rgba(0, 0, 0, 0) 32%); }
-.hs-contact-in { position: relative; z-index: 2; }
-/* on wide screens the words keep to the open sky right of the pine */
-@media (min-width: 900px) { .hs-contact-in { padding-left: max(var(--hs-gutter), 30vw); } }
-.hs-contact-title { font-size: clamp(4rem, 13vw, 13rem); overflow: hidden; padding-bottom: 0.18em; margin-bottom: 0.6rem; }
-.hs-contact-line { color: rgba(236, 232, 245, 0.78); font-size: clamp(1.05rem, 1.6vw, 1.3rem); margin-bottom: 1rem; }
+.hs-dusk::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.55) 5%, rgba(0, 0, 0, 0) 14%); }
+.hs-contact-in { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; margin: 0 auto; max-width: 88rem; }
+.hs-contact-title { font-size: min(10.5vw, 22vh, 15rem); white-space: nowrap; padding-bottom: 0.22em; margin-bottom: 0.1em; }
+.hs-ct-w { display: inline-block; white-space: nowrap; }
+.hs-contact-line { color: rgba(236, 232, 245, 0.82); font-size: clamp(1.05rem, 1.4vw, 1.5rem); margin-bottom: 0.8rem; max-width: 62ch; text-wrap: balance; }
 .hs-contact-mail {
   display: inline-block;
+  white-space: nowrap;
   font-family: var(--hs-serif), Georgia, serif; font-style: italic;
-  font-size: clamp(1.6rem, 4.4vw, 4rem); line-height: 1.15;
+  font-size: min(4vw, 7vh, 4.4rem); line-height: 1.2;
   color: var(--hs-gold);
   text-decoration: none;
   background: linear-gradient(currentColor, currentColor) left 100% / 0 1px no-repeat;
   transition: background-size 0.5s var(--hs-ease);
-  margin-bottom: 2.4rem;
-  overflow-wrap: anywhere;
+  margin-bottom: 2.2rem;
 }
 .hs-contact-mail:hover { background-size: 100% 1px; }
+.hs-contact-in .hs-btns { justify-content: center; }
 @media (max-width: 899px) {
-  .hs-contact { min-height: 170svh; padding-top: 7rem; }
-  .hs-dusk img { object-position: 6% 100%; } /* keeps the pine, which stands near the left edge of the tall painting */
+  /* tall screens: the tall painting, the pine at the left, the words above its crown */
+  /* the words sit in the night sky above the painting, which starts below them, so the whole pine shows */
+  .hs-contact { display: block; min-height: 0; padding-top: 7rem; padding-bottom: 115svh; background: linear-gradient(180deg, #000 0%, #0b0e1d 40%, #141930 70%); }
+  .hs-dusk { top: auto; height: 120svh; }
+  .hs-dusk img { object-position: 6% 100%; -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 16%); mask-image: linear-gradient(180deg, transparent 0%, #000 16%); }
+  .hs-dusk::after { display: none; }
+  .hs-contact-mail { font-size: 6.4vw; }
+}
+@media (max-width: 600px) {
+  .hs-contact-title { font-size: 25vw; line-height: 0.9; }
+  .hs-ct-w { display: block; }
 }
 
 /* ───────────── Reduced motion: every state finished ───────────── */
 @media (prefers-reduced-motion: reduce) {
-  .hs *, .hs-index { animation: none !important; }
+  .hs * { animation: none !important; }
   .hs-hero { height: auto; }
   .hs-stage { position: relative; }
   .hs-under { display: none; }
   .hs-reader { height: auto; }
   .hs-reader-stage { position: relative; height: auto; overflow: clip; display: flex; flex-direction: column; padding: 6rem 0 0; }
   .hs-reader-meters { opacity: 0.35; }
-  .hs .hs-reader-intro, .hs .hs-beats { position: relative; inset: auto; padding: 0 var(--hs-gutter); padding-left: max(var(--hs-gutter), calc(var(--hs-index-w) + 24px)); }
+  .hs .hs-reader-intro, .hs .hs-beats { position: relative; inset: auto; padding: 0 var(--hs-edge); }
   .hs .hs-reader-intro { padding-bottom: 0; }
   .hs .hs-beats { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 2rem; margin: 3rem 0; }
   .hs-beat { position: relative; left: auto; right: auto; top: auto; bottom: auto; margin: 0; width: auto; transform: none; visibility: visible; opacity: 1; }
   .hs-beat h3 { font-size: 1.6rem; }
   .hs-reader-rail { display: none; }
-  .hs-reader-card { position: relative; inset: auto; visibility: visible; --hs-card: 1; }
-  .hs-reader-gl { position: absolute; inset: auto 0 0 0; height: 100svh; }
-  .hs-reader-card .hs-fc { min-height: 100svh; }
-  .hs-cardwrap .hs-fc-frame { opacity: 1; transform: none; }
+  .hs-reader-stage, .hs-fl-stage { --k: 1; }
+  .hs-reader-scene { position: absolute; inset: auto 0 0 0; height: 100svh; transform: none; border-radius: 0; }
+  .hs-reader-card { position: relative; inset: auto; visibility: visible; }
+  .hs-stagecard .hs-fc-body { pointer-events: auto; }
+  /* June and BeadReader: the opener, then the card, both still */
+  .hs-fl { height: auto; }
+  .hs-fl-stage { position: relative; height: auto; overflow: visible; }
+  .hs-fl-scene { position: relative; height: 100svh; transform: none; border-radius: 0; }
+  .hs-fl-photo { opacity: 1; }
+  .hs-fl-head { opacity: 1; transform: none; bottom: auto; top: calc(100svh - 0px); transform: translateY(-100%); }
+  .hs-fl-card { position: relative; inset: auto; }
+  .hs-stagecard .hs-fc { height: auto; min-height: 100svh; }
   .hs-bench-pin { position: relative; height: auto; padding-top: 6rem; padding-bottom: 3rem; }
   .hs-cards { margin-top: 0; }
   .hs-btn, .hs-pc, .hs-tile > button, .hs-mph img { transition: none; }
   .hs-dusk img { transform: none; }
 }
+
+@keyframes hs-fade { from { opacity: 0; } }

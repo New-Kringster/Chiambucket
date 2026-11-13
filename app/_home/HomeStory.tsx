@@ -2,7 +2,7 @@
 /* ────────────────────────────────────────────────────────────────
    The homepage as a scroll story (November 2026, branch task/home-story).
 
-   Chapters (CHAPTERS in content.ts drives the left index):
+   Chapters:
      Start        the painted morning comes into focus, like eyes opening
                   to the sun, and the glass name focuses in over it;
                   scrolling breaks the painting into glittering grain (the
@@ -32,7 +32,7 @@
    ──────────────────────────────────────────────────────────────── */
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Figtree, Newsreader } from 'next/font/google';
-import { CHAPTERS, LAYERS, READER_BEATS, BENCH, PHOTOS, OCR_CARD, JUNE_CARD, BEAD_CARD } from './content';
+import { LAYERS, READER_BEATS, BENCH, SHOW_BENCH, PHOTOS, OCR_CARD, JUNE_CARD, BEAD_CARD } from './content';
 import { FlagCard, ProjectGallery, Bento, usePeek } from './Cards';
 import AsciiLab from './AsciiLab';
 import { IcGitHub, IcMail, IcServer, IcPhotos } from '../../components/Icons';
@@ -134,11 +134,11 @@ function Sub({ children }: { children: string }) {
 }
 
 /* Masonry: photos dealt into columns by height, so each column can drift at
-   its own speed. Four columns on wide screens, three on tablets, two on phones. */
+   its own speed. Five on very wide screens, four on desktops, three on tablets, two on phones. */
 function useCols() {
   const [cols, setCols] = useState(4);
   useEffect(() => {
-    const pick = () => setCols(innerWidth <= 640 ? 2 : innerWidth <= 1100 ? 3 : 4);
+    const pick = () => setCols(innerWidth <= 640 ? 2 : innerWidth <= 1100 ? 3 : innerWidth < 1900 ? 4 : 5);
     pick();
     addEventListener('resize', pick);
     return () => removeEventListener('resize', pick);
@@ -154,9 +154,6 @@ function deal<T extends { w: number; h: number }>(items: T[], n: number) {
 
 export default function HomeStory() {
   const root = useRef<HTMLDivElement>(null);
-  const [active, setActive] = useState('top');
-  const [tone, setTone] = useState<'dark' | 'paper' | 'art'>('art');
-  const [footer, setFooter] = useState(false);
   const lenisRef = useRef<{ scrollTo: (t: number, o?: { duration?: number }) => void } | null>(null);
   const peek = usePeek();
   const cols = useCols();
@@ -172,14 +169,11 @@ export default function HomeStory() {
     return off;
   }, []);
 
-  /* Chapter under the middle of the screen (the index), the tone under the
-     nav (the nav and footer colours) and under the index, and the footer. */
+  /* The tone under the nav sets the nav and footer colours; the footer's
+     height lets the closing scene reach under it. */
   useEffect(() => {
     const html = document.documentElement;
     html.classList.add('hs-home');
-    const secs = CHAPTERS.map((c) => document.getElementById(c.id)).filter(Boolean) as HTMLElement[];
-    const io = new IntersectionObserver((es) => { for (const e of es) if (e.isIntersecting) setActive((e.target as HTMLElement).id); }, { rootMargin: '-50% 0px -50% 0px' });
-    secs.forEach((s) => io.observe(s));
     const toneEls = Array.from(document.querySelectorAll<HTMLElement>('[data-tone]'));
     const navIo = new IntersectionObserver((es) => {
       for (const e of es) {
@@ -189,20 +183,14 @@ export default function HomeStory() {
         html.classList.toggle('is-day', !dark);
       }
     }, { rootMargin: '0px 0px -94% 0px' });
-    const idxIo = new IntersectionObserver((es) => {
-      for (const e of es) if (e.isIntersecting) setTone((e.target as HTMLElement).dataset.tone as 'dark' | 'paper' | 'art');
-    }, { rootMargin: '-88% 0px 0px 0px' });
-    toneEls.forEach((s) => { navIo.observe(s); idxIo.observe(s); });
-    const foot = document.querySelector('.footer');
-    const fIo = new IntersectionObserver(([e]) => setFooter(e.isIntersecting), { rootMargin: '0px 0px 40px 0px' });
-    if (foot) fIo.observe(foot);
-    // the footer stands in the grass of the closing scene: it is pulled up over it by its own height
-    const setFoot = () => { if (foot) html.style.setProperty('--hs-foot', `${(foot as HTMLElement).offsetHeight}px`); };
+    toneEls.forEach((s) => navIo.observe(s));
+    const foot = document.querySelector<HTMLElement>('.footer');
+    const setFoot = () => { if (foot) html.style.setProperty('--hs-foot', `${foot.offsetHeight}px`); };
     setFoot();
     const ro = foot ? new ResizeObserver(setFoot) : null;
     if (foot) ro!.observe(foot);
     return () => {
-      io.disconnect(); navIo.disconnect(); idxIo.disconnect(); fIo.disconnect(); ro?.disconnect();
+      navIo.disconnect(); ro?.disconnect();
       html.classList.remove('hs-home');
       html.style.removeProperty('--hs-foot');
     };
@@ -218,7 +206,7 @@ export default function HomeStory() {
       let dispose: (() => void) | undefined;
       const host = el.querySelector<HTMLElement>('.hs-reader-gl');
       if (host) import('./readerScene').then(({ createReaderScene }) => createReaderScene(host, { compact: innerWidth < 760 }))
-        .then((s) => { if (gone) return s.dispose(); s.setProgress(0.97); dispose = s.dispose; host.classList.add('is-ready'); })
+        .then((s) => { if (gone) return s.dispose(); s.jump(0.97); dispose = s.dispose; host.classList.add('is-ready'); })
         .catch(() => el.classList.add('hs-no-gl'));
       return () => { gone = true; dispose?.(); };
     }
@@ -311,6 +299,7 @@ export default function HomeStory() {
         const intro = reader.querySelector<HTMLElement>('.hs-reader-intro')!;
         const meters = reader.querySelector<HTMLElement>('.hs-reader-meters')!;
         const card = reader.querySelector<HTMLElement>('.hs-reader-card')!;
+        const stage = reader.querySelector<HTMLElement>('.hs-reader-stage')!;
         let scene: import('./readerScene').ReaderScene | null = null;
         let progress = 0;
         const beatSpans = [[0.2, 0.38], [0.44, 0.62], [0.64, 0.8]];
@@ -330,9 +319,11 @@ export default function HomeStory() {
             el.style.transform = `translate3d(0, ${((1 - v) * (p < a + 0.05 ? 3 : -3)).toFixed(2)}rem, 0)`;
             el.style.visibility = v > 0.01 ? 'visible' : 'hidden';
           });
-          const c = ramp(0.84, 0.92);
-          card.style.setProperty('--hs-card', c.toFixed(3));
+          // the scene steps back into a card: eased, so it starts and lands softly
+          const c0 = ramp(0.82, 0.94), c = c0 * c0 * (3 - 2 * c0);
+          stage.style.setProperty('--k', c.toFixed(4));
           card.style.visibility = c > 0.01 ? 'visible' : 'hidden';
+          card.classList.toggle('is-live', c > 0.6);
           reader.style.setProperty('--hs-rp', p.toFixed(4));
         };
         ScrollTrigger.create({
@@ -348,7 +339,7 @@ export default function HomeStory() {
             const { createReaderScene } = await import('./readerScene');
             const s = await createReaderScene(host, { compact: innerWidth < 760 });
             if (cancelled) return s.dispose();
-            scene = s; s.setProgress(progress); host.classList.add('is-ready');
+            scene = s; s.jump(progress); host.classList.add('is-ready');
           } catch { el.classList.add('hs-no-gl'); }
         }, { rootMargin: '150% 0px' });
         near.observe(reader);
@@ -356,25 +347,32 @@ export default function HomeStory() {
         window.addEventListener('resize', onR);
         disposers.push(() => { near.disconnect(); window.removeEventListener('resize', onR); scene?.dispose(); });
 
-        /* ── Openers: the picture settles, the title assembles ── */
-        gsap.utils.toArray<HTMLElement>('.hs-op').forEach((op) => {
-          const img = op.querySelector('.hs-op-media img');
-          if (img) gsap.fromTo(img, { scale: 1.16 }, { scale: 1, ease: 'none',
-            scrollTrigger: { trigger: op, start: 'top bottom', end: 'top -60%', scrub: true } });
-          const chars = op.querySelectorAll('.hs-op-title .hs-c');
-          gsap.from(chars, { yPercent: 110, opacity: 0, rotate: 6, duration: 1.1, ease: 'expo.out', stagger: 0.035,
-            scrollTrigger: { trigger: op.querySelector('.hs-op-head'), start: 'top 82%', toggleActions: 'play none none reverse' } });
-          const sub = op.querySelector('.hs-op-head .hs-sub');
-          if (sub) gsap.from(sub, { y: 30, opacity: 0, duration: 1, ease: 'expo.out', delay: 0.25,
-            scrollTrigger: { trigger: sub, start: 'top 90%', toggleActions: 'play none none reverse' } });
-        });
-
-        /* ── Full-screen cards: the frame draws in, the poster settles ── */
-        gsap.utils.toArray<HTMLElement>('.hs-cardwrap .hs-fc').forEach((fc) => {
-          ScrollTrigger.create({ trigger: fc, start: 'top 70%', onToggle: (st) => { if (st.isActive) fc.classList.add('is-in'); }, onLeaveBack: () => fc.classList.remove('is-in') });
-          const poster = fc.querySelector('.hs-fc-media img');
-          if (poster) gsap.fromTo(poster, { yPercent: 6, scale: 1.08 }, { yPercent: -6, scale: 1, ease: 'none',
-            scrollTrigger: { trigger: fc, start: 'top bottom', end: 'bottom top', scrub: true } });
+        /* ── Project June and BeadReader: one pinned scene each. The title
+           assembles over the picture; then the whole scene steps back (it
+           scales down a little and rounds its corners) as the card's frame
+           draws in round it, the picture dims, and the card's poster and
+           copy come up. --k carries the eased progress of that change. ── */
+        gsap.utils.toArray<HTMLElement>('.hs-fl').forEach((fl) => {
+          const photo = fl.querySelector('.hs-fl-photo');
+          const chars = fl.querySelectorAll('.hs-fl-title .hs-c');
+          const sub = fl.querySelector('.hs-fl-head .hs-sub');
+          const tag = fl.querySelector('.hs-fl-head .hs-tag');
+          const head = gsap.timeline({ paused: true })
+            .from(chars, { yPercent: 60, opacity: 0, rotate: 4, duration: 1.1, ease: 'expo.out', stagger: 0.035 })
+            .from([tag, sub], { y: 24, opacity: 0, duration: 0.9, ease: 'expo.out' }, 0.2);
+          ScrollTrigger.create({ trigger: fl, start: 'top 60%', onEnter: () => head.play(), onLeaveBack: () => head.reverse() });
+          const card = fl.querySelector<HTMLElement>('.hs-fl-card')!;
+          ScrollTrigger.create({
+            trigger: fl, start: 'top top', end: 'bottom bottom',
+            onUpdate: (st) => {
+              const r = Math.min(1, Math.max(0, (st.progress - 0.3) / 0.4));
+              const k = r * r * (3 - 2 * r);
+              fl.style.setProperty('--k', k.toFixed(4));
+              card.classList.toggle('is-live', k > 0.6);
+            },
+          });
+          if (photo) gsap.fromTo(photo, { scale: 1.12 }, { scale: 1, ease: 'none',
+            scrollTrigger: { trigger: fl, start: 'top bottom', end: 'top top', scrub: true } });
         });
 
         /* ── Rising blocks ── */
@@ -391,11 +389,11 @@ export default function HomeStory() {
         });
 
         /* ── On the bench: cards tilt up as they rise over the title ── */
-        gsap.utils.toArray<HTMLElement>('.hs-card').forEach((c) => {
+        if (SHOW_BENCH) gsap.utils.toArray<HTMLElement>('.hs-card').forEach((c) => {
           gsap.fromTo(c, { rotateX: 14, y: 80, scale: 0.94 }, { rotateX: 0, y: 0, scale: 1, ease: 'none',
             scrollTrigger: { trigger: c, start: 'top bottom', end: 'top 55%', scrub: true } });
         });
-        gsap.to('.hs-bench-title', { scale: 0.86, opacity: 0.25, ease: 'none',
+        if (SHOW_BENCH) gsap.to('.hs-bench-title', { scale: 0.86, opacity: 0.25, ease: 'none',
           scrollTrigger: { trigger: '.hs-bench', start: 'top top', end: 'bottom bottom', scrub: true } });
 
         /* ── What I do: tiles open like shutters, pictures drift ── */
@@ -411,7 +409,7 @@ export default function HomeStory() {
 
         /* ── Photos: each column drifts at its own speed ── */
         gsap.utils.toArray<HTMLElement>('.hs-mcol').forEach((c, i, all) => {
-          const sp = [-6, 8, -10, 5][i % 4] * (all.length > 2 ? 1 : 0.6);
+          const sp = [-6, 8, -10, 5, -7][i % 5] * (all.length > 2 ? 1 : 0.6);
           gsap.fromTo(c, { yPercent: sp * -0.5 }, { yPercent: sp * 0.5, ease: 'none',
             scrollTrigger: { trigger: '.hs-masonry', start: 'top bottom', end: 'bottom top', scrub: true } });
         });
@@ -419,7 +417,7 @@ export default function HomeStory() {
         /* ── Contact: the sign-off assembles; the field rises at dusk ── */
         gsap.from('.hs-contact-title .hs-c', { yPercent: 100, opacity: 0, duration: 1.1, ease: 'expo.out', stagger: 0.03,
           scrollTrigger: { trigger: '.hs-contact', start: 'top 70%', toggleActions: 'play none none reverse' } });
-        gsap.fromTo('.hs-dusk img', { yPercent: -6, scale: 1.08 }, { yPercent: 0, scale: 1, ease: 'none',
+        gsap.fromTo('.hs-dusk img', { yPercent: -3, scale: 1.04 }, { yPercent: 0, scale: 1, ease: 'none',
           scrollTrigger: { trigger: '.hs-contact', start: 'top bottom', end: 'bottom bottom', scrub: true } });
       }, el);
 
@@ -444,32 +442,10 @@ export default function HomeStory() {
   // Masonry columns changed: measure the page again.
   useEffect(() => { import('gsap/ScrollTrigger').then(({ ScrollTrigger }) => ScrollTrigger.refresh()); }, [cols]);
 
-  const go = (id: string) => (e: React.MouseEvent) => {
-    e.preventDefault();
-    const t = document.getElementById(id);
-    if (!t) return;
-    const top = id === 'top' ? 0 : t.getBoundingClientRect().top + scrollY;
-    if (lenisRef.current) lenisRef.current.scrollTo(top, { duration: 1.6 });
-    else window.scrollTo({ top, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
-  };
-
   const photoCols = deal(PHOTOS, cols);
 
   return (
     <div ref={root} className={`hs ${sans.variable} ${serif.variable}`}>
-      {/* ── Index ── */}
-      <nav className={`hs-index is-${tone}${footer ? ' is-away' : ''}`} aria-label="Chapters on this page">
-        <ol>
-          {CHAPTERS.map((c, i) => (
-            <li key={c.id} className={active === c.id ? 'is-on' : ''}>
-              <a href={`#${c.id}`} onClick={go(c.id)} aria-current={active === c.id ? 'true' : undefined} tabIndex={footer ? -1 : 0}>
-                <span className="hs-index-n">{i}</span>{c.label}
-              </a>
-            </li>
-          ))}
-        </ol>
-      </nav>
-
       <main className="hs-main">
         {/* ── Start ── */}
         <section className="hs-hero" id="top" data-tone="art">
@@ -530,11 +506,13 @@ export default function HomeStory() {
           {/* ── OCR Reader ── */}
           <section className="hs-reader" id="ocr-reader" data-tone="dark" aria-labelledby="hs-reader-h">
             <div className="hs-reader-stage">
-              <div className="hs-reader-meters" aria-hidden="true">
-                <img src="/images/waterslop/metersim-key.webp" alt="" loading="lazy" />
-              </div>
-              <div className="hs-reader-gl" aria-hidden="true">
-                <img className="hs-reader-fallback" src="/images/ocr-reader-flagship.webp" alt="" />
+              <div className="hs-reader-scene">
+                <div className="hs-reader-meters" aria-hidden="true">
+                  <img src="/images/waterslop/metersim-key.webp" alt="" loading="lazy" />
+                </div>
+                <div className="hs-reader-gl" aria-hidden="true">
+                  <img className="hs-reader-fallback" src="/images/ocr-reader-flagship.webp" alt="" />
+                </div>
               </div>
               <div className="hs-reader-intro">
                 <p className="hs-tag">Flagship project</p>
@@ -550,7 +528,7 @@ export default function HomeStory() {
                   </li>
                 ))}
               </ol>
-              <div className="hs-reader-card">
+              <div className="hs-reader-card hs-stagecard">
                 <FlagCard p={OCR_CARD} onPeek={peek.show} variant="ocr" slot={<span className="hs-fc-slot" />} />
               </div>
               <div className="hs-reader-rail" aria-hidden="true"><span /></div>
@@ -558,32 +536,36 @@ export default function HomeStory() {
           </section>
 
           {/* ── Project June ── */}
-          <section className="hs-op" id="june" data-tone="dark">
-            <div className="hs-op-media">
-              <img src="/images/home/june-night.webp" alt="Project June, the rover, lit by its own lamp in a dark room" loading="lazy" />
-            </div>
-            <div className="hs-op-head">
-              <p className="hs-tag">Highlighted hardware build</p>
-              <h2 className="hs-op-title"><Chars text="Project June" /></h2>
-              <Sub>A 5G rover I can drive anywhere there is signal.</Sub>
-            </div>
-            <div className="hs-cardwrap">
-              <FlagCard p={JUNE_CARD} onPeek={peek.show} variant="june" side="left" />
+          <section className="hs-fl is-june" id="june" data-tone="dark">
+            <div className="hs-fl-stage">
+              <div className="hs-fl-scene" aria-hidden="true">
+                <img className="hs-fl-photo" src="/images/home/june-night.webp" alt="" loading="lazy" />
+              </div>
+              <div className="hs-fl-head">
+                <p className="hs-tag">Highlighted hardware build</p>
+                <h2 className="hs-fl-title"><Chars text="Project June" /></h2>
+                <Sub>A 5G rover I can drive anywhere there is signal.</Sub>
+              </div>
+              <div className="hs-fl-card hs-stagecard">
+                <FlagCard p={JUNE_CARD} onPeek={peek.show} variant="june" side="left" />
+              </div>
             </div>
           </section>
 
           {/* ── BeadReader ── */}
-          <section className="hs-op is-contain" id="beadreader" data-tone="dark">
-            <div className="hs-op-media">
-              <img src="/images/home/beadreader-phones.webp" alt="BeadReader open on three phones: the sign-in screen, a chapter and the library" loading="lazy" />
-            </div>
-            <div className="hs-op-head">
-              <p className="hs-tag">Highlighted software build</p>
-              <h2 className="hs-op-title"><Chars text="BeadReader" /></h2>
-              <Sub>A private book reader for a few friends.</Sub>
-            </div>
-            <div className="hs-cardwrap">
-              <FlagCard p={BEAD_CARD} onPeek={peek.show} variant="bead" />
+          <section className="hs-fl is-bead" id="beadreader" data-tone="dark">
+            <div className="hs-fl-stage">
+              <div className="hs-fl-scene" aria-hidden="true">
+                <img className="hs-fl-photo" src="/images/home/beadreader-phones.webp" alt="" loading="lazy" />
+              </div>
+              <div className="hs-fl-head">
+                <p className="hs-tag">Highlighted software build</p>
+                <h2 className="hs-fl-title"><Chars text="BeadReader" /></h2>
+                <Sub>A private book reader for a few friends.</Sub>
+              </div>
+              <div className="hs-fl-card hs-stagecard">
+                <FlagCard p={BEAD_CARD} onPeek={peek.show} variant="bead" />
+              </div>
             </div>
           </section>
 
@@ -599,7 +581,8 @@ export default function HomeStory() {
             </div>
           </section>
 
-          {/* ── On the bench ── */}
+          {/* ── On the bench: off the page for now (SHOW_BENCH in content.ts) ── */}
+          {SHOW_BENCH && (
           <section className="hs-paper hs-bench" id="bench" data-tone="paper">
             <div className="hs-bench-pin">
               <h2 className="hs-bench-title">On the bench</h2>
@@ -618,6 +601,7 @@ export default function HomeStory() {
             </div>
             <Tear at="bottom" seed={21} />
           </section>
+          )}
         </div>
 
         {/* ── What I do ── */}
@@ -631,9 +615,10 @@ export default function HomeStory() {
           </div>
         </section>
 
-        {/* ── HomeLab ── */}
+        {/* ── HomeLab: the cloud-and-N mark in ASCII behind the copy ── */}
         <section className="hs-lab" id="homelab" data-tone="dark">
-          <div className="hs-wrap hs-lab-grid">
+          <AsciiLab />
+          <div className="hs-wrap">
             <div className="hs-lab-text">
               <p className="hs-tag">Infrastructure</p>
               <h2 className="hs-ctitle">HomeLab</h2>
@@ -644,9 +629,8 @@ export default function HomeStory() {
                 <div><dt>24 TB</dt><dd>usable storage</dd></div>
                 <div><dt>38</dt><dd>self-hosted apps</dd></div>
               </dl>
-              <div className="hs-btns hs-rise"><a className="hs-btn is-primary" href="/homelab"><IcServer /> Explore the HomeLab</a></div>
+              <div className="hs-btns hs-lab-cta hs-rise"><a className="hs-btn is-primary" href="/homelab"><IcServer /> Explore the HomeLab</a></div>
             </div>
-            <AsciiLab />
           </div>
         </section>
 
@@ -670,19 +654,22 @@ export default function HomeStory() {
               </div>
             ))}
           </div>
-          <div className="hs-wrap hs-photos-more"><a className="hs-btn is-primary" href="/photography"><IcPhotos /> See every album</a></div>
+          <div className="hs-photos-more"><a className="hs-btn is-primary" href="/photography"><IcPhotos /> See every album</a></div>
         </section>
 
         {/* ── Contact, at dusk ── */}
         <section className="hs-contact" id="contact" data-tone="dark">
           <div className="hs-dusk" aria-hidden="true">
             <picture>
-              <source media="(orientation: portrait)" srcSet="/images/home/dusk-tall.webp" />
-              <img src="/images/home/dusk-wide.webp" alt="" loading="lazy" />
+              <source media="(max-width: 899px)" srcSet="/images/home/dusk-tall.webp" />
+              <img src="/images/home/dusk-pano.webp" alt="" loading="lazy" />
             </picture>
           </div>
-          <div className="hs-wrap hs-contact-in">
-            <h2 className="hs-contact-title"><Chars text="Say hello." /></h2>
+          <div className="hs-contact-in">
+            <h2 className="hs-contact-title" aria-label="Say hello.">
+              <span className="hs-ct-w" aria-hidden="true"><Chars text="Say" /></span>{' '}
+              <span className="hs-ct-w" aria-hidden="true"><Chars text="hello." /></span>
+            </h2>
             <p className="hs-contact-line">Questions about a build, or something you want made? Email me.</p>
             <a className="hs-contact-mail" href="mailto:braven@chiambucket.com">braven@chiambucket.com</a>
             <div className="hs-btns">

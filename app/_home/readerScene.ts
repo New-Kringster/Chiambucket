@@ -22,9 +22,11 @@ const SHELL_OFFSET = [0.2225, 2.7544, -2.5709];
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 /** Progress of p through [a, b], eased. */
+/** Progress of p through [a, b], eased with smootherstep: velocity and
+    acceleration are both zero at the ends, so no motion starts or stops dead. */
 const seg = (p: number, a: number, b: number) => {
   const t = clamp01((p - a) / (b - a));
-  return t * t * (3 - 2 * t);
+  return t * t * t * (t * (t * 6 - 15) + 10);
 };
 
 type Shader = { uniforms: Record<string, { value: unknown }>; vertexShader: string; fragmentShader: string };
@@ -101,6 +103,7 @@ function bake(mesh: THREE.Mesh) {
 
 export type ReaderScene = {
   setProgress: (p: number) => void;
+  jump: (p: number) => void;
   resize: () => void;
   dispose: () => void;
 };
@@ -223,28 +226,35 @@ export async function createReaderScene(host: HTMLElement, opts: { compact: bool
   }
 
   // ── Pose from progress ──
-  let p = 0, w = 1, h = 1, raf = 0, disposed = false;
+  // p is what is drawn; target is where the scroll is. p follows target
+  // through a critically damped spring, so a jerky wheel or a fling still
+  // gives continuous motion that eases to a stop.
+  let p = 0, target = 0, vel = 0, last = 0, w = 1, h = 1, raf = 0, disposed = false;
+  const OMEGA = 10; // rad/s: how quickly it catches up
   // Yaw, then pitch, then roll about the board's own normal: roll turns the
   // board in its plane (upright to lying sideways), yaw turns its face away.
   rig.rotation.order = 'YXZ';
+  // The segments overlap, and each eases in and out, so one motion always
+  // hands over to the next with no stop in between:
+  // .00–.24 the bare board rises in, turning to face us
+  // .14–.44 PCB beat: it drifts slowly closer and keeps turning a little
+  // .34–.52 it turns on its side, long edge level, face turned away,
+  //         so the case halves meet it from the left and right
+  // .46–.66 the case closes; .60–.84 the closed reader turns to its lens
+  // .80–.98 it settles into the project card
   const pose = () => {
-    // .02–.20 the bare board rises in, turning to face us
-    // .20–.36 PCB beat: it leans closer
-    // .36–.46 it turns on its side, long edge level, face turned away,
-    //         so the case halves meet it from the left and right
-    // .46–.62 the case closes; .64–.80 the closed reader turns to its lens
-    // .82–.96 it settles into the project card
-    const enter = seg(p, 0.02, 0.2);
-    const lean = seg(p, 0.2, 0.32) * (1 - seg(p, 0.34, 0.44));
-    const side = seg(p, 0.36, 0.46);
-    const close = seg(p, 0.46, 0.62);
-    const turn = seg(p, 0.64, 0.8);
-    const settle = seg(p, 0.82, 0.96);
+    const enter = seg(p, 0, 0.24);
+    const drift = seg(p, 0.14, 0.44);
+    const lean = seg(p, 0.16, 0.32) * (1 - seg(p, 0.3, 0.46));
+    const side = seg(p, 0.34, 0.52);
+    const close = seg(p, 0.46, 0.66);
+    const turn = seg(p, 0.6, 0.84);
+    const settle = seg(p, 0.8, 0.98);
 
     rig.position.y = lerp(-70, 0, enter);
     rig.rotation.z = lerp(0.5, 0.08, enter) + side * (Math.PI / 2 - 0.08) - settle * 0.12;
     rig.rotation.x = lerp(-1.2, -0.42, enter) - lean * 0.06 + side * 0.22 - turn * 0.1 - settle * 0.08;
-    rig.rotation.y = lerp(0.9, -0.18, enter) + lean * 0.1 + side * -0.95 + turn * -1.5 - settle * 0.25;
+    rig.rotation.y = lerp(0.9, -0.08, enter) - drift * 0.16 + side * -0.89 + turn * -1.5 - settle * 0.25;
 
     bottom.position.z = SHELL_OFFSET[2] + (1 - close) * 46;
     top.position.z = SHELL_OFFSET[2] - (1 - close) * 50;
@@ -257,15 +267,24 @@ export async function createReaderScene(host: HTMLElement, opts: { compact: bool
     const wide = w / h > 1.1;
     const dist = lerp(270, 190, lean) * (opts.compact ? 1.3 : 1) * lerp(1, 1.1, side) * lerp(1, 1.05, settle);
     const sideX = wide ? -dist * lerp(0.13, 0.17, settle) : 0;
-    const sideY = wide ? -dist * 0.02 * settle : -dist * lerp(lerp(0.05, 0.12, seg(p, 0.08, 0.2)), 0.2, settle);
+    const sideY = wide ? -dist * 0.02 * settle : -dist * lerp(lerp(0.05, 0.12, seg(p, 0.06, 0.22)), 0.2, settle);
     camera.position.set(sideX, sideY + lean * -8, dist);
     camera.lookAt(sideX, sideY, 0);
   };
-  const render = () => {
+  const render = (now: number) => {
     raf = 0;
     if (disposed) return;
+    const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60;
+    last = now;
+    // semi-implicit critically damped spring toward target
+    const x = p - target;
+    vel += (-OMEGA * OMEGA * x - 2 * OMEGA * vel) * dt;
+    p += vel * dt;
+    if (Math.abs(p - target) < 1e-4 && Math.abs(vel) < 1e-3) { p = target; vel = 0; }
     pose();
     renderer.render(scene, camera);
+    if (p !== target) raf = requestAnimationFrame(render);
+    else last = 0;
   };
   const request = () => { if (!raf) raf = requestAnimationFrame(render); };
   const resize = () => {
@@ -281,7 +300,9 @@ export async function createReaderScene(host: HTMLElement, opts: { compact: bool
   request();
 
   return {
-    setProgress: (v) => { if (Math.abs(v - p) > 1e-5) { p = v; request(); } },
+    setProgress: (v) => { if (Math.abs(v - target) > 1e-5) { target = v; request(); } },
+    /** Jump without easing (reduced motion, first frame). */
+    jump: (v: number) => { target = p = v; vel = 0; request(); },
     resize,
     dispose: () => {
       disposed = true;

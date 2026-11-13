@@ -5,21 +5,6 @@
    ──────────────────────────────────────────────────────────────── */
 import type { InfoItem } from '../../components/InfoModal';
 
-/** Chapters in reading order; the left index lists these. */
-export const CHAPTERS: { id: string; label: string }[] = [
-  { id: 'top', label: 'Start' },
-  { id: 'hello', label: 'Hello' },
-  { id: 'ocr-reader', label: 'OCR Reader' },
-  { id: 'june', label: 'Project June' },
-  { id: 'beadreader', label: 'BeadReader' },
-  { id: 'projects', label: 'Projects' },
-  { id: 'bench', label: 'On the bench' },
-  { id: 'skills', label: 'What I do' },
-  { id: 'homelab', label: 'HomeLab' },
-  { id: 'photos', label: 'Photos' },
-  { id: 'contact', label: 'Contact' },
-];
-
 /** The layers of a build, from the chip to the cloud (the Hello chapter). */
 export const LAYERS = [
   { name: 'Firmware', line: 'C and C++ on ESP32, Arduino and M5Stack boards, or MicroPython when it suits.' },
@@ -112,6 +97,9 @@ export const PROJECTS: Project[] = [
   { id: 'proj-mc', title: 'Minecraft Live Map', blurb: 'A Paper server in Docker on my homelab, with a live Dynmap of the world.', img: '/images/mc-pf-context.webp', type: 'personal', url: null, icons: [{ src: '/images/docker-icon.webp', alt: 'Docker' }] },
   { id: 'proj-webdev', title: 'Web Development Prj', blurb: 'My first working website, in HTML and CSS, for my web development class.', img: '/images/tht-cover.webp', type: 'school', url: null, icons: [{ src: '/images/vscode-icon.webp', alt: 'VS Code' }] },
 ];
+
+/** On the bench is off the page for now; set true to bring it back. */
+export const SHOW_BENCH = false;
 
 export type Bench = { name: string; status: string; what: string; stack: string[]; link?: { label: string; url: string } };
 
@@ -219,14 +207,6 @@ export const TILES: Tile[] = [
   { key: 'video', word: 'Video', line: 'A film for every build.', video: { webm: '/images/Davinci-showcase.webm', mp4: '/images/Davinci-showcase.mp4', poster: '/images/Davinci-showcase-poster.webp' }, size: 'wide', item: SKILL_VIDEO },
   { key: 'ui', word: 'Design', line: 'Interfaces and posters.', img: '/images/Cdyspstart.webp', size: 'sq', item: SKILL_DESIGN },
   { key: 'photo', word: 'Photography', line: 'Travel, mostly.', img: '/images/home/gal-12.webp', size: 'wide', item: SKILL_PHOTOS },
-];
-
-/** The HomeLab machines, drawn in ASCII one after another. */
-export const MACHINES = [
-  { img: '/images/hl-rack-real.jpg', name: 'The rack', line: 'Everything below, behind one mesh door' },
-  { img: '/images/hl-newmain.png', name: 'NewMain', line: 'Storage and most of the Docker stack' },
-  { img: '/images/hl-caca.png', name: 'CaCa', line: 'Proxmox cluster, always on' },
-  { img: '/images/hl-adell.png', name: 'Adell', line: 'Proxmox cluster, woken on demand' },
 ];
 
 /** Highlights from the photo library, captioned by album only. */
