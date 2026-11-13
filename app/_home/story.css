@@ -623,7 +623,7 @@ html.hs-home .footer { position: relative; z-index: 3; }
 .hs-contact-mail:hover { background-size: 100% 1px; }
 @media (max-width: 899px) {
   .hs-contact { min-height: 170svh; padding-top: 7rem; }
-  .hs-dusk img { object-position: 22% 100%; }
+  .hs-dusk img { object-position: 6% 100%; } /* keeps the pine, which stands near the left edge of the tall painting */
 }
 
 /* ───────────── Reduced motion: every state finished ───────────── */
