@@ -19,7 +19,7 @@ const FRAG = `
 precision highp float;
 varying vec2 vUv;
 uniform sampler2D uTex;
-uniform float uHasTex, uIn, uOut, uTime, uGain, uZoom, uImgA, uViewA, uSeed, uDpr;
+uniform float uHasTex, uIn, uOut, uTime, uGain, uZoom, uImgA, uViewA, uSeed, uDpr, uMode;
 uniform vec3 uColor, uLight;
 uniform vec2 uFocus, uRes;
 
@@ -50,7 +50,10 @@ void main() {
   float tIn = mix(0.06, 0.95, uIn);
   float tOut = mix(0.06, 0.95, uOut);
   vec2 px = gl_FragCoord.xy;
-  float grain = h21(floor(px / (1.5 * uDpr)) + uSeed) * 0.05;
+  /* grains on a grid of CSS pixels, so canvases of different resolutions
+     (a page-transition mask and its light) break up identically */
+  vec2 gcell = floor(vUv * uRes / uDpr / 1.5);
+  float grain = h21(gcell + uSeed) * 0.05;
   float f = field(vUv) + grain;
 
   float aIn = uIn <= 0.0005 ? 0.0 : uIn >= 0.9995 ? 1.0 : 1.0 - smoothstep(tIn - 0.006, tIn + 0.006, f);
@@ -75,9 +78,11 @@ void main() {
 
   /* the picture breaks into its own grains on the far side of the front,
      and a few of them catch the light and flicker white */
-  float tw = h21(floor(px / (1.5 * uDpr)) + floor(uTime * 12.0) + uSeed * 3.0);
+  float tw = h21(gcell + floor(uTime * 12.0) + uSeed * 3.0);
   float dustBand = exp(-b * b / 0.006) * (1.0 - a);
-  float dust = step(0.62, h21(floor(px / (1.5 * uDpr)) + uSeed * 5.0)) * dustBand * (0.55 + 0.45 * tw);
+  float dust = step(0.62, h21(gcell + uSeed * 5.0)) * dustBand * (0.55 + 0.45 * tw);
+  /* mask mode: where the old page still shows, its scattering grains included */
+  if (uMode > 1.5) { float m = max(a, dust); gl_FragColor = vec4(m); return; }
   float glit = step(0.972, tw) * halo;
 
   /* four-point stars, one candidate per cell, lit while the front passes it */
@@ -94,11 +99,15 @@ void main() {
   float spark = on * tws * star;
 
   float lit = edge * 1.1 + glit * 1.2 + spark * 1.5 + contour * halo * 1.0;
+  /* light mode: only the light along the front, drawn over a live page */
+  if (uMode > 0.5) { float l = lit + dust * 0.35; gl_FragColor = vec4(uLight * l * uGain, clamp(l, 0.0, 1.0)); return; }
   vec3 col = base * a + base * dust * 1.5 + uLight * lit * uGain;
   float alpha = max(max(a, dust), clamp(lit, 0.0, 1.0));
   gl_FragColor = vec4(col, alpha);
 }`;
 
+export type DissolveMode = 'normal' | 'light' | 'mask';
+export type DissolveOpts = { maxDpr?: number; seed?: number; size?: [number, number]; dpr?: number; sdr?: boolean };
 export type DissolveState = { inP: number; outP: number; time: number; focus?: [number, number]; zoom?: number };
 
 export class Dissolve {
@@ -111,22 +120,29 @@ export class Dissolve {
   private color: [number, number, number] = [0, 0, 0];
   private light: [number, number, number] = [1, 0.97, 0.9];
   private seed = Math.random() * 50;
+  private mode = 0;
+  private fixed: [number, number] | null = null;
   private hdr = false;
   private dpr = 1;
   readonly canvas: HTMLCanvasElement;
 
-  static create(canvas: HTMLCanvasElement, opts: { maxDpr?: number } = {}): Dissolve | null {
+  /* opts.size draws at a fixed pixel size (for a canvas that is not on the
+     page), opts.dpr then says how many of its pixels make a CSS pixel; seed
+     makes two instances break up identically. */
+  static create(canvas: HTMLCanvasElement, opts: DissolveOpts = {}): Dissolve | null {
     try { return new Dissolve(canvas, opts); } catch { return null; }
   }
 
-  private constructor(canvas: HTMLCanvasElement, opts: { maxDpr?: number }) {
+  private constructor(canvas: HTMLCanvasElement, opts: DissolveOpts) {
     this.canvas = canvas;
+    if (opts.seed !== undefined) this.seed = opts.seed;
+    if (opts.size) this.fixed = opts.size;
     const attrs: WebGLContextAttributes = { premultipliedAlpha: true, alpha: true, antialias: false, depth: false, stencil: false, powerPreference: 'high-performance' };
     const gl = (canvas.getContext('webgl2', attrs) || canvas.getContext('webgl', attrs)) as WebGLRenderingContext | WebGL2RenderingContext | null;
     if (!gl) throw new Error('no webgl');
     this.gl = gl;
     const coarse = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches;
-    this.dpr = Math.min(window.devicePixelRatio || 1, opts.maxDpr ?? (coarse ? 1.25 : 1.5));
+    this.dpr = opts.size ? (opts.dpr ?? 1) : Math.min(window.devicePixelRatio || 1, opts.maxDpr ?? (coarse ? 1.25 : 1.5));
 
     // Brighter than white where the browser and the display can show it.
     const g2 = gl as WebGL2RenderingContext & {
@@ -135,7 +151,7 @@ export class Dissolve {
       drawingBufferColorSpace?: string;
     };
     const wantsHdr = typeof matchMedia !== 'undefined' && matchMedia('(dynamic-range: high)').matches;
-    if (wantsHdr && 'RGBA16F' in g2 && typeof g2.drawingBufferStorage === 'function' && typeof g2.drawingBufferToneMapping === 'function') {
+    if (!opts.sdr && wantsHdr && 'RGBA16F' in g2 && typeof g2.drawingBufferStorage === 'function' && typeof g2.drawingBufferToneMapping === 'function') {
       try { g2.drawingBufferToneMapping({ mode: 'extended' }); this.hdr = true; } catch { this.hdr = false; }
     }
     if ('drawingBufferColorSpace' in g2) { try { g2.drawingBufferColorSpace = 'display-p3'; } catch { /* keep sRGB */ } }
@@ -160,7 +176,7 @@ export class Dissolve {
     const loc = gl.getAttribLocation(prog, 'aPos');
     gl.enableVertexAttribArray(loc);
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-    for (const n of ['uTex', 'uHasTex', 'uIn', 'uOut', 'uTime', 'uGain', 'uZoom', 'uImgA', 'uViewA', 'uSeed', 'uDpr', 'uColor', 'uLight', 'uFocus', 'uRes']) this.u[n] = gl.getUniformLocation(prog, n);
+    for (const n of ['uMode', 'uTex', 'uHasTex', 'uIn', 'uOut', 'uTime', 'uGain', 'uZoom', 'uImgA', 'uViewA', 'uSeed', 'uDpr', 'uColor', 'uLight', 'uFocus', 'uRes']) this.u[n] = gl.getUniformLocation(prog, n);
     gl.uniform1i(this.u.uTex, 0);
     this.resize();
   }
@@ -169,8 +185,8 @@ export class Dissolve {
 
   resize() {
     const c = this.canvas;
-    const w = Math.max(1, Math.round(c.clientWidth * this.dpr));
-    const h = Math.max(1, Math.round(c.clientHeight * this.dpr));
+    const w = this.fixed ? this.fixed[0] : Math.max(1, Math.round(c.clientWidth * this.dpr));
+    const h = this.fixed ? this.fixed[1] : Math.max(1, Math.round(c.clientHeight * this.dpr));
     if (c.width !== w || c.height !== h) {
       c.width = w; c.height = h;
       if (this.hdr) {
@@ -200,12 +216,15 @@ export class Dissolve {
   }
 
   setColor(rgb: [number, number, number]) { this.color = rgb; }
+  setMode(m: DissolveMode) { this.mode = m === 'mask' ? 2 : m === 'light' ? 1 : 0; }
+  setSize(w: number, h: number, dpr?: number) { this.fixed = [w, h]; if (dpr) this.dpr = dpr; this.resize(); }
   setLight(rgb: [number, number, number]) { this.light = rgb; }
 
   draw(s: DissolveState) {
     const gl = this.gl, u = this.u, c = this.canvas;
     gl.useProgram(this.prog);
     if (this.tex) { gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, this.tex); }
+    gl.uniform1f(u.uMode, this.mode);
     gl.uniform1f(u.uHasTex, this.hasTex ? 1 : 0);
     gl.uniform1f(u.uIn, s.inP);
     gl.uniform1f(u.uOut, s.outP);
