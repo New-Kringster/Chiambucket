@@ -31,7 +31,7 @@ Opens at `http://localhost:3000`. Use `npx tsc --noEmit` to type-check without d
 | Path | Purpose |
 |------|---------|
 | `app/layout.tsx` | Root layout — stylesheet links, loader, Nav/Footer, Analytics, sets per-page theme |
-| `app/page.tsx` → `app/_home/HomeStory.tsx` | Homepage — a scroll story in chapters: entrance, Hello, the OCR Reader in 3D, Project June, BeadReader, On the bench, Other builds, HomeLab, Photos, Contact |
+| `app/page.tsx` → `app/_home/HomeStory.tsx` | Homepage — a scroll story in chapters: opening, Hello, the OCR Reader in 3D, Project June and BeadReader as full-screen cards, the project gallery, On the bench, What I do, HomeLab in ASCII, Photos, Contact at dusk |
 | `app/<route>/page.tsx` | File-based routes (`/photography`, `/contact`, `/credits`, `/ai-use`, `/homelab`, article pages) |
 | `components/` | Shared `Nav`, `Footer`, `ClientEffects`, `SceneShell`/`SunlitScene` (the painted background), `ArticleRecommendations`, `ArticleScrollSpy` |
 | `lib/theme.ts` | Per-page accent theme map (`data-theme` on `<html>`) |

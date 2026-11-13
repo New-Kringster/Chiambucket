@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import HomeStory from './_home/HomeStory';
 
-// The story opens on black (the entrance), so the phone browser bar does too.
-export const viewport: Viewport = { themeColor: '#000000' };
+// The story opens on the sage morning painting; the phone browser bar matches it.
+export const viewport: Viewport = { themeColor: '#a2b69a' };
 
 export const metadata: Metadata = {
   title: 'Braven Chiam | Hardware, software and design',

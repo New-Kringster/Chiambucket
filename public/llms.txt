@@ -14,7 +14,7 @@
 - The site is built with Next.js 16 (React 19) and hosted on Vercel.
 
 ## Key pages
-- [Home](https://www.chiambucket.com/): a scroll story in chapters: who Braven is and the layers he builds in (firmware, hardware, software, infrastructure, design), the OCR Reader as a scroll-driven 3D model of its real board and case, Project June, BeadReader, recent work "on the bench", the other write-ups, the homelab, a strip of photos and contact.
+- [Home](https://www.chiambucket.com/): a scroll story in chapters: who Braven is and the layers he builds in (firmware, hardware, software, infrastructure, design), the OCR Reader as a scroll-driven 3D model of its real board and case ending in its project card, Project June and BeadReader cards, a gallery of the other projects with summaries, recent work "on the bench", a bento of what he does, the homelab drawn in ASCII, a wall of photos and contact.
 - [Contact](https://www.chiambucket.com/contact): email (braven@chiambucket.com) and social links.
 - [Photography](https://www.chiambucket.com/photography): galleries including Highlights, Europe, China, New Zealand, Hong Kong, 21:9 and General.
 - [HomeLab](https://www.chiambucket.com/homelab): A three-node self-hosted homelab that also runs the MQTT and TURN servers his hardware projects use. NewMain (Unraid) plus a Proxmox PXE cluster (CaCa always on, Adell on demand) run around 38 services behind a segmented UniFi network with VLANs and WPA3-Enterprise RADIUS auth. Services include Immich, Nginx Proxy Manager with CrowdSec, Lychee, Pingvin Share, PairDrop, Fireshare, Tailscale, Shadowsocks, UpStat, Paperless-NGX, coturn and Mosquitto.

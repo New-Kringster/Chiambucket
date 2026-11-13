@@ -224,34 +224,41 @@ export async function createReaderScene(host: HTMLElement, opts: { compact: bool
 
   // ── Pose from progress ──
   let p = 0, w = 1, h = 1, raf = 0, disposed = false;
+  // Yaw, then pitch, then roll about the board's own normal: roll turns the
+  // board in its plane (upright to lying sideways), yaw turns its face away.
+  rig.rotation.order = 'YXZ';
   const pose = () => {
-    // 0–.14 the bare board rises in turning; .14–.36 it faces us and the camera leans in;
-    // .36–.6 the case closes around it; .6–.82 the closed reader turns over;
-    // .82–1 it settles at an angle beside the closing copy.
-    const enter = seg(p, 0, 0.14);
-    const close = seg(p, 0.38, 0.6);
-    const turn = seg(p, 0.6, 0.82);
-    const settle = seg(p, 0.82, 1);
-    const lean = seg(p, 0.14, 0.36) * (1 - seg(p, 0.36, 0.5));
+    // .02–.20 the bare board rises in, turning to face us
+    // .20–.36 PCB beat: it leans closer
+    // .36–.46 it turns on its side, long edge level, face turned away,
+    //         so the case halves meet it from the left and right
+    // .46–.62 the case closes; .64–.80 the closed reader turns to its lens
+    // .82–.96 it settles into the project card
+    const enter = seg(p, 0.02, 0.2);
+    const lean = seg(p, 0.2, 0.32) * (1 - seg(p, 0.34, 0.44));
+    const side = seg(p, 0.36, 0.46);
+    const close = seg(p, 0.46, 0.62);
+    const turn = seg(p, 0.64, 0.8);
+    const settle = seg(p, 0.82, 0.96);
 
     rig.position.y = lerp(-70, 0, enter);
-    rig.rotation.x = lerp(-1.25, -0.42, enter) + lean * 0.22 + turn * 0.12 - settle * 0.12;
-    rig.rotation.y = lerp(0.9, -0.35, enter) + lean * 0.25 + turn * Math.PI * 0.92 + settle * 0.35;
-    rig.rotation.z = lerp(0.5, 0.18, enter) - turn * 0.2;
+    rig.rotation.z = lerp(0.5, 0.08, enter) + side * (Math.PI / 2 - 0.08) - settle * 0.12;
+    rig.rotation.x = lerp(-1.2, -0.42, enter) - lean * 0.06 + side * 0.22 - turn * 0.1 - settle * 0.08;
+    rig.rotation.y = lerp(0.9, -0.18, enter) + lean * 0.1 + side * -0.95 + turn * -1.5 - settle * 0.25;
 
-    bottom.position.z = SHELL_OFFSET[2] + (1 - close) * 40;
-    top.position.z = SHELL_OFFSET[2] - (1 - close) * 44;
-    const shellVis = seg(p, 0.33, 0.43);
+    bottom.position.z = SHELL_OFFSET[2] + (1 - close) * 46;
+    top.position.z = SHELL_OFFSET[2] - (1 - close) * 50;
+    const shellVis = seg(p, 0.42, 0.5);
     for (const m of shellMats) { m.opacity = shellVis; m.depthWrite = shellVis > 0.98; }
     bottom.visible = top.visible = shellVis > 0.001;
 
-    // Camera: distance and framing. On wide screens the reader sits right of the copy.
+    // Camera: distance and framing. On wide screens the reader sits right of the
+    // copy (further right once it is in the card); on tall ones above it.
     const wide = w / h > 1.1;
-    const dist = lerp(270, 175, lean) * (opts.compact ? 1.3 : 1) * lerp(1, 1.08, close) * lerp(1, 1.1, settle);
-    // Wide: push the reader right of the copy column. Tall: lift it above the copy.
-    const sideX = wide ? -dist * 0.13 : 0;
-    const sideY = wide ? 0 : -dist * lerp(0.05, 0.12, seg(p, 0.08, 0.2));
-    camera.position.set(sideX, sideY + lean * -10, dist);
+    const dist = lerp(270, 190, lean) * (opts.compact ? 1.3 : 1) * lerp(1, 1.1, side) * lerp(1, 1.05, settle);
+    const sideX = wide ? -dist * lerp(0.13, 0.17, settle) : 0;
+    const sideY = wide ? -dist * 0.02 * settle : -dist * lerp(lerp(0.05, 0.12, seg(p, 0.08, 0.2)), 0.2, settle);
+    camera.position.set(sideX, sideY + lean * -8, dist);
     camera.lookAt(sideX, sideY, 0);
   };
   const render = () => {

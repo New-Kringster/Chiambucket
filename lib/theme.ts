@@ -8,7 +8,7 @@
    pages the dark glass ones (app/scenes.css). Each theme picks its scene
    preset (PRESETS in SunlitScene.tsx) and its sky colours (app/scenes.css).
 
-     /             night    the scroll story (app/_home) paints its own chapters; no scene
+     /             sunlit   the scroll story (app/_home) paints its own chapters; no scene
      /photography  golden   golden hour, low sun on the left
      /contact      noon     clear blue midday, at the beach (sand and sea)
      /homelab      teal     cool, misty teal morning
@@ -17,9 +17,10 @@
      everything else (the articles and the 404 page): night, moon and stars
    ──────────────────────────────────────────────────────────────── */
 export const THEME_MAP: Record<string, string> = {
-  // The homepage is a scroll story with its own artwork (app/_home), on the
-  // night theme so the nav and footer read over its dark chapters.
-  '/': 'night',
+  // The homepage is a scroll story with its own artwork (app/_home). It opens
+  // on the light painting, so it starts as a day page; HomeStory then swaps
+  // .is-day / .is-night on <html> as dark and light chapters pass the nav.
+  '/': 'sunlit',
   '/photography': 'golden',
   '/contact': 'noon',
   '/homelab': 'teal',
