@@ -183,7 +183,7 @@ export default function HomeStory() {
           await img.decode();
           if (cancelled) return;
           try { dissolve = createDissolve(canvas, img, portrait ? 0.3 : 0.4); } catch { dissolve = null; }
-          if (dissolve) heroTl.scrollTrigger?.refresh();
+          if (dissolve) { art.style.opacity = ''; heroTl.scrollTrigger?.refresh(); }
         };
         const heroTl = gsap.timeline({
           scrollTrigger: {
@@ -201,8 +201,13 @@ export default function HomeStory() {
           .to('.hs-scroll-cue', { opacity: 0, ease: 'none', duration: 0.1 }, 0)
           .to('.hs-hero .hs-frame', { opacity: 0, ease: 'none', duration: 0.2 }, 0.1)
           .fromTo('.hs-under-inner', { scale: 0.94, opacity: 0.3 }, { scale: 1, opacity: 1, ease: 'none', duration: 0.6 }, 0.3);
-        startDissolve();
-        disposers.push(() => dissolve?.dispose());
+        // Build the WebGL dissolve after the entrance (or on the first scroll), so creating
+        // the context and uploading the painting never stutters the entrance.
+        let started = false;
+        const kick = () => { if (started) return; started = true; window.removeEventListener('scroll', kick); startDissolve(); };
+        const kickTimer = window.setTimeout(kick, 3400);
+        window.addEventListener('scroll', kick, { passive: true });
+        disposers.push(() => { clearTimeout(kickTimer); window.removeEventListener('scroll', kick); dissolve?.dispose(); });
         const onResize = () => dissolve?.resize();
         window.addEventListener('resize', onResize);
         disposers.push(() => window.removeEventListener('resize', onResize));

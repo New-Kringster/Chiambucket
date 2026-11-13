@@ -561,10 +561,11 @@ html.lenis, html.lenis body { height: auto; }
   .hs-under { display: none; }
   .hs-after-hero { display: block; }
   .hs-reader { height: auto; }
-  .hs-reader-stage { position: relative; height: auto; min-height: 100svh; overflow: visible; display: grid; grid-template-columns: 1fr 1fr; align-items: center; padding: 6rem 0; }
+  .hs-reader-stage { position: relative; height: auto; min-height: 100svh; overflow: clip; display: grid; grid-template-columns: 1fr 1fr; align-items: center; padding: 6rem 0; }
   .hs-reader-gl { position: relative; inset: auto; height: 70vh; grid-column: 2; grid-row: 1 / span 3; }
-  .hs-reader-intro, .hs-beats, .hs-reader-outro { position: relative; inset: auto; padding: 0 var(--hs-gutter); padding-left: max(var(--hs-gutter), calc(var(--hs-index-w) + 24px)); grid-column: 1; }
-  .hs-beats { display: grid; gap: 2rem; margin: 3rem 0; }
+  .hs .hs-reader-intro, .hs .hs-beats, .hs .hs-reader-outro { position: relative; inset: auto; padding: 0 var(--hs-gutter); padding-left: max(var(--hs-gutter), calc(var(--hs-index-w) + 24px)); grid-column: 1; }
+  .hs .hs-beats { display: grid; gap: 2rem; margin: 3rem 0; }
+  .hs .hs-reader-intro { padding-bottom: 0; }
   .hs-beat, .hs-reader-outro { position: relative; left: auto; right: auto; top: auto; bottom: auto; margin: 0; width: auto; transform: none; visibility: visible; opacity: 1; }
   .hs-beat h3 { font-size: 1.8rem; }
   .hs-reader-rail { display: none; }
