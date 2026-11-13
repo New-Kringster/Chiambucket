@@ -121,6 +121,9 @@ html.sensory-active.is-day {
    painted above it) and is a little wider than the screen, so the sway never
    opens a gap at the edges. The sway pivots on the bottom of the screen. */
 .sl-grass-canvas { position: absolute; top: 60lvh; left: -3%; width: 106%; height: 75lvh; transform-origin: 50% 40lvh; }
+/* The fox (components/fox.ts): his own canvas over the field, covering the
+   lower half of the screen; fox.ts sets its top and height. */
+.sl-fox { position: absolute; left: 0; width: 100%; pointer-events: none; }
 
 /* Tiny birds far off in the sky */
 .sl-scene > .sl-birds { overflow: hidden; }

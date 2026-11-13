@@ -1,4 +1,5 @@
 'use client';
+import { mountFox, type FoxHandle } from './fox';
 import { useEffect, useRef } from 'react';
 
 /*
@@ -1294,16 +1295,18 @@ export default function SunlitScene({ theme, home }: SceneProps) {
     let planted: TreeFoot | null = null;
     let flies: HTMLElement[] = [];
     // The field, which carries the foot of the tree once the tree is drawn.
+    let skyAtHorizon: string | null = null;
     const paintField = (w: number, h: number) => {
       const dpr = Math.min(window.devicePixelRatio || 1, window.matchMedia('(pointer: coarse)').matches ? 1.5 : 2);
+      skyAtHorizon = horizonOf(sky, h);
       const full = Math.max(h, Math.round(field.getBoundingClientRect().height));
       if (p.ground === 'beach') {
-        drawBeach(grass, w, h, full, dpr, p, horizonOf(sky, h), {
+        drawBeach(grass, w, h, full, dpr, p, skyAtHorizon, {
           surf: Array.from(field.querySelectorAll<HTMLCanvasElement>('.sl-surf')),
           glints: Array.from(field.querySelectorAll<HTMLCanvasElement>('.sl-glint')),
         });
       } else {
-        drawGrass(grass, w, h, full, dpr, p, horizonOf(sky, h), planted);
+        drawGrass(grass, w, h, full, dpr, p, skyAtHorizon, planted);
       }
     };
     const draw = () => {
@@ -1361,7 +1364,7 @@ export default function SunlitScene({ theme, home }: SceneProps) {
     let timer = 0;
     const onResize = () => {
       window.clearTimeout(timer);
-      timer = window.setTimeout(draw, 160);
+      timer = window.setTimeout(() => { draw(); fox?.resize(); }, 160);
     };
     window.addEventListener('resize', onResize);
 
@@ -1507,8 +1510,32 @@ export default function SunlitScene({ theme, home }: SceneProps) {
     document.addEventListener('visibilitychange', setMotion);
     still.addEventListener('change', setMotion);
 
+    /* The fox (homepage, not with reduced motion): his first run a moment after
+       the scene appears, then again now and then while the top of the page is
+       in view and the tab is showing. */
+    const fox = home ? mountFox({
+      host: field,
+      grass,
+      horizonAt: (x) => ridgeAt((x + drawnW * 0.03) / 1.06, drawnW, drawnH),
+      haze: () => skyAtHorizon,
+    }) : null;
+    let foxTimer = 0;
+    const cueFox = (delay: number) => {
+      foxTimer = window.setTimeout(() => {
+        const ready = !document.hidden && !still.matches && window.scrollY < window.innerHeight * 0.2;
+        if (ready) fox?.play();
+        cueFox(ready ? 42000 : 5000);
+      }, delay);
+    };
+    if (fox) {
+      cueFox(2600);
+      if (process.env.NODE_ENV !== 'production') (window as unknown as { __fox?: FoxHandle }).__fox = fox;
+    }
+
     return () => {
       window.clearTimeout(timer);
+      window.clearTimeout(foxTimer);
+      fox?.destroy();
       window.removeEventListener('resize', onResize);
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
