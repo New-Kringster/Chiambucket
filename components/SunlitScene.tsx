@@ -1028,6 +1028,226 @@ function drawShoreLayers(layers: BeachLayers, w: number, h: number, sea: number,
   });
 }
 
+/* A coconut palm on the left of the beach, painted once in code: a ringed
+   trunk leaning into the scene from the sand, and a crown of arching fronds,
+   each a midrib hung with drooping leaflets, lit from the sun on the upper
+   right. It stands in the sand (it is in the field's layer, in front of the
+   sea), with a soft shadow at its foot, and sways a little with CSS. */
+type Pt = [number, number];
+const mix = (a: number, b: number, t: number) => a + (b - a) * t;
+type PalmFrond = { angle: number; len: number; depth: number; bend: number };
+
+function drawPalm(canvas: HTMLCanvasElement, w: number, h: number, dpr: number) {
+  const ctx = prepare(canvas, w, h, dpr);
+  ctx.clearRect(0, 0, w, h);
+  canvas.style.height = `${h}px`;
+  const rand = seeded(6121);
+  const portrait = w < h * 0.9;
+  // where it stands and where the crown is
+  // on phones it hugs the left edge, its crown between the nav and the heading
+  const base: Pt = [w * (portrait ? 0.03 : 0.055), h * 0.985];
+  const crown: Pt = [w * (portrait ? 0.05 : 0.16), h * (portrait ? 0.155 : 0.25)];
+  const L = portrait ? Math.min(w * 0.3, h * 0.15) : Math.min(w * 0.2, h * 0.33); // frond length
+  const k = L / 300;
+  canvas.style.transformOrigin = `${base[0].toFixed(1)}px ${base[1].toFixed(1)}px`;
+
+  // The trunk: a gentle S, leaning into the scene, tapering towards the crown.
+  const tall = base[1] - crown[1];
+  const c1: Pt = [base[0] + w * 0.012, base[1] - tall * 0.38];
+  const c2: Pt = [crown[0] - Math.min(tall * 0.12, (crown[0] - base[0]) * 0.5 + w * 0.02), crown[1] + tall * 0.32];
+  const at = (u: number): Pt => {
+    const v = 1 - u;
+    return [
+      v * v * v * base[0] + 3 * v * v * u * c1[0] + 3 * v * u * u * c2[0] + u * u * u * crown[0],
+      v * v * v * base[1] + 3 * v * v * u * c1[1] + 3 * v * u * u * c2[1] + u * u * u * crown[1],
+    ];
+  };
+  const width = (u: number) => (portrait ? w * 0.034 : Math.min(w * 0.022, h * 0.036)) * (1 - 0.42 * u + 0.25 * Math.pow(1 - u, 8));
+  const N = 90;
+  const left: Pt[] = [], right: Pt[] = [];
+  for (let i = 0; i <= N; i++) {
+    const u = i / N;
+    const p = at(u), q = at(Math.min(1, u + 0.01)), o = at(Math.max(0, u - 0.01));
+    const dx = q[0] - o[0], dy = q[1] - o[1], len = Math.hypot(dx, dy) || 1;
+    const nx = -dy / len, ny = dx / len, half = width(u) / 2;
+    left.push([p[0] + nx * half, p[1] + ny * half]);
+    right.push([p[0] - nx * half, p[1] - ny * half]);
+  }
+
+  // its shadow on the sand, falling away from the sun
+  ctx.save();
+  ctx.globalAlpha = 0.28;
+  const shadow = ctx.createRadialGradient(base[0] - width(0) * 1.6, base[1] + 4, 1, base[0] - width(0) * 1.6, base[1] + 4, width(0) * 4);
+  shadow.addColorStop(0, 'rgba(96,72,40,0.9)');
+  shadow.addColorStop(1, 'rgba(96,72,40,0)');
+  ctx.fillStyle = shadow;
+  ctx.beginPath();
+  ctx.ellipse(base[0] - width(0) * 1.6, base[1] + 4, width(0) * 4, width(0) * 0.9, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.beginPath();
+  left.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
+  for (let i = right.length - 1; i >= 0; i--) ctx.lineTo(right[i][0], right[i][1]);
+  ctx.closePath();
+  // lit on the right, where the sun is, shaded on the left
+  const across = ctx.createLinearGradient(base[0] - width(0), 0, base[0] + width(0) * 1.4, 0);
+  across.addColorStop(0, '#7d5f40');
+  across.addColorStop(0.45, '#b8946a');
+  across.addColorStop(0.85, '#e4c99a');
+  across.addColorStop(1, '#c9a87a');
+  ctx.fillStyle = across;
+  ctx.fill();
+  ctx.save();
+  ctx.clip();
+  // the trunk follows its curve, so shade it again along the length: darker low down
+  const along = ctx.createLinearGradient(0, crown[1], 0, base[1]);
+  along.addColorStop(0, 'rgba(120,92,58,0)');
+  along.addColorStop(1, 'rgba(92,70,44,0.35)');
+  ctx.fillStyle = along;
+  ctx.fillRect(0, crown[1] - 20, w * 0.6, tall + 40);
+  // rings: crescents of shadow with a lit lip under each, closer together near the top
+  for (let u = 0.02; u < 0.97; u += 0.018 + 0.012 * (1 - u)) {
+    const p = at(u), q = at(u + 0.01);
+    const ang = Math.atan2(q[1] - p[1], q[0] - p[0]);
+    const half = width(u) / 2;
+    ctx.save();
+    ctx.translate(p[0], p[1]);
+    ctx.rotate(ang + Math.PI / 2);
+    ctx.strokeStyle = 'rgba(82,60,36,0.45)';
+    ctx.lineWidth = Math.max(0.8, half * 0.12);
+    ctx.beginPath();
+    ctx.moveTo(-half * 1.1, 0);
+    ctx.quadraticCurveTo(0, half * 0.35 * between(rand, 0.6, 1.2), half * 1.1, 0);
+    ctx.stroke();
+    ctx.strokeStyle = 'rgba(246,226,186,0.35)';
+    ctx.lineWidth = Math.max(0.6, half * 0.08);
+    ctx.beginPath();
+    ctx.moveTo(-half * 0.2, half * 0.12 + 1.2);
+    ctx.quadraticCurveTo(half * 0.4, half * 0.35 + 1.2, half * 1.05, 1.2);
+    ctx.stroke();
+    ctx.restore();
+  }
+  // fine bark texture
+  for (let i = 0; i < 260; i++) {
+    const u = rand() * 0.98;
+    const p = at(u), half = width(u) / 2;
+    ctx.globalAlpha = between(rand, 0.08, 0.2);
+    ctx.fillStyle = rand() < 0.5 ? '#5f4630' : '#f0dcb4';
+    ctx.fillRect(p[0] + between(rand, -half, half), p[1], between(rand, 0.6, 1.4), between(rand, 2, 6) * k);
+  }
+  ctx.globalAlpha = 1;
+  ctx.restore();
+
+  // The crown. Fronds spread all round, more to the sides than straight up or
+  // down; the ones behind are drawn first and darker.
+  const fronds: PalmFrond[] = [];
+  const angles = [-2.85, -2.45, -2.05, -1.72, -1.35, -0.98, -0.6, -0.25, 0.08, 3.05, 0.42, 2.7, 0.85, 2.3, 1.3, 1.85];
+  angles.forEach((a, i) => fronds.push({
+    angle: a + between(rand, -0.12, 0.12),
+    // the young fronds standing up are shorter; the ones hanging down are the oldest and droop most
+    len: L * between(rand, 0.8, 1.05) * (a > 0.3 && a < 2.8 ? 0.72 : 1) * (1 - 0.32 * Math.max(0, 1 - Math.abs(a + Math.PI / 2) / 0.9)),
+    depth: i < 10 ? between(rand, -1, 0.2) : between(rand, 0.3, 1),
+    bend: between(rand, 0.9, 1.5),
+  }));
+  fronds.sort((a, b) => a.depth - b.depth);
+
+  // coconuts, tucked under the crown (drawn among the back fronds)
+  const nuts = () => {
+    for (const [dx, dy, r] of [[-0.05, 0.05, 0.05], [0.02, 0.07, 0.052], [0.07, 0.035, 0.046], [-0.01, 0.0, 0.048], [0.045, 0.1, 0.04]] as [number, number, number][]) {
+      const x = crown[0] + dx * L, y = crown[1] + dy * L, rr = r * L;
+      const g = ctx.createRadialGradient(x + rr * 0.35, y - rr * 0.4, rr * 0.1, x, y, rr);
+      g.addColorStop(0, '#b6a24a');
+      g.addColorStop(0.55, '#7d6a2c');
+      g.addColorStop(1, '#4e3f1a');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(x, y, rr, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  };
+
+  let nutsDrawn = false;
+  for (const f of fronds) {
+    if (!nutsDrawn && f.depth > 0.25) { nuts(); nutsDrawn = true; }
+    const side = Math.cos(f.angle) >= 0 ? 1 : -1;
+    // light: fronds reaching up and to the right face the sun
+    const lit = clamp01(0.5 + 0.35 * Math.cos(f.angle + 0.8) + 0.3 * f.depth);
+    const shade = lit < 0.4 ? '#34512e' : lit < 0.65 ? '#43673a' : '#557a42';
+    const mid = lit < 0.4 ? '#4c6e40' : lit < 0.65 ? '#5f8547' : '#75994f';
+    const tipC = lit < 0.4 ? '#6c8a50' : lit < 0.65 ? '#89a85c' : '#a6c06c';
+    const segs = 30;
+    const pts: Pt[] = [];
+    let x = crown[0], y = crown[1];
+    // each frond arches over towards straight down, most of all at its tip
+    const down = side > 0 ? Math.PI / 2 : f.angle < 0 ? -Math.PI * 1.5 : Math.PI / 2;
+    for (let i = 0; i <= segs; i++) {
+      const u = i / segs;
+      pts.push([x, y]);
+      const a = f.angle + (down - f.angle) * Math.min(1, f.bend * 0.62 * Math.pow(u, 1.7));
+      x += Math.cos(a) * f.len / segs;
+      y += Math.sin(a) * f.len / segs;
+    }
+    // leaflets: both sides of the midrib, longest in the middle, hanging down
+    for (let i = 3; i < segs; i++) {
+      const u = i / segs;
+      const [px, py] = pts[i];
+      const [qx, qy] = pts[i + 1] ?? pts[i];
+      const ra = Math.atan2(qy - py, qx - px);
+      const ll = f.len * 0.3 * Math.sin(Math.PI * Math.pow(u, 0.7)) * between(rand, 0.85, 1.1);
+      for (const s of [-1, 1]) {
+        const la = ra + s * between(rand, 0.85, 1.15);
+        // leaflets stand off the midrib and droop a little, more towards the tip
+        const droop = 0.18 + 0.32 * u;
+        const dxl = Math.cos(la) * (1 - droop) + 0 * droop, dyl = Math.sin(la) * (1 - droop) + 1 * droop;
+        const dl = Math.hypot(dxl, dyl) || 1;
+        const tx = px + (dxl / dl) * ll, ty = py + (dyl / dl) * ll;
+        const mx = px + Math.cos(la) * ll * 0.45, my = py + Math.sin(la) * ll * 0.45;
+        const wid = Math.max(0.7, (1.6 + 2.2 * (1 - u)) * k);
+        ctx.globalAlpha = 0.95;
+        ctx.fillStyle = u < 0.35 ? shade : u < 0.75 ? mid : tipC;
+        ctx.beginPath();
+        ctx.moveTo(px, py);
+        ctx.quadraticCurveTo(mx - wid, my - wid * 0.5, tx, ty);
+        ctx.quadraticCurveTo(mx + wid, my + wid * 0.5, px + wid * 0.6, py + wid * 0.6);
+        ctx.closePath();
+        ctx.fill();
+        // sunlit fronds catch a highlight along each leaflet
+        if (lit > 0.55 && s === -1) {
+          ctx.globalAlpha = 0.35;
+          ctx.strokeStyle = '#d6e48c';
+          ctx.lineWidth = Math.max(0.5, wid * 0.35);
+          ctx.beginPath();
+          ctx.moveTo(px, py);
+          ctx.quadraticCurveTo(mx - wid * 0.6, my - wid * 0.4, mix(px, tx, 0.85), mix(py, ty, 0.85));
+          ctx.stroke();
+        }
+      }
+    }
+    // the midrib
+    ctx.globalAlpha = 0.9;
+    ctx.strokeStyle = lit > 0.55 ? '#a7a85a' : '#6f7a3a';
+    ctx.lineCap = 'round';
+    for (let i = 0; i < segs; i++) {
+      ctx.lineWidth = Math.max(0.8, 4.5 * k * (1 - i / segs));
+      ctx.beginPath();
+      ctx.moveTo(pts[i][0], pts[i][1]);
+      ctx.lineTo(pts[i + 1][0], pts[i + 1][1]);
+      ctx.stroke();
+    }
+  }
+  if (!nutsDrawn) nuts();
+  ctx.globalAlpha = 1;
+
+  // a little of the sky's light over it, then the scene's grain
+  ctx.globalCompositeOperation = 'source-atop';
+  ctx.fillStyle = 'rgba(190, 214, 232, 0.15)';
+  ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = grainPattern(ctx, seeded(3307));
+  ctx.fillRect(0, 0, w, h);
+  ctx.globalCompositeOperation = 'source-over';
+}
+
 /* Lay a preset's colour grade over the painted field. Blend modes also paint
    where the canvas is empty, so the field's own shape is stamped back on
    afterwards from a copy taken first. */
@@ -1156,6 +1376,7 @@ export function SunlitField({ beach = false }: { beach?: boolean }) {
           <canvas className="sl-glint is-b" />
           <canvas className="sl-surf" />
           <canvas className="sl-surf is-b" />
+          <canvas className="sl-palm" />
         </>
       )}
     </div>
@@ -1250,6 +1471,8 @@ export default function SunlitScene({ theme, home }: SceneProps) {
           surf: Array.from(field.querySelectorAll<HTMLCanvasElement>('.sl-surf')),
           glints: Array.from(field.querySelectorAll<HTMLCanvasElement>('.sl-glint')),
         });
+        const palm = field.querySelector<HTMLCanvasElement>('.sl-palm');
+        if (palm) drawPalm(palm, w, h, dpr);
       } else {
         drawGrass(grass, w, h, full, dpr, p, horizonOf(sky, h));
       }
@@ -1298,6 +1521,7 @@ export default function SunlitScene({ theme, home }: SceneProps) {
        - Near the end the field comes back and rises until its crest is above
          the footer, so the footer stands in the grass on any screen. */
     const root = document.documentElement;
+    const palmEl = field.querySelector<HTMLElement>('.sl-palm');
     const footer = document.querySelector<HTMLElement>('.footer');
     const rising = home ? Array.from(document.querySelectorAll<HTMLElement>('#about .sl-emerge')) : [];
     const shifted = new Map<HTMLElement, number>(); // the translate we last gave each block, in px
@@ -1334,6 +1558,8 @@ export default function SunlitScene({ theme, home }: SceneProps) {
       const lift = calm ? (back > 0 ? reach : 0) : reach * back;
       field.style.opacity = gone >= 1 ? '0' : (1 - gone).toFixed(3);
       field.style.translate = `0 ${((calm ? 0 : gone * vh * 0.18) - lift).toFixed(1)}px`;
+      // the palm keeps its place on screen while the beach lifts behind its foot
+      if (palmEl) palmEl.style.translate = lift ? `0 ${lift.toFixed(1)}px` : '';
       if (treeLayer) {
         const treeGone = fade(0.3, 0.38);
         treeLayer.style.opacity = treeGone >= 1 ? '0' : (1 - treeGone).toFixed(3);
