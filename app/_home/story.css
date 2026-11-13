@@ -408,9 +408,9 @@ html.hs-home .footer { position: relative; z-index: 3; }
 .hs-cardwrap { position: relative; z-index: 1; }
 .hs-cardwrap .hs-fc-frame { opacity: 0; transform: scale(1.03); }
 .hs-cardwrap .hs-fc.is-in .hs-fc-frame { opacity: 1; transform: none; }
-.hs-fc.is-june { background: radial-gradient(70% 80% at 22% 45%, #1d140c 0%, #0c0805 55%, #050302 100%); }
+.hs-fc.is-june { background: radial-gradient(70% 80% at 22% 45%, #130d08 0%, #0a0705 55%, #050302 100%); }
 .hs-fc.is-june .hs-fc-frame { border-color: rgba(230, 170, 100, 0.45); }
-.hs-fc.is-bead { background: radial-gradient(70% 80% at 78% 45%, #1c150d 0%, #0b0806 55%, #040302 100%); }
+.hs-fc.is-bead { background: radial-gradient(70% 80% at 78% 45%, #15110d 0%, #0a0807 55%, #040302 100%); }
 .hs-fc.is-bead .hs-fc-frame { border-color: rgba(214, 164, 92, 0.45); }
 .hs-fc.is-bead .hs-fc-badge, .hs-fc.is-june .hs-fc-badge { color: #f3dcb4; border-color: rgba(230, 180, 110, 0.35); background: rgba(230, 180, 110, 0.08); }
 
