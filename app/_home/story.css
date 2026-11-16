@@ -371,7 +371,7 @@ html.hs-home .footer { position: relative; z-index: 3; }
 .hs-fl-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; }
 .hs-fl-scene { background: #000; }
 .hs-fl-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: calc(1 - max(0.8 * var(--f), var(--k))); }
-.hs-fl.is-bead .hs-fl-photo { object-fit: contain; object-position: 50% 34%; padding: 9vh 6vw 26vh; }
+.hs-fl.is-bead .hs-fl-photo { object-fit: contain; object-position: 50% 34%; padding: 9vh 6vw 26vh; opacity: calc(1 - max(var(--f), var(--k))); }
 /* a soft vignette for the title's sake: no band, the picture runs to the edges */
 .hs-fl-scene::after { content: ''; position: absolute; inset: 0; background: radial-gradient(120% 90% at 50% 30%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.5) 100%); pointer-events: none; }
 .hs-fl-head {
@@ -445,40 +445,132 @@ html.hs-home .footer { position: relative; z-index: 3; }
   .hs-jh-place { grid-column: span 3; }
 }
 
-/* ── BeadReader: the real app on two phones ──
-   --f / --fp: beat 1 comes in / plays out (the theme turns dark, the reader
-   opens); --g / --gp: beat 2 comes in / plays out (Sam joins, a wave, a note).
+/* ── BeadReader: the real app in an iPhone 16 ──
+   The frame is Braven's iPhone 16 mockup, flattened with its screen cut out
+   (iphone16-front.webp, 1046 × 2159); the screens are markup under it.
+   Inside a phone --fu is one pixel of the mockup and --su one pixel of the
+   880-wide app screenshots (the screen is 971 mockup pixels wide).
+   --f / --g: beat 1 / beat 2 come in (--go / --gi cross between them);
+   beat 1 steps through --lift (the cut-out settles), --tap, --push (the
+   reader slides in), --scr (it scrolls to the saved line) and --mark;
+   --gp: beat 2 plays out (Sam joins, a wave, a note).
    A small window(x, a, b) in CSS: min(clamp(0, (x - a) * k, 1), clamp(0, (b - x) * k, 1)). */
 .hs-fl.is-bead {
-  height: 540svh;
-  --gp: 0;
+  height: 600svh;
+  --gp: 0; --lift: 1; --tap: 0; --push: 0; --scr: 0; --mark: 0;
+  --cs: 1.85;
   --ph: calc(100svh - var(--hs-navb, 64px) - 8vh - 4.5rem);
   --vw: calc(100vw - 2 * var(--hs-edge) - min(29rem, 32vw) - 4vw);
-  --pw: min(calc(var(--ph) * 0.56), calc((var(--vw) - 6rem) / 2));
+  --pw: min(calc(var(--ph) * 0.4845), calc(var(--vw) * 0.6));
   --go: clamp(0, calc(1 - var(--g) * 2.5), 1);
   --gi: clamp(0, calc(var(--g) * 2 - 0.6), 1);
 }
+.hs-bb-visual { justify-items: center; }
 .hs-bb-visual > * { grid-area: 1 / 1; }
-.hs-bb-phone { width: var(--pw); aspect-ratio: 1 / 1.78; /* about the screenshots' own shape, so little is cropped */ padding: calc(var(--pw) * 0.035); border-radius: calc(var(--pw) * 0.15); background: linear-gradient(160deg, #3a3631, #141210 40%, #26221e); box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.12), 0 40px 70px -30px rgba(0, 0, 0, 0.9), 0 0 0 1px #000; }
-.hs-bb-screen { position: relative; width: 100%; height: 100%; border-radius: calc(var(--pw) * 0.12); overflow: hidden; background: #f7f3ea; }
-.hs-bb-screen img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
 .hs-bb-col { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 0.9rem; }
-.hs-bb-col figcaption { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; font-size: clamp(0.8rem, 1vw, 0.95rem); color: var(--hs-mute); text-align: center; }
-.hs-bb-theme { display: grid; }
-.hs-bb-theme b { grid-area: 1 / 1; font-size: 0.78rem; font-weight: 700; padding: 0.18rem 0.65rem; border-radius: 999px; background: #f1d9b0; color: #2b2118; }
-/* beat 1: resume and theme */
-.hs-bb-resume { --r: clamp(0, calc((var(--fp) - 0.12) * 5), 1); --dk: clamp(0, calc((var(--fp) - 0.55) * 6), 1);
-  display: flex; align-items: center; justify-content: center; gap: clamp(0.8rem, 2vw, 2rem);
-  opacity: calc(clamp(0, var(--f) * 3, 1) * var(--go)); transform: translate3d(0, calc((1 - clamp(0, var(--f) * 3, 1)) * 2rem), 0); }
-.hs-bb-dark { opacity: var(--dk); }
-.hs-bb-resume .is-l { opacity: calc(1 - var(--dk)); }
-.hs-bb-resume .is-d { opacity: var(--dk); background: #3b2e22; color: #f1d9b0; }
-.hs-bb-arrow { position: relative; width: clamp(2rem, 4vw, 4rem); height: 2px; background: rgba(217, 181, 107, 0.2); opacity: var(--r); }
-.hs-bb-arrow i { position: absolute; inset: 0; background: var(--hs-gold); transform-origin: 0 50%; transform: scaleX(var(--r)); }
-.hs-bb-arrow::after { content: ''; position: absolute; right: -2px; top: 50%; width: 8px; height: 8px; border-top: 2px solid var(--hs-gold); border-right: 2px solid var(--hs-gold); transform: translateY(-50%) rotate(45deg); opacity: var(--r); }
-.hs-bb-col.is-reader { opacity: var(--r); transform: translate3d(calc((1 - var(--r)) * 2rem), 0, 0); }
+.hs-bb-col figcaption { font-size: clamp(0.8rem, 1vw, 0.95rem); color: var(--hs-mute); text-align: center; }
+
+.hs-bb-phone {
+  container-type: inline-size;
+  position: relative; flex: none;
+  width: var(--pw); aspect-ratio: 1046 / 2159;
+  --fu: calc(100cqw / 1046);
+  --su: calc(100cqw / 947.95);
+}
+/* a soft shadow under the body; the mockup's own studio shadow was left out */
+.hs-bb-phone::before {
+  content: ''; position: absolute; inset: 1.5% 3% 0.5%; border-radius: 15% / 7.5%;
+  box-shadow: 0 2.4vh 6vh -1.6vh rgba(0, 0, 0, 0.75), 0 0.6vh 1.6vh rgba(0, 0, 0, 0.35);
+}
+.hs-bb-frame { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; pointer-events: none; }
+.hs-bb-screen {
+  position: absolute; z-index: 1; overflow: hidden;
+  left: calc(37 * var(--fu)); top: calc(30 * var(--fu)); width: calc(971 * var(--fu)); height: calc(2099 * var(--fu));
+  border-radius: calc(150 * var(--fu));
+  background: #f7f6f2; color: #1f1a15;
+}
+.hs-bb-screen img { display: block; width: 100%; height: auto; }
+.hs-bb-home { position: absolute; z-index: 4; left: 50%; bottom: calc(18 * var(--su)); width: calc(300 * var(--su)); height: calc(11 * var(--su)); margin-left: calc(-150 * var(--su)); border-radius: 99px; background: rgba(20, 16, 12, 0.85); }
+.hs-bb-app { position: absolute; inset: 0; overflow: hidden; background: #f7f6f2; }
+.hs .hs-bb-status, .hs .hs-bb-status * { font-family: -apple-system, 'SF Pro Text', system-ui, sans-serif; }
+.hs-bb-status {
+  position: absolute; inset: 0 0 auto; z-index: 2; height: calc(120 * var(--su)); padding: calc(20 * var(--su)) calc(78 * var(--su)) 0 calc(108 * var(--su));
+  display: flex; align-items: center; justify-content: space-between;
+  background: #fff; color: #1a1714;
+}
+.hs-bb-status b { font-size: calc(36 * var(--su)); font-weight: 600; letter-spacing: -0.01em; }
+.hs-bb-status svg { width: calc(150 * var(--su)); height: auto; fill: currentColor; }
+.is-reader .hs-bb-status { background: #faf8f4; }
+
+/* the book page, with Mara's row of Who's reading at 552–737 of the screenshot */
+.hs-bb-cpage { position: absolute; left: 0; right: 0; top: calc(120 * var(--su)); }
+.hs-bb-slot { position: absolute; left: calc(32 * var(--su)); top: calc(552 * var(--su)); width: calc(816 * var(--su)); height: calc(185 * var(--su)); border-radius: calc(26 * var(--su)) calc(26 * var(--su)) 0 0; background: #e9e5dd; box-shadow: inset 0 calc(8 * var(--su)) calc(18 * var(--su)) rgba(60, 40, 20, 0.22); opacity: clamp(0, calc(var(--lift) * 25), 1); }
+.hs-bb-slot::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: rgba(139, 90, 42, 0.14); opacity: var(--tp); }
+.hs-bb-dim { position: absolute; inset: 0; z-index: 3; background: #000; pointer-events: none; opacity: max(calc(var(--lift) * 0.45), calc(var(--push) * 0.28)); }
+
+/* the row, drawn as the app draws it, in screenshot pixels */
+.hs .hs-bb-row, .hs .hs-bb-row * { font-family: 'DejaVu Sans', Verdana, Geneva, system-ui, sans-serif; }
+.hs-bb-row {
+  position: absolute; width: calc(816 * var(--su)); height: calc(185 * var(--su));
+  background: #fff; color: #1f1a15; line-height: 1;
+  border: calc(2 * var(--su)) solid #e2e1db; border-radius: calc(26 * var(--su)) calc(26 * var(--su)) 0 0;
+}
+.hs-bb-row > * { position: absolute; white-space: nowrap; }
+.hs-bb-row-av { left: calc(32 * var(--su)); top: calc(56 * var(--su)); width: calc(64 * var(--su)); height: calc(64 * var(--su)); border-radius: 50%; display: grid; place-items: center; background: #efe8df; color: #a67a45; font-size: calc(26 * var(--su)); font-weight: 700; }
+.hs-bb-row-av::after { content: ''; position: absolute; left: calc(42 * var(--su)); top: calc(43 * var(--su)); width: calc(20 * var(--su)); height: calc(20 * var(--su)); border-radius: 50%; background: #23c65f; box-shadow: 0 0 0 calc(4 * var(--su)) #fff; }
+.hs-bb-row-name { left: calc(121 * var(--su)); top: calc(29 * var(--su)); font-size: calc(29 * var(--su)); }
+.hs-bb-row-chip { left: calc(206 * var(--su)); top: calc(24 * var(--su)); height: calc(39 * var(--su)); padding: 0 calc(15 * var(--su)); border-radius: 99px; display: grid; place-items: center; background: #e1f5e7; color: #239a62; font-size: calc(21 * var(--su)); }
+.hs-bb-row-bar { left: calc(121 * var(--su)); top: calc(91 * var(--su)); width: calc(588 * var(--su)); height: calc(10 * var(--su)); border-radius: 99px; background: #e5e2da; overflow: hidden; }
+.hs-bb-row-bar i { position: absolute; inset: 0 25% 0 0; border-radius: inherit; background: #8b5a2a; }
+.hs-bb-row-pct { left: calc(728 * var(--su)); top: calc(84 * var(--su)); font-size: calc(23.5 * var(--su)); color: #6b6158; }
+.hs-bb-row-sub { left: calc(121 * var(--su)); top: calc(129 * var(--su)); font-size: calc(23.5 * var(--su)); color: #7c7064; }
+/* lifted out of the page as a cut-out, then set back in its slot */
+.hs-bb-row.is-cut {
+  z-index: 3;
+  left: calc(37 * var(--fu) + 32 * var(--su)); top: calc(30 * var(--fu) + 672 * var(--su));
+  transform: translate3d(0, calc(var(--lift) * -70 * var(--su)), 0) scale(calc(1 + var(--lift) * (var(--cs) - 1)));
+  border-radius: calc(26 * var(--su));
+  box-shadow: 0 calc(var(--lift) * 40 * var(--su)) calc(var(--lift) * 70 * var(--su)) calc(var(--lift) * -20 * var(--su)) rgba(0, 0, 0, 0.7);
+  opacity: clamp(0, calc(var(--lift) * 25), 1);
+}
+/* the tap: a fingertip on the progress bar, a press, a ring */
+.hs-bb-touch {
+  position: absolute; z-index: 3; pointer-events: none;
+  left: calc(37 * var(--fu) + 470 * var(--su)); top: calc(30 * var(--fu) + 720 * var(--su));
+  width: calc(100 * var(--su)); height: calc(100 * var(--su)); border-radius: 50%;
+  background: rgba(40, 28, 16, 0.3); box-shadow: 0 0 0 calc(4 * var(--su)) rgba(255, 255, 255, 0.92), 0 calc(8 * var(--su)) calc(24 * var(--su)) rgba(0, 0, 0, 0.35);
+  opacity: var(--td); transform: scale(calc(1 - var(--tp) * 0.22));
+}
+.hs-bb-touch::after { content: ''; position: absolute; inset: 0; border-radius: 50%; border: calc(4 * var(--su)) solid #fff; opacity: calc((1 - var(--tr)) * clamp(0, calc(var(--tr) * 20), 1)); transform: scale(calc(1 + var(--tr) * 1.8)); }
+
+/* the reader on chapter 12: the screenshot's top bar (0–102) stays, the page scrolls under it */
+.hs-bb-rbar { position: absolute; left: 0; right: 0; top: calc(120 * var(--su)); height: calc(102 * var(--su)); overflow: hidden; z-index: 1; }
+.hs-bb-rbody { position: absolute; left: 0; right: 0; top: calc(222 * var(--su)); bottom: 0; overflow: hidden; }
+.hs-bb-rpage { position: relative; margin-top: calc(-102 * var(--su)); transform: translate3d(0, calc(var(--scr) * -260 * var(--su)), 0); }
+.hs-bb-here { position: absolute; left: calc(36 * var(--su)); top: calc(990 * var(--su)); width: calc(702 * var(--su)); height: calc(58 * var(--su)); border-radius: calc(8 * var(--su)); background: #f3d48c; mix-blend-mode: multiply; transform-origin: 0 50%; transform: scaleX(var(--mark)); }
+.hs .hs-bb-herechip, .hs .hs-bb-herechip * { font-family: 'DejaVu Sans', Verdana, Geneva, system-ui, sans-serif; }
+.hs-bb-herechip {
+  position: absolute; right: calc(40 * var(--su)); top: calc(934 * var(--su));
+  display: flex; align-items: center; gap: calc(8 * var(--su));
+  padding: calc(8 * var(--su)) calc(16 * var(--su)); border-radius: 99px;
+  background: #8b5a2a; color: #fff; font-size: calc(30 * var(--su)); font-weight: 700; line-height: 1; white-space: nowrap;
+  opacity: var(--mark); transform: translate3d(0, calc((1 - var(--mark)) * 12 * var(--su)), 0);
+}
+.hs-bb-herechip svg { width: calc(18 * var(--su)); height: auto; fill: currentColor; }
+
+/* beat 1: Mara's place */
+.hs-bb-resume {
+  --td: min(clamp(0, calc(var(--tap) * 7), 1), clamp(0, calc((1 - var(--tap)) * 7), 1));
+  --tp: min(clamp(0, calc((var(--tap) - 0.3) * 5), 1), clamp(0, calc((0.78 - var(--tap)) * 5), 1));
+  --tr: clamp(0, calc((var(--tap) - 0.48) * 2), 1);
+  opacity: calc(clamp(0, var(--f) * 3, 1) * var(--go)); transform: translate3d(0, calc((1 - clamp(0, var(--f) * 3, 1)) * 2rem), 0);
+}
+.is-resume .hs-bb-app.is-contents { transform: translate3d(calc(var(--push) * -30%), 0, 0); }
+.is-resume .hs-bb-app.is-reader { transform: translate3d(calc((1 - var(--push)) * 100%), 0, 0); box-shadow: calc(-16 * var(--su)) 0 calc(40 * var(--su)) rgba(0, 0, 0, calc(var(--push) * 0.25)); }
+/* beat 2 shows the same page, already at her place */
+.hs-bb-phone.is-mara { --scr: 1; --mark: 0; }
 /* beat 2: reading together */
-.hs-bb-together { display: flex; align-items: center; justify-content: center; opacity: var(--gi); transform: translate3d(0, calc((1 - var(--gi)) * 2rem), 0); }
+.hs-bb-together { --pw: min(calc(var(--ph) * 0.4845), calc((var(--vw) - 22rem) * 1.4)); display: flex; align-items: center; justify-content: center; opacity: var(--gi); transform: translate3d(0, calc((1 - var(--gi)) * 2rem), 0); }
 .hs-bb-together .hs-bb-col { order: 2; }
 .hs-bb-online {
   order: 1; position: relative; z-index: 1;
@@ -513,10 +605,10 @@ html.hs-home .footer { position: relative; z-index: 3; }
 .hs-bb-online .is-sam .is-b { opacity: clamp(0, calc((var(--gp) - 0.28) * 10), 1); }
 /* what reaches Mara's screen */
 .hs-bb-toast {
-  position: absolute; left: 8%; right: 8%; top: 9%; z-index: 2;
+  position: absolute; left: calc(36 * var(--su)); right: calc(36 * var(--su)); top: calc(132 * var(--su)); z-index: 3;
   display: flex; align-items: center; gap: 0.5em;
-  padding: 0.6em 0.8em; border-radius: 14px; background: rgba(31, 26, 21, 0.92); color: #fff;
-  font-size: clamp(0.7rem, calc(var(--pw) * 0.045), 0.95rem); line-height: 1.3;
+  padding: 0.6em 0.8em; border-radius: calc(34 * var(--su)); background: rgba(31, 26, 21, 0.92); color: #fff;
+  font-size: calc(34 * var(--su)); line-height: 1.3;
   box-shadow: 0 14px 30px -12px rgba(0, 0, 0, 0.6);
   opacity: var(--t); transform: translate3d(0, calc((1 - var(--t)) * -0.8rem), 0);
 }
@@ -525,11 +617,12 @@ html.hs-home .footer { position: relative; z-index: 3; }
 .hs-bb-toast.is-note { --t: clamp(0, calc((var(--gp) - 0.74) * 10), 1); flex-direction: column; align-items: flex-start; gap: 0.1em; background: #22a35a; }
 .hs-bb-toast.is-note b { font-size: 0.82em; opacity: 0.85; }
 @media (max-width: 760px) {
-  .hs-fl.is-bead { --ph: calc(62svh - var(--hs-navb, 64px) - 12px - 3.4rem); --vw: calc(100vw - 2 * var(--hs-gutter)); --pw: min(calc(var(--ph) * 0.56), calc((var(--vw) - 3rem) / 2)); }
-  .hs-bb-arrow { width: 1.4rem; }
+  .hs-fl.is-bead { --cs: 1.7; --ph: calc(69svh - var(--hs-navb, 64px) - 12px); --vw: calc(100vw - 2 * var(--hs-gutter)); --pw: min(calc(var(--ph) * 0.4845), calc(var(--vw) * 0.66)); }
+  .hs-bb > .hs-bb-visual { bottom: 31svh; }
+  .hs-bb-together { --pw: inherit; }
+  .hs-bb-col figcaption { display: none; }
   .hs-bb-online { width: calc(var(--vw) * 0.66); margin-right: calc(var(--pw) * -0.5); font-size: 0.72rem; padding: 0.6rem 0.6rem 0.3rem; }
   .hs-bb-acts i { width: 1.7em; height: 1.7em; }
-  .hs-bb-col figcaption { font-size: 0.72rem; }
 }
 
 /* ───────────── The flagship card ─────────────
@@ -826,12 +919,12 @@ html.hs-home .footer { position: relative; z-index: 3; }
     .hs-sp { overflow: clip; }
   .hs-bb-online { transform: none; }
   .hs-fl { --m: 1; --lo: 1; --li: 0; --fp: 1; }
-  .hs-fl.is-bead { --gp: 1; --go: 1; --gi: 1; }
+  .hs-fl.is-bead { --gp: 1; --go: 1; --gi: 1; --lift: 0; --tap: 0; --push: 1; --scr: 1; --mark: 1; }
   .hs-bb-visual { display: grid; gap: 3rem; }
   .hs-bb-visual > * { grid-area: auto; }
   .hs-fl-stage { position: relative; height: auto; overflow: visible; }
   .hs-fl-scene { position: relative; height: 100svh; transform: none; border-radius: 0; }
-  .hs-fl-photo { opacity: 1; }
+  .hs-fl-photo, .hs-fl.is-bead .hs-fl-photo { opacity: 1; }
   .hs-fl-head { opacity: 1; transform: none; bottom: auto; top: calc(100svh - 0px); transform: translateY(-100%); }
   .hs-sp { position: relative; inset: auto; opacity: 1; min-height: 100svh; display: grid; grid-template-columns: 1fr 1.3fr; gap: 4vw; align-items: center; padding: 6rem var(--hs-edge); }
   .hs-sp > [class$="-visual"] { position: relative; inset: auto; }

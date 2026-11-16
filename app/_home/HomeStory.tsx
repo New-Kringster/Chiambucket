@@ -420,15 +420,22 @@ export default function HomeStory() {
           const apply = (p: number) => {
             set('--t', ease(ramp(p, 0.08, 0.16)));             // the title leaves
             if (bead) {
-              // two beats: resume and theme, then reading together
-              set('--f', ease(ramp(p, 0.1, 0.26)));
-              set('--fp', ramp(p, 0.18, 0.44));
-              set('--g', ease(ramp(p, 0.44, 0.54)));
-              set('--gp', ramp(p, 0.5, 0.8));
-              set('--c1', show(p, 0.14, 0.46));
-              set('--c2', show(p, 0.46, 0.82));
-              set('--k', ease(ramp(p, 0.82, 0.92)));
-              fl.querySelector('.hs-fl-card')!.classList.toggle('is-live', p > 0.88);
+              // two beats. Beat 1 on Mara's phone: her row of Who's reading,
+              // lifted out as a cut-out, settles in its slot, is tapped, and
+              // the reader slides in and scrolls to the line she stopped on.
+              set('--f', ease(ramp(p, 0.1, 0.22)));
+              set('--lift', 1 - ease(ramp(p, 0.2, 0.29)));
+              set('--tap', ramp(p, 0.3, 0.38));
+              set('--push', ease(ramp(p, 0.37, 0.43)));
+              set('--scr', ease(ramp(p, 0.41, 0.47)));
+              set('--mark', ease(ramp(p, 0.455, 0.485)));
+              // beat 2: reading together
+              set('--g', ease(ramp(p, 0.54, 0.61)));
+              set('--gp', ramp(p, 0.58, 0.83));
+              set('--c1', show(p, 0.13, 0.54));
+              set('--c2', show(p, 0.54, 0.85));
+              set('--k', ease(ramp(p, 0.84, 0.93)));
+              fl.querySelector('.hs-fl-card')!.classList.toggle('is-live', p > 0.89);
               return;
             }
             set('--f', ease(ramp(p, 0.1, 0.26)));              // beat 1 builds
