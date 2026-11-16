@@ -115,7 +115,7 @@ export type ReaderScene = {
 
 export async function createReaderScene(host: HTMLElement, opts: { compact: boolean }): Promise<ReaderScene> {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, opts.compact ? 1.5 : 1.75));
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.setClearColor(0, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;

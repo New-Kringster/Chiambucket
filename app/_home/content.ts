@@ -60,8 +60,8 @@ export const JUNE_CARD: Flagship = {
   lead: 'A 5G rover I can drive wherever there is signal. Three phones stream its view to my dashboard while its sensors report what is around it. Concept to first drive took three weeks.',
   stats: [{ v: '3', l: 'live video streams' }, { v: '5G', l: 'cellular link' }, { v: '8+', l: 'onboard sensors' }, { v: '3 weeks', l: 'concept to drive' }],
   tools: [{ src: '/images/esp-icon.webp', alt: 'ESP32-S3' }, { src: '/images/Kicad-icon.webp', alt: 'KiCad' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }, { src: '/images/PlatformIO-icon.webp', alt: 'PlatformIO' }],
-  poster: '/images/home/june-poster.webp',
-  posterAlt: 'Project June, the rover, floating in warm light',
+  poster: '/images/home/june-banner.webp',
+  posterAlt: 'Project June: the rover kicking up dirt beside its driving console and an Xbox controller',
   read: '/project-june',
   extra: { label: 'Watch the build', url: 'https://youtu.be/MnkJsx-nwoE?si=kd1n5bYct6dWTcQC', kind: 'play' },
 };
@@ -74,8 +74,8 @@ export const BEAD_CARD: Flagship = {
   lead: 'A private book reader for a few friends. I publish books in Markdown or as webtoons, they sign in with one access code, and friends on the same book see each other reading live.',
   stats: [{ v: 'Live', l: 'read-together presence' }, { v: 'SQL', l: 'enforced content gate' }, { v: 'Offline', l: 'works without a connection' }, { v: '1 click', l: 'to deploy your own' }],
   tools: [{ src: '/images/nextjs-icon.webp', alt: 'Next.js' }, { src: '/images/supabase-icon.webp', alt: 'Supabase' }, { src: '/images/tailwind-icon.webp', alt: 'Tailwind CSS' }, { src: '/images/cloudflare-icon.webp', alt: 'Cloudflare R2' }],
-  poster: '/images/home/beadreader-poster.webp',
-  posterAlt: 'BeadReader on three phones: sign-in, a chapter and the reading stats',
+  poster: '/images/home/bead-banner.webp',
+  posterAlt: 'BeadReader on three phones: the sign-in screen, a chapter and the library',
   read: '/beadreader',
   extra: { label: 'GitHub', url: 'https://github.com/New-Kringster/BeadReader', kind: 'github' },
 };

@@ -11,10 +11,10 @@
                   and case in 3D through three beats, ending as a project card
      Project June mission control: the three phones' live feeds, the night
                   run's telemetry and the signal path, then its card
-     BeadReader   a book whose pages turn, friends reading together and the
-                  spicy gate, then its card
+     BeadReader   the real app on two phones: it remembers your page and
+                  theme, then friends reading together; then its card
      Projects     the gallery of the other projects (peek or read)
-     What I do    a bento of pictures, each opening its details
+     My skills    a bento of pictures, each opening its details
      HomeLab      the cloud-and-N mark in ASCII behind the copy
      Photos       a dense masonry wall
      Contact      "Say hello." in the sky over the field at dusk, with the
@@ -41,7 +41,7 @@ import { IcGitHub, IcMail, IcServer, IcPhotos } from '../../components/Icons';
 import './story.css';
 
 const sans = Figtree({ subsets: ['latin'], weight: ['400', '500', '600', '800'], variable: '--hs-sans', display: 'swap' });
-// Only the email address is set in the serif.
+// The serif sets the line under Hello. and the email address.
 const serif = Newsreader({ subsets: ['latin'], style: ['italic'], weight: ['400'], variable: '--hs-serif', display: 'swap' });
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
@@ -310,7 +310,9 @@ export default function HomeStory() {
           const portrait = innerHeight > innerWidth;
           const img = await loadImage(portrait ? '/images/home/morning-tall.webp' : '/images/home/morning-wide.webp');
           if (cancelled) return;
-          fx = Dissolve.create(canvas);
+          // At the screen's own pixel ratio: it takes over from the sharp <img>, so a
+          // lower-resolution canvas made the painting visibly soften as the dissolve began.
+          fx = Dissolve.create(canvas, { maxDpr: Math.min(window.devicePixelRatio || 1, 3) });
           if (!fx) return;
           fx.setImage(img, img.naturalWidth / img.naturalHeight);
           art.style.opacity = '';
@@ -414,8 +416,21 @@ export default function HomeStory() {
             }
           };
           const set = (k: string, v: number) => fl.style.setProperty(k, v.toFixed(4));
+          const bead = fl.classList.contains('is-bead');
           const apply = (p: number) => {
             set('--t', ease(ramp(p, 0.08, 0.16)));             // the title leaves
+            if (bead) {
+              // two beats: resume and theme, then reading together
+              set('--f', ease(ramp(p, 0.1, 0.26)));
+              set('--fp', ramp(p, 0.18, 0.44));
+              set('--g', ease(ramp(p, 0.44, 0.54)));
+              set('--gp', ramp(p, 0.5, 0.8));
+              set('--c1', show(p, 0.14, 0.46));
+              set('--c2', show(p, 0.46, 0.82));
+              set('--k', ease(ramp(p, 0.82, 0.92)));
+              fl.querySelector('.hs-fl-card')!.classList.toggle('is-live', p > 0.88);
+              return;
+            }
             set('--f', ease(ramp(p, 0.1, 0.26)));              // beat 1 builds
             set('--g', ease(ramp(p, 0.38, 0.52)));             // beat 2 builds
             set('--fp', ramp(p, 0.16, 0.38));                  // beat 1 plays out (the pages turn)
@@ -431,12 +446,6 @@ export default function HomeStory() {
             for (const c of counters) { const dp = +(c.dataset.dp ?? 0); c.textContent = (+c.dataset.to! * g).toFixed(dp); }
             setPlay(active && p > 0.1 && p < 0.84 && !document.hidden);
           };
-          // Cal mode closes the passage up by the gated line's own height
-          const spicy = fl.querySelector<HTMLElement>('.hs-bb-spicy');
-          const measure = () => { if (spicy) fl.style.setProperty('--sp-h', `${spicy.offsetHeight + parseFloat(getComputedStyle(spicy).marginTop || '0')}px`); };
-          measure();
-          window.addEventListener('resize', measure);
-          disposers.push(() => window.removeEventListener('resize', measure));
           const F = follower(apply);
           ScrollTrigger.create({
             trigger: fl, start: 'top top', end: 'bottom bottom',
@@ -529,7 +538,7 @@ export default function HomeStory() {
             <div className="hs-under">
               <div className="hs-under-inner">
                 <p className="hs-under-kicker">Hello.</p>
-                <p className="hs-sub hs-under-line"><span className="hs-sub-trace" aria-hidden="true" />I’m Braven. Most projects need hardware, software and design, and I like doing all three myself.</p>
+                <p className="hs-under-line">I’m Braven. Most projects need hardware, software and design, and I like doing all three myself.</p>
               </div>
             </div>
             <div className="hs-art">
@@ -588,7 +597,7 @@ export default function HomeStory() {
             <div className="hs-reader-stage">
               <div className="hs-reader-scene">
                 <div className="hs-reader-meters" aria-hidden="true">
-                  <img src="/images/waterslop/metersim-key.webp" alt="" loading="lazy" />
+                  <img src="/images/home/meters-key.webp" alt="" loading="lazy" />
                 </div>
                 <div className="hs-reader-gl" aria-hidden="true">
                   <img className="hs-reader-fallback" src="/images/ocr-reader-flagship.webp" alt="" />
@@ -628,7 +637,7 @@ export default function HomeStory() {
               </div>
               <JuneHud />
               <div className="hs-fl-card hs-stagecard">
-                <FlagCard p={JUNE_CARD} onPeek={peek.show} variant="june" side="left" />
+                <FlagCard p={JUNE_CARD} onPeek={peek.show} variant="june" />
               </div>
             </div>
           </section>
@@ -657,7 +666,7 @@ export default function HomeStory() {
             <div className="hs-wrap">
               <div className="hs-chead hs-rise">
                 <h2 className="hs-ctitle">More projects</h2>
-                <Sub>Open a summary, or read the whole write-up.</Sub>
+                <Sub>See all my other projects.</Sub>
               </div>
               <ProjectGallery onPeek={peek.show} />
             </div>
@@ -690,8 +699,7 @@ export default function HomeStory() {
         <section className="hs-skills" id="skills" data-tone="dark">
           <div className="hs-wrap">
             <div className="hs-chead hs-rise">
-              <h2 className="hs-ctitle">What I do</h2>
-              <Sub>Tap a tile for where I used it.</Sub>
+              <h2 className="hs-ctitle">My skills</h2>
             </div>
             <Bento />
           </div>
@@ -742,7 +750,10 @@ export default function HomeStory() {
         {/* ── Contact, at dusk ── */}
         <section className="hs-contact" id="contact" data-tone="dark">
           <div className="hs-dusk" aria-hidden="true">
-            <img src="/images/home/dusk-pano.webp" alt="" loading="lazy" />
+            <picture>
+              <source media="(max-aspect-ratio: 4/5)" srcSet="/images/home/dusk-tall.webp" />
+              <img src="/images/home/dusk-wide.webp" alt="" loading="lazy" />
+            </picture>
           </div>
           <div className="hs-contact-in">
             <h2 className="hs-contact-title" aria-label="Say hello.">

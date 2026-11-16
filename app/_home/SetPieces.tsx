@@ -9,7 +9,7 @@
    Every fact here comes from the Project June and BeadReader articles
    (CommandLink.tsx, ReadingTogether.tsx, SpicyGate.tsx).
    ──────────────────────────────────────────────────────────────── */
-import type { CSSProperties } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 
 export type Beat = { title: string; text: string };
 
@@ -20,9 +20,8 @@ export const JUNE_BEATS: Beat[] = [
 ];
 
 export const BEAD_BEATS: Beat[] = [
-  { title: 'It remembers your page', text: 'Every reader picks up where they stopped, in the reading theme they chose. Books are Markdown text or image webtoons.' },
-  { title: 'Reading together', text: 'Friends on the same book get a green ring and their chapter. Send a wave or a short note: it fades in seconds and nothing is saved.' },
-  { title: 'The spicy gate', text: 'Each reader’s access decides what the server sends: blurred until tapped, locked, or removed with no gap. The gate is enforced in the SQL query.' },
+  { title: 'It remembers your page', text: 'Open a book and Continue reading takes you back to the chapter you stopped on, in the reading theme you chose. Books are Markdown text or image webtoons.' },
+  { title: 'Reading together', text: 'Friends on the same book get a green ring and their chapter. Tap to send a wave or a short note: it shows on their screen, fades in seconds and nothing is saved.' },
 ];
 
 function Captions({ beats }: { beats: Beat[] }) {
@@ -85,7 +84,8 @@ export function JuneHud() {
             <div className="hs-jh-place" style={{ '--i': TELE.length } as CSSProperties}><dt>Place</dt><dd><b>Sembawang Park</b></dd></div>
           </dl>
           <ol className="hs-jh-link">
-            <svg className="hs-jh-wire" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M12.5 5 H87.5" pathLength={1} /></svg>
+            {/* one track from the first stop's centre to the last; it lights from the left */}
+            <span className="hs-jh-wire"><i /></span>
             {LINK.map((n, i) => (
               <li key={n.label} style={{ '--i': i } as CSSProperties}><span className="hs-jh-node" /><b>{n.label}</b><span>{n.sub}</span></li>
             ))}
@@ -97,59 +97,67 @@ export function JuneHud() {
   );
 }
 
-/* ── BeadReader: a book read together ── */
-// Only lines that appear in the app's own screenshot of its reader (public/images/beadreader/reader-paper.webp).
-const LEAVES = [
-  ['I stood upon the hearth-rug and picked up the stick which our visitor had left behind him the night before.', 'It was a fine, thick piece of wood, bulbous-headed, of the sort which is known as a “Penang lawyer.”'],
-  ['“To the man who loves art for its own sake,” remarked Sherlock Holmes,', '“it is frequently in its least important and lowliest manifestations that the keenest pleasure is to be derived.”'],
-  ['Mr. Sherlock Holmes, who was usually very late in the mornings,', 'was seated at the breakfast table.'],
-];
-const GATE = {
-  lead: 'They had circled each other all evening. When the last guest finally left, the room went quiet.',
-  spicy: 'What happened next stayed between them and the low light of the fire.',
-  trail: 'Morning came far too soon.',
-};
+/* ── BeadReader: the real app on two phones ──
+   Beat 1: the book page (Continue reading, chapter 12 marked "reading")
+   turns from the light theme to the dark one, and beside it the reader
+   opens on chapter 12. Beat 2: Mara's screen, with the "Online now" panel
+   as you see it: rings, chapters, a wave and a note that reach her screen.
+   Every screen is a real screenshot from public/images/beadreader. */
+function Phone({ cls, children }: { cls: string; children: ReactNode }) {
+  return <div className={`hs-bb-phone ${cls}`}><div className="hs-bb-screen">{children}</div></div>;
+}
 
 export function BeadBook() {
   return (
     <div className="hs-sp hs-bb">
       <div className="hs-bb-visual" aria-hidden="true">
-        <div className="hs-bb-book">
-          <div className="hs-bb-page is-left">
-            <p className="hs-bb-crumb">A Study in Scarlet</p>
-            <h4>The Science of Deduction</h4>
-            <p>Mr. Sherlock Holmes, who was usually very late in the mornings, save upon those not infrequent occasions when he was up all night, was seated at the breakfast table.</p>
-            <p className="hs-bb-progress"><span><i /></span>Chapter 12 of 16</p>
-          </div>
-          <div className="hs-bb-page is-right">
-            <p>“To the man who loves art for its own sake,” remarked Sherlock Holmes, “it is frequently in its least important and lowliest manifestations that the keenest pleasure is to be derived.”</p>
-          </div>
-          {LEAVES.map(([front, back], i) => (
-            <div key={i} className="hs-bb-leaf" style={{ '--i': i } as CSSProperties}>
-              <div className="hs-bb-face is-front"><p>{front}</p></div>
-              <div className="hs-bb-face is-back"><p>{back}</p></div>
-            </div>
-          ))}
+        {/* beat 1: it remembers your page and your theme */}
+        <div className="hs-bb-resume">
+          <figure className="hs-bb-col">
+            <Phone cls="is-book">
+              <img src="/images/beadreader/contents-light.webp" alt="" loading="lazy" />
+              <img className="hs-bb-dark" src="/images/beadreader/contents-dark.webp" alt="" loading="lazy" />
+            </Phone>
+            <figcaption><span className="hs-bb-theme"><b className="is-l">Light theme</b><b className="is-d">Dark theme</b></span>Your place, kept</figcaption>
+          </figure>
+          <span className="hs-bb-arrow"><i /></span>
+          <figure className="hs-bb-col is-reader">
+            <Phone cls="is-reader">
+              <img src="/images/beadreader/reader-paper.webp" alt="" loading="lazy" />
+            </Phone>
+            <figcaption><span className="hs-bb-theme"><b>Paper theme</b></span>Back on chapter 12</figcaption>
+          </figure>
         </div>
-        <div className="hs-bb-online">
-          <p className="hs-bb-online-h">Online now</p>
-          <ul>
-            <li className="is-here"><span className="hs-bb-av">M<em>12</em></span><span><b>Mara</b><small>Reading here, chapter 12</small></span></li>
-            <li><span className="hs-bb-av">J</span><span><b>Jae</b><small>The Hobbit, chapter 3</small></span></li>
-            <li className="hs-bb-sam"><span className="hs-bb-av">S<em>1</em></span><span><b>Sam</b><small className="is-a">Browsing the library</small><small className="is-b">This book, chapter 1</small></span></li>
-          </ul>
-          <p className="hs-bb-note">loved that twist!</p>
-        </div>
-        <div className="hs-bb-gate">
-          <ul className="hs-bb-modes">
-            <li className="is-full">Full access</li>
-            <li className="is-none">No access</li>
-            <li className="is-cal">Cal mode</li>
-          </ul>
-          <div className="hs-bb-passage">
-            <p>{GATE.lead}</p>
-            <p className="hs-bb-spicy"><span>{GATE.spicy}</span><i>Locked</i></p>
-            <p className="hs-bb-trail">{GATE.trail}</p>
+        {/* beat 2: reading together */}
+        <div className="hs-bb-together">
+          <figure className="hs-bb-col is-mara">
+            <Phone cls="is-mara">
+              <img src="/images/beadreader/reader-paper.webp" alt="" loading="lazy" />
+              <p className="hs-bb-toast is-wave"><span>👋</span>Braven waved at you</p>
+              <p className="hs-bb-toast is-note"><b>Braven</b>loved that twist!</p>
+            </Phone>
+            <figcaption>Mara’s screen</figcaption>
+          </figure>
+          <div className="hs-bb-online">
+            <p className="hs-bb-online-h">Online now</p>
+            <ul>
+              <li className="is-mara">
+                <span className="hs-bb-av">M<em>12</em></span>
+                <span className="hs-bb-who"><b>Mara</b><small>Reading here · ch 12</small></span>
+                <span className="hs-bb-acts"><i className="is-wave">👋</i><i className="is-note">💬</i></span>
+              </li>
+              <li className="hs-bb-notebox"><span>loved that twist!</span><i>➤</i></li>
+              <li>
+                <span className="hs-bb-av">J</span>
+                <span className="hs-bb-who"><b>Jae</b><small>The Hobbit · ch 3</small></span>
+                <span className="hs-bb-acts"><i>👋</i><i>💬</i></span>
+              </li>
+              <li className="is-sam">
+                <span className="hs-bb-av">S<em>1</em></span>
+                <span className="hs-bb-who"><b>Sam</b><small className="is-a">Browsing</small><small className="is-b">Reading here · ch 1</small></span>
+                <span className="hs-bb-acts"><i>👋</i><i>💬</i></span>
+              </li>
+            </ul>
           </div>
         </div>
       </div>

@@ -45,13 +45,15 @@ const extraIcon = { play: <IcPlay />, github: <IcGitHub />, report: <IcOut /> };
 export const Crown = () => <svg className="hs-tier-ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2.4 18.2h19.2l-1.5-9.4-5.4 3.9L12 4.8 9.3 12.7 3.9 8.8z" /></svg>;
 export const Star = () => <svg className="hs-tier-ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6.05 6.6.78-4.87 4.5 1.28 6.52L12 17.9 6.09 20.85l1.28-6.52L2.5 9.33l6.6-.78z" /></svg>;
 
-/** A flagship project as a full-screen card: a frame around the screen, the
-    badge, the AI-use mark, the poster, the facts and the actions. `side`
-    picks which side the poster stands on; `slot` lets the OCR card leave its
-    poster area to the live 3D reader. */
-export function FlagCard({ p, onPeek, side = 'right', variant, slot }: { p: Flagship; onPeek: (id: string) => void; side?: 'left' | 'right'; variant: 'ocr' | 'june' | 'bead'; slot?: ReactNode }) {
+/** A flagship project as a full-screen card: a frame round the screen, the
+    picture in a band across the top (the project's own art on black, so it
+    meets the card with no edge), then the copy across the card's full inner
+    width: the badge with the AI-use mark at the right edge, the title beside
+    the lead, the facts, and the tools beside the actions. `slot` lets the
+    OCR card leave its picture band to the live 3D reader. */
+export function FlagCard({ p, onPeek, variant, slot }: { p: Flagship; onPeek: (id: string) => void; variant: 'ocr' | 'june' | 'bead'; slot?: ReactNode }) {
   return (
-    <article className={`hs-fc is-${variant} is-${side}`} aria-label={`${p.name}, ${p.badge}`}>
+    <article className={`hs-fc is-${variant}`} aria-label={`${p.name}, ${p.badge}`}>
       <div className="hs-fc-frame" aria-hidden="true" />
       <div className="hs-fc-media">
         {slot ?? <img src={p.poster} alt={p.posterAlt} loading="lazy" />}
@@ -61,21 +63,25 @@ export function FlagCard({ p, onPeek, side = 'right', variant, slot }: { p: Flag
           <span className={`hs-fc-badge${p.gold ? ' is-gold' : ''}`}>{p.gold ? <Crown /> : <Star />}{p.badge}</span>
           <AiMark project={p.id} className="hs-fc-ai" />
         </div>
-        <h3 className="hs-fc-title">{p.name}</h3>
-        <p className="hs-fc-kind">{p.kind}</p>
+        <div className="hs-fc-head">
+          <h3 className="hs-fc-title">{p.name}</h3>
+          <p className="hs-fc-kind">{p.kind}</p>
+        </div>
         <p className="hs-fc-lead">{p.lead}</p>
         <dl className="hs-fc-stats">
           {p.stats.map((s) => <div key={s.l}><dt>{s.v}</dt><dd>{s.l}</dd></div>)}
         </dl>
-        <div className="hs-fc-tools" aria-label="Tools">
-          {p.tools.map((t) => <img key={t.src} src={t.src} alt={t.alt} title={t.alt} loading="lazy" />)}
+        <div className="hs-fc-foot">
+          <div className="hs-fc-tools" aria-label="Tools">
+            {p.tools.map((t) => <img key={t.src} src={t.src} alt={t.alt} title={t.alt} loading="lazy" />)}
+            {slot && <img className="hs-fc-poster" src={p.poster} alt={p.posterAlt} loading="lazy" />}
+          </div>
+          <div className="hs-btns">
+            <a className="hs-btn is-primary" href={p.read}><IcRead /> Read the article</a>
+            <button type="button" className="hs-btn" onClick={() => onPeek(p.id)}><IcPeek /> Peek summary</button>
+            <a className="hs-btn" href={p.extra.url} target="_blank" rel="noopener">{extraIcon[p.extra.kind]} {p.extra.label}</a>
+          </div>
         </div>
-        <div className="hs-btns">
-          <a className="hs-btn is-primary" href={p.read}><IcRead /> Read the article</a>
-          <button type="button" className="hs-btn" onClick={() => onPeek(p.id)}><IcPeek /> Peek summary</button>
-          <a className="hs-btn" href={p.extra.url} target="_blank" rel="noopener">{extraIcon[p.extra.kind]} {p.extra.label}</a>
-        </div>
-        {slot && <img className="hs-fc-poster" src={p.poster} alt={p.posterAlt} loading="lazy" />}
       </div>
     </article>
   );
