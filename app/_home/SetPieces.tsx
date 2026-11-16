@@ -79,7 +79,7 @@ export function JuneHud() {
             {TELE.map((t, i) => (
               <div key={t.label} style={{ '--i': i } as CSSProperties}>
                 <dt>{t.label}</dt>
-                <dd><b data-to={t.to} data-dp={t.dp}>{(0).toFixed(t.dp)}</b>{t.unit && <span>{t.unit}</span>}</dd>
+                <dd><b data-to={t.to} data-dp={t.dp}>{t.to.toFixed(t.dp)}</b>{t.unit && <span>{t.unit}</span>}</dd>
               </div>
             ))}
             <div className="hs-jh-place" style={{ '--i': TELE.length } as CSSProperties}><dt>Place</dt><dd><b>Sembawang Park</b></dd></div>

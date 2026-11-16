@@ -816,8 +816,7 @@ html.hs-home .footer { position: relative; z-index: 3; }
   /* June and BeadReader: the opener, the set piece with every beat's
      caption listed beside its built visual, then the card, all still */
   .hs-fl { height: auto; --t: 0; --f: 1; --g: 1; --l: 0; --c1: 1; --c2: 1; --c3: 1; }
-  .hs-fl.is-bead { --g: 0.5; }
-  .hs-sp { overflow: clip; }
+    .hs-sp { overflow: clip; }
   .hs-bb-online { transform: none; }
   .hs-fl { --m: 1; --lo: 1; --li: 0; --fp: 1; }
   .hs-fl-stage { position: relative; height: auto; overflow: visible; }
