@@ -426,7 +426,8 @@ export default function HomeStory() {
             set('--c3', show(p, 0.62, 0.82));
             set('--k', ease(ramp(p, 0.8, 0.92)));              // the card
             fl.querySelector('.hs-fl-card')!.classList.toggle('is-live', p > 0.88);
-            const g = ease(ramp(p, 0.38, 0.52));
+            // the readings finish counting early in their beat, so what rests on screen is the real value
+            const g = ease(ramp(p, 0.38, 0.45));
             for (const c of counters) { const dp = +(c.dataset.dp ?? 0); c.textContent = (+c.dataset.to! * g).toFixed(dp); }
             setPlay(active && p > 0.1 && p < 0.84 && !document.hidden);
           };
