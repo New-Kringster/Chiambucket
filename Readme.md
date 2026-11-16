@@ -10,7 +10,7 @@ Personal portfolio and website for Braven Chiam. Dark-themed ("Dark Sensory / Si
 
 - **Next.js 15 (App Router) + React 19 + TypeScript** — `app/` directory, server components by default
 - **framer-motion** — available for React animations (CSS handles most transitions)
-- **GSAP ScrollTrigger + Lenis** — the homepage scroll story only (scrubbed progress and smooth wheel scrolling); **three.js** draws its 3D OCR Reader
+- **GSAP ScrollTrigger** — the homepage scroll story (scroll-linked animations that ease toward native scrolling); **three.js** draws its 3D OCR Reader
 - **Background** — one static CSS layer (`components/Backdrop.tsx`, styles at the end of `mainstyle.css`); no canvas or animation, so idle and scrolling pages do no background work
 - **Vercel Analytics + Speed Insights** — loaded in `app/layout.tsx`
 - **Lychee** — self-hosted photo galleries embedded via a remote script (loaded after paint, non-blocking)

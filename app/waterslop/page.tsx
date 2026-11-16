@@ -11,7 +11,6 @@ import PairCompare from './Compare';
 import { LoopRing, AgentBadges } from './Agents';
 import PageFx from './PageFx';
 import Entrance from './Entrance';
-import 'lenis/dist/lenis.css';
 import SkipToEnd from './SkipToEnd';
 import PdfEmbed from '../../components/PdfEmbed';
 import { IcRead, IcOut } from '../../components/Icons';

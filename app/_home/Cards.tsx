@@ -40,6 +40,11 @@ export function usePeek() {
 
 const extraIcon = { play: <IcPlay />, github: <IcGitHub />, report: <IcOut /> };
 
+/* The tier marks the old homepage used (.hp-pf-crown, .hp-pf-star): a crown
+   for the flagship, a star for highlighted builds. */
+export const Crown = () => <svg className="hs-tier-ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2.4 18.2h19.2l-1.5-9.4-5.4 3.9L12 4.8 9.3 12.7 3.9 8.8z" /></svg>;
+export const Star = () => <svg className="hs-tier-ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6.05 6.6.78-4.87 4.5 1.28 6.52L12 17.9 6.09 20.85l1.28-6.52L2.5 9.33l6.6-.78z" /></svg>;
+
 /** A flagship project as a full-screen card: a frame around the screen, the
     badge, the AI-use mark, the poster, the facts and the actions. `side`
     picks which side the poster stands on; `slot` lets the OCR card leave its
@@ -53,7 +58,7 @@ export function FlagCard({ p, onPeek, side = 'right', variant, slot }: { p: Flag
       </div>
       <div className="hs-fc-body">
         <div className="hs-fc-top">
-          <span className={`hs-fc-badge${p.gold ? ' is-gold' : ''}`}>{p.badge}</span>
+          <span className={`hs-fc-badge${p.gold ? ' is-gold' : ''}`}>{p.gold ? <Crown /> : <Star />}{p.badge}</span>
           <AiMark project={p.id} className="hs-fc-ai" />
         </div>
         <h3 className="hs-fc-title">{p.name}</h3>
@@ -96,6 +101,7 @@ export function ProjectGallery({ onPeek }: { onPeek: (id: string) => void }) {
               <img src={p.img} alt="" loading="lazy" />
               <AiMark project={p.id} />
               <span className="hs-pc-type">{p.type === 'personal' ? 'Personal' : 'School'}</span>
+              {p.highlight && <span className="hs-pc-hl"><Star />Highlight</span>}
             </div>
             <div className="hs-pc-info">
               <h3>{p.title}</h3>

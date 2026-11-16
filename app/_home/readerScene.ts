@@ -101,8 +101,13 @@ function bake(mesh: THREE.Mesh) {
   return g;
 }
 
+/** A region of the canvas, in fractions of its width and height (0 at the top left). */
+export type Box = { x: number; y: number; w: number; h: number };
+
 export type ReaderScene = {
   setProgress: (p: number) => void;
+  /** Where the model should sit: during the beats, and once settled in the card. */
+  setFrames: (f: { beat: Box; card: Box }) => void;
   jump: (p: number) => void;
   resize: () => void;
   dispose: () => void;
@@ -242,16 +247,28 @@ export async function createReaderScene(host: HTMLElement, opts: { compact: bool
   //         so the case halves meet it from the left and right
   // .46–.66 the case closes; .60–.84 the closed reader turns to its lens
   // .80–.98 it settles into the project card
+  // The model is framed inside measured boxes (the space the copy leaves
+  // free, then the card's picture slot), so it never sits under the nav or
+  // behind text at any screen size. setViewOffset moves the picture without
+  // moving the camera, so the model keeps the same perspective wherever it sits.
+  let frames: { beat: Box; card: Box } = { beat: { x: 0.45, y: 0.1, w: 0.52, h: 0.82 }, card: { x: 0.52, y: 0.15, w: 0.42, h: 0.7 } };
+  const R = 34; // mm: about the radius of the closed reader's bounding sphere
+  const TAN = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+  const fitDist = (b: Box) => (2 * R) / (0.88 * Math.min(b.h, b.w * (w / h)) * 2 * TAN);
   const pose = () => {
-    const enter = seg(p, 0, 0.24);
+    // On phones the title sits where the board would rise through, so the
+    // board waits until the title has faded.
+    const enter = opts.compact ? seg(p, 0.13, 0.3) : seg(p, 0.1, 0.27);
     const drift = seg(p, 0.14, 0.44);
-    const lean = seg(p, 0.16, 0.32) * (1 - seg(p, 0.3, 0.46));
+    const lean = seg(p, 0.18, 0.32) * (1 - seg(p, 0.3, 0.46));
     const side = seg(p, 0.34, 0.52);
     const close = seg(p, 0.46, 0.66);
     const turn = seg(p, 0.6, 0.84);
     const settle = seg(p, 0.8, 0.98);
 
-    rig.position.y = lerp(-70, 0, enter);
+    rig.position.y = lerp(opts.compact ? -55 : -70, 0, enter);
+    // nothing shows until its entrance starts, so it never sits behind the title
+    rig.visible = enter > 0.001;
     rig.rotation.z = lerp(0.5, 0.08, enter) + side * (Math.PI / 2 - 0.08) - settle * 0.12;
     rig.rotation.x = lerp(-1.2, -0.42, enter) - lean * 0.06 + side * 0.22 - turn * 0.1 - settle * 0.08;
     rig.rotation.y = lerp(0.9, -0.08, enter) - drift * 0.16 + side * -0.89 + turn * -1.5 - settle * 0.25;
@@ -262,14 +279,16 @@ export async function createReaderScene(host: HTMLElement, opts: { compact: bool
     for (const m of shellMats) { m.opacity = shellVis; m.depthWrite = shellVis > 0.98; }
     bottom.visible = top.visible = shellVis > 0.001;
 
-    // Camera: distance and framing. On wide screens the reader sits right of the
-    // copy (further right once it is in the card); on tall ones above it.
-    const wide = w / h > 1.1;
-    const dist = lerp(270, 190, lean) * (opts.compact ? 1.3 : 1) * lerp(1, 1.1, side) * lerp(1, 1.05, settle);
-    const sideX = wide ? -dist * lerp(0.13, 0.17, settle) : 0;
-    const sideY = wide ? -dist * 0.02 * settle : -dist * lerp(lerp(0.05, 0.12, seg(p, 0.06, 0.22)), 0.2, settle);
-    camera.position.set(sideX, sideY + lean * -8, dist);
-    camera.lookAt(sideX, sideY, 0);
+    // While the case is open its halves sit far to either side, so the
+    // frame widens a little then.
+    const spread = side * (1 - close);
+    const b = frames.beat, c = frames.card;
+    const cx = lerp(b.x + b.w / 2, c.x + c.w / 2, settle);
+    const cy = lerp(b.y + b.h / 2, c.y + c.h / 2, settle);
+    const dist = lerp(fitDist(b), fitDist(c), settle) * lerp(1, 0.86, lean) * (1 + (opts.compact ? 0.85 : 0.75) * spread);
+    camera.position.set(0, 0, dist);
+    camera.lookAt(0, 0, 0);
+    camera.setViewOffset(w, h, w / 2 - cx * w, h / 2 - cy * h, w, h);
   };
   const render = (now: number) => {
     raf = 0;
@@ -303,6 +322,7 @@ export async function createReaderScene(host: HTMLElement, opts: { compact: bool
     setProgress: (v) => { if (Math.abs(v - target) > 1e-5) { target = v; request(); } },
     /** Jump without easing (reduced motion, first frame). */
     jump: (v: number) => { target = p = v; vel = 0; request(); },
+    setFrames: (f) => { frames = f; request(); },
     resize,
     dispose: () => {
       disposed = true;

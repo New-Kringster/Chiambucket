@@ -51,10 +51,6 @@
    for the old layout, so undo it here. */
 #portfolio-items-holder.hs-work { display: block; max-width: none; width: auto; margin: 0; gap: 0; transition: none; scroll-margin-top: 0; }
 
-/* Lenis */
-html.lenis, html.lenis body { height: auto; }
-.lenis-smooth { scroll-behavior: auto !important; }
-.lenis-stopped { overflow: hidden; }
 
 .hs-wrap {
   width: 100%;
@@ -66,30 +62,31 @@ html.lenis, html.lenis body { height: auto; }
 /* ── Shared type ──
    Big titles: line-height under 1 keeps them tight, so each gets bottom
    padding for its descenders (g, y, j) and nothing clips them. */
-.hs-tag { font-size: 0.9rem; font-weight: 600; color: var(--hs-gold); margin-bottom: 0.9rem; }
+.hs-tag { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.9rem; font-weight: 600; color: var(--hs-gold); margin-bottom: 0.9rem; }
+/* the tier marks: a crown for the flagship, a star for the highlighted builds */
+.hs-tier-ic { width: 1.05em; height: 1.05em; flex: none; }
+/* The line under every section title: a short gold trace that ends in a
+   pad leads into a plain sentence, the same motif as the chip-to-cloud
+   timeline. Sentence case, medium weight, a muted tone of the ink. */
 .hs-sub {
-  font-family: var(--hs-serif), Georgia, serif;
-  font-style: italic;
-  font-weight: 400;
-  font-size: clamp(1.3rem, 2.5vw, 2.2rem);
-  line-height: 1.25;
-  letter-spacing: -0.01em;
-  max-width: 32ch;
+  position: relative;
+  font-weight: 500;
+  font-size: clamp(1.1rem, 1.75vw, 1.6rem);
+  line-height: 1.38;
+  letter-spacing: -0.012em;
+  max-width: 34ch;
+  padding-left: 3.4rem;
+  color: rgba(241, 239, 232, 0.8);
   text-wrap: balance;
 }
-.hs-drop {
-  font-family: var(--hs-serif), Georgia, serif;
-  float: left;
-  font-size: 2.35em;
-  line-height: 0.78;
-  margin: 0.06em 0.08em -0.1em -0.04em;
-  color: var(--hs-gold);
-  font-weight: 500;
-  /* a thin gold trace under the initial, like a pad with a track leaving it */
-  background: linear-gradient(var(--hs-gold), var(--hs-gold)) left 100% / 0.62em 1px no-repeat;
-  padding-bottom: 0.12em;
-}
-.hs-paper .hs-drop { color: var(--hs-gold-deep); background-image: linear-gradient(var(--hs-gold-deep), var(--hs-gold-deep)); }
+.hs-sub-trace { position: absolute; left: 0; top: 0.69em; width: 2.6rem; height: 1.5px; background: var(--hs-gold); }
+.hs-sub-trace::before, .hs-sub-trace::after { content: ''; position: absolute; top: 50%; border-radius: 50%; transform: translateY(-50%); }
+/* a via at the start, a filled pad where the trace meets the words */
+.hs-sub-trace::before { left: -2px; width: 7px; height: 7px; border: 1.5px solid var(--hs-gold); background: #000; }
+.hs-sub-trace::after { right: -3px; width: 7px; height: 7px; background: var(--hs-gold); }
+.hs-paper .hs-sub { color: var(--hs-pine-2); }
+.hs-paper .hs-sub-trace, .hs-paper .hs-sub-trace::after { background: var(--hs-gold-deep); }
+.hs-paper .hs-sub-trace::before { border-color: var(--hs-gold-deep); background: var(--hs-paper); }
 .hs-lead { font-size: clamp(1.05rem, 1.5vw, 1.3rem); line-height: 1.6; max-width: 34em; color: var(--hs-silk); }
 .hs-chars { display: inline-block; }
 .hs-c { display: inline-block; white-space: pre; }
@@ -177,7 +174,7 @@ html.hs-home .footer { position: relative; z-index: 3; }
 .hs-under { background: var(--hs-paper); color: var(--hs-pine); display: grid; place-items: center; padding: 0 var(--hs-gutter); }
 .hs-under-inner { max-width: 1000px; transform-origin: 50% 60%; }
 .hs-under-kicker { font-weight: 800; font-size: clamp(4rem, 13vw, 12rem); letter-spacing: -0.055em; line-height: 0.9; padding-bottom: 0.1em; }
-.hs-under-line { margin-top: 1rem; font-family: var(--hs-serif), Georgia, serif; font-style: italic; font-size: clamp(1.3rem, 2.8vw, 2.4rem); line-height: 1.25; max-width: 26ch; }
+.hs .hs-under-line { margin-top: 1.4rem; font-size: clamp(1.15rem, 2.2vw, 2rem); max-width: 30ch; }
 .hs-art img, .hs-art canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hs-art canvas { opacity: 0; pointer-events: none; }
 .hs-hero.is-dissolving .hs-art canvas { opacity: 1; }
@@ -270,21 +267,23 @@ html.hs-home .footer { position: relative; z-index: 3; }
 .hs-said { font-weight: 600; font-size: clamp(1.7rem, 3.9vw, 3.6rem); line-height: 1.16; letter-spacing: -0.03em; max-width: 22em; }
 .hs-layers { margin-top: clamp(5rem, 14vh, 9rem); }
 .hs-layers-h { font-size: clamp(1.4rem, 2.4vw, 2rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 2.4rem; }
-.hs-layers-row { position: relative; display: grid; grid-template-columns: repeat(5, 1fr); gap: clamp(1rem, 2vw, 2rem); padding-right: 22px; }
-.hs-layers-trace { position: absolute; left: 7px; right: 8px; top: 7px; height: 2px; background: var(--hs-gold-deep); transform-origin: 0 50%; }
+.hs-layers-row { position: relative; display: grid; grid-template-columns: repeat(5, 1fr) 7rem; gap: clamp(1rem, 2vw, 2rem); }
+/* the trace runs from the first pad to the last, the "Complete" stop */
+.hs-layers-trace { position: absolute; left: 7px; right: calc(7rem - 9px); top: 7px; height: 2px; background: var(--hs-gold-deep); transform-origin: 0 50%; }
+.hs-layers-trace-v { display: none; }
 .hs-layer { position: relative; padding-top: 2.2rem; }
 .hs-layer-pad { position: absolute; left: 0; top: 0; width: 16px; height: 16px; border-radius: 50%; background: var(--hs-paper); border: 2px solid var(--hs-gold-deep); }
-/* the trace ends in a solid node, like a via at the end of a track */
-.hs-layer-end { position: absolute; right: 0; top: -1px; width: 18px; height: 18px; border-radius: 50%; background: var(--hs-gold-deep); box-shadow: 0 0 0 4px var(--hs-paper), 0 0 0 5px rgba(156, 122, 53, 0.45); }
-.hs-layer-end i { position: absolute; inset: 5px; border-radius: 50%; background: var(--hs-paper); }
 .hs-layer h3 { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 0.5rem; }
 .hs-layer p { font-size: 0.98rem; line-height: 1.55; color: var(--hs-pine-2); }
+/* the end of the trace: a filled pad with a ring, labelled like the other stops */
+.hs-layer.is-end .hs-layer-pad { background: var(--hs-gold-deep); box-shadow: 0 0 0 4px var(--hs-paper), 0 0 0 5px rgba(156, 122, 53, 0.5); }
+.hs-layer.is-end h3 { color: var(--hs-gold-deep); }
 @media (max-width: 860px) {
-  .hs-layers-row { grid-template-columns: 1fr; gap: 1.8rem; padding-left: 2.2rem; padding-right: 0; padding-bottom: 2.4rem; }
-  .hs-layers-trace { left: 7px; right: auto; top: 0; bottom: 18px; width: 2px; height: auto; transform-origin: 50% 0; }
+  .hs-layers-row { grid-template-columns: 1fr; gap: 1.8rem; padding-left: 2.2rem; }
+  .hs-layers-trace { display: none; }
+  .hs-layers-trace-v { display: block; position: absolute; left: 7px; top: 0.4rem; bottom: 1.2rem; width: 2px; background: var(--hs-gold-deep); transform-origin: 50% 0; }
   .hs-layer { padding-top: 0; }
   .hs-layer-pad { left: -2.2rem; top: 0.2rem; }
-  .hs-layer-end { right: auto; left: -1px; top: auto; bottom: 0; }
 }
 
 /* ───────────── Pinned scenes that become cards ─────────────
@@ -362,23 +361,189 @@ html.hs-home .footer { position: relative; z-index: 3; }
   .hs-reader-meters img { object-position: 60% 40%; -webkit-mask-image: linear-gradient(0deg, transparent 0%, #000 40%); mask-image: linear-gradient(0deg, transparent 0%, #000 40%); }
 }
 
-/* ───────────── Project June and BeadReader ───────────── */
-.hs-fl { position: relative; height: 320svh; background: #000; }
+/* ───────────── Project June and BeadReader ─────────────
+   One pinned stage each: the photo and title, three beats of a set piece
+   (SetPieces.tsx), then the step back into the card. HomeStory sets the
+   eased values: --t title out, --f / --g / --l the three beats building,
+   --c1..--c3 their captions, --k the card. */
+.hs-fl { position: relative; height: 620svh; background: #000; --t: 0; --f: 0; --fp: 0; --g: 0; --l: 0; --m: 0; --c1: 0; --c2: 0; --c3: 0;
+  /* what leaves is gone before what arrives is half in */
+  --lo: clamp(0, calc(1 - var(--l) * 2.5), 1); --li: clamp(0, calc(var(--l) * 2 - 0.6), 1); }
 .hs-fl-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; }
 .hs-fl-scene { background: #050504; }
-.hs-fl-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: calc(1 - 0.95 * var(--k)); will-change: transform; }
+.hs-fl-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: calc(1 - max(0.8 * var(--f), 0.95 * var(--k))); will-change: transform; }
 .hs-fl.is-bead .hs-fl-photo { object-fit: contain; object-position: 50% 34%; padding: 9vh 6vw 26vh; }
 /* a soft vignette for the title's sake: no band, the picture runs to the edges */
 .hs-fl-scene::after { content: ''; position: absolute; inset: 0; background: radial-gradient(120% 90% at 50% 30%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.5) 100%); pointer-events: none; }
 .hs-fl-head {
   position: absolute; left: 0; right: 0; bottom: 0;
   padding: 0 var(--hs-edge) clamp(3rem, 11vh, 8rem);
-  opacity: calc(1 - 2.5 * var(--k));
-  transform: translate3d(0, calc(var(--k) * -6vh), 0) scale(calc(1 - 0.06 * var(--k)));
-  transform-origin: 30% 100%;
+  opacity: calc(1 - var(--t));
+  transform: translate3d(0, calc(var(--t) * -6vh), 0);
   pointer-events: none;
 }
 .hs-fl-title { font-size: clamp(4rem, 13vw, 15rem); margin: 0 0 0.6rem -0.04em; }
+
+/* ── The set piece's frame: captions at the left (phones: at the foot),
+   the visual in the rest of the screen, clear of the nav ── */
+.hs-sp { position: absolute; inset: 0; pointer-events: none; opacity: calc(1 - 1.6 * var(--k)); }
+.hs-sp-caps { position: absolute; inset: 0; }
+.hs-sp-cap {
+  position: absolute; left: var(--hs-edge); top: 50%;
+  width: min(29rem, 32vw);
+  opacity: var(--v);
+  transform: translate3d(0, calc((1 - var(--v)) * 1.6rem - 50%), 0);
+}
+.hs-sp-cap h3 { font-size: clamp(1.9rem, 3.2vw, 3rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1.04; margin-bottom: 1rem; padding-bottom: 0.08em; text-wrap: balance; }
+.hs-sp-cap p { font-size: clamp(1rem, 1.3vw, 1.18rem); color: var(--hs-mute); line-height: 1.55; }
+.hs-sp > [class$="-visual"] {
+  position: absolute;
+  left: calc(var(--hs-edge) + min(29rem, 32vw) + 4vw); right: var(--hs-edge);
+  top: calc(var(--hs-navb, 64px) + 3vh); bottom: 5vh;
+  display: grid; align-content: center; gap: 3vh;
+}
+@media (max-width: 760px) {
+  .hs-sp-cap { left: var(--hs-gutter); right: var(--hs-gutter); width: auto; top: auto; bottom: clamp(1.4rem, 5vh, 2.6rem); transform: translate3d(0, calc((1 - var(--v)) * 1.4rem), 0); }
+  .hs-sp-cap h3 { font-size: 1.6rem; margin-bottom: 0.6rem; }
+  .hs-sp-cap p { font-size: 0.95rem; }
+  .hs-sp > [class$="-visual"] { left: var(--hs-gutter); right: var(--hs-gutter); top: calc(var(--hs-navb, 64px) + 12px); bottom: 38svh; gap: 14px; }
+}
+
+/* ── Project June: mission control ── */
+.hs-jh-feeds { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(6px, 1vw, 16px); max-width: 84svh; width: 100%; justify-self: center; }
+.hs-jh-feed {
+  --s: clamp(0, calc((var(--f) - var(--i) * 0.16) / 0.68), 1);
+  position: relative; margin: 0; aspect-ratio: 3 / 4;
+  border-radius: clamp(10px, 1.2vw, 16px); overflow: hidden; background: #0a0a0a;
+  box-shadow: inset 0 0 0 1px rgba(241, 239, 232, 0.14), 0 24px 50px -24px rgba(0, 0, 0, 0.9);
+  opacity: var(--s);
+  transform: translate3d(0, calc((1 - var(--s)) * 2.4rem), 0) scale(calc(0.9 + 0.1 * var(--s)));
+}
+.hs-jh-feed video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hs-jh-feed figcaption { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; align-items: baseline; gap: 0.4rem; padding: 1.6rem 0.7rem 0.55rem; font-size: clamp(0.68rem, 0.9vw, 0.85rem); background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.75)); }
+.hs-jh-feed figcaption b { font-weight: 700; }
+.hs-jh-feed figcaption span { color: var(--hs-mute); }
+.hs-jh-live { position: absolute; top: 0.55rem; left: 0.6rem; display: inline-flex; align-items: center; gap: 0.35rem; font-style: normal; font-size: 0.68rem; font-weight: 600; color: #fff; padding: 0.12rem 0.45rem; border-radius: 999px; background: rgba(0, 0, 0, 0.5); }
+.hs-jh-live::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: rgb(255, 106, 61); }
+.hs-jh-strip { display: grid; max-width: 84svh; width: 100%; justify-self: center; }
+.hs-jh-strip > * { grid-area: 1 / 1; }
+.hs-jh-tele { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem 1rem; opacity: calc(var(--g) * var(--lo)); }
+.hs-jh-tele > div { --s: clamp(0, calc((var(--g) - var(--i) * 0.07) / 0.6), 1); border-top: 1px solid rgba(241, 239, 232, 0.18); padding-top: 0.45rem; opacity: var(--s); transform: translate3d(0, calc((1 - var(--s)) * 0.8rem), 0); }
+.hs-jh-tele dt { font-size: 0.72rem; color: var(--hs-mute); }
+.hs-jh-tele dd { font-size: clamp(0.95rem, 1.35vw, 1.3rem); font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; white-space: nowrap; }
+.hs-jh-tele dd span { font-size: 0.75em; font-weight: 500; color: var(--hs-mute); margin-left: 0.2em; }
+.hs-jh-place { grid-column: span 2; }
+.hs-jh-link { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; opacity: var(--li); align-self: center; }
+.hs-jh-wire { position: absolute; left: 0; right: 0; top: 4px; width: 100%; height: 10px; overflow: visible; }
+.hs-jh-wire path { fill: none; stroke: var(--hs-gold); stroke-width: 1.5; vector-effect: non-scaling-stroke; stroke-dasharray: 1; stroke-dashoffset: calc(1 - min(1, var(--m) * 1.4)); }
+.hs-jh-link li { --s: clamp(0, calc(var(--m) * 5.6 - var(--i) * 1.3), 1); position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.15rem; padding-top: 1.4rem; opacity: calc(0.25 + 0.75 * var(--s)); }
+.hs-jh-node { position: absolute; top: 2px; left: 50%; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; background: #000; border: 2px solid var(--hs-gold); box-shadow: 0 0 calc(var(--s) * 14px) rgba(217, 181, 107, 0.7); background: color-mix(in srgb, var(--hs-gold) calc(var(--s) * 100%), #000); }
+.hs-jh-link b { font-size: clamp(0.8rem, 1.1vw, 1rem); font-weight: 700; }
+.hs-jh-link span { font-size: clamp(0.66rem, 0.85vw, 0.8rem); color: var(--hs-mute); line-height: 1.3; }
+@media (max-width: 760px) {
+  .hs-jh-tele { grid-template-columns: repeat(3, 1fr); gap: 0.5rem 0.7rem; }
+  .hs-jh-place { grid-column: span 3; }
+}
+
+/* ── BeadReader: a book read together ── */
+.hs-bb-visual { --pg: #f6f1e6; --ink: #2b2118; }
+.hs-bb-visual > * { grid-area: 1 / 1; }
+.hs-bb-book {
+  --s: clamp(0, var(--f) * 3, 1);
+  position: relative; justify-self: center; align-self: center;
+  width: min(100%, 64svh * 1.5); aspect-ratio: 1.5;
+  perspective: 1800px;
+  opacity: calc(var(--s) * var(--lo));
+  transform: translate3d(0, calc((1 - var(--s)) * 2rem), 0) rotateX(calc((1 - var(--s)) * 14deg));
+  filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.6));
+}
+.hs-bb-page, .hs-bb-face {
+  position: absolute; top: 0; bottom: 0; width: 50%;
+  padding: 7% 6%;
+  background: var(--pg); color: var(--ink);
+  font-family: Georgia, 'Times New Roman', serif; font-size: clamp(8px, 1.15vw, 15px); line-height: 1.6;
+  overflow: hidden;
+}
+.hs-bb-page.is-left { left: 0; border-radius: 8px 2px 2px 8px; box-shadow: inset -18px 0 24px -18px rgba(60, 40, 20, 0.35); }
+.hs-bb-page.is-right, .hs-bb-leaf { left: 50%; }
+.hs-bb-page.is-right { border-radius: 2px 8px 8px 2px; box-shadow: inset 18px 0 24px -18px rgba(60, 40, 20, 0.35); }
+.hs-bb-page p + p { margin-top: 0.9em; }
+.hs-bb-page h4 { font-size: 1.6em; line-height: 1.15; margin: 0.4em 0 0.7em; font-weight: 700; }
+.hs-bb-crumb { font-family: var(--hs-sans), sans-serif; font-size: 0.78em; color: #8a6a44; }
+.hs-bb-progress { position: absolute; left: 6%; right: 6%; bottom: 6%; font-family: var(--hs-sans), sans-serif; font-size: 0.78em; color: #8a6a44; }
+.hs-bb-progress span { display: block; height: 3px; border-radius: 3px; background: rgba(138, 106, 68, 0.22); margin-bottom: 0.4em; overflow: hidden; }
+.hs-bb-progress i { display: block; height: 100%; width: 75%; background: #8a5a2b; transform-origin: 0 50%; transform: scaleX(calc(0.6 + 0.4 * var(--s))); }
+/* the leaves turn about the spine as the beat goes on */
+.hs-bb-leaf {
+  --a: clamp(0, calc((var(--fp) - var(--i) * 0.3) / 0.36), 1);
+  position: absolute; top: 0; bottom: 0; width: 50%;
+  transform-origin: 0 50%; transform-style: preserve-3d;
+  transform: rotateY(calc(var(--a) * -180deg));
+}
+.hs-bb-leaf .hs-bb-face { left: 0; width: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 2px 8px 8px 2px; }
+.hs-bb-leaf .is-back { transform: rotateY(180deg); border-radius: 8px 2px 2px 8px; }
+.hs-bb-face.is-front { box-shadow: inset 18px 0 24px -18px rgba(60, 40, 20, 0.35); }
+/* reading together */
+.hs-bb-online {
+  justify-self: end; align-self: end;
+  width: min(20rem, 78%);
+  padding: 1rem 1.1rem;
+  border-radius: 16px; background: #fbf8f2; color: var(--ink);
+  box-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.8);
+  opacity: calc(var(--g) * var(--lo));
+  transform: translate3d(calc((1 - var(--g)) * 2.4rem), calc((1 - var(--g)) * 1rem), 0);
+  font-size: clamp(0.78rem, 0.95vw, 0.92rem);
+}
+.hs-bb-online-h { font-size: 0.72em; font-weight: 700; color: #8a6a44; margin-bottom: 0.6rem; }
+.hs-bb-online li { display: flex; align-items: center; gap: 0.7rem; padding: 0.45rem 0; border-top: 1px solid rgba(43, 33, 24, 0.08); }
+.hs-bb-online li:first-child { border-top: 0; }
+.hs-bb-online li > span:last-child { display: grid; }
+.hs-bb-online small { font-size: 0.86em; color: #7a6a5a; grid-area: 2 / 1; }
+.hs-bb-av { position: relative; flex: none; width: 2.2em; height: 2.2em; border-radius: 50%; display: grid; place-items: center; font-weight: 700; background: #efe6d8; color: #6b4a2a; }
+.hs-bb-av em { position: absolute; right: -0.35em; bottom: -0.25em; font-style: normal; font-size: 0.62em; font-weight: 700; color: #fff; background: #22a35a; border-radius: 999px; padding: 0 0.35em; opacity: 0; }
+/* green is BeadReader's presence colour: a ring and the chapter badge */
+.hs-bb-online .is-here .hs-bb-av { box-shadow: 0 0 0 2px #fbf8f2, 0 0 0 4px #22a35a; }
+.hs-bb-online .is-here .hs-bb-av em { opacity: 1; }
+.hs-bb-sam { --j: clamp(0, calc((var(--g) - 0.62) * 6), 1); }
+.hs-bb-sam .hs-bb-av { box-shadow: 0 0 0 2px #fbf8f2, 0 0 0 4px rgba(34, 163, 90, var(--j)); }
+.hs-bb-sam .hs-bb-av em { opacity: var(--j); }
+.hs-bb-sam .is-a { opacity: calc(1 - var(--j)); }
+.hs-bb-sam .is-b { opacity: var(--j); }
+.hs-bb-note {
+  --n: min(clamp(0, calc((var(--g) - 0.28) * 6), 1), clamp(0, calc((0.78 - var(--g)) * 6), 1));
+  position: absolute; right: 1rem; top: -0.9rem;
+  padding: 0.35rem 0.7rem; border-radius: 12px 12px 4px 12px;
+  background: #22a35a; color: #fff; font-weight: 600; font-size: 0.85em;
+  opacity: var(--n); transform: translate3d(0, calc((1 - var(--n)) * 0.6rem), 0) scale(calc(0.9 + 0.1 * var(--n)));
+}
+.hs-bb-online { position: relative; }
+/* the spicy gate: one passage, three readers */
+.hs-bb-gate {
+  --m2: clamp(0, calc((var(--m) - 0.36) * 10), 1);
+  --m3: clamp(0, calc((var(--m) - 0.68) * 10), 1);
+  justify-self: center; align-self: center;
+  width: min(100%, 34rem);
+  opacity: var(--li);
+  transform: translate3d(0, calc((1 - var(--li)) * 2rem), 0);
+}
+.hs-bb-modes { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+.hs-bb-modes li { position: relative; font-size: clamp(0.78rem, 0.95vw, 0.9rem); font-weight: 600; padding: 0.35rem 0.85rem; border-radius: 999px; border: 1px solid rgba(241, 239, 232, 0.24); color: var(--hs-mute); overflow: hidden; isolation: isolate; }
+.hs-bb-modes li::before { content: ''; position: absolute; inset: 0; z-index: -1; background: #f1d9b0; opacity: var(--on); }
+.hs-bb-modes li { color: color-mix(in srgb, #2b2118 calc(var(--on) * 100%), rgba(241, 239, 232, 0.7)); }
+.hs-bb-modes .is-full { --on: calc(1 - var(--m2)); }
+.hs-bb-modes .is-none { --on: calc(var(--m2) * (1 - var(--m3))); }
+.hs-bb-modes .is-cal { --on: var(--m3); }
+.hs-bb-passage { padding: clamp(1.2rem, 2.4vw, 2rem); border-radius: 16px; background: var(--pg); color: var(--ink); font-family: Georgia, 'Times New Roman', serif; font-size: clamp(0.95rem, 1.3vw, 1.2rem); line-height: 1.65; box-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.8); }
+.hs-bb-passage p + p { margin-top: 0.8em; }
+.hs-bb-spicy { position: relative; opacity: calc(1 - var(--m3)); }
+.hs-bb-spicy span { display: block; color: #9b2f4a; filter: blur(calc(5px * (1 - var(--m2)) + 0px)); opacity: calc(1 - var(--m2)); }
+.hs-bb-spicy i { position: absolute; left: 0; top: 50%; transform: translateY(-50%); font-style: normal; font-family: var(--hs-sans), sans-serif; font-size: 0.78em; font-weight: 700; padding: 0.25rem 0.7rem; border-radius: 999px; background: rgba(155, 47, 74, 0.12); color: #9b2f4a; opacity: calc(var(--m2) * (1 - var(--m3))); }
+/* Cal mode: the gated line is gone and the rest closes up (a transform, measured in script) */
+.hs-bb-trail { transform: translate3d(0, calc(var(--m3) * var(--sp-h, 1.6em) * -1), 0); }
+@media (max-width: 760px) {
+  .hs-bb-book { width: 100%; }
+  .hs-bb-online { width: 86%; font-size: 0.78rem; }
+}
 
 /* ───────────── The flagship card ───────────── */
 .hs-fc {
@@ -411,7 +576,7 @@ html.hs-home .footer { position: relative; z-index: 3; }
 .hs-fc-body { position: relative; max-width: 38rem; }
 .hs-fc-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.4rem; }
 .hs-fc-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.42rem 0.9rem; border-radius: 999px; font-size: 0.85rem; font-weight: 600; color: var(--hs-silk); background: rgba(241, 239, 232, 0.07); border: 1px solid rgba(241, 239, 232, 0.2); }
-.hs-fc-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: 0.6; }
+.hs-fc-badge .hs-tier-ic { width: 1.05em; height: 1.05em; }
 .hs-fc-badge.is-gold { color: #1a1408; background: linear-gradient(135deg, #f1d69a, #d9b56b 55%, #b8914c); border-color: rgba(255, 236, 190, 0.6); box-shadow: 0 6px 20px -8px rgba(217, 181, 107, 0.6); }
 .hs-fc .hs-fc-ai { --ai-h: 64px; }
 .hs-fc-title { font-size: clamp(2.8rem, 6vw, 6.4rem); font-weight: 800; letter-spacing: -0.055em; line-height: 0.94; padding-bottom: 0.16em; }
@@ -428,12 +593,17 @@ html.hs-home .footer { position: relative; z-index: 3; }
 .hs-fc-slot { display: block; }
 
 @media (max-width: 900px) {
-  /* Phones: every card lives inside a fixed screen, so it is compact: the
-     picture stands in the top fifth, the facts sit four across, the tools step aside. */
-  .hs-fc { grid-template-columns: 1fr; align-content: start; gap: 0.6rem; padding: 4.4rem calc(3vw + 18px) 1.6rem; }
+  /* Portrait: the card fills the screen below the nav. The picture (or the
+     live 3D reader) takes all the space the copy leaves, the copy sits at the
+     foot, and the frame starts just under the nav, so nothing is cut off and
+     there is no dead area. The facts sit four across, the tools step aside. */
+  .hs-fc { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; align-items: stretch; gap: 0.6rem; padding: calc(var(--hs-navb, 64px) + 14px) calc(3vw + 18px) calc(3svh + 18px); }
+  .hs-fc-frame { inset: calc(var(--hs-navb, 64px) + 4px) 3vw 3svh; }
+  .hs-stagecard .hs-fc-frame { inset: calc(var(--hs-navb, 64px) + 4px) 3vw 3svh; }
   .hs-fc.is-right .hs-fc-media { order: 0; }
-  .hs-fc-media { min-height: 20svh; }
-  .hs-fc-media img { max-height: 24svh; }
+  .hs-fc-media { min-height: 18svh; }
+  .hs-fc-media img { max-height: 100%; }
+  .hs-fc-body { align-self: end; }
   .hs-fc-top { margin-bottom: 0.8rem; }
   .hs-fc .hs-fc-ai { --ai-h: 46px; }
   .hs-fc-title { font-size: 2.6rem; }
@@ -575,17 +745,17 @@ html.hs-home .footer { position: relative; z-index: 3; }
 @media (hover: none) { .hs-mph figcaption { display: none; } }
 
 /* ───────────── Contact at dusk ─────────────
-   The closing scene is the morning's field again, at dusk. On wide screens
-   it is one screen: a wide panorama (dusk-pano.webp) with the whole pine at
-   the left, "Say hello." and the address centred in the open sky, and the
-   footer pulled up over the band of grass at the foot. The title and the
-   address never break (sized to fit; on phones the title is a deliberate
-   two-word stack). Tall screens use the tall painting under the words. */
+   The last screen of the page, at every size: the dusk panorama
+   (dusk-pano.webp) with the whole pine, "Say hello.", the address and the
+   buttons in the sky, and the footer pulled up over the grass at the foot.
+   The section is one screen tall and the footer overlaps its bottom, so
+   when the page has scrolled to its end, all of it is in view. The title
+   and the address never break: they are sized to fit. */
 .hs-contact {
   position: relative;
   min-height: 100svh;
   margin-bottom: calc(-1 * var(--hs-foot, 140px));
-  padding: clamp(6rem, 16vh, 12rem) var(--hs-gutter) calc(var(--hs-foot, 140px) + 22vh);
+  padding: calc(var(--hs-navb, 64px) + 3vh) var(--hs-gutter) calc(var(--hs-foot, 140px) + 16vh);
   background: var(--hs-dusk);
   overflow: hidden;
   display: flex; flex-direction: column; justify-content: center;
@@ -593,11 +763,11 @@ html.hs-home .footer { position: relative; z-index: 3; }
 .hs-dusk { position: absolute; inset: 0; z-index: 0; }
 .hs-dusk img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 18% 100%; will-change: transform; transform-origin: 50% 100%; }
 /* black from the chapter above fades into the night sky */
-.hs-dusk::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.55) 5%, rgba(0, 0, 0, 0) 14%); }
+.hs-dusk::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.55) 4%, rgba(0, 0, 0, 0) 12%); }
 .hs-contact-in { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; margin: 0 auto; max-width: 88rem; }
 .hs-contact-title { font-size: min(10.5vw, 22vh, 15rem); white-space: nowrap; padding-bottom: 0.22em; margin-bottom: 0.1em; }
 .hs-ct-w { display: inline-block; white-space: nowrap; }
-.hs-contact-line { color: rgba(236, 232, 245, 0.82); font-size: clamp(1.05rem, 1.4vw, 1.5rem); margin-bottom: 0.8rem; max-width: 62ch; text-wrap: balance; }
+.hs-contact-line { color: rgba(236, 232, 245, 0.82); font-size: clamp(1rem, 1.4vw, 1.5rem); margin-bottom: 0.6rem; max-width: 62ch; text-wrap: balance; }
 .hs-contact-mail {
   display: inline-block;
   white-space: nowrap;
@@ -607,22 +777,20 @@ html.hs-home .footer { position: relative; z-index: 3; }
   text-decoration: none;
   background: linear-gradient(currentColor, currentColor) left 100% / 0 1px no-repeat;
   transition: background-size 0.5s var(--hs-ease);
-  margin-bottom: 2.2rem;
+  margin-bottom: 1.8rem;
 }
 .hs-contact-mail:hover { background-size: 100% 1px; }
 .hs-contact-in .hs-btns { justify-content: center; }
 @media (max-width: 899px) {
-  /* tall screens: the tall painting, the pine at the left, the words above its crown */
-  /* the words sit in the night sky above the painting, which starts below them, so the whole pine shows */
-  .hs-contact { display: block; min-height: 0; padding-top: 7rem; padding-bottom: 115svh; background: linear-gradient(180deg, #000 0%, #0b0e1d 40%, #141930 70%); }
-  .hs-dusk { top: auto; height: 120svh; }
-  .hs-dusk img { object-position: 6% 100%; -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 16%); mask-image: linear-gradient(180deg, transparent 0%, #000 16%); }
-  .hs-dusk::after { display: none; }
-  .hs-contact-mail { font-size: 6.4vw; }
-}
-@media (max-width: 600px) {
-  .hs-contact-title { font-size: 25vw; line-height: 0.9; }
-  .hs-ct-w { display: block; }
+  /* Portrait: the words at the top of the sky, the pine's crown under them
+     and its trunk running down into the grass behind the footer. */
+  .hs-contact { justify-content: flex-start; padding-top: calc(var(--hs-navb, 64px) + 2.4vh); padding-bottom: var(--hs-foot, 140px); }
+  .hs-dusk img { object-position: 13% 100%; }
+  .hs-contact-title { font-size: min(18vw, 9rem); padding-bottom: 0.16em; }
+  .hs-contact-line { font-size: 0.95rem; max-width: 30ch; }
+  .hs-contact-mail { font-size: min(6.6vw, 2.2rem); margin-bottom: 1rem; }
+  .hs-contact-in .hs-btns { flex-wrap: nowrap; gap: 0.5rem; }
+  .hs-contact-in .hs-btn { min-height: 42px; padding: 0.55rem 0.95rem; font-size: 0.88rem; white-space: nowrap; }
 }
 
 /* ───────────── Reduced motion: every state finished ───────────── */
@@ -645,17 +813,30 @@ html.hs-home .footer { position: relative; z-index: 3; }
   .hs-reader-card { position: relative; inset: auto; visibility: visible; }
   .hs-stagecard .hs-fc-body { pointer-events: auto; }
   /* June and BeadReader: the opener, then the card, both still */
-  .hs-fl { height: auto; }
+  /* June and BeadReader: the opener, the set piece with every beat's
+     caption listed beside its built visual, then the card, all still */
+  .hs-fl { height: auto; --t: 0; --f: 1; --g: 1; --l: 0; --c1: 1; --c2: 1; --c3: 1; }
+  .hs-fl.is-bead { --g: 0.5; }
+  .hs-fl { --m: 1; --lo: 1; --li: 0; --fp: 1; }
   .hs-fl-stage { position: relative; height: auto; overflow: visible; }
   .hs-fl-scene { position: relative; height: 100svh; transform: none; border-radius: 0; }
   .hs-fl-photo { opacity: 1; }
   .hs-fl-head { opacity: 1; transform: none; bottom: auto; top: calc(100svh - 0px); transform: translateY(-100%); }
+  .hs-sp { position: relative; inset: auto; opacity: 1; min-height: 100svh; display: grid; grid-template-columns: 1fr 1.3fr; gap: 4vw; align-items: center; padding: 6rem var(--hs-edge); }
+  .hs-sp > [class$="-visual"] { position: relative; inset: auto; }
+  .hs-sp-caps { position: relative; inset: auto; order: -1; display: grid; gap: 2rem; }
+  .hs-sp-cap { position: relative; inset: auto; width: auto; transform: none; }
+  .hs-sp-cap h3 { font-size: 1.6rem; }
   .hs-fl-card { position: relative; inset: auto; }
   .hs-stagecard .hs-fc { height: auto; min-height: 100svh; }
   .hs-bench-pin { position: relative; height: auto; padding-top: 6rem; padding-bottom: 3rem; }
   .hs-cards { margin-top: 0; }
   .hs-btn, .hs-pc, .hs-tile > button, .hs-mph img { transition: none; }
   .hs-dusk img { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) and (max-width: 760px) {
+  .hs-sp { grid-template-columns: 1fr; }
+  .hs-sp > [class$="-visual"] { min-height: 60svh; }
 }
 
 @keyframes hs-fade { from { opacity: 0; } }
