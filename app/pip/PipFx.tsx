@@ -122,14 +122,17 @@ export function Clip({ src, poster, className, label, active = true, eager = fal
 }) {
   const ref = useRef<HTMLVideoElement>(null);
   const [load, setLoad] = useState(eager);
-  const state = useRef({ on: false, active });
-  state.current.active = active;
   const reduced = useReduced();
+  // the observers outlive renders, so everything sync() reads lives in a ref
+  const state = useRef({ on: false, active, load, reduced });
+  state.current.active = active;
+  state.current.load = load;
+  state.current.reduced = reduced;
 
   const sync = () => {
-    const v = ref.current;
-    if (!v || !load) return;
-    if (state.current.on && state.current.active && !reduced) { const pr = v.play(); if (pr) pr.catch(() => {}); }
+    const v = ref.current, st = state.current;
+    if (!v || !st.load) return;
+    if (st.on && st.active && !st.reduced) { const pr = v.play(); if (pr) pr.catch(() => {}); }
     else v.pause();
   };
 
@@ -172,8 +175,7 @@ export function Tab5Hero({ children, screen }: { children: ReactNode; screen: st
     video.muted = true; video.loop = true; video.playsInline = true; video.crossOrigin = 'anonymous';
     video.setAttribute('playsinline', '');
     const canWebm = video.canPlayType('video/webm; codecs="vp9"') !== '';
-    video.src = screen + (canWebm ? '.webm' : '.mp4');
-    video.preload = 'auto';
+    if (!reduced) { video.src = screen + (canWebm ? '.webm' : '.mp4'); video.preload = 'auto'; }
     const loop = () => {
       raf = 0;
       if (!alive || !visible) return;
@@ -184,15 +186,18 @@ export function Tab5Hero({ children, screen }: { children: ReactNode; screen: st
     import('./tab5Scene').then(({ createTab5Scene }) => {
       if (!alive) return;
       try {
-        scene.current = createTab5Scene(el, { video, glb: '/pip/tab5.glb', onReady: () => { if (alive) setReady(true); } });
+        scene.current = createTab5Scene(el, {
+          video, glb: '/pip/tab5.glb', still: reduced ? screen + '.webp' : undefined,
+          onReady: () => {
+            if (!alive) return;
+            setReady(true);
+            // reduced motion: one still frame, the tablet turned a little, its screen on Pip
+            if (reduced) { scene.current?.setProgress(0.12); scene.current?.render(); }
+          },
+        });
       } catch { return; }
       scene.current.setProgress(p.current);
-      if (reduced) {
-        // one still frame: the tablet face on, its screen on Pip's first frame
-        video.addEventListener('loadeddata', () => { scene.current?.setProgress(0.2); scene.current?.render(); }, { once: true });
-        video.load();
-        return;
-      }
+      if (reduced) return;
       video.play().catch(() => {});
       start();
     });
@@ -215,7 +220,7 @@ export function Tab5Hero({ children, screen }: { children: ReactNode; screen: st
       window.removeEventListener('resize', onResize); window.removeEventListener('pointermove', onMove);
       document.removeEventListener('visibilitychange', onVis);
       if (raf) cancelAnimationFrame(raf);
-      video.pause(); video.removeAttribute('src'); video.load();
+      video.pause(); if (video.src) { video.removeAttribute('src'); video.load(); }
       scene.current?.destroy(); scene.current = null;
     };
   }, [screen, reduced]);
@@ -317,6 +322,31 @@ export function Opener({ id, desk, color, title, lede, clip, pipLabel }: {
           ))}
         </h2>
         <p className="pp-op-lede">{lede}</p>
+      </div>
+    </Stage>
+  );
+}
+
+/* ── Desktops: scroll through three real home screens, each sliding in like a desktop switch ── */
+export function DeskSwitch({ desks, id }: { desks: Array<{ src: string; name: string; color: string; alt: string }>; id?: string }) {
+  const [beat, setBeat] = useState(0);
+  const reduced = useReduced();
+  return (
+    <Stage id={id} className="pp-switch" screens={desks.length * 0.75 + 1} beats={desks.length} onBeat={setBeat} label="Three of my desktops">
+      <div className="pp-switch-in" style={{ ['--acc' as string]: desks[beat].color }}>
+        <div className="pp-tab" data-no-zoom>
+          <i className="pp-tab-glass" aria-hidden="true" />
+          <div className="pp-tab-screen">
+            <div className="pp-switch-strip" style={{ transform: reduced ? undefined : `translateX(${-beat * 100}%)` }}>
+              {desks.map((d) => <img key={d.name} src={d.src} alt={d.alt} loading="lazy" decoding="async" />)}
+            </div>
+          </div>
+          <i className="pp-tab-cam" aria-hidden="true" />
+        </div>
+        <div className="pp-switch-pill" aria-hidden="true">
+          {desks.map((d, i) => <i key={d.name} className={i === beat ? 'on' : undefined} style={{ ['--c' as string]: d.color }} />)}
+        </div>
+        <p className="pp-switch-name" aria-live="polite"><b style={{ color: desks[beat].color }}>{desks[beat].name}</b></p>
       </div>
     </Stage>
   );

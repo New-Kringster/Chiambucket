@@ -54,7 +54,8 @@ function slab(w: number, h: number, r: number, depth: number, bevel = 0.35) {
   return g;
 }
 
-export function createTab5Scene(host: HTMLElement, opts: { video: HTMLVideoElement; glb: string; onReady?: () => void }): Tab5Scene {
+export function createTab5Scene(host: HTMLElement, opts: { video: HTMLVideoElement; still?: string; glb: string; onReady?: () => void }): Tab5Scene {
+  let needs = true, pending = opts.still ? 2 : 1;   // ready once the model (and a still picture) have loaded
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.setClearColor(0x000000, 1);
@@ -93,7 +94,10 @@ export function createTab5Scene(host: HTMLElement, opts: { video: HTMLVideoEleme
   glass.position.z = -0.05;
   tilt.add(glass);
 
-  const tex = new THREE.VideoTexture(opts.video);
+  // the screen: the video, or with reduced motion one still picture of it
+  const tex: THREE.Texture = opts.still
+    ? new THREE.TextureLoader().load(opts.still, () => { needs = true; pending--; if (!pending) opts.onReady?.(); })
+    : new THREE.VideoTexture(opts.video);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.minFilter = THREE.LinearFilter;
   tex.magFilter = THREE.LinearFilter;
@@ -121,11 +125,12 @@ export function createTab5Scene(host: HTMLElement, opts: { video: HTMLVideoEleme
       m.material = shell;
     });
     tilt.add(gltf.scene);
-    opts.onReady?.();
     needs = true;
+    pending--;
+    if (!pending) opts.onReady?.();
   });
 
-  let p = 0, px = 0, py = 0, needs = true, aspect = 1;
+  let p = 0, px = 0, py = 0, aspect = 1;
   const resize = () => {
     const w = host.clientWidth || 1, h = host.clientHeight || 1;
     aspect = w / h;
@@ -138,7 +143,6 @@ export function createTab5Scene(host: HTMLElement, opts: { video: HTMLVideoEleme
   /* Where the camera stands so a width w (mm) takes a fraction f of the view's width, or height h of its height. */
   const tanH = () => Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
   const distFor = (w: number, fw: number, h: number, fh: number) => Math.max(w / fw / (2 * tanH() * aspect), h / fh / (2 * tanH()));
-  const coverFor = (w: number, h: number) => Math.min(w / (2 * tanH() * aspect), h / (2 * tanH()));
 
   const place = () => {
     const wide = aspect > 1.05;
@@ -146,9 +150,8 @@ export function createTab5Scene(host: HTMLElement, opts: { video: HTMLVideoEleme
     const fill = seg(p, 0.3, 0.94);
     // start: beside the words on wide screens, under them on phones
     const d0 = wide ? distFor(W, 0.44, H, 0.62) : distFor(W, 0.86, H, 0.4);
-    // end: the screen just past contain, so the grey frame has left the view
-    // wide screens: the panel covers the view; tall ones: it fits the width (the rest is the screen's own black)
-    const d1 = wide ? coverFor(SCREEN_W * 0.97, SCREEN_H * 0.97) : distFor(SCREEN_W, 1.04, SCREEN_H, 1.04);
+    // the panel fits the view; the body has faded by then, so only the screen remains on the black page
+    const d1 = distFor(SCREEN_W, wide ? 0.94 : 1.0, SCREEN_H, wide ? 0.86 : 1.0);
     const d = lerp(d0, d1, fill);
     const half = d * tanH();
     const x0 = wide ? half * aspect * 0.42 : 0;

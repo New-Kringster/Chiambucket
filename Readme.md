@@ -40,7 +40,9 @@ Opens at `http://localhost:3000`. Use `npx tsc --noEmit` to type-check without d
 | `next.config.mjs` | Permanent redirects from the old `.html` URLs to clean routes |
 | `vercel.json` | Security headers |
 
-Article pages: `/project-june`, `/lumen`, `/beadreader`, `/waterslop`, `/brolocator`, `/csdp`, `/pandus`, `/elecf`.
+Article pages: `/project-june`, `/lumen`, `/beadreader`, `/waterslop`, `/pip`, `/brolocator`, `/csdp`, `/pandus`, `/elecf`.
+
+`/pip` is a scroll-driven product page for Pip, a desk pet on an M5Stack Tab5 run by the DeepSeek Harness: a three.js Tab5 hero (built on M5Stack's MIT-licensed Tab5 structure model), chapter openers per desktop colour, Pip's moods rendered by its firmware's own drawing code, and real screen recordings from the tablet and the browser Pip drives.
 
 ## Theming
 

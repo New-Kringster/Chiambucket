@@ -19,6 +19,16 @@ export function Tab({ children, className }: { children: ReactNode; className?: 
   );
 }
 
+/* The browser Pip drives, as a plain window with Pip's eyes in its bar (the mark for "this is Pip's"). */
+export function Win({ children, label }: { children: ReactNode; label: string }) {
+  return (
+    <div className="pp-win" data-no-zoom>
+      <div className="pp-win-bar"><i aria-hidden="true" /><span>{label}</span></div>
+      <div className="pp-win-body">{children}</div>
+    </div>
+  );
+}
+
 const FLOW: Array<{ k: string; title: string; where: string; items: string[] }> = [
   { k: 'tab', title: 'Tab5', where: 'On my desk', items: ['Pip, drawn on the tablet', 'Touch, keyboard, mics', 'Camera, IMU, speaker', 'Native applets in Lua'] },
   { k: 'bridge', title: 'Pet bridge', where: 'On the VM', items: ['Speech to text, on the VM', 'The tablet’s hardware, as an API', 'Pages for applets'] },
@@ -91,6 +101,12 @@ export function Hub() {
           </g>
         ))}
       </svg>
+      {/* phones: the same spokes as rows, readable at that size */}
+      <ul className="pp-hub-list">
+        {SPOKES.map((sp) => (
+          <li key={sp.label.join()}><i style={sp.dot ? { background: sp.dot } : undefined} /><b>{sp.label[0]}</b><span>{sp.label[1]}</span></li>
+        ))}
+      </ul>
     </figure>
   );
 }
