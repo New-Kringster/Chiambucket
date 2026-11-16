@@ -19,13 +19,13 @@ import AiMark from './AiMark';
 
 /* Project order = the homepage gallery order (also the ALL_PROJECTS order). */
 export const PEEK_ORDER: string[] = [
-  'proj-waterslop', 'proj-june', 'proj-beadreader', 'proj-lora', 'proj-lumen', 'proj-ema', 'proj-pandus', 'proj-elecf',
+  'proj-waterslop', 'proj-june', 'proj-beadreader', 'proj-pip', 'proj-lora', 'proj-lumen', 'proj-ema', 'proj-pandus', 'proj-elecf',
   'proj-kauli', 'proj-sol', 'proj-copyboard', 'proj-webdev', 'proj-mc',
 ];
 
 const TITLES: Record<string, string> = {
   'proj-june': 'Project June', 'proj-lora': 'LoRA Messenger', 'proj-lumen': 'LUMEN',
-  'proj-beadreader': 'BeadReader', 'proj-waterslop': 'OCR Reader',
+  'proj-beadreader': 'BeadReader', 'proj-waterslop': 'OCR Reader', 'proj-pip': 'Pip',
   'proj-ema': 'EMA Smart Home', 'proj-pandus': 'Pandus Dispenser', 'proj-elecf': 'ELEC-F Concept',
   'proj-kauli': 'Kauli Concept', 'proj-sol': 'Series One Light', 'proj-copyboard': 'Copy Board',
   'proj-webdev': 'Web Development', 'proj-mc': 'Minecraft Live Map',
@@ -82,6 +82,20 @@ export function PeekModalContent({ id }: { id: string }) {
           {chapter('02', 'Control and telemetry', <p>MQTT carries control and telemetry over a Mosquitto broker, with custom PWM motor control and servo steering driven from an Xbox controller.</p>)}
           {chapter('03', 'A full sensor suite', <><p>Neo8M GPS, gyroscope, accelerometer, magnetometer, barometer, ultrasonic distance sensor, DHT11, and a TEMT6000 light sensor.</p><img className="hp-rd-fig" src="/images/ProjJuneArchi.webp" alt="System architecture" loading="lazy" /></>)}
           {cta('Want the full build log?', 'Photos, the architecture and every problem I hit.', 'Read the full article', '/project-june')}
+        </div>
+      </>
+    );
+    case 'proj-pip': return (
+      <>
+        {hero('/images/pip-pf-context.webp', 'Pip, a cyan desk pet, on the M5Stack Tab5', ['Personal Project'], 'highlight')}
+        <div className="hp-rd-body">
+          <h2 className="hp-md-title">Pip</h2>
+          <p className="hp-md-meta">1 Week · M5Stack Tab5 · ESP32-P4 · DeepSeek Harness · Lua · Docker</p>
+          <p className="hp-rd-lead">A desk pet on an M5Stack Tab5. Its brain is the DeepSeek Harness on my server, so it can drive a browser, build its own apps and keep an eye on my other agents.</p>
+          {chapter('01', 'A pet that shows its work', <><p>Pip sleeps when left alone, wakes when the tablet is picked up, twists and rubs its temples while it thinks, and hops when something works. It acts out each tool it uses: binoculars to read a page, a megaphone to brief a helper.</p><img className="hp-rd-fig" src="/videos/pip/props.webp" alt="Pip with a magnifying glass, binoculars, a megaphone and a paper plane" loading="lazy" /></>)}
+          {chapter('02', 'It uses the screen', <p>Answers come as pages and formatted text. Pip can click through those pages with its own cursor, ask multiple choice questions, and build small apps that land in a drawer: web pages served from the VM, or Lua scripts that run on the tablet itself.</p>)}
+          {chapter('03', 'A hub for my agents', <><p>Pip runs inside the same harness as my coding sessions, hands long jobs to helper pips, and tells me when a session finishes or needs an answer.</p><img className="hp-rd-fig" src="/videos/pip/crew.webp" alt="Helper pips at work with a notepad, a laptop, blocks, a book and a flask" loading="lazy" /></>)}
+          {cta('See Pip move', 'The moods, the apps, the desktops and how it all connects.', 'Read the full article', '/pip')}
         </div>
       </>
     );
@@ -285,7 +299,7 @@ function PeekItem({ id, first, index }: { id: string; first: boolean; index: num
 /* The cover each project's reader opens with, for the peek of the next one. */
 const COVERS: Record<string, string> = {
   'proj-june': '/images/ProjJuneBanner1.webp', 'proj-lora': '/images/borlocator-pf-context.webp',
-  'proj-waterslop': '/images/ocr-reader-pf-context.webp',
+  'proj-waterslop': '/images/ocr-reader-pf-context.webp', 'proj-pip': '/images/pip-pf-context.webp',
   'proj-lumen': '/images/lumen-pf-context.webp', 'proj-beadreader': '/images/beadreader-pf-context.webp',
   'proj-ema': '/images/Ema-pf-context.webp', 'proj-pandus': '/images/pandusarticle.webp',
   'proj-elecf': '/images/elef2-pf-context.webp', 'proj-kauli': '/images/kauli3-pf-context.webp',
