@@ -249,6 +249,37 @@ html.hs-home .footer { position: relative; z-index: 3; }
 /* Skipping: every opening animation ends at once. */
 .hs-skip .hs-hero * { animation-duration: 1ms !important; animation-delay: 0s !important; }
 
+/* The scroll cue: small and quiet, centred at the foot of the painting. It
+   comes in once the name has focused (the delay survives a skip, so a first
+   wheel never flashes it) and leaves for good on the first scroll
+   (.hs-scrolled, set once). Only its dot moves: a slow drift down the line,
+   transform and opacity only, stopped once it is gone. */
+.hs-cue {
+  position: absolute; z-index: 2; left: 50%; bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%); pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+.hs-scrolled .hs-cue { opacity: 0; }
+.hs-cue-in {
+  display: flex; flex-direction: column; align-items: center; gap: 0.55rem;
+  color: rgba(255, 253, 244, 0.8);
+  animation: hs-cue-in 1.2s cubic-bezier(0.22, 1, 0.36, 1) 2.6s backwards;
+}
+.hs-skip .hs-hero .hs-cue-in { animation-duration: 1.2s !important; animation-delay: 2.6s !important; }
+@keyframes hs-cue-in { from { opacity: 0; transform: translateY(-0.5rem); } }
+.hs .hs-cue-in span { font-size: 0.74rem; font-weight: 600; letter-spacing: 0.02em; text-shadow: 0 1px 6px rgba(31, 43, 28, 0.45); }
+.hs-cue-line { position: relative; display: block; width: 1px; height: 2.4rem; overflow: hidden; background: rgba(255, 253, 244, 0.28); box-shadow: 0 0 6px rgba(31, 43, 28, 0.25); }
+.hs-cue-line b { position: absolute; left: -1px; top: 0; width: 3px; height: 0.8rem; border-radius: 2px; background: rgba(255, 253, 244, 0.95); animation: hs-cue-drift 2.8s cubic-bezier(0.45, 0, 0.3, 1) 3.4s infinite backwards; }
+.hs-skip .hs-hero .hs-cue-line b { animation-duration: 2.8s !important; animation-delay: 3.4s !important; }
+@keyframes hs-cue-drift {
+  0% { transform: translateY(-0.8rem); opacity: 0; }
+  25% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { transform: translateY(2.4rem); opacity: 0; }
+}
+.hs-scrolled .hs-cue-line b { animation: none; opacity: 0; }
+@media (max-width: 760px) { .hs-cue { bottom: calc(1.1rem + env(safe-area-inset-bottom, 0px)); } }
+
 /* ───────────── Paper chapters and the torn edge ───────────── */
 .hs-paper { position: relative; background: var(--hs-paper); color: var(--hs-pine); }
 .hs-tear { position: absolute; left: 0; width: 100%; height: clamp(40px, 5vw, 74px); z-index: 4; pointer-events: none; overflow: visible; }
@@ -472,7 +503,9 @@ html.hs-home .footer { position: relative; z-index: 3; }
 
 .hs-bb-phone {
   container-type: inline-size;
-  position: relative; flex: none;
+  /* its own stacking context: the frame (z 2) covers only this phone's screen,
+     never the Online now panel beside it */
+  position: relative; z-index: 0; flex: none;
   width: var(--pw); aspect-ratio: 1046 / 2159;
   --fu: calc(100cqw / 1046);
   --su: calc(100cqw / 947.95);
@@ -547,7 +580,8 @@ html.hs-home .footer { position: relative; z-index: 3; }
 .hs-bb-rbar { position: absolute; left: 0; right: 0; top: calc(120 * var(--su)); height: calc(102 * var(--su)); overflow: hidden; z-index: 1; }
 .hs-bb-rbody { position: absolute; left: 0; right: 0; top: calc(222 * var(--su)); bottom: 0; overflow: hidden; }
 .hs-bb-rpage { position: relative; margin-top: calc(-102 * var(--su)); transform: translate3d(0, calc(var(--scr) * -260 * var(--su)), 0); }
-.hs-bb-here { position: absolute; left: calc(36 * var(--su)); top: calc(990 * var(--su)); width: calc(702 * var(--su)); height: calc(58 * var(--su)); border-radius: calc(8 * var(--su)); background: #f3d48c; mix-blend-mode: multiply; transform-origin: 0 50%; transform: scaleX(var(--mark)); }
+/* the saved line ("To the man who loves art for its own sake,", 50–724 of the screenshot): the band is always the whole line and fades in, so a scroll that stops mid-beat never leaves part of it unmarked */
+.hs-bb-here { position: absolute; left: calc(34 * var(--su)); top: calc(990 * var(--su)); width: calc(712 * var(--su)); height: calc(58 * var(--su)); border-radius: calc(8 * var(--su)); background: #f3d48c; mix-blend-mode: multiply; opacity: var(--mark); }
 .hs .hs-bb-herechip, .hs .hs-bb-herechip * { font-family: 'DejaVu Sans', Verdana, Geneva, system-ui, sans-serif; }
 .hs-bb-herechip {
   position: absolute; right: calc(40 * var(--su)); top: calc(934 * var(--su));
@@ -573,7 +607,7 @@ html.hs-home .footer { position: relative; z-index: 3; }
 .hs-bb-together { --pw: min(calc(var(--ph) * 0.4845), calc((var(--vw) - 22rem) * 1.4)); display: flex; align-items: center; justify-content: center; opacity: var(--gi); transform: translate3d(0, calc((1 - var(--gi)) * 2rem), 0); }
 .hs-bb-together .hs-bb-col { order: 2; }
 .hs-bb-online {
-  order: 1; position: relative; z-index: 1;
+  order: 1; position: relative; z-index: 3; /* above the phone, whose frame sits over its own screen */
   width: min(21rem, calc(var(--vw) * 0.62)); margin-right: calc(var(--pw) * -0.32);
   padding: 0.9rem 0.9rem 0.6rem; border-radius: 18px; background: #fff; color: #1f1a15;
   font-size: clamp(0.8rem, 0.95vw, 0.95rem);
@@ -897,6 +931,7 @@ html.hs-home .footer { position: relative; z-index: 3; }
 @media (prefers-reduced-motion: reduce) {
   .hs * { animation: none !important; }
   .hs-hero { height: auto; }
+  .hs-cue-line b { top: 0.8rem; }
   .hs-stage { position: relative; }
   .hs-under { display: none; }
   .hs-reader { height: auto; }

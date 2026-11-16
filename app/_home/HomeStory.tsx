@@ -192,7 +192,7 @@ export default function HomeStory() {
   const peek = usePeek();
   const cols = useCols();
 
-  /* Skip the opening on the first scroll, key or tap. */
+  /* Skip the opening on the first scroll, key or tap; drop the scroll cue once scrolled. */
   useEffect(() => {
     const el = root.current;
     if (!el) return;
@@ -200,7 +200,11 @@ export default function HomeStory() {
     const evs = ['wheel', 'touchstart', 'keydown', 'pointerdown'] as const;
     const off = () => evs.forEach((e) => window.removeEventListener(e, skip));
     evs.forEach((e) => window.addEventListener(e, skip, { passive: true, once: true }));
-    return off;
+    // The scroll cue leaves on the first scroll and never comes back.
+    const scrolled = () => { if (window.scrollY < 4) return; el.classList.add('hs-scrolled'); window.removeEventListener('scroll', scrolled); };
+    window.addEventListener('scroll', scrolled, { passive: true });
+    scrolled();
+    return () => { off(); window.removeEventListener('scroll', scrolled); };
   }, []);
 
   /* The tone under the nav sets the nav and footer colours; the nav's bottom
@@ -566,6 +570,10 @@ export default function HomeStory() {
                 <GlassWord>Braven</GlassWord>{' '}
                 <GlassWord>Chiam</GlassWord>
               </h1>
+            </div>
+            {/* a quiet cue to scroll: comes in once the opening has settled, leaves for good on the first scroll */}
+            <div className="hs-cue" aria-hidden="true">
+              <div className="hs-cue-in"><span>Scroll</span><i className="hs-cue-line"><b /></i></div>
             </div>
           </div>
         </section>
