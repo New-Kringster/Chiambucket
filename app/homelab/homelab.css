@@ -290,6 +290,11 @@
 .hl2-map-tip { font-family: var(--dc-mono); font-size: 0.64rem; letter-spacing: 0.04em; color: var(--dc-dim); opacity: 0.7; }
 .hl2-map-scroll { overflow-x: auto; }
 .hl2-map-svg { display: block; width: 100%; min-width: 720px; height: auto; }
+/* phones: the indented tree (SystemMap's tall layout) fits the width */
+.hl2-map-svg.is-tall { min-width: 0; padding: 4px 6px 10px; box-sizing: border-box; }
+.hl2-map-svg.is-tall .hl2-node-label { text-anchor: start; font-size: 15.5px; }
+.hl2-map-svg.is-tall .hl2-node-sub { text-anchor: end; font-size: 11.5px; }
+.hl2-map-svg.is-tall .hl2-zone-label { font-size: 11.5px; }
 
 .hl2-zone-label { font-family: var(--dc-mono); font-size: 11px; letter-spacing: 0.12em; opacity: 0.85; }
 .hl2-edge { stroke: rgba(var(--sa-accent),0.22); stroke-width: 1.6; stroke-dasharray: 5 7; }
@@ -397,13 +402,38 @@
   .hl2-storage { grid-template-columns: 1fr; }
   .hl2-services { grid-template-columns: repeat(2, 1fr); }
 }
+.hl2-title { text-wrap: balance; }
+.hl2-lead { text-wrap: pretty; }
 @media (max-width: 620px) {
   .hl2-pillars, .hl2-services { grid-template-columns: 1fr; }
   .hl2-hero-photo { display: none; }
-  .hl2-hero { min-height: auto; padding-top: 130px; padding-bottom: 70px; }
-  .hl2-hero-stats { gap: 18px 28px; }
-  .hl2-map-controls { flex-direction: column; align-items: flex-start; }
+  /* phones: the hero keeps the whole screen, so the cue sits at its foot
+     with room above it and the next section starts below the fold */
+  .hl2-hero { min-height: 100svh; padding: 112px 24px calc(92px + env(safe-area-inset-bottom, 0px)); }
+  .hl2-scrollcue { bottom: calc(26px + env(safe-area-inset-bottom, 0px)); }
+  .hl2-statusbar { font-size: 0.66rem; gap: 6px 12px; padding: 9px 13px; }
   .hl2-statusbar .hl2-sep { display: none; }
+  .hl2-eyebrow { margin-top: 30px; }
+  .hl2-title { font-size: clamp(2.6rem, 12.4vw, 3.6rem); margin-top: 12px; }
+  .hl2-lead { margin-top: 1.2rem; }
+  /* the four figures as a hairline readout, one row, then 2 x 2 on narrow phones */
+  .hl2-hero-stats { display: grid; grid-template-columns: repeat(4, auto); justify-content: start; gap: 0; margin-top: 1.9rem; border-top: 1px solid var(--dc-line); border-bottom: 1px solid var(--dc-line); }
+  .hl2-stat { padding: 14px 22px 13px; min-width: 0; border-left: 1px solid var(--dc-line); }
+  .hl2-stat:first-child { padding-left: 0; border-left: 0; }
+  .hl2-stat span { line-height: 1.45; }
+  .hl2-hero-cta { margin-top: 1.9rem; }
+  .hl2-map-controls { flex-direction: column; align-items: flex-start; }
+  .hl2-wrap { padding: 0 24px; }
+}
+@media (max-width: 520px) {
+  /* two equal full-width buttons instead of two odd-sized ones */
+  .hl2-hero-cta { flex-direction: column; align-items: stretch; gap: 10px; }
+  .hl2-hero-cta .hl2-btn { justify-content: center; box-sizing: border-box; padding-block: 0.95rem; }
+  .hl2-hero-stats { grid-template-columns: 1fr 1fr; border-bottom: 0; }
+  .hl2-stat, .hl2-stat:first-child { padding: 14px 0 13px; border-left: 0; border-bottom: 1px solid var(--dc-line); }
+  .hl2-stat:nth-child(odd) { padding-right: 14px; border-right: 1px solid var(--dc-line); }
+  .hl2-stat:nth-child(even) { padding-left: 18px; }
+  .hl2-cta .hl2-hero-cta { max-width: 360px; margin-inline: auto; }
 }
 
 /* ═══════════ DAY: the teal-morning scene (html.is-day, lib/theme.ts) ═══════════

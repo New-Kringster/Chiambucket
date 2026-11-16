@@ -1,5 +1,5 @@
 'use client';
-import { useState, type CSSProperties } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 
 /* ── Topology model (viewBox 0 0 1120 640) ── */
 type Vlan = 'unraid' | 'server' | 'default' | 'iot' | 'core';
@@ -66,6 +66,45 @@ const VLAN_INFO: Record<Vlan, { label: string; blurb: string }> = {
 const cx = (n: Node) => n.x + n.w / 2;
 const cy = (n: Node) => n.y + n.h / 2;
 
+/* ── Phone layout: the same tree, indented and read top to bottom ──
+   A 1120-wide map squeezed onto a phone either shrinks its labels past
+   reading or scrolls sideways with half of it hidden. Below 620px each
+   device gets a full-width row, indented under the device it hangs off,
+   with elbow links down the left. Selection and VLAN highlighting work
+   the same. */
+const TALL_W = 400;
+const TALL_ROWS: [id: string, depth: number, gapBefore?: number][] = [
+  ['internet', 0], ['udm', 1], ['sw1', 2],
+  ['newmain', 3, 26], ['caca', 3, 30], ['adell', 3],
+  ['sw2', 2, 14], ['clients', 3], ['sw3', 2], ['aps', 3], ['wmain', 4], ['wiot', 4],
+];
+const TALL: Record<string, Node> = {};
+let tallH = 14;
+for (const [id, depth, gap = 0] of TALL_ROWS) {
+  tallH += gap;
+  const x = 12 + depth * 24;
+  TALL[id] = { ...N[id], x, y: tallH, w: TALL_W - 12 - x, h: 40 };
+  tallH += 48;
+}
+tallH += 6;
+const zoneAround = (ids: string[], pad = 6) => {
+  const ns = ids.map((id) => TALL[id]);
+  const x = ns[0].x - pad, y = ns[0].y - 22, b = ns[ns.length - 1];
+  return { x, y, w: TALL_W - 6 - x, h: b.y + b.h + pad - y };
+};
+
+function useTall() {
+  const [tall, setTall] = useState(false);
+  useEffect(() => {
+    const mq = matchMedia('(max-width: 620px)');
+    const on = () => setTall(mq.matches);
+    on();
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, []);
+  return tall;
+}
+
 export default function SystemMap() {
   const [selected, setSelected] = useState<string>('udm');
   const [pinned, setPinned] = useState<Vlan | null>(null);
@@ -88,6 +127,9 @@ export default function SystemMap() {
   const pickNode = (id: string) => { setSelected(id); setPinned(null); setHovered(null); };
 
   const sel = selected ? N[selected] : null;
+  const tall = useTall();
+  const L = tall ? TALL : N;
+  const zU = zoneAround(['newmain']), zS = zoneAround(['caca', 'adell']);
 
   return (
     <div className="hl2-map-wrap">
@@ -116,35 +158,46 @@ export default function SystemMap() {
       </div>
 
       <div className="hl2-map-scroll">
-        <svg className="hl2-map-svg" viewBox="0 0 1120 640" role="img" aria-label="Network map. Select a device for details.">
+        <svg className={`hl2-map-svg${tall ? ' is-tall' : ''}`} viewBox={tall ? `0 0 ${TALL_W} ${tallH}` : '0 0 1120 640'} role="img" aria-label="Network map. Select a device for details.">
           {/* VLAN zones (only the two adjacent server-rack groups get a backing) */}
           <g className="hl2-zones">
-            <Zone x={19} y={384} w={142} h={98} color={VLAN_COLOR.unraid} label="Unraid VLAN" active={active === 'unraid'} />
-            <Zone x={169} y={384} w={292} h={98} color={VLAN_COLOR.server} label="Server VLAN" dashed active={active === 'server'} />
+            {tall ? <>
+              <Zone {...zU} color={VLAN_COLOR.unraid} label="Unraid VLAN" active={active === 'unraid'} />
+              <Zone {...zS} color={VLAN_COLOR.server} label="Server VLAN" dashed active={active === 'server'} />
+            </> : <>
+              <Zone x={19} y={384} w={142} h={98} color={VLAN_COLOR.unraid} label="Unraid VLAN" active={active === 'unraid'} />
+              <Zone x={169} y={384} w={292} h={98} color={VLAN_COLOR.server} label="Server VLAN" dashed active={active === 'server'} />
+            </>}
           </g>
 
           {/* edges */}
           <g>
             {EDGES.map((e, i) => {
-              const a = N[e.from], b = N[e.to];
-              const x1 = cx(a), y1 = a.y + a.h, x2 = cx(b), y2 = b.y;
+              const a = L[e.from], b = L[e.to];
               const hot = edgeHot(e);
               const dim = edgeDim(e);
+              let d: string, d2: string;
+              if (tall) {
+                // elbow: down from the parent's left, then across into the child
+                const x1 = a.x + 12, y1 = a.y + a.h, y2 = cy(b), x2 = b.x;
+                d = `M${x1},${y1} V${y2 - 7} Q${x1},${y2} ${x1 + 7},${y2} H${x2}`;
+                d2 = `M${x1 + 4},${y1} V${y2 - 3} Q${x1 + 4},${y2 + 4} ${x1 + 11},${y2 + 4} H${x2}`;
+              } else {
+                const x1 = cx(a), y1 = a.y + a.h, x2 = cx(b), y2 = b.y;
+                d = `M${x1},${y1} C${x1},${(y1 + y2) / 2} ${x2},${(y1 + y2) / 2} ${x2},${y2}`;
+                d2 = `M${x1 + 5},${y1} C${x1 + 5},${(y1 + y2) / 2} ${x2 + 5},${(y1 + y2) / 2} ${x2 + 5},${y2}`;
+              }
               return (
                 <g key={i} opacity={dim ? 0.14 : 1} style={{ transition: 'opacity .35s' }}>
-                  <path d={`M${x1},${y1} C${x1},${(y1 + y2) / 2} ${x2},${(y1 + y2) / 2} ${x2},${y2}`}
-                    className={`hl2-edge${hot ? ' hot' : ''}`} style={hot && active ? { stroke: VLAN_COLOR[active] } : undefined} fill="none" />
-                  {e.redundant && (
-                    <path d={`M${x1 + 5},${y1} C${x1 + 5},${(y1 + y2) / 2} ${x2 + 5},${(y1 + y2) / 2} ${x2 + 5},${y2}`}
-                      className="hl2-edge redundant" fill="none" />
-                  )}
+                  <path d={d} className={`hl2-edge${hot ? ' hot' : ''}`} style={hot && active ? { stroke: VLAN_COLOR[active] } : undefined} fill="none" />
+                  {e.redundant && <path d={d2} className="hl2-edge redundant" fill="none" />}
                 </g>
               );
             })}
           </g>
 
           {/* nodes */}
-          {Object.values(N).map((n) => {
+          {Object.values(L).map((n) => {
             const color = VLAN_COLOR[n.vlan];
             const isSel = !active && selected === n.id;
             return (
@@ -152,12 +205,18 @@ export default function SystemMap() {
                 opacity={nodeDim(n) ? 0.26 : 1} style={{ transition: 'opacity .35s' }}
                 onClick={() => pickNode(n.id)} tabIndex={0}
                 onKeyDown={(e) => { if (e.key === 'Enter') pickNode(n.id); }} role="button" aria-label={n.label}>
-                <rect width={n.w} height={n.h} rx={13}
+                <rect width={n.w} height={n.h} rx={tall ? 11 : 13}
                   className={`hl2-node-box${isSel ? ' sel' : ''}${nodeSpot(n) ? ' spot' : ''}${n.vlan === 'iot' ? ' iot' : ''}`}
                   style={{ '--nc': color } as CSSProperties} />
-                <text x={n.w / 2} y={n.h / 2 - 3} className="hl2-node-label">{n.label}</text>
-                <text x={n.w / 2} y={n.h / 2 + 15} className="hl2-node-sub">{n.sub}</text>
-                <circle cx={14} cy={14} r={4} fill={color} className="hl2-node-led" />
+                {tall ? <>
+                  <text x={28} y={n.h / 2 + 5} className="hl2-node-label">{n.label}</text>
+                  <text x={n.w - 12} y={n.h / 2 + 4} className="hl2-node-sub">{n.sub}</text>
+                  <circle cx={15} cy={n.h / 2} r={4} fill={color} className="hl2-node-led" />
+                </> : <>
+                  <text x={n.w / 2} y={n.h / 2 - 3} className="hl2-node-label">{n.label}</text>
+                  <text x={n.w / 2} y={n.h / 2 + 15} className="hl2-node-sub">{n.sub}</text>
+                  <circle cx={14} cy={14} r={4} fill={color} className="hl2-node-led" />
+                </>}
               </g>
             );
           })}
