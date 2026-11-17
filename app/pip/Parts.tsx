@@ -32,7 +32,7 @@ export function Win({ children, label }: { children: ReactNode; label: string })
 const FLOW: Array<{ k: string; title: string; where: string; items: string[] }> = [
   { k: 'tab', title: 'Tab5', where: 'On my desk', items: ['Pip, drawn on the tablet', 'Touch, keyboard, mics', 'Camera, IMU, speaker', 'Native applets in Lua'] },
   { k: 'bridge', title: 'Pet bridge', where: 'On the VM', items: ['Speech to text, on the VM', 'The tablet’s hardware, as an API', 'Pages for applets'] },
-  { k: 'dsh', title: 'DeepSeek Harness', where: 'On the VM', items: ['Pip, a session with its own persona', 'Helpers that do the long jobs', 'A browser Pip can see and click', 'Applets in Docker'] },
+  { k: 'dsh', title: 'DeepSeek Harness', where: 'On the VM', items: ['Pip, a session with its own persona', 'Subagents that do the long jobs', 'A browser Pip can see and click', 'Applets in Docker'] },
 ];
 
 export function Flow() {
@@ -66,14 +66,14 @@ const SPOKES: Array<{ x: number; y: number; label: string[]; dot?: string }> = [
   { x: 300, y: 70, label: ['Coding session', 'running'], dot: '#7cc8ff' },
   { x: 515, y: 190, label: ['Coding session', 'done'], dot: '#5EE08A' },
   { x: 515, y: 420, label: ['Coding session', 'needs an answer'], dot: '#FFB04A' },
-  { x: 300, y: 535, label: ['Helpers', 'planner, coder, tester'] },
+  { x: 300, y: 535, label: ['Subagents', 'planner, coder, tester'] },
   { x: 85, y: 420, label: ['Applets', 'web and native'] },
   { x: 85, y: 190, label: ['Other Pips', 'one per desktop'] },
 ];
 
 export function Hub() {
   return (
-    <figure className="pp-hub" aria-label="Pip at the centre, connected to coding sessions, helpers, applets and the other Pips">
+    <figure className="pp-hub" aria-label="Pip at the centre, connected to coding sessions, subagents, applets and the other Pips">
       <svg viewBox="0 0 600 600" role="img" aria-hidden="true">
         <defs>
           <radialGradient id="pp-hub-glow" cx="50%" cy="50%" r="50%">

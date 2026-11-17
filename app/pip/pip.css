@@ -259,16 +259,35 @@ html.sensory-active main.pp { background: var(--bg); z-index: 2; }
   .is-back .pp-tc-page { opacity: 0; }
 }
 
+/* Long jobs: the task list, zoomed in, the rest of the screen cropped away */
+.pp-zoomlist { position: relative; aspect-ratio: 16 / 10; overflow: hidden; border-radius: 22px; background: #000; border: 1px solid var(--line);
+  box-shadow: 0 30px 60px -28px rgba(0, 0, 0, 0.9), 0 60px 140px -50px color-mix(in srgb, var(--acc) 34%, transparent); }
+.pp-zoomlist img { position: absolute; width: 262%; max-width: none; height: auto; left: -1.5%; top: -7%; }
+.pp-zoomlist::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, transparent 62%, rgba(0, 0, 0, 0.55)); }
+
 /* A new Pip hatching: two screens and the words */
-.pp-hatch { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+.pp-hatch { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(14px, 2vw, 32px); align-items: start; margin-top: clamp(80px, 14vh, 160px); }
+.pp-hatch figcaption, .pp-steps span { display: block; margin-top: 12px; font-size: clamp(14px, 0.9vw, 20px); font-weight: 700; color: var(--ink3); }
 .pp-hatch-copy { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: clamp(20px, 4vw, 80px); margin-top: 12px; }
 .pp-hatch-copy h3 { font-size: clamp(28px, 3vw, 72px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.04; }
 .pp-hatch-copy p { font-size: clamp(17px, 1.15vw, 27px); line-height: 1.65; color: var(--ink2); max-width: 40ch; }
 
 /* The real crew card, four frames in a row */
-.pp-crewcard { margin-top: clamp(56px, 9vh, 110px); }
-.pp-crewcard img { width: 100%; height: auto; border-radius: 16px; border: 1px solid var(--line); }
-.pp-crewcard figcaption { margin-top: 16px; font-size: clamp(15px, 0.95vw, 21px); color: var(--ink3); }
+.pp-crewhome { margin: clamp(56px, 9vh, 110px) auto 0; width: min(100%, 124svh); }
+.pp-crewhome figcaption { margin-top: 18px; font-size: clamp(15px, 0.95vw, 21px); line-height: 1.55; color: var(--ink2); max-width: 60ch; }
+
+/* Eight Pips, each in its own colour, in its own words */
+.pp-pips { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(12px, 1.4vw, 24px); margin-top: clamp(40px, 7vh, 80px); }
+.pp-pips li { display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; background: var(--sheet); border: 1px solid var(--line); }
+.pp-pips img { width: 100%; aspect-ratio: 1; background: #091010; }
+.pp-pips li > div { padding: clamp(14px, 1.3vw, 22px); display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.pp-pips b { font-size: clamp(20px, 1.6vw, 34px); font-weight: 900; letter-spacing: -0.02em; color: var(--c); }
+.pp-pips p { font-size: clamp(14px, 0.9vw, 20px); line-height: 1.5; color: var(--ink2); }
+.pp-pips q { margin-top: auto; font-size: clamp(14px, 0.9vw, 20px); font-weight: 800; color: var(--ink); }
+.pp-pips q::before { content: '\201C'; } .pp-pips q::after { content: '\201D'; }
+
+/* Kimi, step by step */
+.pp-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(12px, 1.6vw, 28px); }
 
 /* Desktops: three real home screens, switched by scrolling */
 .pp-switch .pp-sticky { display: grid; place-items: center; }
@@ -417,7 +436,9 @@ html.sensory-active main.pp { background: var(--bg); z-index: 2; }
   .pp-mood .pp-pipvid { width: min(46svh, 92vw); }
   .pp-moods.is-still .pp-mood-view { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .pp-pair { grid-template-columns: minmax(0, 1fr); gap: 56px; }
-  .pp-hatch { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .pp-hatch { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .pp-pips { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pp-steps { grid-template-columns: minmax(0, 1fr); gap: 22px; }
   .pp-hatch-copy { grid-template-columns: minmax(0, 1fr); gap: 12px; margin-top: 18px; }
   .pp-notes { grid-template-columns: repeat(2, minmax(0, 1fr)); border-radius: 20px; }
   .pp-touch { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 14px; }
@@ -448,6 +469,7 @@ html.sensory-active main.pp { background: var(--bg); z-index: 2; }
   .pp-hub-list span { color: var(--ink3); font-weight: 600; text-align: right; }
 }
 @media (max-width: 560px) {
+  .pp-hatch { grid-template-columns: minmax(0, 1fr); gap: 22px; }
   .pp-touch { grid-template-columns: minmax(0, 1fr); gap: 32px; }
 }
 @media (max-width: 420px) {
