@@ -3,7 +3,7 @@ import localFont from 'next/font/local';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
 import AiMark from '../../components/AiMark';
 import { IcRead } from '../../components/Icons';
-import { HeroMeet, Opener, Moods, Clip, Desktops, PageFx, Touches, HatchSlides, PipPicker, type Mood, type HatchStep } from './PipFx';
+import { HeroMeet, Opener, Moods, Clip, Desktops, PageFx, Touches, HatchSlides, PipDeck, type Mood, type HatchStep } from './PipFx';
 import { Tab, Win, Flow } from './Parts';
 import './pip.css';
 
@@ -211,11 +211,14 @@ export default function PipPage() {
             media={<Tab><Clip src={V + 'switch'} poster={V + 'switch.webp'} className="pp-screen" label="On Mopi's desktop the pill at the top is pulled down into the spotlight bar, slides to Fizz's chip and lets go, and Fizz's desktop arrives; then the same from Fizz to Wavo" /></Tab>}>
             <p>Pull the pill at the top of the screen down and it opens into the spotlight bar, with a chip for every desktop. Slide to one and let go, and that desktop comes up with its own Pip, picture and work. Here I go from Mopi to Fizz, then on to Wavo.</p>
           </Row>
-          <Row title="Every Pip makes itself up" flip media={<HatchSlides steps={HATCH} />}>
-            <p>A new desktop starts as an egg. Its Pip invents a personality, a name, a body, a hat and a home picture to match, then hatches. A tap on its name shows the card it wrote about itself.</p>
-            <p>Here are eight of mine, in their own words.</p>
-          </Row>
-          <div data-pp-in><PipPicker pips={PIPS.map((p) => ({ ...p, img: I + 'pips/' + p.name.toLowerCase() + '.webp' }))} /></div>
+          <div className="pp-newpip" data-pp-in>
+            <div className="pp-newpip-copy">
+              <h3>Every Pip makes itself up</h3>
+              <p>A new desktop starts as an egg. Its Pip invents a personality, a name, a body, a hat and a home picture to match, then hatches. A tap on its name shows the card it wrote about itself. Here are eight of mine, in their own words.</p>
+              <PipDeck pips={PIPS.map((p) => ({ ...p, img: I + 'pips/' + p.name.toLowerCase() + '.webp' }))} />
+            </div>
+            <div className="pp-newpip-media"><HatchSlides steps={HATCH} /></div>
+          </div>
           <Row title="Ask Pip from anywhere"
             media={<Tab><Clip src={V + 'ask'} poster={V + 'ask.webp'} className="pp-screen" label="The spotlight bar pulled down over Riva's home screen, the question What's a good name for a cactus? typed and sent, then Riva's reply: Prickly Pete, Spike Lee or Sir Pokes-A-Lot" /></Tab>}>
             <p>The spotlight bar is also where you talk to Pip from anywhere: pull it down, or press Ctrl+Space on the keyboard, then type or speak. Here I ask Riva for a cactus name. The clip skips the few seconds she took to answer.</p>

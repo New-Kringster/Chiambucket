@@ -465,28 +465,65 @@ html.sensory-active main.pp { background: transparent; z-index: 2; }
 .pp-slides-cap span { grid-area: 1 / 1; opacity: 0; transition: opacity 0.35s; }
 .pp-slides-cap span.on { opacity: 1; }
 
-/* ── The Pips (PipPicker): a row of bodies, one card ── */
-.pp-picker { display: grid; gap: clamp(16px, 2.4vh, 28px); margin-top: clamp(56px, 9vh, 110px); }
-.pp-picker-row { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: clamp(6px, 0.9vw, 16px); }
-.pp-picker-row button { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 8px 12px; border-radius: 20px; border: 1px solid var(--line);
-  background: var(--sheet); color: var(--ink3); font: inherit; font-size: clamp(13px, 0.85vw, 19px); font-weight: 800; cursor: pointer;
-  transition: transform 0.3s var(--ease), border-color 0.3s, color 0.3s; }
-.pp-picker-row button img { width: 100%; aspect-ratio: 1; object-fit: contain; }
-.pp-picker-row button:hover { transform: translateY(-3px); color: var(--ink2); }
-.pp-picker-row button:active { transform: translateY(0) scale(0.97); }
-.pp-picker-row button.on { border-color: var(--c); color: var(--ink); transform: translateY(-5px); }
-.pp-picker-row button:focus-visible { outline: 2px solid var(--c); outline-offset: 3px; }
-.pp-picker-card { display: grid; width: min(100%, 860px); padding: clamp(22px, 2.4vw, 44px); border-radius: 28px; background: var(--sheet); border: 1px solid var(--line); }
-.pp-picker-card > div { grid-area: 1 / 1; display: flex; flex-direction: column; gap: 10px; opacity: 0; transform: translateY(8px); transition: opacity 0.3s, transform 0.4s var(--ease); }
-.pp-picker-card > div.on { opacity: 1; transform: none; }
-.pp-picker-card b { font-size: clamp(34px, 3.2vw, 72px); font-weight: 900; letter-spacing: -0.03em; line-height: 1; }
-.pp-picker-card em { font-style: normal; font-size: clamp(14px, 0.9vw, 20px); font-weight: 700; color: var(--ink3); }
-.pp-picker-card p { font-size: clamp(17px, 1.1vw, 25px); line-height: 1.6; color: var(--ink2); }
-.pp-picker-card q { margin-top: 4px; font-size: clamp(17px, 1.1vw, 25px); font-weight: 800; color: var(--ink); }
-.pp-picker-card q::before { content: '\201C'; } .pp-picker-card q::after { content: '\201D'; }
+/* ── Every Pip makes itself up: the copy with the deck under it, the slide beside, one grid ── */
+.pp-newpip { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: clamp(28px, 5vw, 96px); align-items: center; margin-top: clamp(80px, 15vh, 180px); }
+.pp-newpip-copy h3 { font-size: clamp(28px, 3vw, 72px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.04; color: var(--ink); text-wrap: balance; margin-bottom: 18px; }
+.pp-newpip-copy > p { font-size: clamp(17px, 1.15vw, 27px); line-height: 1.65; color: var(--ink2); max-width: 40ch; text-wrap: pretty; }
+.pp .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ── The Pips (PipDeck): a deck of their own cards ── */
+.pp-deck { width: min(100%, max(540px, 30vw)); margin-top: clamp(28px, 4vh, 48px); border-radius: 24px; }
+.pp-deck:focus-visible { outline: 2px solid var(--acc); outline-offset: 6px; }
+/* room above and right for the cards behind to peek out */
+.pp-deck-stack { display: grid; padding: 34px 46px 0 0; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.pp-deck-card { grid-area: 1 / 1; display: grid; grid-template-columns: 38% minmax(0, 1fr); gap: clamp(14px, 1.4vw, 24px); align-items: center;
+  padding: clamp(14px, 1.2vw, 20px); border-radius: 24px; background: var(--sheet);
+  border: 1px solid color-mix(in srgb, var(--c) 50%, var(--line));
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), 0 22px 44px -22px rgba(0, 0, 0, 0.95);
+  transform-origin: 30% 100%;
+  transform: translate(calc(var(--d) * 14px), calc(var(--d) * -11px)) rotate(calc(var(--d) * 2.2deg)) scale(calc(1 - var(--d) * 0.035));
+  opacity: var(--vis); transition: transform 0.5s var(--ease), opacity 0.4s; }
+.pp-deck-card.is-top { cursor: pointer; }
+.pp-deck-card > * { opacity: 0; transition: opacity 0.2s; }
+.pp-deck-card.is-top > * { opacity: 1; transition: opacity 0.3s 0.12s; }
+.pp-deck-pic { aspect-ratio: 1; border-radius: 18px; background: radial-gradient(circle at 50% 62%, color-mix(in srgb, var(--c) 30%, transparent), transparent 68%), #091010; }
+.pp-deck-pic img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+.pp-deck-txt { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.pp-deck-txt b { font-size: clamp(26px, 2.2vw, 48px); font-weight: 900; letter-spacing: -0.03em; line-height: 1; color: var(--c); }
+.pp-deck-txt em { font-style: normal; font-size: clamp(13px, 0.85vw, 18px); font-weight: 700; color: var(--ink3); }
+.pp-deck-txt p { margin-top: 4px; font-size: clamp(15px, 0.95vw, 21px); line-height: 1.5; color: var(--ink2); }
+.pp-deck-txt q { margin-top: 4px; font-size: clamp(15px, 0.95vw, 21px); font-weight: 800; color: var(--ink); }
+.pp-deck-txt q::before { content: '\201C'; } .pp-deck-txt q::after { content: '\201D'; }
+/* next: the top card flicks off to the left (it ends hidden at the back); previous: the back card comes in */
+.pp-deck-card.is-out { z-index: 20 !important; animation: ppDeckOut 0.5s var(--ease) both; }
+.pp-deck-card.is-in { animation: ppDeckIn 0.5s var(--ease) both; }
+@keyframes ppDeckOut { from { transform: none; opacity: 1; } to { transform: translate(-115%, 6%) rotate(-14deg); opacity: 0; } }
+@keyframes ppDeckIn { from { transform: translate(-115%, 6%) rotate(-14deg); opacity: 0; } to { transform: none; opacity: 1; } }
+.pp-deck-bar { display: flex; align-items: center; gap: 14px; margin-top: 20px; }
+.pp-deck-bar button { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: var(--sheet); color: var(--ink); cursor: pointer;
+  transition: transform 0.2s var(--ease), border-color 0.2s; }
+.pp-deck-bar button:hover { border-color: var(--acc); }
+.pp-deck-bar button:active { transform: scale(0.92); }
+.pp-deck-bar button:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+.pp-deck-bar svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.pp-deck-count { min-width: 4.5ch; text-align: center; font-size: clamp(15px, 0.95vw, 20px); font-weight: 800; color: var(--ink2); font-variant-numeric: tabular-nums; }
 @media (max-width: 900px) {
-  .pp-picker-row { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .pp-newpip { grid-template-columns: minmax(0, 1fr); gap: 32px; margin-top: 88px; }
+  .pp-deck-stack { padding: 30px 36px 0 0; }
+}
+/* phones: the deck sits centred under the copy */
+@media (max-width: 640px) {
+  .pp-deck { margin-inline: auto; }
+  .pp-deck-bar { justify-content: center; padding-right: 36px; }
+}
+@media (max-width: 560px) {
+  .pp-deck-card { grid-template-columns: minmax(0, 1fr); }
+  .pp-deck-pic { aspect-ratio: 16 / 9; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .pp-slides-step, .pp-slides-cap span, .pp-picker-card > div, .pp-picker-row button { transition: none; }
+  .pp-slides-step, .pp-slides-cap span { transition: none; }
+  /* the deck: only the top card, cross-fading */
+  .pp-deck-card { transform: none; transition: opacity 0.35s; animation: none !important; }
+  .pp-deck-card:not(.is-top) { opacity: 0; }
+  .pp-deck-card > *, .pp-deck-card.is-top > * { transition: none; }
 }

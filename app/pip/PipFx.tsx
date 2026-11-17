@@ -479,33 +479,76 @@ export function HatchSlides({ steps }: { steps: HatchStep[] }) {
   );
 }
 
-/* ── The Pips: a row of bodies; pick one to read the card it wrote about itself ── */
+/* ── The Pips: a deck of their own cards ──
+   All cards share one grid cell, so the deck is always as tall as its tallest card. The top card is
+   d = 0; the ones behind peek out by depth (offset, a little rotation and scale). Next flicks the top
+   card off to the left and it goes to the back; previous brings the back card in from the left.
+   Tap or click the top card, the arrows, a swipe or the arrow keys; it also deals itself slowly while
+   on screen until the reader touches it. Reduced motion: only the top card shows, cross-fading. */
 export type PipCard = { name: string; color: string; look: string; vibe: string; says: string; img: string };
-export function PipPicker({ pips }: { pips: PipCard[] }) {
-  const [i, setI] = useState(0);
-  const p = pips[i];
+export function PipDeck({ pips }: { pips: PipCard[] }) {
+  const n = pips.length;
+  const ref = useRef<HTMLDivElement>(null);
+  const [top, setTop] = useState(0);
+  const [fly, setFly] = useState<{ i: number; dir: 'out' | 'in'; k: number } | null>(null);
+  const [on, setOn] = useState(false);
+  const [held, setHeld] = useState(false);
+  const reduced = useReduced();
+  const swipe = useRef<{ x: number; y: number } | null>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setOn(e.isIntersecting), { threshold: 0.4 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  const step = (by: 1 | -1) => {
+    const next = (top + by + n) % n;
+    setFly({ i: by === 1 ? top : next, dir: by === 1 ? 'out' : 'in', k: Date.now() });
+    setTop(next);
+  };
+  const user = (by: 1 | -1) => { setHeld(true); step(by); };
+  useEffect(() => {
+    if (!on || held || reduced) return;
+    const t = window.setTimeout(() => step(1), 4200);
+    return () => window.clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [top, on, held, reduced]);
+  const p = pips[top];
   return (
-    <div className="pp-picker" style={{ ['--c' as string]: p.color } as CSSProperties}>
-      <div className="pp-picker-row" role="tablist" aria-label="Pips">
-        {pips.map((q, n) => (
-          <button key={q.name} type="button" role="tab" aria-selected={n === i} className={n === i ? 'on' : ''}
-            style={{ ['--c' as string]: q.color } as CSSProperties}
-            onClick={() => setI(n)} onMouseEnter={() => setI(n)} onFocus={() => setI(n)}>
-            <img src={q.img} alt={`${q.name}, ${q.look}`} loading="lazy" decoding="async" />
-            <span>{q.name}</span>
-          </button>
-        ))}
+    <div className="pp-deck" ref={ref} role="group" aria-roledescription="carousel" aria-label="Eight of my Pips"
+      tabIndex={0} onKeyDown={(e) => { if (e.key === 'ArrowRight') { e.preventDefault(); user(1); } else if (e.key === 'ArrowLeft') { e.preventDefault(); user(-1); } }}>
+      <div className="pp-deck-stack"
+        onPointerDown={(e) => { swipe.current = { x: e.clientX, y: e.clientY }; }}
+        onPointerUp={(e) => {
+          const s = swipe.current; swipe.current = null;
+          if (!s) return;
+          const dx = e.clientX - s.x, dy = e.clientY - s.y;
+          if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) user(dx < 0 ? 1 : -1);
+          else if (Math.abs(dx) < 8 && Math.abs(dy) < 8) user(1);
+        }}>
+        {pips.map((q, i) => {
+          const d = (i - top + n) % n;
+          const f = fly && fly.i === i ? ` is-${fly.dir}` : '';
+          return (
+            <article key={q.name} className={`pp-deck-card${d === 0 ? ' is-top' : ''}${f}`} aria-hidden={d !== 0}
+              style={{ ['--d' as string]: Math.min(d, 3), ['--vis' as string]: d <= 3 ? 1 : 0, ['--c' as string]: q.color, zIndex: n - d } as CSSProperties}
+              onAnimationEnd={() => setFly((x) => (x && x.i === i ? null : x))}>
+              <div className="pp-deck-pic"><img src={q.img} alt="" loading="lazy" decoding="async" draggable={false} /></div>
+              <div className="pp-deck-txt">
+                <b>{q.name}</b>
+                <em>{q.look}</em>
+                <p>{q.vibe}</p>
+                <q>{q.says}</q>
+              </div>
+            </article>
+          );
+        })}
       </div>
-      {/* every card is stacked in one cell, so the block keeps the tallest card's height */}
-      <div className="pp-picker-card" role="tabpanel" aria-live="polite">
-        {pips.map((q, n) => (
-          <div key={q.name} className={n === i ? 'on' : ''} aria-hidden={n !== i}>
-            <b style={{ color: q.color }}>{q.name}</b>
-            <em>{q.look}</em>
-            <p>{q.vibe}</p>
-            <q>{q.says}</q>
-          </div>
-        ))}
+      <div className="pp-deck-bar">
+        <button type="button" onClick={() => user(-1)} aria-label="Previous Pip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg></button>
+        <span className="pp-deck-count" aria-live="polite"><span className="sr-only">{p.name}, </span>{top + 1} / {n}</span>
+        <button type="button" onClick={() => user(1)} aria-label="Next Pip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg></button>
       </div>
     </div>
   );
