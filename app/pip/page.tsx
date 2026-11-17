@@ -141,8 +141,8 @@ export default function PipPage() {
             <p>Ask for a video with captions on and Pip opens it, glides its cursor to the captions button, then finds the speed setting in the gear menu. This is recorded from the browser Pip drives on my server. On the tablet, Pip sits beside this page and watches.</p>
           </Row>
           <Row title="It points things out" flip
-            media={<Tab><img className="pp-screen" src={I + 'point-nucleus.webp'} alt="A cell diagram on the Tab5 with Pip's gold arrow and a Nucleus label drawn over it, and Pip's reply below" loading="lazy" decoding="async" /></Tab>}>
-            <p>Handy for studying. Put up a cell diagram and ask where the nucleus is: Pip finds it by the diagram&rsquo;s own label and draws an arrow and a note over the page, stroke by stroke.</p>
+            media={<Tab><Clip src={V + 'point'} poster={V + 'point.webp'} className="pp-screen" label="An unlabelled animal cell diagram on the Tab5: Pip circles the two mitochondria with a Mitochondria note, then draws an arrow labelled Nucleus into the nucleus" /></Tab>}>
+            <p>Handy for studying. I put up an animal cell diagram with no labels and asked Pip to circle the mitochondria, then to show me the nucleus. Pip takes a screenshot of the page and looks at it, so it finds the parts from the picture itself, then draws circles, an arrow and a note over the diagram. This is the tablet&rsquo;s own screen, recorded in real time at a few frames a second.</p>
           </Row>
           <Row title="Answers you can read"
             media={<Tab><img className="pp-screen" src={I + 'markdown.webp'} alt="A formatted reply on the Tab5: a bold title, a list with bold leads, and a line in the talk bubble" loading="lazy" decoding="async" /></Tab>}>
