@@ -3,8 +3,8 @@ import localFont from 'next/font/local';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
 import AiMark from '../../components/AiMark';
 import { IcRead } from '../../components/Icons';
-import { HeroMeet, Opener, Moods, Clip, Desktops, PageFx, DeskSwitch, Touches, type Mood } from './PipFx';
-import { Tab, Win, Flow, Hub } from './Parts';
+import { HeroMeet, Opener, Moods, Clip, Desktops, PageFx, Touches, HatchSlides, PipPicker, type Mood, type HatchStep } from './PipFx';
+import { Tab, Win, Flow } from './Parts';
 import './pip.css';
 
 /* Pip's own typeface: the tablet's UI is set in Nunito (SIL Open Font License). Self-hosted, the
@@ -64,12 +64,13 @@ const MOODS: Mood[] = [
   { key: 'talk', name: 'Talking', line: 'Replies land in a bubble beside it, under the words it heard, with a soft chime.', clip: V + 'm-talk' },
 ];
 
-/* Three desktops, as the tablet showed them: each keeps its own Pip, picture and work. */
-const DESKS = [
-  { src: I + 'desk-mopi.webp', name: 'Mopi', color: C.cyan, alt: 'Mopi, a cyan cloud in glasses, on a misty lake' },
-  { src: I + 'desk-fizz.webp', name: 'Fizz', color: C.pink, alt: 'Fizz, a pink Pip in a party hat, on a meme with a finished task list' },
-  { src: I + 'desk-zebo.webp', name: 'Zebo', color: C.gold, alt: 'Zebo, a gold pear in a bow tie, thinking beside the YouTube video it is working on' },
-];
+/* A new desktop, step by step (HatchSlides), as the tablet showed it. */
+const HATCH: HatchStep[] = [
+  { src: V + 'newpip.webp', alt: 'The spotlight bar pulled down on Wavo\'s desktop, dragged past the last chip until a plus springs out; let go, and a new desktop arrives with an egg',
+    caption: 'Drag past the last chip for a new desktop', clip: { src: V + 'newpip', poster: V + 'newpip.webp', ms: 4400 } },
+  { src: I + 'hatch-riva.webp', alt: 'Riva, a gold heart in a crown, hatched, with her first line in a bubble', caption: 'The egg hatches with a first line' },
+  { src: I + 'icard-riva.webp', alt: "Riva's card on the Tab5, written by her: a swaggering golden rival, theatrical, competitive and loyal, with her catchphrase, likes and dislikes", caption: 'Tap its name for the card it wrote' },
+]
 
 /* Eight real Pips: the four on my desktops and four from the test desktops, from their own cards. */
 const PIPS = [
@@ -98,6 +99,7 @@ export default function PipPage() {
     <main className={`pp ${nunito.variable}`}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <PageFx />
+      <div className="pp-body">
       <Desktops items={CHAPTERS} />
 
       {/* ── The hero and 1. Meet Pip (cyan): one stage, the same Pip from the tablet's screen into the opener ── */}
@@ -179,7 +181,13 @@ export default function PipPage() {
             </figure>
           </div>
           <div className="pp-built" data-pp-in>
-            <h3>Built by Pip</h3>
+            <div className="pp-built-head">
+              <h3>Built by Pip</h3>
+              <figure className="pp-built-clip">
+                <Tab><Clip src={V + 'tictactoe'} poster={V + 'tictactoe.webp'} className="pp-screen" label="A game of Tic-Tac-Toe on the Tab5, X wins along the diagonal" /></Tab>
+                <figcaption>Tic-Tac-Toe, another app Pip built, being played on the tablet</figcaption>
+              </figure>
+            </div>
             <ul>
               <li><b>106 s</b><span>a pomodoro timer</span></li>
               <li><b>5 min</b><span>a reaction game in Lua, tested on the tablet</span></li>
@@ -198,45 +206,19 @@ export default function PipPage() {
       <Opener id="desktops" desk={3} color={C.lime} title="Desktops" clip={V + 'o-lime'} pipLabel="A lime Pip in a party hat throwing a paper plane"
         lede="One desktop for each conversation, each with its own Pip and its own colour." />
       <div className="pp-chapter" style={{ ['--acc' as string]: C.lime }}>
-        <DeskSwitch id="switch" desks={DESKS} />
         <div className="pp-wrap">
           <Row title="Pull down to switch" wide
-            media={<Tab><Clip src={V + 'spot-switch'} poster={V + 'spot-switch.webp'} className="pp-screen" label="A finger pulls the spotlight bar down from the pill at the top, slides across the desktop chips to Fizz and lets go" /></Tab>}>
-            <p>Pull the pill at the top of the screen down and it opens into the spotlight bar, with a chip for every desktop. Slide to one and let go to switch to it.</p>
+            media={<Tab><Clip src={V + 'switch'} poster={V + 'switch.webp'} className="pp-screen" label="On Mopi's desktop the pill at the top is pulled down into the spotlight bar, slides to Fizz's chip and lets go, and Fizz's desktop arrives; then the same from Fizz to Wavo" /></Tab>}>
+            <p>Pull the pill at the top of the screen down and it opens into the spotlight bar, with a chip for every desktop. Slide to one and let go, and that desktop comes up with its own Pip, picture and work. Here I go from Mopi to Fizz, then on to Wavo.</p>
           </Row>
-          <div className="pp-hatch" data-pp-in>
-            <figure>
-              <Tab><img className="pp-screen" src={I + 'hatch-egg.webp'} alt="A new desktop on the Tab5 with a gold egg labelled hatching" loading="lazy" decoding="async" /></Tab>
-              <figcaption>It starts as an egg</figcaption>
-            </figure>
-            <figure>
-              <Tab><img className="pp-screen" src={I + 'hatch-zebo.webp'} alt="Zebo, a gold pear with a bow tie, announcing that it has hatched" loading="lazy" decoding="async" /></Tab>
-              <figcaption>and hatches with a first line</figcaption>
-            </figure>
-            <figure>
-              <Tab><img className="pp-screen" src={I + 'icard-wavo.webp'} alt="Wavo's card on the Tab5: a laid-back surf-mathematician, chill, curious, precise, with how it talks, its catchphrase, likes and dislikes" loading="lazy" decoding="async" /></Tab>
-              <figcaption>Tap its name for the card it wrote</figcaption>
-            </figure>
-            <div className="pp-hatch-copy">
-              <h3>Every Pip makes itself up</h3>
-              <p>A new desktop starts as an egg. Its Pip invents a personality, a name, a body, a hat and a home picture to match, then hatches. A tap on its name shows the card it wrote about itself. These are eight of mine, in their own words.</p>
-            </div>
-          </div>
-          <ul className="pp-pips" data-pp-in>
-            {PIPS.map((p) => (
-              <li key={p.name} style={{ ['--c' as string]: p.color }}>
-                <img src={I + 'pips/' + p.name.toLowerCase() + '.webp'} alt={`${p.name}, ${p.look}`} loading="lazy" decoding="async" />
-                <div>
-                  <b>{p.name}</b>
-                  <p>{p.vibe}</p>
-                  <q>{p.says}</q>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <Row title="Every Pip makes itself up" flip media={<HatchSlides steps={HATCH} />}>
+            <p>A new desktop starts as an egg. Its Pip invents a personality, a name, a body, a hat and a home picture to match, then hatches. A tap on its name shows the card it wrote about itself.</p>
+            <p>Here are eight of mine, in their own words.</p>
+          </Row>
+          <div data-pp-in><PipPicker pips={PIPS.map((p) => ({ ...p, img: I + 'pips/' + p.name.toLowerCase() + '.webp' }))} /></div>
           <Row title="Ask Pip from anywhere"
-            media={<Tab><Clip src={V + 'spot-plus'} poster={V + 'spot-plus.webp'} className="pp-screen" label="The spotlight bar pulled down, a finger slides past the last desktop chip until a plus bubble springs out, and a new desktop slides in with an egg" /></Tab>}>
-            <p>The spotlight bar is also where you talk to Pip from anywhere: pull it down, or press Ctrl+Space on the keyboard, and type or speak. Drag past the last chip and a plus springs out; let go and a new desktop slides in, with a new Pip ready to hatch.</p>
+            media={<Tab><Clip src={V + 'ask'} poster={V + 'ask.webp'} className="pp-screen" label="The spotlight bar pulled down over Riva's home screen, the question What's a good name for a cactus? typed and sent, then Riva's reply: Prickly Pete, Spike Lee or Sir Pokes-A-Lot" /></Tab>}>
+            <p>The spotlight bar is also where you talk to Pip from anywhere: pull it down, or press Ctrl+Space on the keyboard, then type or speak. Here I ask Riva for a cactus name. The clip skips the few seconds she took to answer.</p>
           </Row>
           <Row title="A control centre" flip
             media={<Tab><Clip src={V + 'control'} poster={V + 'control.webp'} className="pp-screen" label="The control centre dropping down over the thermometer app, then its settings page" /></Tab>}>
@@ -283,9 +265,6 @@ export default function PipPage() {
           <div className="pp-how" data-pp-in>
             <Flow />
           </div>
-          <Row title="Pip in the middle" flip media={<Hub />}>
-            <p>Pip is the hub: it can see my coding sessions, hand work to subagents, open applets and talk to the other Pips, and tells me with a chime when something needs me.</p>
-          </Row>
           <div className="pp-hw" data-pp-in>
             <div>
               <h3>On the Tab5, working</h3>
@@ -301,15 +280,13 @@ export default function PipPage() {
             </div>
           </div>
           <div className="pp-next" data-pp-in>
-            <h3>Coming next</h3>
-            <ul>
-              <li><b>Interrupting with my voice.</b> Talking over Pip mid-job to change course. It is built, but not tested on the tablet yet.</li>
-              <li><b>Agents from other places.</b> Kimi Code already joins the crew when Pip starts it. Next: agents I start myself and agents on other machines checking in, and Pip answering their questions for me.</li>
-              <li><b>The rest of the hardware.</b> USB, the headphone jack, ESP-NOW, BLE and UART, each in an applet of its own.</li>
-            </ul>
+            <h3>Still in progress</h3>
+            <p>Pip is still being built, and it changes most weeks. Instructions for deploying your own will be added here in the future.</p>
           </div>
-          <p className="pp-credit" data-pp-in>The Tab5 in 3D at the top of this page is built on M5Stack&rsquo;s own Tab5 structure model from <a href="https://github.com/m5stack/M5_Hardware" target="_blank" rel="noopener">M5_Hardware</a> (MIT licence, copyright M5Stack), with the glass, screen and back added. Pip&rsquo;s animations are rendered from the firmware&rsquo;s actual drawing code. The screenshots come from the tablet itself, and the browser clips are screen recordings of Pip&rsquo;s headless browser on the DSH host PC.</p>
+          <p className="pp-credit" data-pp-in>The Tab5 in 3D at the top of this page is built on M5Stack&rsquo;s own Tab5 structure model from <a href="https://github.com/m5stack/M5_Hardware" target="_blank" rel="noopener">M5_Hardware</a> (MIT licence, copyright M5Stack), with the glass, screen and back added. Pip&rsquo;s animations are rendered from the firmware&rsquo;s actual drawing code. The screenshots and most clips come from the tablet&rsquo;s own screen. The gesture clips were recorded with the tablet slowed down 50 times and played back at true speed, so Pip&rsquo;s own small movements in them run fast. The browser clips are screen recordings of Pip&rsquo;s headless browser on the DSH host PC.</p>
         </div>
+      </div>
+
       </div>
 
       <ArticleRecommendations exclude="proj-pip" />

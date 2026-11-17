@@ -16,6 +16,7 @@
   the hero is a still frame, loops show their posters.
 */
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { Tab } from './Parts';
 
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 
@@ -350,7 +351,11 @@ export function PageFx() {
     if (nav) ro.observe(nav);
     const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -12% 0px' });
     document.querySelectorAll('[data-pp-in]').forEach((el) => io.observe(el));
-    return () => { ro.disconnect(); io.disconnect(); html.classList.remove('pp-route'); html.style.removeProperty('--pp-nav'); };
+    // the night scene only shows at the end, behind the recommendations and the footer
+    const end = document.querySelector('.pp > .arec-section');
+    const eo = new IntersectionObserver(([e]) => html.classList.toggle('pp-end', e.isIntersecting), { rootMargin: '0px 0px 100% 0px' });
+    if (end) eo.observe(end);
+    return () => { ro.disconnect(); io.disconnect(); eo.disconnect(); html.classList.remove('pp-route', 'pp-end'); html.style.removeProperty('--pp-nav'); };
   }, []);
   return null;
 }
@@ -379,59 +384,18 @@ export function Opener({ id, desk, color, title, lede, clip, pipLabel }: {
   );
 }
 
-/* ── Desktops: scroll through three real home screens, each sliding in like a desktop switch ── */
-export function DeskSwitch({ desks, id }: { desks: Array<{ src: string; name: string; color: string; alt: string }>; id?: string }) {
-  const [beat, setBeat] = useState(0);
-  const reduced = useReduced();
-  return (
-    <Stage id={id} className="pp-switch" screens={desks.length * 0.75 + 1} beats={desks.length} onBeat={setBeat} label="Three of my desktops">
-      <div className="pp-switch-in" style={{ ['--acc' as string]: desks[beat].color }}>
-        <div className="pp-tab" data-no-zoom>
-          <i className="pp-tab-glass" aria-hidden="true" />
-          <div className="pp-tab-screen">
-            <div className="pp-switch-strip" style={{ transform: reduced ? undefined : `translateX(${-beat * 100}%)` }}>
-              {desks.map((d) => <img key={d.name} src={d.src} alt={d.alt} loading="lazy" decoding="async" />)}
-            </div>
-          </div>
-          <i className="pp-tab-cam" aria-hidden="true" />
-        </div>
-        <div className="pp-switch-pill" aria-hidden="true">
-          {desks.map((d, i) => <i key={d.name} className={i === beat ? 'on' : undefined} style={{ ['--c' as string]: d.color }} />)}
-        </div>
-        <p className="pp-switch-name" aria-live="polite"><b style={{ color: desks[beat].color }}>{desks[beat].name}</b></p>
-      </div>
-    </Stage>
-  );
-}
 
-/* ── Touches, shown: a fingertip on a zoomed-in piece of the real screen ──
+/* ── Touches, shown: a contact disc on a zoomed-in piece of the real screen ──
    Each cell is a real hub frame with the tablet's own touch marks drawn over it at their real sizes
    (main.cpp: a blue #39B2FF dot of radius 13 at once, a 5 px blue trail while dragging; canvas.js: a
    44 px green ring where the click landed). CSS keyframes, transform and opacity only, paused while
-   the row is off screen; reduced motion shows each cell's final state. */
-function Finger() {
-  return (
-    <svg className="pp-tc-fsvg" viewBox="0 0 120 300" aria-hidden="true">
-      <defs>
-        <linearGradient id="pp-skin" x1="0" x2="1" y1="0" y2="0">
-          <stop offset="0" stopColor="#b97c62" /><stop offset="0.45" stopColor="#ecc0a3" /><stop offset="1" stopColor="#c98a6d" />
-        </linearGradient>
-      </defs>
-      <g transform="rotate(-24 60 26)">
-        <ellipse cx="66" cy="160" rx="44" ry="150" fill="#000" opacity="0.28" className="pp-tc-shadow" />
-        <path d="M22 300 L22 66 C22 30 40 8 60 8 C80 8 98 30 98 66 L98 300 Z" fill="url(#pp-skin)" />
-        <rect x="38" y="20" width="44" height="54" rx="20" fill="#f7dfd1" opacity="0.9" />
-        <path d="M42 70 Q60 80 78 70" stroke="#c48a70" strokeWidth="2" fill="none" opacity="0.6" />
-      </g>
-    </svg>
-  );
-}
-
+   the row is off screen; reduced motion shows each cell's final state. The touch itself is a soft
+   contact disc about a fingertip wide (~9 mm on the 110.7 mm panel), pressing in at the touch point. */
 const TOUCHES = [
-  { k: 'tap', img: '/images/pip/touch-docs.webp', title: 'Taps show.', text: 'A tap lands as a blue dot, then a green ring once the page has reacted.', alt: 'A fingertip tapping the close button of a help popup on a web page, a blue dot, then a green ring' },
-  { k: 'drag', img: '/images/pip/touch-full.webp', title: 'Drags show.', text: 'A drag leaves a blue line behind the finger while the page scrolls.', alt: 'A fingertip dragging down a web page, leaving a blue line' },
-  { k: 'expand', img: '/images/pip/touch-pane.webp', img2: '/images/pip/touch-full.webp', title: 'Any pane expands.', text: 'Tap Expand and the pane grows to the full screen.', alt: 'A fingertip tapping Expand on a pane, which grows to the full screen' },
-  { k: 'back', img: '/images/pip/touch-pane.webp', img2: '/images/pip/touch-full.webp', title: 'Back is always the same.', text: 'A swipe from left to right goes back, wherever you are.', alt: 'A fingertip swiping from left to right, sliding the screen back to the one before' },
+  { k: 'tap', img: '/images/pip/touch-docs.webp', title: 'Taps show.', text: 'A tap lands as a blue dot, then a green ring once the page has reacted.', alt: 'A touch on the round help button of the M5Stack Tab5 page: a blue dot, then a green ring' },
+  { k: 'drag', img: '/images/pip/touch-full.webp', title: 'Drags show.', text: 'A drag leaves a blue line behind the finger while the page scrolls.', alt: 'A touch dragging down the M5Stack Tab5 page, leaving a blue line' },
+  { k: 'expand', img: '/images/pip/touch-pane.webp', img2: '/images/pip/touch-full.webp', title: 'Any pane expands.', text: 'Tap Expand and the pane grows to the full screen.', alt: 'A touch on Expand on a pane, which grows to the full screen' },
+  { k: 'back', img: '/images/pip/touch-pane.webp', img2: '/images/pip/touch-full.webp', title: 'Back is always the same.', text: 'A swipe from left to right goes back, wherever you are.', alt: 'A touch swiping from left to right, sliding the screen back to the one before' },
 ];
 
 export function Touches() {
@@ -455,11 +419,94 @@ export function Touches() {
               {t.k === 'drag' && <i className="pp-tc-trail" />}
               {(t.k === 'tap' || t.k === 'expand') && <><i className="pp-tc-dot" /><i className="pp-tc-ring" /></>}
             </div>
-            <div className="pp-tc-hand"><span className="pp-tc-finger"><span className="pp-tc-fm"><Finger /></span></span></div>
+            <div className="pp-tc-hand"><span className="pp-tc-finger"><i className="pp-tc-fm" /></span></div>
           </div>
           <p><b>{t.title}</b> {t.text}</p>
         </li>
       ))}
     </ul>
+  );
+}
+
+/* ── A new Pip, step by step: one Tab5 screen that walks through the steps ──
+   Each step is a real still or clip from the tablet. It advances on its own while on screen (a clip
+   step waits for its clip's length), and the dots or a tap on the screen step it by hand, which
+   pauses the auto-advance. Reduced motion: no auto-advance, the dots still work. */
+export type HatchStep = { src: string; alt: string; caption: string; clip?: { src: string; poster: string; ms: number } };
+export function HatchSlides({ steps }: { steps: HatchStep[] }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [i, setI] = useState(0);
+  const [on, setOn] = useState(false);
+  const [held, setHeld] = useState(false);
+  const reduced = useReduced();
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setOn(e.isIntersecting), { threshold: 0.35 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  useEffect(() => {
+    if (!on || held || reduced) return;
+    const t = window.setTimeout(() => setI((n) => (n + 1) % steps.length), steps[i].clip?.ms ?? 3600);
+    return () => window.clearTimeout(t);
+  }, [i, on, held, reduced, steps]);
+  const go = (n: number) => { setHeld(true); setI(n); };
+  return (
+    <div className="pp-slides" ref={ref}>
+      <Tab>
+        <button type="button" className="pp-slides-scr" onClick={() => go((i + 1) % steps.length)} aria-label="Next step">
+          {steps.map((s, n) => (
+            <span key={s.src} className={`pp-slides-step${n === i ? ' on' : ''}`} aria-hidden={n !== i}>
+              {s.clip
+                ? <Clip src={s.clip.src} poster={s.clip.poster} className="pp-screen" label={s.alt} active={n === i && on} />
+                : <img className="pp-screen" src={s.src} alt={s.alt} loading="lazy" decoding="async" />}
+            </span>
+          ))}
+        </button>
+      </Tab>
+      <div className="pp-slides-foot">
+        <div className="pp-slides-dots" role="tablist" aria-label="Steps">
+          {steps.map((s, n) => (
+            <button key={s.src} type="button" role="tab" aria-selected={n === i} aria-label={s.caption} className={n === i ? 'on' : ''} onClick={() => go(n)} />
+          ))}
+        </div>
+        <p className="pp-slides-cap" aria-live="polite">
+          {steps.map((s, n) => <span key={s.src} className={n === i ? 'on' : ''}>{s.caption}</span>)}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ── The Pips: a row of bodies; pick one to read the card it wrote about itself ── */
+export type PipCard = { name: string; color: string; look: string; vibe: string; says: string; img: string };
+export function PipPicker({ pips }: { pips: PipCard[] }) {
+  const [i, setI] = useState(0);
+  const p = pips[i];
+  return (
+    <div className="pp-picker" style={{ ['--c' as string]: p.color } as CSSProperties}>
+      <div className="pp-picker-row" role="tablist" aria-label="Pips">
+        {pips.map((q, n) => (
+          <button key={q.name} type="button" role="tab" aria-selected={n === i} className={n === i ? 'on' : ''}
+            style={{ ['--c' as string]: q.color } as CSSProperties}
+            onClick={() => setI(n)} onMouseEnter={() => setI(n)} onFocus={() => setI(n)}>
+            <img src={q.img} alt={`${q.name}, ${q.look}`} loading="lazy" decoding="async" />
+            <span>{q.name}</span>
+          </button>
+        ))}
+      </div>
+      {/* every card is stacked in one cell, so the block keeps the tallest card's height */}
+      <div className="pp-picker-card" role="tabpanel" aria-live="polite">
+        {pips.map((q, n) => (
+          <div key={q.name} className={n === i ? 'on' : ''} aria-hidden={n !== i}>
+            <b style={{ color: q.color }}>{q.name}</b>
+            <em>{q.look}</em>
+            <p>{q.vibe}</p>
+            <q>{q.says}</q>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

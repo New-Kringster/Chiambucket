@@ -8,8 +8,9 @@
    status, as on the tablet.
    ──────────────────────────────────────────────────────────────── */
 html.pp-route body { background: #000; }
-/* The painted night scene would only paint behind an opaque page. */
-html.pp-route .sl-scene { display: none; }
+/* The page is the black of the screen until the end, where it fades out into the painted night scene
+   behind the recommendations and the footer, like the other articles. The scene is hidden until then. */
+html.pp-route:not(.pp-end) .sl-scene { visibility: hidden; }
 
 .pp {
   --bg: #000;
@@ -28,7 +29,6 @@ html.pp-route .sl-scene { display: none; }
   --ease: cubic-bezier(0.2, 0.9, 0.25, 1);
   position: relative;
   z-index: 2;
-  background: var(--bg);
   color: var(--ink);
   font-family: var(--pp-font), Nunito, system-ui, sans-serif;
   font-weight: 500;
@@ -36,7 +36,11 @@ html.pp-route .sl-scene { display: none; }
   overflow-x: clip;
 }
 /* The site makes every main transparent over its painted scene; this page is the black of the screen. */
-html.sensory-active main.pp { background: var(--bg); z-index: 2; }
+html.sensory-active main.pp { background: transparent; z-index: 2; }
+.pp-body { background: var(--bg); }
+.pp > .arec-section { position: relative; isolation: isolate; border-top: 0; }
+.pp > .arec-section::before { content: ''; position: absolute; left: 0; right: 0; top: 0; z-index: -1; height: min(45svh, 420px); pointer-events: none;
+  background: linear-gradient(to bottom, #000, rgba(0, 0, 0, 0.62) 45%, rgba(0, 0, 0, 0)); }
 /* The site sets a face on every element; inherit ours (the recommendations keep theirs). */
 .pp > :not(.arec-section), .pp > :not(.arec-section) * { font-family: inherit; }
 .pp *, .pp *::before, .pp *::after { box-sizing: border-box; }
@@ -123,8 +127,14 @@ html.sensory-active main.pp { background: var(--bg); z-index: 2; }
 .pp-chapter { padding: 2vh 0 clamp(80px, 14vh, 180px); }
 .pp-row { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 96px); align-items: center; margin: clamp(80px, 15vh, 180px) 0 0; }
 .pp-row.flip .pp-row-media { order: 2; }
-.pp-row.wide { grid-template-columns: minmax(0, 1fr); gap: clamp(24px, 4vh, 44px); width: min(100%, 124svh); margin-inline: auto; }
-.pp-row.wide .pp-row-copy { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: clamp(20px, 4vw, 80px); align-items: start; }
+/* wide rows: the media is sized to the screen and centred; the copy runs the full measure beneath it,
+   heading left, text right, with room to breathe */
+.pp-row.wide { grid-template-columns: minmax(0, 1fr); gap: clamp(32px, 6vh, 72px); }
+.pp-row.wide .pp-row-media { width: min(100%, 118svh); margin-inline: auto; }
+.pp-row.wide .pp-row-copy { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: clamp(28px, 6vw, 140px); align-items: start; width: min(100%, 150svh); margin-inline: auto; }
+.pp-row.wide .pp-row-copy p { max-width: 60ch; }
+/* the browser window: its whole height (bar + 808:616 page) fits in 80% of the screen */
+.pp-row.wide .pp-win { width: min(100%, calc((80svh - 50px) * 808 / 616)); margin-inline: auto; }
 .pp-row h3, .pp-built h3, .pp-hw h3, .pp-next h3 { font-size: clamp(28px, 3vw, 72px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.04; color: var(--ink); text-wrap: balance; }
 .pp-row p, .pp-built > p { font-size: clamp(17px, 1.15vw, 27px); line-height: 1.65; color: var(--ink2); max-width: 38ch; text-wrap: pretty; }
 .pp-row:not(.wide) h3 { margin-bottom: 18px; }
@@ -168,7 +178,7 @@ html.sensory-active main.pp { background: var(--bg); z-index: 2; }
 .pp-notes li { background: var(--sheet); padding: clamp(18px, 1.8vw, 30px); font-size: clamp(15px, 0.95vw, 21px); line-height: 1.5; color: var(--ink2); }
 .pp-notes b { display: block; margin-bottom: 6px; color: var(--ink); font-weight: 800; font-size: 1.08em; }
 
-/* Touches, shown (Touches in PipFx): real hub frames, the tablet's own marks at real size, a fingertip.
+/* Touches, shown (Touches in PipFx): real hub frames, the tablet's own marks at real size, a contact disc for the touch.
    Per cell: --px/--py the action point on the frame, --z the zoom about --ox/--oy. */
 .pp-touchwrap { margin-top: clamp(80px, 14vh, 160px); }
 .pp-touch { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(14px, 1.6vw, 28px); }
@@ -185,15 +195,16 @@ html.sensory-active main.pp { background: var(--bg); z-index: 2; }
 .pp-tc-scr { container-type: inline-size; }
 .pp-tc-ring { border-width: calc(0.3125cqi); }
 .pp-tc-hand { position: absolute; inset: 0; pointer-events: none; }
-.pp-tc-finger { position: absolute; width: var(--fw, 15%); left: calc(var(--ox, 50%) + (var(--px) - var(--ox, 50%)) * var(--z, 1)); top: calc(var(--oy, 50%) + (var(--py) - var(--oy, 50%)) * var(--z, 1)); transform: translate(-50%, -8.7%); }
-.pp-tc-fm { display: block; }
-.pp-tc-fsvg { display: block; width: 100%; height: auto; overflow: visible; }
-.pp-tc-shadow { filter: blur(6px); }
+.pp-tc-finger { position: absolute; width: var(--tw, 7.5%); aspect-ratio: 1; left: calc(var(--ox, 50%) + (var(--px) - var(--ox, 50%)) * var(--z, 1)); top: calc(var(--oy, 50%) + (var(--py) - var(--oy, 50%)) * var(--z, 1)); transform: translate(-50%, -50%); }
+/* the contact: a pale disc with a dark hairline so it reads on white pages and dark ones alike */
+.pp-tc-fm { display: block; width: 100%; height: 100%; border-radius: 50%; opacity: 0;
+  background: radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.72) 0 38%, rgba(255, 255, 255, 0.42) 70%, rgba(255, 255, 255, 0.28) 100%);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.22), inset 0 0 0 1.5px rgba(255, 255, 255, 0.9), 0 3px 10px rgba(0, 0, 0, 0.32); }
 
-.pp-tc.is-tap { --px: 40.6%; --py: 38.1%; --z: 2.2; --ox: 40.6%; --oy: 38.1%; --fw: 17%; }
-.pp-tc.is-drag { --px: 62%; --py: 30%; --z: 2.2; --ox: 62%; --oy: 38%; --fw: 17%; }
-.pp-tc.is-expand { --px: 36.9%; --py: 10.6%; --z: 1; --fw: 12%; }
-.pp-tc.is-back { --px: 6%; --py: 56%; --z: 1; --fw: 12%; }
+.pp-tc.is-tap { --px: 45.1%; --py: 32.4%; --z: 2.2; --ox: 45.1%; --oy: 36%; --tw: 16%; }
+.pp-tc.is-drag { --px: 62%; --py: 30%; --z: 2.2; --ox: 62%; --oy: 38%; --tw: 16%; }
+.pp-tc.is-expand { --px: 45.3%; --py: 10.6%; --z: 1; --tw: 7.5%; }
+.pp-tc.is-back { --px: 6%; --py: 56%; --z: 1; --tw: 7.5%; }
 
 /* The loops: 3.6 s each, paused off screen */
 .pp-tc * { animation-duration: 3.6s; animation-iteration-count: infinite; animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); animation-play-state: paused; }
@@ -202,13 +213,11 @@ html.sensory-active main.pp { background: var(--bg); z-index: 2; }
 .is-tap .pp-tc-dot, .is-expand .pp-tc-dot { animation-name: tcDot; }
 .is-tap .pp-tc-ring, .is-expand .pp-tc-ring { animation-name: tcRing; }
 @keyframes tcFingerTap {
-  0% { transform: translate(55%, 60%); opacity: 0; }
-  14% { opacity: 1; }
-  26% { transform: translate(0, 0) scale(1); }
-  31% { transform: translate(0, 0) scale(0.93); }
-  40% { transform: translate(8%, 9%) scale(1); }
-  66% { transform: translate(12%, 13%); opacity: 1; }
-  82%, 100% { transform: translate(55%, 60%); opacity: 0; }
+  0%, 16% { opacity: 0; transform: scale(1.4); }
+  26% { opacity: 1; transform: scale(1); }
+  31% { transform: scale(0.86); }
+  40% { opacity: 1; transform: scale(1); }
+  52%, 100% { opacity: 0; transform: scale(1.25); }
 }
 @keyframes tcDot { 0%, 29% { opacity: 0; transform: scale(0.4); } 31% { opacity: 1; transform: scale(1); } 44% { opacity: 1; } 52%, 100% { opacity: 0; } }
 @keyframes tcRing { 0%, 42% { opacity: 0; transform: scale(0.55); } 48% { opacity: 1; transform: scale(1); } 74% { opacity: 1; } 86%, 100% { opacity: 0; } }
@@ -223,13 +232,10 @@ html.sensory-active main.pp { background: var(--bg); z-index: 2; }
 @keyframes tcDragHand { 0%, 26% { transform: translateY(0); } 66%, 100% { transform: translateY(35.2%); } }
 .is-drag .pp-tc-fm { animation-name: tcFingerDrag; }
 @keyframes tcFingerDrag {
-  0% { transform: translate(45%, 55%); opacity: 0; }
-  12% { opacity: 1; }
-  24% { transform: translate(0, 0) scale(1); }
-  26% { transform: translate(0, 0) scale(0.95); }
-  66% { transform: translate(0, 0) scale(0.95); }
-  72% { transform: translate(6%, 6%) scale(1); opacity: 1; }
-  86%, 100% { transform: translate(45%, 55%); opacity: 0; }
+  0%, 14% { opacity: 0; transform: scale(1.4); }
+  24% { opacity: 1; transform: scale(1); }
+  27%, 66% { opacity: 1; transform: scale(0.9); }
+  78%, 100% { opacity: 0; transform: scale(1.25); }
 }
 
 /* Expand: tap Expand, the pane grows from where it was to the whole screen */
@@ -266,45 +272,18 @@ html.sensory-active main.pp { background: var(--bg); z-index: 2; }
 .pp-zoomlist::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, transparent 62%, rgba(0, 0, 0, 0.55)); }
 
 /* A new Pip hatching: two screens and the words */
-.pp-hatch { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(14px, 2vw, 32px); align-items: start; margin-top: clamp(80px, 14vh, 160px); }
-.pp-hatch figcaption, .pp-steps span { display: block; margin-top: 12px; font-size: clamp(14px, 0.9vw, 20px); font-weight: 700; color: var(--ink3); }
-.pp-hatch-copy { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: clamp(20px, 4vw, 80px); margin-top: 12px; }
-.pp-hatch-copy h3 { font-size: clamp(28px, 3vw, 72px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.04; }
-.pp-hatch-copy p { font-size: clamp(17px, 1.15vw, 27px); line-height: 1.65; color: var(--ink2); max-width: 40ch; }
 
 /* The real crew card, four frames in a row */
 .pp-crewhome { margin: clamp(56px, 9vh, 110px) auto 0; width: min(100%, 124svh); }
 .pp-crewhome figcaption { margin-top: 18px; font-size: clamp(15px, 0.95vw, 21px); line-height: 1.55; color: var(--ink2); max-width: 60ch; }
 
 /* Eight Pips, each in its own colour, in its own words */
-.pp-pips { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(12px, 1.4vw, 24px); margin-top: clamp(40px, 7vh, 80px); }
-.pp-pips li { display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; background: var(--sheet); border: 1px solid var(--line); }
-.pp-pips img { width: 100%; aspect-ratio: 1; background: #091010; }
-.pp-pips li > div { padding: clamp(14px, 1.3vw, 22px); display: flex; flex-direction: column; gap: 8px; flex: 1; }
-.pp-pips b { font-size: clamp(20px, 1.6vw, 34px); font-weight: 900; letter-spacing: -0.02em; color: var(--c); }
-.pp-pips p { font-size: clamp(14px, 0.9vw, 20px); line-height: 1.5; color: var(--ink2); }
-.pp-pips q { margin-top: auto; font-size: clamp(14px, 0.9vw, 20px); font-weight: 800; color: var(--ink); }
-.pp-pips q::before { content: '\201C'; } .pp-pips q::after { content: '\201D'; }
 
 /* Kimi, step by step */
+.pp-steps span { display: block; margin-top: 12px; font-size: clamp(14px, 0.9vw, 20px); font-weight: 700; color: var(--ink3); }
 .pp-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(12px, 1.6vw, 28px); }
 
 /* Desktops: three real home screens, switched by scrolling */
-.pp-switch .pp-sticky { display: grid; place-items: center; }
-.pp-switch-in { width: min(var(--wrap), 128svh); display: flex; flex-direction: column; align-items: center; gap: clamp(14px, 2.4vh, 26px); padding-top: var(--pp-nav, 72px); }
-.pp-switch-in .pp-tab { width: 100%; transition: box-shadow 0.6s ease; }
-.pp-switch-strip { display: flex; width: 100%; height: 100%; transition: transform 0.62s cubic-bezier(0.34, 1.32, 0.5, 1); }
-.pp-switch-strip img { flex: 0 0 100%; width: 100%; height: 100%; object-fit: cover; }
-.pp-switch-pill { display: flex; gap: 8px; padding: 8px 12px; border-radius: 999px; background: var(--sheet); border: 1px solid var(--line); }
-.pp-switch-pill i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); opacity: 0.3; transition: opacity 0.3s ease, transform 0.4s var(--ease); }
-.pp-switch-pill i.on { opacity: 1; transform: scale(1.25); }
-.pp-switch-name { font-size: clamp(22px, 2vw, 44px); font-weight: 900; letter-spacing: -0.03em; }
-.pp-switch.is-still .pp-sticky { min-height: 0; padding: 10vh 0; }
-.pp-switch.is-still .pp-tab { aspect-ratio: auto; background: none; box-shadow: none; }
-.pp-switch.is-still .pp-tab-glass, .pp-switch.is-still .pp-tab-cam, .pp-switch.is-still .pp-tab::after, .pp-switch.is-still .pp-switch-pill, .pp-switch.is-still .pp-switch-name { display: none; }
-.pp-switch.is-still .pp-tab-screen { position: static; width: 100%; height: auto; }
-.pp-switch.is-still .pp-switch-strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-.pp-switch.is-still .pp-switch-strip img { border-radius: 12px; height: auto; }
 
 /* Strips of pips (props, the crew) sit straight on the black */
 .pp-strip { height: auto; aspect-ratio: auto; }
@@ -335,24 +314,21 @@ html.sensory-active main.pp { background: var(--bg); z-index: 2; }
 .pp-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(24px, 4vw, 64px); margin-top: clamp(80px, 14vh, 160px); }
 .pp-pair figcaption { margin-top: 22px; font-size: clamp(16px, 1.05vw, 25px); line-height: 1.6; color: var(--ink2); max-width: 40ch; }
 .pp-pair figcaption b { color: var(--ink); font-weight: 800; }
-/* the video call: the MacBook behind, the Tab5 in front at lower left */
-.pp-call { position: relative; aspect-ratio: 3 / 2; }
-.pp-call-mac { position: absolute; top: 0; right: 0; width: 84%; height: auto; }
-.pp-call .pp-call-tab { position: absolute; left: 0; bottom: 0; width: 50%; z-index: 1; }
+/* the video call: the Tab5 is the picture; the MacBook peeks out behind it, top right, with its
+   browser bar, a sliver of the call, the preview panel and its chin still showing.
+   In container widths: the Mac is 70 wide (0.428 tall), the Tab5 80 wide (0.5 tall) from 0.07 down. */
+.pp-call { position: relative; aspect-ratio: 100 / 57; }
+.pp-call-mac { position: absolute; top: 0; right: 0; width: 70%; height: auto; }
+.pp-call .pp-call-tab { position: absolute; left: 0; top: 12.28%; width: 80%; z-index: 1; filter: drop-shadow(-6px 22px 34px rgba(0, 0, 0, 0.6)); }
 .pp-built { margin-top: clamp(80px, 14vh, 160px); }
+/* the heading with a small clip of one of Pip's apps beside it */
+.pp-built-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 30%); gap: clamp(20px, 4vw, 64px); align-items: end; }
+.pp-built-clip figcaption { margin-top: 10px; font-size: clamp(13px, 0.85vw, 18px); font-weight: 700; color: var(--ink3); }
+@media (max-width: 640px) { .pp-built-head { grid-template-columns: minmax(0, 1fr); } .pp-built-clip { width: min(100%, 360px); } }
 .pp-built ul { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin: clamp(24px, 4vh, 40px) 0; border-radius: 28px; overflow: hidden; background: var(--line); border: 1px solid var(--line); }
 .pp-built li { background: var(--sheet); padding: clamp(18px, 2.2vw, 32px); display: flex; flex-direction: column; gap: 8px; }
 .pp-built li b { font-size: clamp(40px, 4.6vw, 110px); font-weight: 900; letter-spacing: -0.05em; line-height: 0.95; color: var(--acc); }
 .pp-built li span { font-size: clamp(15px, 0.95vw, 23px); line-height: 1.45; color: var(--ink2); font-weight: 600; }
-
-/* ── The hub ── */
-.pp-hub { width: min(100%, clamp(320px, 22vw + 260px, 820px)); margin: 0 auto; }
-.pp-hub svg { display: block; width: 100%; height: auto; overflow: visible; }
-.pp-hub-spoke { stroke: var(--acc); stroke-opacity: 0.55; stroke-width: 2; stroke-dasharray: 260; stroke-dashoffset: 260; transition: stroke-dashoffset 1.1s var(--ease) var(--d, 0s); }
-.is-in .pp-hub-spoke { stroke-dashoffset: 0; }
-.pp-hub-list { display: none; }
-.pp-hub-t { fill: var(--ink); font-size: 15px; font-weight: 800; }
-.pp-hub-s { fill: var(--ink3); font-size: 13px; font-weight: 700; }
 
 /* ── How it works ── */
 .pp-how { margin-top: clamp(60px, 10vh, 120px); }
@@ -388,10 +364,8 @@ html.sensory-active main.pp { background: var(--bg); z-index: 2; }
 .pp-chips.on li::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 10px rgba(94, 224, 138, 0.6); }
 
 .pp-next { margin-top: clamp(80px, 14vh, 160px); }
-.pp-next h3 { margin-bottom: 24px; }
-.pp-next ul { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-.pp-next li { padding: 22px 24px; border-radius: 20px; background: var(--sheet); border: 1px dashed var(--line); font-size: clamp(16px, 0.9vw, 22px); line-height: 1.55; color: var(--ink2); }
-.pp-next li b { display: block; margin-bottom: 6px; color: var(--ink); font-size: clamp(18px, 1vw, 25px); font-weight: 800; }
+.pp-next h3 { margin-bottom: 20px; }
+.pp-next p { font-size: clamp(17px, 1.15vw, 27px); line-height: 1.65; color: var(--ink2); max-width: 52ch; }
 .pp-credit { margin-top: clamp(60px, 10vh, 120px); max-width: 70ch; font-size: clamp(14px, 0.75vw, 18px); line-height: 1.6; color: var(--ink3); }
 .pp-credit a { color: var(--ink2); text-decoration: underline; text-underline-offset: 3px; }
 .pp-credit a:hover { color: var(--ink); }
@@ -440,10 +414,7 @@ html.sensory-active main.pp { background: var(--bg); z-index: 2; }
   .pp-mood .pp-pipvid { width: min(46svh, 92vw); }
   .pp-moods.is-still .pp-mood-view { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .pp-pair { grid-template-columns: minmax(0, 1fr); gap: 56px; }
-  .pp-hatch { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-  .pp-pips { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .pp-steps { grid-template-columns: minmax(0, 1fr); gap: 22px; }
-  .pp-hatch-copy { grid-template-columns: minmax(0, 1fr); gap: 12px; margin-top: 18px; }
   .pp-notes { grid-template-columns: repeat(2, minmax(0, 1fr)); border-radius: 20px; }
   .pp-touch { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 14px; }
   .pp-built ul { grid-template-columns: repeat(2, minmax(0, 1fr)); border-radius: 20px; }
@@ -459,21 +430,12 @@ html.sensory-active main.pp { background: var(--bg); z-index: 2; }
   .pp-link-line i::before { right: auto; left: 2px; top: auto; bottom: 2px; border: 5px solid transparent; border-top: 8px solid var(--acc); border-bottom: 0; }
   .pp-link-line i::after { left: auto; right: 2px; bottom: auto; top: 2px; border: 5px solid transparent; border-bottom: 8px solid var(--ink3); border-top: 0; }
   .pp-hw { grid-template-columns: minmax(0, 1fr); gap: 48px; }
-  .pp-next ul { grid-template-columns: minmax(0, 1fr); }
   .pp-desks { gap: 0; padding: 5px; }
   .pp-desks a { padding: 0 7px; }
 }
 @media (max-width: 640px) {
-  .pp-hub svg text, .pp-hub svg g[transform] { display: none; }
-  .pp-hub svg { width: 64%; margin: 0 auto; }
-  .pp-hub-list { display: grid; gap: 8px; margin-top: 4px; }
-  .pp-hub-list li { display: grid; grid-template-columns: 10px auto 1fr; align-items: baseline; gap: 10px; padding: 12px 16px; border-radius: 14px; background: var(--card); border: 1px solid var(--line); font-size: 15px; }
-  .pp-hub-list i { width: 8px; height: 8px; border-radius: 50%; background: var(--acc); align-self: center; }
-  .pp-hub-list b { color: var(--ink); font-weight: 800; }
-  .pp-hub-list span { color: var(--ink3); font-weight: 600; text-align: right; }
 }
 @media (max-width: 560px) {
-  .pp-hatch { grid-template-columns: minmax(0, 1fr); gap: 22px; }
   .pp-touch { grid-template-columns: minmax(0, 1fr); gap: 32px; }
 }
 @media (max-width: 420px) {
@@ -483,6 +445,48 @@ html.sensory-active main.pp { background: var(--bg); z-index: 2; }
 
 @media (prefers-reduced-motion: reduce) {
   [data-pp-in] { opacity: 1; transform: none; transition: none; }
-  .pp-hub-spoke { stroke-dashoffset: 0; transition: none; }
   .pp-mood, .pp-mood-list li, .pp-desks, .pp-btn { transition: none; }
+}
+
+/* ── A new Pip, step by step (HatchSlides): one Tab5 screen, stacked steps that cross-fade ── */
+.pp-slides-scr { position: relative; display: block; width: 100%; height: 100%; padding: 0; border: 0; background: #000; cursor: pointer; }
+.pp-slides-scr:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+.pp-slides-step { position: absolute; inset: 0; opacity: 0; transition: opacity 0.5s var(--ease); }
+.pp-slides-step.on { opacity: 1; }
+.pp-slides-step > * { display: block; width: 100%; height: 100%; object-fit: cover; }
+.pp-slides-foot { display: flex; align-items: center; gap: 14px; margin-top: 18px; }
+.pp-slides-dots { display: flex; flex: none; }
+.pp-slides-dots button { position: relative; width: 26px; height: 26px; padding: 0; border: 0; background: none; cursor: pointer; }
+.pp-slides-dots button::after { content: ''; position: absolute; left: 8px; top: 8px; width: 10px; height: 10px; border-radius: 50%; background: var(--line); transition: transform 0.3s var(--ease), background-color 0.3s; }
+.pp-slides-dots button:hover::after { transform: scale(1.2); }
+.pp-slides-dots button.on::after { background: var(--acc); transform: scale(1.3); }
+.pp-slides-dots button:focus-visible { outline: 2px solid var(--acc); outline-offset: -2px; border-radius: 50%; }
+.pp-slides-cap { display: grid; font-size: clamp(15px, 0.95vw, 21px); font-weight: 700; color: var(--ink2); }
+.pp-slides-cap span { grid-area: 1 / 1; opacity: 0; transition: opacity 0.35s; }
+.pp-slides-cap span.on { opacity: 1; }
+
+/* ── The Pips (PipPicker): a row of bodies, one card ── */
+.pp-picker { display: grid; gap: clamp(16px, 2.4vh, 28px); margin-top: clamp(56px, 9vh, 110px); }
+.pp-picker-row { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: clamp(6px, 0.9vw, 16px); }
+.pp-picker-row button { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 8px 12px; border-radius: 20px; border: 1px solid var(--line);
+  background: var(--sheet); color: var(--ink3); font: inherit; font-size: clamp(13px, 0.85vw, 19px); font-weight: 800; cursor: pointer;
+  transition: transform 0.3s var(--ease), border-color 0.3s, color 0.3s; }
+.pp-picker-row button img { width: 100%; aspect-ratio: 1; object-fit: contain; }
+.pp-picker-row button:hover { transform: translateY(-3px); color: var(--ink2); }
+.pp-picker-row button:active { transform: translateY(0) scale(0.97); }
+.pp-picker-row button.on { border-color: var(--c); color: var(--ink); transform: translateY(-5px); }
+.pp-picker-row button:focus-visible { outline: 2px solid var(--c); outline-offset: 3px; }
+.pp-picker-card { display: grid; width: min(100%, 860px); padding: clamp(22px, 2.4vw, 44px); border-radius: 28px; background: var(--sheet); border: 1px solid var(--line); }
+.pp-picker-card > div { grid-area: 1 / 1; display: flex; flex-direction: column; gap: 10px; opacity: 0; transform: translateY(8px); transition: opacity 0.3s, transform 0.4s var(--ease); }
+.pp-picker-card > div.on { opacity: 1; transform: none; }
+.pp-picker-card b { font-size: clamp(34px, 3.2vw, 72px); font-weight: 900; letter-spacing: -0.03em; line-height: 1; }
+.pp-picker-card em { font-style: normal; font-size: clamp(14px, 0.9vw, 20px); font-weight: 700; color: var(--ink3); }
+.pp-picker-card p { font-size: clamp(17px, 1.1vw, 25px); line-height: 1.6; color: var(--ink2); }
+.pp-picker-card q { margin-top: 4px; font-size: clamp(17px, 1.1vw, 25px); font-weight: 800; color: var(--ink); }
+.pp-picker-card q::before { content: '\201C'; } .pp-picker-card q::after { content: '\201D'; }
+@media (max-width: 900px) {
+  .pp-picker-row { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pp-slides-step, .pp-slides-cap span, .pp-picker-card > div, .pp-picker-row button { transition: none; }
 }
