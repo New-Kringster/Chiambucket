@@ -128,22 +128,16 @@ export default function PipPage() {
             media={<Win label="The page Pip is driving"><Clip src={V + 'cursor'} poster={V + 'cursor.webp'} className="pp-screen" label="Pip's cursor gliding over a YouTube video, turning on captions and setting the speed to 1.5x" /></Win>}>
             <p>Ask for a video with captions on and Pip opens it, glides its cursor to the captions button, then finds the speed setting in the gear menu. This is recorded from the browser Pip drives on my server. On the tablet, Pip sits beside this page and watches.</p>
           </Row>
-          <div className="pp-pair" data-pp-in>
-            <figure>
-              <Win label="The page Pip is driving"><Clip src={V + 'site'} poster={V + 'site.webp'} className="pp-screen" label="Pip opening My work on chiambucket.com and scrolling to Project June" /></Win>
-              <figcaption><b>It finds its way around.</b> On this site, it opened My work and scrolled to the project I asked about.</figcaption>
-            </figure>
-            <figure>
-              <Tab><img className="pp-screen" src={I + 'marks.webp'} alt="Pip's gold circle around Project June on chiambucket.com, with an arrow to the next build" loading="lazy" decoding="async" /></Tab>
-              <figcaption><b>It points things out.</b> Pip draws circles and arrows over the page, stroke by stroke, to show me what it means.</figcaption>
-            </figure>
-          </div>
+          <Row title="It points things out" flip
+            media={<Tab><img className="pp-screen" src={I + 'point-nucleus.webp'} alt="A cell diagram on the Tab5 with Pip's gold arrow and a Nucleus label drawn over it, and Pip's reply below" loading="lazy" decoding="async" /></Tab>}>
+            <p>Handy for studying. Put up a cell diagram and ask where the nucleus is: Pip finds it by the diagram&rsquo;s own label and draws an arrow and a note over the page, stroke by stroke.</p>
+          </Row>
           <Row title="Answers you can read"
             media={<Tab><img className="pp-screen" src={I + 'markdown.webp'} alt="A formatted reply on the Tab5: a bold title, a list with bold leads, and a line in the talk bubble" loading="lazy" decoding="async" /></Tab>}>
             <p>Longer answers come as formatted text in a pane, with the short version in the bubble next to Pip.</p>
           </Row>
           <Row title="It asks before it guesses" flip
-            media={<Tab><img className="pp-screen" src={I + 'question.webp'} alt="A multiple choice question card from Pip on the Tab5 with three options and a Skip button" loading="lazy" decoding="async" /></Tab>}>
+            media={<Tab><img className="pp-screen" src={I + 'question.webp'} alt="A multiple choice question from Pip on the Tab5: which part of the cell to point at first, with three options, Type an answer and Skip" loading="lazy" decoding="async" /></Tab>}>
             <p>When Pip needs a decision it puts up a question. Tap an option, type on the keyboard, or hold Pip and say it.</p>
           </Row>
           <div className="pp-touchwrap" data-pp-in><Touches /></div>

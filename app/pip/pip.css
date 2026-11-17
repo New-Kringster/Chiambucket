@@ -401,6 +401,7 @@ html.sensory-active main.pp { background: var(--bg); z-index: 2; }
 @media (max-width: 900px) {
   .pp-hero-copy { top: calc(var(--pp-nav, 80px) + 3svh); left: var(--gut); right: var(--gut); width: auto; transform: translateY(calc(var(--f) * -6svh)); }
   .pp-hero.is-still .pp-hero-copy { transform: none; }
+  .pp-hm.is-still .pp-hero-copy { top: calc(var(--pp-nav, 80px) + 3svh); }
   .pp-hero-t { font-size: clamp(110px, 34vw, 200px); }
   .pp-hero-lead { max-width: 34ch; font-size: 17px; }
   .pp-hero-row { margin-top: 18px; }
