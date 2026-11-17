@@ -167,8 +167,11 @@ export default function PipPage() {
           </Row>
           <div className="pp-pair" data-pp-in>
             <figure>
-              <Tab><img className="pp-screen" src={I + 'intercom-call.webp'} alt="The Intercom web applet on the Tab5 during a video call: my face from the Mac's webcam fills the screen, with a TALK button and the box for the tablet's own camera view in the corner" loading="lazy" decoding="async" /></Tab>
-              <figcaption><b>Web applets</b> are pages Pip writes and serves from my server, and they can still use the tablet&rsquo;s camera, mics and speaker. This is a still of the Intercom, a video call applet: I joined from a browser on my Mac. The picture streams at about two frames a second and the voice in short clips.</figcaption>
+              <div className="pp-call">
+                <img className="pp-call-mac" src={I + 'intercom-mac.webp'} alt="A MacBook showing the Intercom in a browser: the Tab5's camera view of me fills the window, with my own Mac camera preview beside it" loading="lazy" decoding="async" />
+                <Tab className="pp-call-tab"><img className="pp-screen" src={I + 'intercom-call.webp'} alt="The Intercom web applet on the Tab5 during the same call: my face from the Mac's camera fills the screen, a TALK button at the bottom and the tablet's own camera view in the corner" loading="lazy" decoding="async" /></Tab>
+              </div>
+              <figcaption><b>Web applets</b> are pages Pip writes and serves from my server, and they can still use the tablet&rsquo;s camera, mics and speaker. This is the Intercom, a video call applet, during a real call: the Tab5 shows me from my Mac&rsquo;s camera, and the browser on my Mac shows me from the tablet&rsquo;s camera. The picture streams at about two frames a second to the tablet and one back, and the voice in short clips.</figcaption>
             </figure>
             <figure>
               <Tab><img className="pp-screen" src={I + 'native.webp'} alt="The native NCIR Thermometer applet showing the object and ambient temperature with a trend graph" loading="lazy" decoding="async" /></Tab>

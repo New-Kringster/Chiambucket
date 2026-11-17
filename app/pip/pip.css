@@ -335,6 +335,10 @@ html.sensory-active main.pp { background: var(--bg); z-index: 2; }
 .pp-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(24px, 4vw, 64px); margin-top: clamp(80px, 14vh, 160px); }
 .pp-pair figcaption { margin-top: 22px; font-size: clamp(16px, 1.05vw, 25px); line-height: 1.6; color: var(--ink2); max-width: 40ch; }
 .pp-pair figcaption b { color: var(--ink); font-weight: 800; }
+/* the video call: the MacBook behind, the Tab5 in front at lower left */
+.pp-call { position: relative; aspect-ratio: 3 / 2; }
+.pp-call-mac { position: absolute; top: 0; right: 0; width: 84%; height: auto; }
+.pp-call .pp-call-tab { position: absolute; left: 0; bottom: 0; width: 50%; z-index: 1; }
 .pp-built { margin-top: clamp(80px, 14vh, 160px); }
 .pp-built ul { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin: clamp(24px, 4vh, 40px) 0; border-radius: 28px; overflow: hidden; background: var(--line); border: 1px solid var(--line); }
 .pp-built li { background: var(--sheet); padding: clamp(18px, 2.2vw, 32px); display: flex; flex-direction: column; gap: 8px; }
