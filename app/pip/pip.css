@@ -80,7 +80,7 @@ html.sensory-active main.pp { background: var(--bg); z-index: 2; }
 .pp-hero.is-still .pp-hero-copy { opacity: 1; transform: translateY(-50%); }
 
 /* ── Chapter opener: Pip in the chapter's colour, the title rising, then a slide to the next desktop ── */
-.pp-op { --e: clamp(0, (var(--p, 0) - 0.06) / 0.28, 1); --x: clamp(0, (var(--p, 0) - 0.84) / 0.16, 1); }
+.pp-op { --e: clamp(0, (var(--op, var(--p, 0)) - 0.06) / 0.28, 1); --x: clamp(0, (var(--op, var(--p, 0)) - 0.84) / 0.16, 1); }
 .pp-op .pp-sticky { display: grid; place-items: center; }
 .pp-op-in { display: flex; flex-direction: column; align-items: center; text-align: center; width: var(--wrap);
   transform: translateX(calc(var(--x) * -30vw)); opacity: calc(1 - var(--x) * 1.1); }
@@ -90,11 +90,33 @@ html.sensory-active main.pp { background: var(--bg); z-index: 2; }
   text-shadow: 0 0 90px color-mix(in srgb, var(--acc) 30%, transparent); }
 .pp-op-w { display: inline-block; white-space: nowrap; margin: 0 0.12em; }
 .pp-op-l { display: inline-block;
-  --l: clamp(0, (var(--p, 0) - 0.34) / 0.22 * (var(--n) * 0.3 + 1) - var(--i) * 0.3, 1);
+  --l: clamp(0, (var(--op, var(--p, 0)) - 0.34) / 0.22 * (var(--n) * 0.3 + 1) - var(--i) * 0.3, 1);
   opacity: var(--l); transform: translateY(calc((1 - var(--l)) * 0.38em)); }
 .pp-op-lede { margin-top: clamp(14px, 2.4vh, 30px); max-width: 30ch; font-size: clamp(18px, 1.55vw, 36px); line-height: 1.45; font-weight: 700; color: var(--ink2);
-  opacity: clamp(0, (var(--p, 0) - 0.5) / 0.12, 1); transform: translateY(calc((1 - clamp(0, (var(--p, 0) - 0.5) / 0.12, 1)) * 14px)); text-wrap: balance; }
+  opacity: clamp(0, (var(--op, var(--p, 0)) - 0.5) / 0.12, 1); transform: translateY(calc((1 - clamp(0, (var(--op, var(--p, 0)) - 0.5) / 0.12, 1)) * 14px)); text-wrap: balance; }
 .pp-op.is-still { --e: 1; --x: 0; }
+
+/* ── The hero and Meet Pip in one stage (HeroMeet): --p is the stage's progress q ──
+   The hero copy leaves while the tablet turns (zoom ends at q 0.42); the opener runs on --op,
+   which maps q 0.5..1 onto the normal opener's 0.3..1, so its letters, line and exit match the
+   other chapters. The slot is empty: Pip is the WebGL plane that flew there. */
+.pp-hm-wrap { position: relative; }
+.pp-hm-anchor { position: absolute; left: 0; right: 0; top: 52%; bottom: 0; pointer-events: none; }
+.pp-hero.pp-hm { --f: clamp(0, (var(--p, 0) / 0.42 - 0.03) / 0.17, 1); }
+.pp-hm-op { --op: calc(0.3 + (var(--p, 0) - 0.5) * 1.4); position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; pointer-events: none; }
+.pp-hm-op .pp-hm-slot { opacity: 1; transform: none; }
+.pp-hm-slot img { width: 100%; height: 100%; display: block; }
+.pp-hm.is-still .pp-sticky { height: auto; min-height: 0; }
+.pp-hm.is-still .pp-hero-gl { position: relative; height: 100svh; }
+.pp-hm.is-still .pp-hero-copy { top: 50svh; }
+.pp-hm.is-still .pp-hm-op { position: relative; inset: auto; padding: 12vh 0; --op: 1; --x: 0; }
+.pp-hm.is-still .pp-op-l, .pp-hm.is-still .pp-op-lede { opacity: 1; transform: none; }
+
+/* "Read on M5Stack": not published yet, so greyed out and not a link */
+.pp-btn.pp-btn-off { background: var(--raised); color: var(--ink3); box-shadow: inset 0 0 0 1px var(--line); cursor: not-allowed; user-select: none; }
+.pp-btn.pp-btn-off:hover, .pp-btn.pp-btn-off:active { transform: none; box-shadow: inset 0 0 0 1px var(--line); }
+.pp-m5 { width: 26px; height: 19px; flex: none; background: currentColor;
+  -webkit-mask: url(/images/pip/m5stack-mark.svg) center / contain no-repeat; mask: url(/images/pip/m5stack-mark.svg) center / contain no-repeat; }
 .pp-op.is-still .pp-op-l, .pp-op.is-still .pp-op-lede { opacity: 1; transform: none; }
 
 /* ── Chapter bodies ── */
@@ -145,6 +167,97 @@ html.sensory-active main.pp { background: var(--bg); z-index: 2; }
 .pp-notes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin-top: clamp(80px, 14vh, 160px); border-radius: 28px; overflow: hidden; background: var(--line); border: 1px solid var(--line); }
 .pp-notes li { background: var(--sheet); padding: clamp(18px, 1.8vw, 30px); font-size: clamp(15px, 0.95vw, 21px); line-height: 1.5; color: var(--ink2); }
 .pp-notes b { display: block; margin-bottom: 6px; color: var(--ink); font-weight: 800; font-size: 1.08em; }
+
+/* Touches, shown (Touches in PipFx): real hub frames, the tablet's own marks at real size, a fingertip.
+   Per cell: --px/--py the action point on the frame, --z the zoom about --ox/--oy. */
+.pp-touchwrap { margin-top: clamp(80px, 14vh, 160px); }
+.pp-touch { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(14px, 1.6vw, 28px); }
+.pp-tc p { margin-top: 14px; font-size: clamp(15px, 0.95vw, 21px); line-height: 1.5; color: var(--ink2); }
+.pp-tc p b { display: block; margin-bottom: 4px; color: var(--ink); font-weight: 800; font-size: 1.08em; }
+.pp-tc-scr { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 16px; background: #000; border: 1px solid var(--line);
+  box-shadow: 0 24px 50px -30px rgba(0, 0, 0, 0.9), 0 40px 90px -50px color-mix(in srgb, var(--acc) 34%, transparent); }
+.pp-tc-world { position: absolute; inset: 0; transform: scale(var(--z, 1)); transform-origin: var(--ox, 50%) var(--oy, 50%); }
+.pp-tc-world img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.pp-tc-dot, .pp-tc-ring, .pp-tc-trail { position: absolute; left: var(--px); top: var(--py); pointer-events: none; }
+/* 26 px of a 1280 px screen; the ring 44 px plus its 4 px border */
+.pp-tc-dot { width: 2.03%; aspect-ratio: 1; margin: -1.015% 0 0 -1.015%; border-radius: 50%; background: #39b2ff; box-shadow: 0 0 0 1px #fff; opacity: 0; }
+.pp-tc-ring { width: 4.06%; aspect-ratio: 1; margin: -2.03% 0 0 -2.03%; border-radius: 50%; border: 0.31cqi solid #3fb950; background: rgba(63, 185, 80, 0.25); opacity: 0; }
+.pp-tc-scr { container-type: inline-size; }
+.pp-tc-ring { border-width: calc(0.3125cqi); }
+.pp-tc-hand { position: absolute; inset: 0; pointer-events: none; }
+.pp-tc-finger { position: absolute; width: var(--fw, 15%); left: calc(var(--ox, 50%) + (var(--px) - var(--ox, 50%)) * var(--z, 1)); top: calc(var(--oy, 50%) + (var(--py) - var(--oy, 50%)) * var(--z, 1)); transform: translate(-50%, -8.7%); }
+.pp-tc-fm { display: block; }
+.pp-tc-fsvg { display: block; width: 100%; height: auto; overflow: visible; }
+.pp-tc-shadow { filter: blur(6px); }
+
+.pp-tc.is-tap { --px: 40.6%; --py: 38.1%; --z: 2.2; --ox: 40.6%; --oy: 38.1%; --fw: 17%; }
+.pp-tc.is-drag { --px: 62%; --py: 30%; --z: 2.2; --ox: 62%; --oy: 38%; --fw: 17%; }
+.pp-tc.is-expand { --px: 36.9%; --py: 10.6%; --z: 1; --fw: 12%; }
+.pp-tc.is-back { --px: 6%; --py: 56%; --z: 1; --fw: 12%; }
+
+/* The loops: 3.6 s each, paused off screen */
+.pp-tc * { animation-duration: 3.6s; animation-iteration-count: infinite; animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); animation-play-state: paused; }
+.pp-touch.is-on .pp-tc * { animation-play-state: running; }
+.is-tap .pp-tc-fm, .is-expand .pp-tc-fm { animation-name: tcFingerTap; }
+.is-tap .pp-tc-dot, .is-expand .pp-tc-dot { animation-name: tcDot; }
+.is-tap .pp-tc-ring, .is-expand .pp-tc-ring { animation-name: tcRing; }
+@keyframes tcFingerTap {
+  0% { transform: translate(55%, 60%); opacity: 0; }
+  14% { opacity: 1; }
+  26% { transform: translate(0, 0) scale(1); }
+  31% { transform: translate(0, 0) scale(0.93); }
+  40% { transform: translate(8%, 9%) scale(1); }
+  66% { transform: translate(12%, 13%); opacity: 1; }
+  82%, 100% { transform: translate(55%, 60%); opacity: 0; }
+}
+@keyframes tcDot { 0%, 29% { opacity: 0; transform: scale(0.4); } 31% { opacity: 1; transform: scale(1); } 44% { opacity: 1; } 52%, 100% { opacity: 0; } }
+@keyframes tcRing { 0%, 42% { opacity: 0; transform: scale(0.55); } 48% { opacity: 1; transform: scale(1); } 74% { opacity: 1; } 86%, 100% { opacity: 0; } }
+
+/* Drag: the finger goes down, the page scrolls with it, the blue line follows from where it started */
+.is-drag .pp-tc-page { animation-name: tcScroll; }
+@keyframes tcScroll { 0%, 26% { transform: translateY(0); } 66%, 86% { transform: translateY(14%); } 100% { transform: translateY(0); } }
+.pp-tc-trail { left: calc(var(--px) - 0.195%); top: var(--py); width: 0.39%; height: 16%; border-radius: 99px; background: #39b2ff; transform-origin: 50% 0; transform: scaleY(0); opacity: 0;
+  animation-name: tcTrail; }
+@keyframes tcTrail { 0%, 24% { transform: scaleY(0); opacity: 0; } 26% { opacity: 1; } 66% { transform: scaleY(1); opacity: 1; } 76% { opacity: 1; } 86%, 100% { transform: scaleY(1); opacity: 0; } }
+.is-drag .pp-tc-hand { animation-name: tcDragHand; }
+@keyframes tcDragHand { 0%, 26% { transform: translateY(0); } 66%, 100% { transform: translateY(35.2%); } }
+.is-drag .pp-tc-fm { animation-name: tcFingerDrag; }
+@keyframes tcFingerDrag {
+  0% { transform: translate(45%, 55%); opacity: 0; }
+  12% { opacity: 1; }
+  24% { transform: translate(0, 0) scale(1); }
+  26% { transform: translate(0, 0) scale(0.95); }
+  66% { transform: translate(0, 0) scale(0.95); }
+  72% { transform: translate(6%, 6%) scale(1); opacity: 1; }
+  86%, 100% { transform: translate(45%, 55%); opacity: 0; }
+}
+
+/* Expand: tap Expand, the pane grows from where it was to the whole screen */
+.pp-tc-grow { transform-origin: 0 0; opacity: 0; animation-name: tcGrow; }
+@keyframes tcGrow {
+  0%, 44% { opacity: 0; transform: translate(1.25%, 7.8%) scale(0.481, 0.656); }
+  48% { opacity: 1; transform: translate(1.25%, 7.8%) scale(0.481, 0.656); }
+  64%, 84% { opacity: 1; transform: none; }
+  94%, 100% { opacity: 0; transform: none; }
+}
+
+/* Back: a swipe from the left edge slides the screen away to the one before */
+.is-back .pp-tc-page { animation-name: tcBackTop; box-shadow: -20px 0 40px rgba(0, 0, 0, 0.6); }
+@keyframes tcBackTop { 0%, 24% { transform: translateX(0); opacity: 1; } 64% { transform: translateX(101%); opacity: 1; } 84% { transform: translateX(101%); opacity: 0; } 85%, 100% { transform: translateX(0); opacity: 0; } }
+.is-back .pp-tc-page { animation-name: tcBackTop; }
+.is-back .pp-tc-under { animation-name: tcBackUnder; }
+@keyframes tcBackUnder { 0%, 24% { transform: translateX(-24%); opacity: 0.5; } 64%, 86% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(-24%); opacity: 0.5; } }
+.is-back .pp-tc-hand { animation-name: tcBackHand; }
+@keyframes tcBackHand { 0%, 24% { transform: translateX(0); } 64%, 100% { transform: translateX(72%); } }
+.is-back .pp-tc-fm { animation-name: tcFingerDrag; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pp-tc * { animation: none !important; }
+  .pp-tc-ring, .pp-tc-trail { opacity: 1; transform: none; }
+  .is-expand .pp-tc-grow { opacity: 1; transform: none; }
+  .is-expand .pp-tc-ring { opacity: 0; }
+  .is-back .pp-tc-page { opacity: 0; }
+}
 
 /* A new Pip hatching: two screens and the words */
 .pp-hatch { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
@@ -306,6 +419,7 @@ html.sensory-active main.pp { background: var(--bg); z-index: 2; }
   .pp-hatch { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
   .pp-hatch-copy { grid-template-columns: minmax(0, 1fr); gap: 12px; margin-top: 18px; }
   .pp-notes { grid-template-columns: repeat(2, minmax(0, 1fr)); border-radius: 20px; }
+  .pp-touch { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 14px; }
   .pp-built ul { grid-template-columns: repeat(2, minmax(0, 1fr)); border-radius: 20px; }
   .pp-flow-row { grid-template-columns: minmax(0, 1fr); row-gap: 112px; }
   .pp-link { left: 0; right: 0; top: 100%; width: auto; height: 112px; transform: none; flex-direction: row; align-items: center; justify-content: center; gap: 12px; }
@@ -331,6 +445,9 @@ html.sensory-active main.pp { background: var(--bg); z-index: 2; }
   .pp-hub-list i { width: 8px; height: 8px; border-radius: 50%; background: var(--acc); align-self: center; }
   .pp-hub-list b { color: var(--ink); font-weight: 800; }
   .pp-hub-list span { color: var(--ink3); font-weight: 600; text-align: right; }
+}
+@media (max-width: 560px) {
+  .pp-touch { grid-template-columns: minmax(0, 1fr); gap: 32px; }
 }
 @media (max-width: 420px) {
   .pp-op-t { font-size: 17vw; }

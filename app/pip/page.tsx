@@ -3,7 +3,7 @@ import localFont from 'next/font/local';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
 import AiMark from '../../components/AiMark';
 import { IcRead } from '../../components/Icons';
-import { Tab5Hero, Opener, Moods, Clip, Desktops, PageFx, DeskSwitch, type Mood } from './PipFx';
+import { HeroMeet, Opener, Moods, Clip, Desktops, PageFx, DeskSwitch, Touches, type Mood } from './PipFx';
 import { Tab, Win, Flow, Hub } from './Parts';
 import './pip.css';
 
@@ -88,41 +88,43 @@ export default function PipPage() {
       <PageFx />
       <Desktops items={CHAPTERS} />
 
-      <Tab5Hero screen={V + 'screen-home'}>
-        <div className="pp-hero-copy">
-          <h1 className="pp-hero-t">Pip</h1>
-          <p className="pp-hero-lead">A desk pet that lives on an M5Stack Tab5. Its brain is the DeepSeek Harness running on my server, so it can do real work: drive a browser, build its own apps, and keep an eye on my other agents.</p>
-          <div className="pp-hero-row">
-            <a className="pp-btn" href="#meet"><IcRead /> Meet Pip</a>
-            <AiMark project="proj-pip" className="pp-ai" />
+      {/* ── The hero and 1. Meet Pip (cyan): one stage, the same Pip from the tablet's screen into the opener ── */}
+      <HeroMeet title="Meet Pip" slotLabel="Mopi, a cyan cloud in glasses"
+        lede="It's ready to help whenever you are, just pick it up and push to talk."
+        hero={
+          <div className="pp-hero-copy">
+            <h1 className="pp-hero-t">Pip</h1>
+            <p className="pp-hero-lead">Pip is a desk pet that runs from DeepSeek Harness (DSH). It can browse the web, build and test its own apps, control other agents through the MCP connector and much more. Pip&rsquo;s interface runs on an M5Stack Tab5.</p>
+            <div className="pp-hero-row">
+              <a className="pp-btn" href="#meet"><IcRead /> Meet Pip</a>
+              <span className="pp-btn pp-btn-off" role="link" aria-disabled="true" title="Not published yet">
+                <i className="pp-m5" aria-hidden="true" /> Read on M5Stack
+              </span>
+              <AiMark project="proj-pip" className="pp-ai" />
+            </div>
+            <p className="pp-hero-meta">Personal project, November 2026. ESP32-P4, C++, Lua, Node, Python, Docker.</p>
           </div>
-          <p className="pp-hero-meta">Personal project, November 2026. ESP32-P4, C++, Lua, Node, Python, Docker.</p>
-        </div>
-      </Tab5Hero>
-
-      {/* ── 1. Meet Pip (cyan) ── */}
-      <Opener id="meet" desk={0} color={C.cyan} title="Meet Pip" clip={V + 'o-cyan'} pipLabel="Mopi, a cyan cloud in glasses, blinking and winking"
-        lede="It sleeps, wakes when you pick it up, and always shows you what it is doing." />
+        } />
       <div className="pp-chapter" style={{ ['--acc' as string]: C.cyan }}>
         <Moods moods={MOODS} id="moods" />
         <div className="pp-wrap">
-          <Row title="It acts out what it is doing" wide
+          <Row title="Each expression is a different action" wide
             media={<Clip src={V + 'props'} poster={V + 'props.webp'} className="pp-pipvid pp-strip" label="Pips with a magnifying glass, binoculars, a megaphone and a paper plane" />}>
             <p>A magnifying glass when it searches the web. Binoculars when it reads a page. A megaphone when it briefs a helper. A paper plane when it messages another Pip.</p>
           </Row>
           <Row title="It lives on my desk" flip
-            media={<figure className="pp-photo"><img src={I + 'desk-photo.webp'} alt="The M5Stack Tab5 on its keyboard next to my laptop, with Mopi on screen holding a magnifying glass" loading="lazy" decoding="async" /></figure>}>
-            <p>Pip runs on an M5Stack Tab5 clipped to its keyboard, next to my laptop. This is Mopi, the Pip on my first desktop, in the middle of a web search.</p>
+            media={<figure className="pp-photo"><img src={I + 'desk-photo.webp'} alt="The M5Stack Tab5 on its keyboard on my desk, with Mopi, a cyan cloud in glasses, on its home screen" loading="lazy" decoding="async" /></figure>}>
+            <p>Pip runs on an M5Stack Tab5 clipped to its keyboard on my desk. This is Mopi, the Pip on my first desktop, sitting on its home screen until I need it.</p>
           </Row>
         </div>
       </div>
 
       {/* ── 2. The screen (violet) ── */}
       <Opener id="canvas" desk={1} color={C.violet} title="The screen" clip={V + 'o-violet'} pipLabel="A violet Pip in a beret looking through binoculars"
-        lede="Pip answers with pages, not just text, and it can use those pages itself." />
+        lede="Markdown, interactive web browsers, drawings, questions and more." />
       <div className="pp-chapter" style={{ ['--acc' as string]: C.violet }}>
         <div className="pp-wrap">
-          <Row title="It drives the browser" wide
+          <Row title="Browser use capabilities" wide
             media={<Win label="The page Pip is driving"><Clip src={V + 'cursor'} poster={V + 'cursor.webp'} className="pp-screen" label="Pip's cursor gliding over a YouTube video, turning on captions and setting the speed to 1.5x" /></Win>}>
             <p>Ask for a video with captions on and Pip opens it, glides its cursor to the captions button, then finds the speed setting in the gear menu. This is recorded from the browser Pip drives on my server. On the tablet, Pip sits beside this page and watches.</p>
           </Row>
@@ -144,12 +146,7 @@ export default function PipPage() {
             media={<Tab><img className="pp-screen" src={I + 'question.webp'} alt="A multiple choice question card from Pip on the Tab5 with three options and a Skip button" loading="lazy" decoding="async" /></Tab>}>
             <p>When Pip needs a decision it puts up a question. Tap an option, type on the keyboard, or hold Pip and say it.</p>
           </Row>
-          <ul className="pp-notes" data-pp-in>
-            <li><b>Taps show.</b> A tap lands as a blue dot and turns green when the page reacts.</li>
-            <li><b>Drags show.</b> A drag leaves a blue line behind the finger.</li>
-            <li><b>Any pane expands.</b> One button takes it to the full screen.</li>
-            <li><b>Back is always the same.</b> A swipe from left to right.</li>
-          </ul>
+          <div className="pp-touchwrap" data-pp-in><Touches /></div>
         </div>
       </div>
 

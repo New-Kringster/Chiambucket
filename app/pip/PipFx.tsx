@@ -159,12 +159,24 @@ export function Clip({ src, poster, className, label, active = true, eager = fal
   );
 }
 
-/* ── The hero: the Tab5 turns to face us and its screen fills the view ── */
-export function Tab5Hero({ children, screen }: { children: ReactNode; screen: string }) {
+/* ── The hero and Meet Pip, one pinned stage (q = its progress, 0..1) ──
+   q 0 to 0.42      the Tab5 turns to face us and its screen fills the view; the body fades (tab5Scene)
+   q 0.40 to 0.475  Mopi's home picture fades, so only Pip is left on the black
+   q 0.43 to 0.56   that same Pip flies into the Meet Pip slot (a shared element: one WebGL plane the
+                    whole way, so there is no cut and no swap)
+   q 0.50 to 1      the Meet Pip opener: the title rises letter by letter round Pip, the line follows,
+                    and at the end everything, Pip included, slides off like a desktop switch
+   Reduced motion: no pinning; a still of the tablet, then the opener with a still of Pip. */
+const ZOOM_END = 0.42;
+const smooth = (t: number) => t * t * (3 - 2 * t);
+const span = (v: number, a: number, b: number) => clamp01((v - a) / (b - a));
+
+export function HeroMeet({ hero, title, lede, slotLabel }: { hero: ReactNode; title: string; lede: string; slotLabel: string }) {
   const host = useRef<HTMLDivElement>(null);
+  const slot = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
   const reduced = useReduced();
-  const p = useRef(0);
+  const q = useRef(0);
   const scene = useRef<import('./tab5Scene').Tab5Scene | null>(null);
 
   useEffect(() => {
@@ -172,13 +184,32 @@ export function Tab5Hero({ children, screen }: { children: ReactNode; screen: st
     if (!el) return;
     let alive = true, raf = 0, visible = true;
     const video = document.createElement('video');
-    video.muted = true; video.loop = true; video.playsInline = true; video.crossOrigin = 'anonymous';
+    video.muted = true; video.loop = true; video.playsInline = true;
     video.setAttribute('playsinline', '');
     const canWebm = video.canPlayType('video/webm; codecs="vp9"') !== '';
-    if (!reduced) { video.src = screen + (canWebm ? '.webm' : '.mp4'); video.preload = 'auto'; }
+    if (!reduced) { video.src = '/videos/pip/pip-layer' + (canWebm ? '.webm' : '.mp4'); video.preload = 'auto'; }
+
+    // the handoff, worked out every frame from the stage's progress and where the slot is now
+    const handoff = () => {
+      const sc = scene.current, sl = slot.current;
+      if (!sc || !sl) return;
+      const v = q.current;
+      sc.setProgress(clamp01(v / ZOOM_END));
+      const fade = smooth(span(v, 0.40, 0.475));
+      const fly = smooth(span(v, 0.43, 0.56));
+      const op = 0.30 + (v - 0.5) * 1.4;
+      const exit = span(op, 0.84, 1);
+      const hr = el.getBoundingClientRect(), r = sl.getBoundingClientRect();
+      // Pip's box in the slot: body half the slot's height, feet 80 % down (the opener clips' framing)
+      const bh = (0.5 * r.height) / (415.4 / 720), bw = bh * (800 / 720);
+      const feet = r.top - hr.top + 0.8 * r.height;
+      const to = { x: r.left - hr.left + r.width / 2 - bw / 2, y: feet - (589.8 / 720) * bh, w: bw, h: bh };
+      sc.setHandoff(fade, fly, to, Math.max(0, 1 - exit * 1.1));
+    };
     const loop = () => {
       raf = 0;
       if (!alive || !visible) return;
+      handoff();
       scene.current?.render();
       raf = requestAnimationFrame(loop);
     };
@@ -187,17 +218,17 @@ export function Tab5Hero({ children, screen }: { children: ReactNode; screen: st
       if (!alive) return;
       try {
         scene.current = createTab5Scene(el, {
-          video, glb: '/pip/tab5.glb', still: reduced ? screen + '.webp' : undefined,
+          video, glb: '/pip/tab5.glb', wallpaper: '/images/pip/mopi-home.webp', still: reduced ? '/images/pip/mopi-home-still.webp' : undefined,
           onReady: () => {
             if (!alive) return;
             setReady(true);
-            // reduced motion: one still frame, the tablet turned a little, its screen on Pip
+            // reduced motion: one still frame, the tablet turned a little, Pip on its home screen
             if (reduced) { scene.current?.setProgress(0.12); scene.current?.render(); }
           },
         });
       } catch { return; }
-      scene.current.setProgress(p.current);
       if (reduced) return;
+      handoff();
       video.play().catch(() => {});
       start();
     });
@@ -223,14 +254,35 @@ export function Tab5Hero({ children, screen }: { children: ReactNode; screen: st
       video.pause(); if (video.src) { video.removeAttribute('src'); video.load(); }
       scene.current?.destroy(); scene.current = null;
     };
-  }, [screen, reduced]);
+  }, [reduced]);
 
+  let i = 0;
+  const n = title.replace(/ /g, '').length;
   return (
-    <Stage className={`pp-hero${ready ? ' is-ready' : ''}`} screens={3} label="Pip on the M5Stack Tab5"
-      onProgress={(v) => { p.current = v; scene.current?.setProgress(v); }}>
-      <div className="pp-hero-gl" ref={host} aria-hidden="true" />
-      {children}
-    </Stage>
+    <div className="pp-hm-wrap">
+      {/* the desktop dots count Meet Pip from where its opener starts, not from the top of the page */}
+      <span id="meet" className="pp-hm-anchor" aria-hidden="true" />
+      <Stage className={`pp-hero pp-hm${ready ? ' is-ready' : ''}`} screens={5.6} label="Pip on the M5Stack Tab5, then Meet Pip"
+        onProgress={(v) => { q.current = v; }}>
+        <div className="pp-hero-gl" ref={host} aria-hidden="true" />
+        {hero}
+        <div className="pp-op pp-hm-op" style={{ ['--acc' as string]: '#00ffff', ['--n' as string]: n }}>
+          <div className="pp-op-in">
+            <div className="pp-op-pip pp-hm-slot" ref={slot} role="img" aria-label={slotLabel}>
+              {reduced && <img src="/images/pip/mopi-slot.webp" alt="" />}
+            </div>
+            <h2 className="pp-op-t" aria-label={title}>
+              {title.split(' ').map((w, wi) => (
+                <span className="pp-op-w" key={wi} aria-hidden="true">
+                  {Array.from(w).map((ch) => <span key={i} className="pp-op-l" style={{ ['--i' as string]: i++ }}>{ch}</span>)}
+                </span>
+              ))}
+            </h2>
+            <p className="pp-op-lede">{lede}</p>
+          </div>
+        </div>
+      </Stage>
+    </div>
   );
 }
 
@@ -349,5 +401,65 @@ export function DeskSwitch({ desks, id }: { desks: Array<{ src: string; name: st
         <p className="pp-switch-name" aria-live="polite"><b style={{ color: desks[beat].color }}>{desks[beat].name}</b></p>
       </div>
     </Stage>
+  );
+}
+
+/* ── Touches, shown: a fingertip on a zoomed-in piece of the real screen ──
+   Each cell is a real hub frame with the tablet's own touch marks drawn over it at their real sizes
+   (main.cpp: a blue #39B2FF dot of radius 13 at once, a 5 px blue trail while dragging; canvas.js: a
+   44 px green ring where the click landed). CSS keyframes, transform and opacity only, paused while
+   the row is off screen; reduced motion shows each cell's final state. */
+function Finger() {
+  return (
+    <svg className="pp-tc-fsvg" viewBox="0 0 120 300" aria-hidden="true">
+      <defs>
+        <linearGradient id="pp-skin" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stopColor="#b97c62" /><stop offset="0.45" stopColor="#ecc0a3" /><stop offset="1" stopColor="#c98a6d" />
+        </linearGradient>
+      </defs>
+      <g transform="rotate(-24 60 26)">
+        <ellipse cx="66" cy="160" rx="44" ry="150" fill="#000" opacity="0.28" className="pp-tc-shadow" />
+        <path d="M22 300 L22 66 C22 30 40 8 60 8 C80 8 98 30 98 66 L98 300 Z" fill="url(#pp-skin)" />
+        <rect x="38" y="20" width="44" height="54" rx="20" fill="#f7dfd1" opacity="0.9" />
+        <path d="M42 70 Q60 80 78 70" stroke="#c48a70" strokeWidth="2" fill="none" opacity="0.6" />
+      </g>
+    </svg>
+  );
+}
+
+const TOUCHES = [
+  { k: 'tap', img: '/images/pip/touch-docs.webp', title: 'Taps show.', text: 'A tap lands as a blue dot, then a green ring once the page has reacted.', alt: 'A fingertip tapping the close button of a help popup on a web page, a blue dot, then a green ring' },
+  { k: 'drag', img: '/images/pip/touch-full.webp', title: 'Drags show.', text: 'A drag leaves a blue line behind the finger while the page scrolls.', alt: 'A fingertip dragging down a web page, leaving a blue line' },
+  { k: 'expand', img: '/images/pip/touch-pane.webp', img2: '/images/pip/touch-full.webp', title: 'Any pane expands.', text: 'Tap Expand and the pane grows to the full screen.', alt: 'A fingertip tapping Expand on a pane, which grows to the full screen' },
+  { k: 'back', img: '/images/pip/touch-pane.webp', img2: '/images/pip/touch-full.webp', title: 'Back is always the same.', text: 'A swipe from left to right goes back, wherever you are.', alt: 'A fingertip swiping from left to right, sliding the screen back to the one before' },
+];
+
+export function Touches() {
+  const ref = useRef<HTMLUListElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => el.classList.toggle('is-on', e.isIntersecting), { threshold: 0.15 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return (
+    <ul className="pp-touch" ref={ref} data-no-zoom>
+      {TOUCHES.map((t) => (
+        <li key={t.k} className={`pp-tc is-${t.k}`}>
+          <div className="pp-tc-scr" role="img" aria-label={t.alt}>
+            <div className="pp-tc-world">
+              {t.img2 && t.k === 'back' && <img className="pp-tc-under" src={t.img} alt="" loading="lazy" decoding="async" />}
+              <img className="pp-tc-page" src={t.k === 'back' ? t.img2 : t.img} alt="" loading="lazy" decoding="async" />
+              {t.k === 'expand' && <img className="pp-tc-grow" src={t.img2} alt="" loading="lazy" decoding="async" />}
+              {t.k === 'drag' && <i className="pp-tc-trail" />}
+              {(t.k === 'tap' || t.k === 'expand') && <><i className="pp-tc-dot" /><i className="pp-tc-ring" /></>}
+            </div>
+            <div className="pp-tc-hand"><span className="pp-tc-finger"><span className="pp-tc-fm"><Finger /></span></span></div>
+          </div>
+          <p><b>{t.title}</b> {t.text}</p>
+        </li>
+      ))}
+    </ul>
   );
 }
