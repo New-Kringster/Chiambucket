@@ -167,7 +167,7 @@ export default function PipPage() {
           </Row>
           <div className="pp-pair" data-pp-in>
             <figure>
-              <Tab><img className="pp-screen" src={I + 'intercom-call.webp'} alt="The Intercom web applet on the Tab5 during a video call: my face from the Mac's webcam fills the screen, with a TALK button and the tablet's own camera view in the corner" loading="lazy" decoding="async" /></Tab>
+              <Tab><img className="pp-screen" src={I + 'intercom-call.webp'} alt="The Intercom web applet on the Tab5 during a video call: my face from the Mac's webcam fills the screen, with a TALK button and the box for the tablet's own camera view in the corner" loading="lazy" decoding="async" /></Tab>
               <figcaption><b>Web applets</b> are pages Pip writes and serves from my server, and they can still use the tablet&rsquo;s camera, mics and speaker. This is a still of the Intercom, a video call applet: I joined from a browser on my Mac. The picture streams at about two frames a second and the voice in short clips.</figcaption>
             </figure>
             <figure>
