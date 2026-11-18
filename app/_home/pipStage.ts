@@ -49,7 +49,7 @@ export function createPipStage(section: HTMLElement) {
     const navb = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hs-navb')) || 64;
     const wide = W / H > 1.05;
     const turned: Rect = wide
-      ? { x: W * 0.42, y: navb + H * 0.03, w: W * 0.54, h: H * 0.6 }
+      ? { x: W * 0.44, y: navb + H * 0.07, w: W * 0.5, h: H * 0.54 }
       : { x: W * 0.05, y: navb + 8, w: W * 0.9, h: H * 0.42 };
     const br = box.getBoundingClientRect();
     const facing: Rect = { x: br.left - hr.left, y: br.top - hr.top, w: br.width, h: br.height };
