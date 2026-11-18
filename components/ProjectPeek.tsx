@@ -101,7 +101,7 @@ export function PeekModalContent({ id }: { id: string }) {
     );
     case 'proj-lora': return (
       <>
-        {hero('/images/borlocator-pf-context.webp', 'LoRA Messenger', ['Personal Project'], 'highlight')}
+        {hero('/images/borlocator-pf-context.webp', 'LoRA Messenger', ['Personal Project'], 'personal')}
         <div className="hp-rd-body">
           <h2 className="hp-md-title">LoRA Messenger</h2>
           <p className="hp-md-meta">3 Months · Self-Learnt · 3D Design · PCB Design</p>
