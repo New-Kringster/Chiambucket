@@ -539,7 +539,8 @@ export default function HomeStory() {
     const go = () => {
       const t = document.getElementById(id);
       if (!t || (last >= 0 && Math.abs(window.scrollY - last) > 4)) return;
-      t.scrollIntoView({ block: 'start' });
+      // instant: html's smooth scroll-behavior would animate it, and ScrollTrigger's refresh cuts that short
+      window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY, behavior: 'instant' });
       last = window.scrollY;
     };
     const raf = requestAnimationFrame(go);
