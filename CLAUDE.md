@@ -144,6 +144,7 @@ Pages are recoloured by a single `data-theme` attribute on `<html>` so each rout
 
 ## Copy / content conventions
 
+- **Write all copy in the `connected-prose` style** (the skill of that name): plain, full sentences joined with connectors, plain labels without full stops, and only what a visitor cares about, with no production notes. `app/pip/page.tsx` is the model.
 - **No em dashes (`—`).** Use commas or split into sentences. Applies to all user-facing copy.
 - When adding a page: update `public/sitemap.xml` + `public/llms.txt`, add the right JSON-LD, and ensure `metadata` is on a server component.
 
