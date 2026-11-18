@@ -802,6 +802,8 @@ html.hs-home .footer { position: relative; z-index: 3; }
 .hs-pc.is-lg { grid-column: span 3; }
 .hs-pc.is-md { grid-column: span 4; }
 .hs-pc.is-sm { grid-column: span 2; }
+.hs-pc.is-pair .hs-pc-thumb { aspect-ratio: auto; flex: 1 1 auto; min-height: 12rem; }
+.hs-pc.is-pair .hs-pc-info { flex: none; }
 .hs-pc:is(.is-xl, .is-lg, .is-md) .hs-pc-info { padding: 1.4rem 1.6rem 1.5rem; gap: 0.6rem; }
 .hs-pc:is(.is-lg, .is-md) .hs-pc-info h3 { font-size: clamp(1.5rem, 2vw, 1.9rem); }
 .hs-pc:is(.is-lg, .is-md) .hs-pc-info p { font-size: 1rem; }
@@ -864,6 +866,8 @@ html.hs-home .footer { position: relative; z-index: 3; }
   .hs-pc:is(.is-xl, .is-lg, .is-md) .hs-pc-tags { left: 10px; top: 10px; }
   .hs-pc.is-sm { flex-direction: row; border-radius: 16px; }
   .hs-pc.is-sm .hs-pc-thumb { aspect-ratio: auto; width: 34%; flex: none; }
+  .hs-pc.is-pair .hs-pc-thumb { min-height: 0; }
+  .hs-pc.is-pair .hs-pc-info { flex: 1; }
   .hs-pc.is-sm .hs-pc-thumb > .ai-mark { --ai-h: 36px; top: 6px; right: 6px; }
   .hs-pc.is-sm .hs-pc-tags { display: none; }
   .hs-pc.is-sm .hs-pc-info { padding: 0.8rem 0.9rem; gap: 0.35rem; }

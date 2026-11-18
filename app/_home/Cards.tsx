@@ -93,7 +93,7 @@ export function FlagCard({ p, onPeek, variant, slot }: { p: Flagship; onPeek: (i
    highlight left over takes two thirds of a row beside the first ordinary
    card, so no row is left with a hole. */
 type Size = 'xl' | 'lg' | 'md' | 'sm';
-function bySize(list: Project[]): { p: Project; size: Size }[] {
+function bySize(list: Project[]): { p: Project; size: Size; pair?: boolean }[] {
   const flag = list.filter((p) => p.flagship);
   const hl = list.filter((p) => !p.flagship && p.highlight);
   const rest = list.filter((p) => !p.flagship && !p.highlight);
@@ -101,7 +101,8 @@ function bySize(list: Project[]): { p: Project; size: Size }[] {
   return [
     ...flag.map((p) => ({ p, size: 'xl' as Size })),
     ...hl.map((p, i) => ({ p, size: (odd && i === hl.length - 1 ? 'md' : 'lg') as Size })),
-    ...rest.map((p) => ({ p, size: 'sm' as Size })),
+    // the ordinary card beside an odd highlight is as tall as it, so its picture grows to fill
+    ...rest.map((p, i) => ({ p, size: 'sm' as Size, pair: odd && i === 0 })),
   ];
 }
 
@@ -119,8 +120,8 @@ export function ProjectGallery({ onPeek }: { onPeek: (id: string) => void }) {
         ))}
       </div>
       <ul className="hs-pg">
-        {shown.map(({ p, size }, i) => (
-          <li key={p.id} className={`hs-pc is-${size}${p.url ? '' : ' is-soon'}`} style={{ '--i': i } as CSSProperties}>
+        {shown.map(({ p, size, pair }, i) => (
+          <li key={p.id} className={`hs-pc is-${size}${pair ? ' is-pair' : ''}${p.url ? '' : ' is-soon'}`} style={{ '--i': i } as CSSProperties}>
             <div className="hs-pc-thumb">
               <img src={p.img} alt="" loading="lazy" />
               <AiMark project={p.id} />
