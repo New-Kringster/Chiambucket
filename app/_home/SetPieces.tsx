@@ -232,27 +232,24 @@ export function BeadBook() {
   );
 }
 
-/* ── Pip: the Tab5 itself, with three clips from the article's tablet screen ──
-   The body is drawn to the real proportions (128 x 80 mm, the panel a little
-   left of centre, the camera on the wider bezel). The clips cross as the
-   beats change: --f the first, --g the second, --l the third. */
-const PIP_CLIPS = [
-  { key: 'point', label: 'Pip circling the mitochondria on a cell diagram' },
-  { key: 'drawer', label: 'The app drawer rising and an app opening' },
-  { key: 'switch', label: 'The spotlight bar switching between desktops' },
+/* ── Pip: the 3D Tab5 from the article (pipStage.ts draws it in .hs-pt-gl) ──
+   The visual box is where the tablet settles, facing us, for the beats; its
+   own screen plays the recordings. Without WebGL or with reduced motion the
+   box shows the recordings' stills instead. */
+const PIP_SHOTS = [
+  { key: 'point', alt: 'Pip circling the mitochondria on a cell diagram on the Tab5' },
+  { key: 'drawer', alt: 'The app drawer on the Tab5 with the NCIR Thermometer app' },
+  { key: 'switch', alt: 'The spotlight bar on the Tab5, switching between desktops' },
 ];
 
 export function PipTab() {
   return (
     <div className="hs-sp hs-pt">
-      <div className="hs-pt-visual" aria-hidden="true">
-        <div className="hs-pt-tab">
-          <div className="hs-pt-screen">
-            {PIP_CLIPS.map((c, i) => (
-              <video key={c.key} className={`hs-pt-clip is-${i + 1}`} muted loop playsInline preload="none" poster={`/videos/pip/${c.key}.webp`} data-src={`/videos/pip/${c.key}.mp4`} aria-label={c.label} />
-            ))}
-          </div>
-          <i className="hs-pt-cam" />
+      <div className="hs-pt-visual">
+        <div className="hs-pt-shots">
+          {PIP_SHOTS.map((c, i) => (
+            <img key={c.key} className={`is-${i + 1}`} src={`/videos/pip/${c.key}.webp`} alt={c.alt} loading="lazy" />
+          ))}
         </div>
       </div>
       <Captions beats={PIP_BEATS} />

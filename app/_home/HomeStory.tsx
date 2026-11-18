@@ -35,6 +35,7 @@ import { Figtree, Newsreader } from 'next/font/google';
 import { LAYERS, READER_BEATS, BENCH, SHOW_BENCH, PHOTOS, OCR_CARD, JUNE_CARD, PIP_CARD, BEAD_CARD } from './content';
 import { FlagCard, ProjectGallery, Bento, usePeek, Crown, Star } from './Cards';
 import { JuneHud, PipTab, BeadBook } from './SetPieces';
+import { createPipStage } from './pipStage';
 import AsciiLab from './AsciiLab';
 import type { Box } from './readerScene';
 import { IcGitHub, IcMail, IcServer, IcPhotos } from '../../components/Icons';
@@ -421,6 +422,8 @@ export default function HomeStory() {
           };
           const set = (k: string, v: number) => fl.style.setProperty(k, v.toFixed(4));
           const bead = fl.classList.contains('is-bead');
+          const pipStage = fl.classList.contains('is-pip') ? createPipStage(fl) : null;
+          if (pipStage) disposers.push(() => pipStage.destroy());
           const apply = (p: number) => {
             set('--t', ease(ramp(p, 0.08, 0.16)));             // the title leaves
             if (bead) {
@@ -442,6 +445,7 @@ export default function HomeStory() {
               fl.querySelector('.hs-fl-card')!.classList.toggle('is-live', p > 0.89);
               return;
             }
+            pipStage?.set(p);                                  // Pip: the 3D tablet turns, then plays the beats on its screen
             set('--f', ease(ramp(p, 0.1, 0.26)));              // beat 1 builds
             set('--g', ease(ramp(p, 0.38, 0.52)));             // beat 2 builds
             set('--fp', ramp(p, 0.16, 0.38));                  // beat 1 plays out (the pages turn)
@@ -705,7 +709,9 @@ export default function HomeStory() {
           <section className="hs-fl is-pip" id="pip" data-tone="dark">
             <div className="hs-fl-stage">
               <div className="hs-fl-scene" aria-hidden="true">
-                <img className="hs-fl-photo" src="/images/pip/desk-photo.webp" alt="" loading="lazy" />
+                {/* the 3D Tab5 (pipStage.ts); the still is its render, for reduced motion and no WebGL */}
+                <img className="hs-pt-still" src="/images/pip-pf-context.webp" alt="" loading="lazy" />
+                <div className="hs-pt-gl" />
               </div>
               <div className="hs-fl-head">
                 <p className="hs-tag"><Star />Highlighted software build</p>

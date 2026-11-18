@@ -18,6 +18,11 @@
   has faded. Then setHandoff fades the home picture and flies the Pip plane to
   any rectangle on the page (the Meet Pip slot), so the same Pip carries on.
   Renders only while the hero is on screen.
+
+  The homepage's Pip story uses the same tablet in a second mode: setFrames
+  gives two rectangles in the host's CSS pixels, where the body sits turned
+  (progress 0) and facing us (progress 1), and setClip lays one of the
+  article's screen recordings over the home picture.
 */
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -31,6 +36,10 @@ export type Tab5Scene = {
   /** fade: the home picture leaving (0..1); t: how far Pip has flown to `to` (0..1); opacity: Pip's own. */
   setHandoff(fade: number, t: number, to: Rect | null, opacity: number): void;
   setPointer(x: number, y: number): void;
+  /** Homepage mode: the body fitted into `turned` at progress 0 and `facing` at progress 1. */
+  setFrames(turned: Rect, facing: Rect): void;
+  /** Homepage mode: a screen recording over the home picture (null for none) and its opacity. */
+  setClip(video: HTMLVideoElement | null, opacity: number): void;
   resize(): void;
   render(): void;
   destroy(): void;
@@ -128,6 +137,15 @@ export function createTab5Scene(host: HTMLElement, opts: { video: HTMLVideoEleme
   screen.position.set(SCREEN_X, 0, 0.47);
   tilt.add(screen);
 
+  // a screen recording over the picture (homepage mode), one video texture per clip
+  const clipMat = new THREE.MeshBasicMaterial({ toneMapped: false, transparent: true, opacity: 0 });
+  const clipPlane = new THREE.Mesh(new THREE.PlaneGeometry(SCREEN_W, SCREEN_H), clipMat);
+  clipPlane.position.set(SCREEN_X, 0, 0.48);
+  clipPlane.visible = false;
+  tilt.add(clipPlane);
+  const clipTex = new Map<HTMLVideoElement, THREE.VideoTexture>();
+  let clipVideo: HTMLVideoElement | null = null;
+
   // Pip, its own plane over the picture. `anchor` marks where the tablet draws it.
   const pipTex = new THREE.VideoTexture(opts.video);
   pipTex.colorSpace = THREE.NoColorSpace;
@@ -176,6 +194,7 @@ export function createTab5Scene(host: HTMLElement, opts: { video: HTMLVideoEleme
   });
 
   let p = 0, px = 0, py = 0, aspect = 1, fade = 0, fly = 0, flyTo: Rect | null = null, pipOpacity = 1;
+  let turned: Rect | null = null, facing: Rect | null = null;
   const resize = () => {
     const w = host.clientWidth || 1, h = host.clientHeight || 1;
     aspect = w / h;
@@ -189,7 +208,30 @@ export function createTab5Scene(host: HTMLElement, opts: { video: HTMLVideoEleme
   const tanH = () => Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
   const distFor = (w: number, fw: number, h: number, fh: number) => Math.max(w / fw / (2 * tanH() * aspect), h / fh / (2 * tanH()));
 
+  /* Homepage mode: a fixed camera; the body is scaled and moved so it fits each rectangle. */
+  const placeFramed = (a: Rect, b: Rect) => {
+    const t = smoother(clamp01(p));
+    const d = 900;
+    const hw = host.clientWidth || 1, hh = host.clientHeight || 1;
+    const k = hh / (2 * d * tanH());   // CSS px per mm at the tablet's depth
+    const fit = (r: Rect) => ({ s: Math.min(r.w / (W * k), r.h / (H * k)), x: (r.x + r.w / 2 - hw / 2) / k, y: -(r.y + r.h / 2 - hh / 2) / k });
+    const A = fit(a), B = fit(b);
+    const wide = aspect > 1.05;
+    pose.position.set(lerp(A.x, B.x, t), lerp(A.y, B.y, t), 0);
+    pose.scale.setScalar(lerp(A.s, B.s, t));
+    pose.rotation.set(lerp(-0.3, 0, t), lerp(wide ? -0.58 : -0.36, 0, t), lerp(0.03, 0, t));
+    const calm = 1 - t;
+    tilt.rotation.set(py * 0.1 * calm, px * 0.16 * calm, 0);
+    camera.position.set(0, 0, d);
+    camera.lookAt(0, 0, 0);
+    camera.near = 10;
+    camera.far = d + 2000;
+    camera.updateProjectionMatrix();
+    placePip();
+  };
+
   const place = () => {
+    if (turned && facing) { placeFramed(turned, facing); return; }
     const wide = aspect > 1.05;
     const turn = seg(p, 0.02, 0.5);
     const fill = seg(p, 0.3, 0.94);
@@ -247,10 +289,26 @@ export function createTab5Scene(host: HTMLElement, opts: { video: HTMLVideoEleme
     setProgress(v) { if (v !== p) { p = v; needs = true; } },
     setPointer(x, y) { px = x; py = y; needs = true; },
     setHandoff(f, t, to, o) { fade = f; fly = t; flyTo = to; pipOpacity = o; needs = true; },
+    setFrames(a, b) { turned = a; facing = b; needs = true; },
+    setClip(video, opacity) {
+      if (video && !clipTex.has(video)) {
+        const t = new THREE.VideoTexture(video);
+        t.colorSpace = THREE.SRGBColorSpace;
+        t.minFilter = THREE.LinearFilter;
+        t.generateMipmaps = false;
+        clipTex.set(video, t);
+      }
+      const map = video ? clipTex.get(video)! : null;
+      if (clipMat.map !== map) { clipMat.map = map; clipMat.needsUpdate = true; }
+      clipVideo = video;
+      clipMat.opacity = opacity;
+      clipPlane.visible = !!video && opacity > 0.001;
+      needs = true;
+    },
     resize,
     render() {
       // the video texture changes every frame it plays, so render whenever it is running
-      if (!needs && opts.video.paused) return;
+      if (!needs && opts.video.paused && (!clipVideo || clipVideo.paused || !clipPlane.visible)) return;
       needs = false;
       place();
       renderer.render(scene, camera);
@@ -261,6 +319,7 @@ export function createTab5Scene(host: HTMLElement, opts: { video: HTMLVideoEleme
       env.dispose();
       tex.dispose();
       pipTex.dispose();
+      clipTex.forEach((t) => t.dispose());
       scene.traverse((o) => {
         const m = o as THREE.Mesh;
         if (m.isMesh) { m.geometry.dispose(); (Array.isArray(m.material) ? m.material : [m.material]).forEach((mm) => mm.dispose()); }

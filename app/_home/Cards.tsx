@@ -7,7 +7,7 @@ import InfoModal, { type InfoItem } from '../../components/InfoModal';
 import LazyVideo from '../../components/LazyVideo';
 import { PeekFeed } from '../../components/ProjectPeek';
 import { IcRead, IcPeek, IcPlay, IcGitHub, IcOut } from '../../components/Icons';
-import { PROJECTS, TILES, TYPE_LABEL, type Flagship, type ProjectType } from './content';
+import { PROJECTS, TILES, TYPE_LABEL, type Flagship, type Project, type ProjectType } from './content';
 
 /* ── The peek reader, shared by every card on the page ── */
 export function usePeek() {
@@ -87,10 +87,27 @@ export function FlagCard({ p, onPeek, variant, slot }: { p: Flagship; onPeek: (i
   );
 }
 
-/* ── The project gallery ── */
+/* ── The project gallery ──
+   Cards are sized by tier: the flagship across the whole row, highlights two
+   to a row, everything else three to a row (a six-column grid). An odd
+   highlight left over takes two thirds of a row beside the first ordinary
+   card, so no row is left with a hole. */
+type Size = 'xl' | 'lg' | 'md' | 'sm';
+function bySize(list: Project[]): { p: Project; size: Size }[] {
+  const flag = list.filter((p) => p.flagship);
+  const hl = list.filter((p) => !p.flagship && p.highlight);
+  const rest = list.filter((p) => !p.flagship && !p.highlight);
+  const odd = hl.length % 2 === 1 && rest.length > 0;
+  return [
+    ...flag.map((p) => ({ p, size: 'xl' as Size })),
+    ...hl.map((p, i) => ({ p, size: (odd && i === hl.length - 1 ? 'md' : 'lg') as Size })),
+    ...rest.map((p) => ({ p, size: 'sm' as Size })),
+  ];
+}
+
 export function ProjectGallery({ onPeek }: { onPeek: (id: string) => void }) {
   const [filter, setFilter] = useState<'all' | ProjectType>('all');
-  const shown = PROJECTS.filter((p) => filter === 'all' || p.type === filter);
+  const shown = bySize(PROJECTS.filter((p) => filter === 'all' || p.type === filter));
   return (
     <>
       <div className="hs-pg-filters" role="group" aria-label="Show projects">
@@ -102,8 +119,8 @@ export function ProjectGallery({ onPeek }: { onPeek: (id: string) => void }) {
         ))}
       </div>
       <ul className="hs-pg">
-        {shown.map((p, i) => (
-          <li key={p.id} className={`hs-pc${p.flagship || p.highlight ? ' is-wide' : ''}${p.url ? '' : ' is-soon'}`} style={{ '--i': i } as CSSProperties}>
+        {shown.map(({ p, size }, i) => (
+          <li key={p.id} className={`hs-pc is-${size}${p.url ? '' : ' is-soon'}`} style={{ '--i': i } as CSSProperties}>
             <div className="hs-pc-thumb">
               <img src={p.img} alt="" loading="lazy" />
               <AiMark project={p.id} />
