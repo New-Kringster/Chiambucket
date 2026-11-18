@@ -496,6 +496,7 @@ html.hs-home .footer { position: relative; z-index: 3; }
    left of centre, the camera on the wider bezel); its clips cross as the
    beats change. */
 .hs-fl.is-pip .hs-fl-photo { object-position: 50% 42%; filter: brightness(0.55) saturate(0.9); }
+.hs-fl.is-pip .hs-fl-scene::after { background: linear-gradient(0deg, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.35) 34%, rgba(0, 0, 0, 0) 58%), radial-gradient(120% 90% at 50% 30%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.5) 100%); }
 .hs-pt-visual { justify-items: center; }
 .hs-pt-tab {
   --s: clamp(0, var(--f) * 1.4, 1);
