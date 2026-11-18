@@ -70,8 +70,9 @@ export default function RulerSim() {
     let steps = 0;
     if (pressed) {
       acc.current += d;
-      while (acc.current >= STEP_MM) { steps++; acc.current -= STEP_MM; }
-      while (acc.current <= -STEP_MM) { steps--; acc.current += STEP_MM; }
+      // a hair of slack so rolling exactly 10 cm lands on the 49th detent despite floating-point error
+      while (acc.current >= STEP_MM - 1e-6) { steps++; acc.current -= STEP_MM; }
+      while (acc.current <= -STEP_MM + 1e-6) { steps--; acc.current += STEP_MM; }
     }
     setCore((c) => update(c, steps, pressed));
   }, []);

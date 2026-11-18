@@ -32,6 +32,7 @@
 .srs-small { left: 50%; transform: translate(-50%, -50%); font: 500 calc(var(--u) * 8) / 1 var(--sr-mono); }
 .srs-mid { left: 50%; transform: translate(-50%, -50%); font-size: calc(var(--u) * 12); font-weight: 600; }
 .srs .is-dim { color: var(--sr-dim); }
+.srs .srs-tag { color: #000; } /* the tag's own background carries the colour; its text stays black, as on the device */
 .srs .is-hint { color: var(--sr-hint); }
 .srs-mid.is-warn { color: var(--sr-warn); }
 
