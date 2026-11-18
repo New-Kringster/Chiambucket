@@ -3,10 +3,10 @@
 import { useRef, useState } from 'react';
 
 const MOMENTS = [
-  { t: 0, label: 'Scanning from the demo sheet' },
-  { t: 45, label: 'A real carton' },
-  { t: 69, label: 'Scanning it again' },
-  { t: 78, label: 'Another pantry' },
+  { t: 0, label: 'Scanning from the demo sheet', note: 'Nutella, Coca-Cola and Ritter Sport off my laptop screen' },
+  { t: 45, label: 'A real carton', note: 'A carton of 冰红茶, named by GS1 China' },
+  { t: 69, label: 'Scanning it again', note: 'The saved carton opens instead of being added twice' },
+  { t: 78, label: 'Another pantry', note: 'Switching to the fridge and adding to it' },
 ];
 const mmss = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
@@ -30,7 +30,12 @@ export default function DemoVideo() {
         {MOMENTS.map((m, i) => (
           <li key={m.t}>
             <button type="button" className={i === at && now > 0 ? 'is-on' : ''} onClick={() => seek(m.t)}>
-              <span>{mmss(m.t)}</span>{m.label}
+              <img src={`/videos/pantry/moment-${i + 1}.webp`} alt="" loading="lazy" />
+              <span className="pt-demo-text">
+                <span className="pt-demo-time">{mmss(m.t)}</span>
+                <b>{m.label}</b>
+                <span className="pt-demo-note">{m.note}</span>
+              </span>
             </button>
           </li>
         ))}

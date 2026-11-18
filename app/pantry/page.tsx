@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import ArticleScrollSpy from '../../components/ArticleScrollSpy';
 import AiMark from '../../components/AiMark';
+import ArticleLinks from '../../components/ArticleLinks';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
 import LazyVideo from '../../components/LazyVideo';
 import { Screen } from './Core';
@@ -41,6 +42,9 @@ const BackArrow = () => (
   <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
 );
 const I = '/images/pantry/';
+const REPO = 'https://github.com/New-Kringster/Pantry_tracker_code';
+const DL = REPO + '/releases/latest/download/';
+const FLASHDECK = 'https://flashdeck.shebang.pro/';
 const V = '/videos/pantry/';
 
 /* One feature: the screen (and sometimes a clip of it in the hand) beside a few words. */
@@ -60,7 +64,7 @@ export default function PantryPage() {
       <ArticleScrollSpy />
 
       <header className="art-hero">
-        <div className="art-hero-bg"><img src={I + 'cover.webp'} alt="The pantry tracker: a CoreS3 SE stacked on the QRCode module, its screen listing a drink that expires in 7 days" /></div>
+        <div className="art-hero-bg"><img src={I + 'cover.webp'} alt="The pantry tracker: a CoreS3 SE stacked on the QRCode module and its battery base, the screen glowing red while it scans" /></div>
         <div className="art-hero-scrim"></div>
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#projects"><BackArrow /> Back to projects</a>
@@ -80,6 +84,13 @@ export default function PantryPage() {
               <img src="/images/mosquitto-icon.svg" alt="Mosquitto MQTT" />
             </div>
           </div>
+          <ArticleLinks
+            links={[
+              { type: 'github', label: 'GitHub', url: REPO },
+              { type: 'download', label: 'Flash the firmware', url: FLASHDECK },
+              { type: 'download', label: 'Server downloads', url: REPO + '/releases/latest' },
+            ]}
+          />
           <p className="pt-meta">Internship project at M5Stack, November 2026. M5Stack CoreS3 SE, Module13.2 QRCode, C++, Python, Docker, MQTT.</p>
         </div>
       </header>
@@ -206,12 +217,16 @@ export default function PantryPage() {
 
           <section id="setup" className="art-section" data-reveal>
             <h2>Setting one up</h2>
+            <p>Everything you need is free to download: the firmware flashes from your browser, and the server comes as a Docker bundle with its images included, so nothing has to be pulled from Docker Hub while it installs.</p>
             <ol className="pt-steps">
               <li>
                 <p>On the QRCode module, slide the interface toggle to UART and switch on number 2 in both the TX and RX DIP blocks, then stack the three parts.</p>
                 <figure className="art-fig"><img src={I + 'diagram-hardware-setup.webp'} alt="The interface toggle set to UART, switch 2 on in the TX and RX DIP blocks, and the CoreS3 SE stacked on the module and the battery base" loading="lazy" /></figure>
               </li>
-              <li><p>Set <code>TZ</code> in <code>docker-compose.yml</code> to your time zone and run <code>./install.sh</code> on a computer with Docker, which loads the server and an MQTT broker without pulling anything from Docker Hub.</p></li>
+              <li><p>Open <a href={FLASHDECK} target="_blank" rel="noopener">Flashdeck</a> in Chrome or Edge, choose <b>Pantry</b>, plug the CoreS3 SE in over USB-C and press <b>Install</b>, which flashes the firmware straight from the browser.</p></li>
+              <li>
+                <p>Download the server for the computer that will run it, either the <a href={DL + 'pantry-server-docker-amd64.tar.gz'}>bundle for Intel and AMD computers</a> or the <a href={DL + 'pantry-server-docker-arm64.tar.gz'}>bundle for Apple Silicon Macs and a Raspberry Pi</a>. Unpack it, set <code>TZ</code> in <code>docker-compose.yml</code> to your time zone and run <code>./install.sh</code> in that folder.</p>
+              </li>
               <li>
                 <p>Turn the tracker on, scan the QR code on its screen with your phone, and enter your WiFi and the server address, for example <code>http://192.168.1.20:8080</code>.</p>
                 <figure className="art-fig"><img src={I + 'diagram-first-boot.webp'} alt="First boot: the tracker opens a Pantry hotspot with a QR code, the phone joins it, the setup page takes the WiFi and server address, and the home screen loads" loading="lazy" /></figure>
@@ -223,6 +238,7 @@ export default function PantryPage() {
               <li><p>In Home Assistant, add the MQTT integration with the server&rsquo;s IP address and port 1883.</p></li>
               <li><p>For Chinese barcodes, add a free gds.org.cn account under <b>Settings</b> on the server&rsquo;s web page and sign in once.</p></li>
             </ol>
+            <p>The <a href={REPO} target="_blank" rel="noopener">GitHub repository</a> has the full guide in its README, along with the firmware and server code if you would rather build them yourself.</p>
             <p className="pt-note">Product names and photos on this page come from Open Food Facts (CC BY-SA) and GS1 China.</p>
           </section>
         </div>

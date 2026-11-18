@@ -1,10 +1,11 @@
 /*
-  The CoreS3 SE drawn in CSS around a screen (server-safe, no state).
+  The CoreS3 SE around a screen (server-safe, no state).
 
-  The proportions follow the real unit: a 54 mm square body in light grey,
-  black glass inset on its face, the 2-inch 320 x 240 panel near the top, and
-  the printed row of touch marks under it. The screen box is 4:3 and a
-  container, so anything inside can size itself in screen pixels with
+  The frame is a photo of the real unit, straight on, with its display blacked
+  out (public/images/pantry/cores3-front.webp, 476 x 475, from Braven). The
+  screen box sits on the display at 4:3, as tall as the black window and
+  centred in it, so the window's own black margin reads as the bezel. The box
+  is a container, so anything inside can size itself in screen pixels with
   --u (one of the panel's 320 pixels across).
 */
 import type { ReactNode } from 'react';
@@ -12,11 +13,8 @@ import type { ReactNode } from 'react';
 export function Core({ children, className, label }: { children: ReactNode; className?: string; label?: string }) {
   return (
     <div className={`pt-core${className ? ` ${className}` : ''}`} data-no-zoom role={label ? 'img' : undefined} aria-label={label}>
-      <i className="pt-core-glass" aria-hidden="true" />
+      <img className="pt-core-frame" src="/images/pantry/cores3-front.webp" alt="" aria-hidden="true" draggable={false} />
       <div className="pt-core-screen">{children}</div>
-      <i className="pt-core-marks" aria-hidden="true">
-        <b /><span>‹</span><span>‹</span><em /><span>›</span><span>›</span><b />
-      </i>
     </div>
   );
 }

@@ -3325,7 +3325,8 @@ html.sensory-active .hp-pf-card.is-soon:hover {
 .hp-pf-card.is-compact .hp-pf-thumb > .ai-mark { --ai-h: 58px; top: 8px; right: 8px; border-radius: 7px; }
 .hp-rd-hero-tags { align-items: flex-end; }
 .hp-rd-hero-tags .ai-mark { --ai-h: 68px; align-self: flex-end; }
-.art-tags { align-items: center; }
+/* tags sit on the AI mark's bottom line, as in the peek reader, so a short pill never hangs beside the tall mark */
+.art-tags { align-items: flex-end; }
 .art-tags .ai-mark { --ai-h: 76px; }
 /* OCR Reader hero: under the lead, on the lead's left edge (the copy column is right-aligned) */
 .ws-hero-copy > .ai-mark { --ai-h: 76px; align-self: flex-end; margin: 2.6vh calc(min(100%, 440px) - var(--ai-h) * 84 / 94) 0 0; }

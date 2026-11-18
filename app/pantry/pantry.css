@@ -15,41 +15,35 @@
 .pt .art-section b { color: rgba(240, 240, 240, 0.92); font-weight: 600; }
 .pt .art-section code { font-family: var(--pt-mono); font-size: 0.86em; padding: 0.1em 0.4em; border-radius: 6px; background: rgba(255, 255, 255, 0.07); color: #e6e6e6; }
 
-/* ── The CoreS3 SE: a 54 mm square in light grey, black glass, the 2-inch panel near the top ── */
-.pt-core {
-  position: relative; width: 100%; aspect-ratio: 1; border-radius: 11%;
-  background: linear-gradient(155deg, #f2f1ed 0%, #d8d7d2 42%, #bdbcb6 100%);
-  box-shadow:
-    inset 0 1.5px 0 rgba(255, 255, 255, 0.85), inset 0 -3px 6px rgba(0, 0, 0, 0.22), inset 3px 0 6px rgba(255, 255, 255, 0.25),
-    0 2px 3px rgba(0, 0, 0, 0.35), 0 18px 30px -14px rgba(0, 0, 0, 0.7), 0 44px 70px -40px rgba(8, 14, 30, 0.9);
-}
-.pt-core-glass { position: absolute; inset: 4.6%; border-radius: 8.5%; background: radial-gradient(120% 90% at 30% 0%, #141414 0%, #050505 55%); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.08); }
-.pt-core-screen { position: absolute; left: 12.2%; right: 12.2%; top: 10.4%; aspect-ratio: 4 / 3; overflow: hidden; background: #000; border-radius: 0.6%; container-type: inline-size; }
-.pt-core-screen::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(160deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0) 38%); }
-.pt-core-marks { position: absolute; left: 14%; right: 14%; top: 76.5%; height: 9%; display: flex; align-items: center; justify-content: space-between; color: rgba(214, 120, 52, 0.75); font-style: normal; font-family: var(--pt-sans); font-size: 5.4cqw; pointer-events: none; }
-.pt-core { container-type: inline-size; }
-.pt-core-marks b { width: 2.2cqw; height: 2.2cqw; border-radius: 50%; border: 1px solid rgba(220, 220, 220, 0.35); }
-.pt-core-marks em { width: 4.4cqw; height: 4.4cqw; border-radius: 50%; border: 0.5cqw solid rgba(214, 120, 52, 0.8); }
-.pt-core-marks span { line-height: 1; transform: translateY(-6%); }
+/* ── The CoreS3 SE: a photo of the real unit, the screen laid on its display window ──
+   The window is x 18-444, y 85-381 of the 476 x 475 photo; the 4:3 screen is as
+   tall as it (y 88-378) and centred (x 37.5-424.5). */
+.pt-core { position: relative; width: 100%; aspect-ratio: 476 / 475; }
+.pt-core-frame { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; user-select: none; filter: drop-shadow(0 22px 26px rgba(2, 6, 16, 0.55)) drop-shadow(0 4px 6px rgba(0, 0, 0, 0.35)); }
+.pt-core-screen { position: absolute; left: 7.88%; width: 81.3%; top: 18.53%; aspect-ratio: 4 / 3; overflow: hidden; background: #000; container-type: inline-size; }
+.pt-core-screen::after { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 5; background: linear-gradient(160deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0) 36%); }
 .pt-shot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; image-rendering: auto; }
 
-/* ── The demo: a phone video with buttons for its moments ── */
-.pt-demo { display: grid; grid-template-columns: minmax(0, 320px) minmax(0, 1fr); gap: clamp(18px, 3vw, 32px); align-items: end; margin-top: 18px; }
-.pt-demo-video { width: 100%; aspect-ratio: 9 / 16; max-height: 78vh; object-fit: cover; border-radius: 20px; background: #05070c; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 30px 60px -34px rgba(0, 0, 0, 0.9); display: block; }
-.pt .pt-demo-moments { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; max-width: none; }
-.pt .pt-demo-moments li { padding: 0; }
+/* ── The demo: a phone video beside four moment cards that fill its height ── */
+.pt-demo { display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: clamp(16px, 2.6vw, 28px); align-items: stretch; margin-top: 18px; }
+.pt-demo-video { width: 100%; aspect-ratio: 9 / 16; max-height: 80vh; object-fit: cover; border-radius: 20px; background: #05070c; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 30px 60px -34px rgba(0, 0, 0, 0.9); display: block; }
+.pt .pt-demo-moments { display: grid; grid-template-rows: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; max-width: none; }
+.pt .pt-demo-moments li { padding: 0; min-height: 0; display: flex; }
 .pt .pt-demo-moments li::before { content: none; }
 .pt-demo-moments button {
-  display: flex; align-items: baseline; gap: 12px; width: 100%; text-align: left; cursor: pointer;
-  padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.09); background: rgba(255, 255, 255, 0.03);
-  font-family: 'dmsans'; font-size: 0.98rem; color: rgba(232, 232, 232, 0.78);
+  flex: 1; min-height: 0; display: flex; align-items: center; gap: 16px; width: 100%; text-align: left; cursor: pointer;
+  padding: 10px 18px 10px 10px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.035); color: rgba(232, 232, 232, 0.8);
   transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.pt-demo-moments button span { font-family: var(--pt-mono); font-size: 0.82rem; color: rgba(var(--sa-accent), 0.9); min-width: 2.6em; }
-.pt-demo-moments button:hover { background: rgba(255, 255, 255, 0.07); border-color: rgba(255, 255, 255, 0.18); transform: translateX(3px); }
+.pt-demo-moments img { height: 100%; max-height: 132px; aspect-ratio: 9 / 16; width: auto; object-fit: cover; border-radius: 10px; flex: none; background: #05070c; }
+.pt-demo-text { display: grid; gap: 4px; min-width: 0; }
+.pt-demo-time { font-family: 'dmsans'; font-variant-numeric: tabular-nums; font-size: 0.92rem; font-weight: 700; letter-spacing: 0.02em; color: rgba(var(--sa-accent), 0.95); }
+.pt-demo-moments b { font-family: 'oswaldreg'; font-weight: 400; font-size: clamp(1.15rem, 1.6vw, 1.4rem); line-height: 1.2; color: #f0f0f0; }
+.pt-demo-note { font-family: 'dmsans'; font-size: 0.95rem; line-height: 1.45; color: rgba(232, 232, 232, 0.62); }
+.pt-demo-moments button:hover { background: rgba(255, 255, 255, 0.07); border-color: rgba(255, 255, 255, 0.2); transform: translateX(3px); }
 .pt-demo-moments button:active { transform: translateX(1px) scale(0.99); }
 .pt-demo-moments button:focus-visible { outline: 2px solid rgba(var(--sa-accent), 0.9); outline-offset: 2px; }
-.pt-demo-moments button.is-on { border-color: rgba(var(--sa-accent), 0.5); background: rgba(var(--sa-accent), 0.08); color: #f2f2f2; }
+.pt-demo-moments button.is-on { border-color: rgba(var(--sa-accent), 0.55); background: rgba(var(--sa-accent), 0.09); }
 
 /* ── Feature rows: the screen beside a few words ── */
 .pt-feat { display: grid; grid-template-columns: minmax(0, 0.92fr) minmax(0, 1fr); gap: clamp(18px, 3.4vw, 40px); align-items: center; }
@@ -186,8 +180,9 @@
 @media (max-width: 760px) {
   .pt-demo { grid-template-columns: minmax(0, 1fr); }
   .pt-demo-video { max-width: 340px; margin: 0 auto; max-height: 70vh; }
-  .pt-demo-moments { grid-template-columns: 1fr 1fr; }
-  .pt-demo-moments button { flex-direction: column; gap: 2px; padding: 10px 12px; font-size: 0.9rem; }
+  .pt .pt-demo-moments { grid-template-rows: none; }
+  .pt-demo-moments img { height: 96px; }
+  .pt-demo-moments button { gap: 14px; }
   .pt-feat { grid-template-columns: minmax(0, 1fr); }
   .pt-feat.flip .pt-feat-media { order: 0; }
   .pt-feat-media > .pt-core { max-width: 300px; }
