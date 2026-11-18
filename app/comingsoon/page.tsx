@@ -23,7 +23,7 @@ export default function ComingSoonPage() {
         </p>
 
         <div className="cw-btns">
-          <Link href="/#portfolio-items-holder" className="hp-btn"><IcGrid /> See all projects</Link>
+          <Link href="/#projects" className="hp-btn"><IcGrid /> See all projects</Link>
           <Link href="/" className="hp-btn hp-btn-ghost"><IcHome /> Go to the homepage</Link>
         </div>
       </section>

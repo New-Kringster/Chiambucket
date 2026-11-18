@@ -386,7 +386,7 @@ export default function HomelabClient() {
             <h2 className="hl2-cta-title">What I am building now</h2>
             <p className="hl2-cta-sub">I am building OpenClaw, a runner that lets AI agents do real tasks on the lab, such as starting a container, checking a service, deploying a small app and reporting back, but it is not finished yet.</p>
             <div className="hl2-hero-cta">
-              <a className="hl2-btn" href="/#portfolio-items-holder"><IcGrid /> See my projects</a>
+              <a className="hl2-btn" href="/#projects"><IcGrid /> See my projects</a>
               <a className="hl2-btn ghost" href="/contact"><IcMail /> Contact me</a>
             </div>
           </Reveal>

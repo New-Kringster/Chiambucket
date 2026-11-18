@@ -21,7 +21,7 @@ export default function NotFound() {
         </p>
         <div className="nf-btns">
           <Link href="/" className="hp-btn"><IcHome /> Go to the homepage</Link>
-          <Link href="/#portfolio-items-holder" className="hp-btn hp-btn-ghost"><IcGrid /> See all projects</Link>
+          <Link href="/#projects" className="hp-btn hp-btn-ghost"><IcGrid /> See all projects</Link>
         </div>
       </section>
 

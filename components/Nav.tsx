@@ -5,7 +5,10 @@ import { usePathname } from 'next/navigation';
 import { blobPath, type Capsule } from './navBlob';
 import './nav.css';
 
+// My work lights up across the whole run of project stories, but it takes you
+// to the All projects gallery at the end of them.
 const PORTFOLIO_ID = 'portfolio-items-holder';
+const PROJECTS_ID = 'projects';
 
 type Key = 'home' | 'work' | 'photography' | 'homelab' | 'contact';
 const LINKS: { key: Key; href: string; label: string }[] = [
@@ -14,7 +17,7 @@ const LINKS: { key: Key; href: string; label: string }[] = [
   { key: 'homelab', href: '/homelab', label: 'HomeLab' },
   { key: 'contact', href: '/contact', label: 'Contact' },
 ];
-const WORK = { key: 'work' as const, href: `/#${PORTFOLIO_ID}`, label: 'My work' };
+const WORK = { key: 'work' as const, href: `/#${PROJECTS_ID}`, label: 'My work' };
 
 /*
   The nav is a row of separate small pieces rather than one long bar: the logo
@@ -80,7 +83,7 @@ export default function Nav() {
 
   /* On the homepage, Home and My work scroll the page instead of navigating.
      Leaving it to the href would do nothing on a repeat click, because the URL
-     still carries #portfolio-items-holder from last time and the router sees
+     still carries #projects from last time and the router sees
      no change. Elsewhere they are ordinary links to the homepage. */
   const scrollTo = (e: React.MouseEvent, key: 'home' | 'work') => {
     close();
@@ -93,8 +96,8 @@ export default function Nav() {
       window.history.replaceState(null, '', '/');
       return;
     }
-    document.getElementById(PORTFOLIO_ID)?.scrollIntoView({ behavior, block: 'start' });
-    window.history.replaceState(null, '', `/#${PORTFOLIO_ID}`);
+    document.getElementById(PROJECTS_ID)?.scrollIntoView({ behavior, block: 'start' });
+    window.history.replaceState(null, '', `/#${PROJECTS_ID}`);
   };
 
   // Watch the projects section on the homepage: My work lights up while it

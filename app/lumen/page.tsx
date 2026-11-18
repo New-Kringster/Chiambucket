@@ -151,7 +151,7 @@ export default function LumenPage() {
         <div className="art-hero-bg"><img src="/images/covers/lumen.webp" alt="LUMEN cover art for a smart-home assistant built with OpenAI Whisper and DeepSeek" /></div>
         <div className="art-hero-scrim"></div>
         <div className="art-hero-inner hp-section">
-          <a className="art-back" href="/#portfolio-items-holder"><BackArrow /> Back to projects</a>
+          <a className="art-back" href="/#projects"><BackArrow /> Back to projects</a>
           <div className="art-tags">
             <span className="hp-md-tag school">School project</span>
             <AiMark project="proj-lumen" />

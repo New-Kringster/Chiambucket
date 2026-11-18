@@ -47,7 +47,7 @@
 :where(.hs) a { color: inherit; }
 .hs :focus-visible { outline: 2px solid var(--hs-gold); outline-offset: 3px; border-radius: 4px; }
 .hs-main { display: block; }
-/* The nav's "My work" scrolls to #portfolio-items-holder; mainstyle.css still styles that id
+/* The nav's "My work" scrolls to #projects (and lights up across #portfolio-items-holder); mainstyle.css still styles that id
    for the old layout, so undo it here. */
 #portfolio-items-holder.hs-work { display: block; max-width: none; width: auto; margin: 0; gap: 0; transition: none; scroll-margin-top: 0; }
 

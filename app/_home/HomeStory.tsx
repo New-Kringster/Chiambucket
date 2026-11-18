@@ -506,13 +506,6 @@ export default function HomeStory() {
             scrollTrigger: { trigger: im, start: 'top bottom', end: 'bottom top', scrub: SCRUB } });
         });
 
-        /* ── Photos: each column drifts at its own speed ── */
-        gsap.utils.toArray<HTMLElement>('.hs-mcol').forEach((c, i, all) => {
-          const sp = [-6, 8, -10, 5, -7][i % 5] * (all.length > 2 ? 1 : 0.6);
-          gsap.fromTo(c, { yPercent: sp * -0.5 }, { yPercent: sp * 0.5, ease: 'none',
-            scrollTrigger: { trigger: '.hs-masonry', start: 'top bottom', end: 'bottom top', scrub: SCRUB } });
-        });
-
         /* ── Contact: the sign-off assembles; the field settles at dusk ── */
         gsap.from('.hs-contact-title .hs-c', { yPercent: 100, opacity: 0, duration: 1.1, ease: 'expo.out', stagger: 0.03,
           scrollTrigger: { trigger: '.hs-contact', start: 'top 70%', toggleActions: 'play none none reverse' } });
@@ -535,8 +528,28 @@ export default function HomeStory() {
     return () => { cancelled = true; cleanup?.(); };
   }, []);
 
-  // Masonry columns changed: measure the page again.
-  useEffect(() => { import('gsap/ScrollTrigger').then(({ ScrollTrigger }) => ScrollTrigger.refresh()); }, [cols]);
+  /* Photos: each column drifts at its own speed. Set up again whenever the
+     number of columns changes (a resize), so columns added later drift too. */
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let gone = false;
+    let revert: (() => void) | undefined;
+    (async () => {
+      const [{ gsap }, { ScrollTrigger }] = await Promise.all([import('gsap'), import('gsap/ScrollTrigger')]);
+      if (gone || !root.current) return;
+      gsap.registerPlugin(ScrollTrigger);
+      const ctx = gsap.context(() => {
+        gsap.utils.toArray<HTMLElement>('.hs-mcol').forEach((c, i, all) => {
+          const sp = [-6, 8, -10, 5, -7][i % 5] * (all.length > 2 ? 1 : 0.6);
+          gsap.fromTo(c, { yPercent: sp * -0.5 }, { yPercent: sp * 0.5, ease: 'none',
+            scrollTrigger: { trigger: '.hs-masonry', start: 'top bottom', end: 'bottom top', scrub: 0.6 } });
+        });
+      }, root.current);
+      revert = () => ctx.revert();
+      ScrollTrigger.refresh(); // the masonry's height changed with its columns
+    })();
+    return () => { gone = true; revert?.(); };
+  }, [cols]);
 
   const photoCols = deal(PHOTOS, cols);
 
