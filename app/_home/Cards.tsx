@@ -7,7 +7,7 @@ import InfoModal, { type InfoItem } from '../../components/InfoModal';
 import LazyVideo from '../../components/LazyVideo';
 import { PeekFeed } from '../../components/ProjectPeek';
 import { IcRead, IcPeek, IcPlay, IcGitHub, IcOut } from '../../components/Icons';
-import { PROJECTS, TILES, type Flagship } from './content';
+import { PROJECTS, TILES, TYPE_LABEL, type Flagship, type ProjectType } from './content';
 
 /* ── The peek reader, shared by every card on the page ── */
 export function usePeek() {
@@ -51,7 +51,7 @@ export const Star = () => <svg className="hs-tier-ic" viewBox="0 0 24 24" fill="
     width: the badge with the AI-use mark at the right edge, the title beside
     the lead, the facts, and the tools beside the actions. `slot` lets the
     OCR card leave its picture band to the live 3D reader. */
-export function FlagCard({ p, onPeek, variant, slot }: { p: Flagship; onPeek: (id: string) => void; variant: 'ocr' | 'june' | 'bead'; slot?: ReactNode }) {
+export function FlagCard({ p, onPeek, variant, slot }: { p: Flagship; onPeek: (id: string) => void; variant: 'ocr' | 'june' | 'pip' | 'bead'; slot?: ReactNode }) {
   return (
     <article className={`hs-fc is-${variant}`} aria-label={`${p.name}, ${p.badge}`}>
       <div className="hs-fc-frame" aria-hidden="true" />
@@ -79,7 +79,7 @@ export function FlagCard({ p, onPeek, variant, slot }: { p: Flagship; onPeek: (i
           <div className="hs-btns">
             <a className="hs-btn is-primary" href={p.read}><IcRead /> Read the article</a>
             <button type="button" className="hs-btn" onClick={() => onPeek(p.id)}><IcPeek /> Peek summary</button>
-            <a className="hs-btn" href={p.extra.url} target="_blank" rel="noopener">{extraIcon[p.extra.kind]} {p.extra.label}</a>
+            {p.extra && <a className="hs-btn" href={p.extra.url} target="_blank" rel="noopener">{extraIcon[p.extra.kind]} {p.extra.label}</a>}
           </div>
         </div>
       </div>
@@ -89,25 +89,28 @@ export function FlagCard({ p, onPeek, variant, slot }: { p: Flagship; onPeek: (i
 
 /* ── The project gallery ── */
 export function ProjectGallery({ onPeek }: { onPeek: (id: string) => void }) {
-  const [filter, setFilter] = useState<'all' | 'personal' | 'school'>('all');
+  const [filter, setFilter] = useState<'all' | ProjectType>('all');
   const shown = PROJECTS.filter((p) => filter === 'all' || p.type === filter);
   return (
     <>
       <div className="hs-pg-filters" role="group" aria-label="Show projects">
-        {(['all', 'personal', 'school'] as const).map((f) => (
+        {(['all', 'personal', 'school', 'internship'] as const).map((f) => (
           <button key={f} type="button" className={filter === f ? 'is-on' : ''} aria-pressed={filter === f} onClick={() => setFilter(f)}>
-            {f === 'all' ? 'All' : f === 'personal' ? 'Personal' : 'School'}
+            {f === 'all' ? 'All' : TYPE_LABEL[f]}
+            {f === 'internship' && <i className="hs-m5" role="img" aria-label="at M5Stack" />}
           </button>
         ))}
       </div>
       <ul className="hs-pg">
         {shown.map((p, i) => (
-          <li key={p.id} className={`hs-pc${p.highlight ? ' is-wide' : ''}${p.url ? '' : ' is-soon'}`} style={{ '--i': i } as CSSProperties}>
+          <li key={p.id} className={`hs-pc${p.flagship || p.highlight ? ' is-wide' : ''}${p.url ? '' : ' is-soon'}`} style={{ '--i': i } as CSSProperties}>
             <div className="hs-pc-thumb">
               <img src={p.img} alt="" loading="lazy" />
               <AiMark project={p.id} />
-              <span className="hs-pc-type">{p.type === 'personal' ? 'Personal' : 'School'}</span>
-              {p.highlight && <span className="hs-pc-hl"><Star />Highlight</span>}
+              <div className="hs-pc-tags">
+                <span className="hs-pc-type">{TYPE_LABEL[p.type]}{p.type === 'internship' && <i className="hs-m5" role="img" aria-label="at M5Stack" />}</span>
+                {p.flagship ? <span className="hs-pc-hl is-gold"><Crown />Flagship</span> : p.highlight && <span className="hs-pc-hl"><Star />Highlight</span>}
+              </div>
             </div>
             <div className="hs-pc-info">
               <h3>{p.title}</h3>

@@ -20,6 +20,12 @@ export const JUNE_BEATS: Beat[] = [
   { title: 'From a controller to the road', text: 'I drive it with an Xbox controller through my web console. The commands go over MQTT through my server and the video comes back through my TURN server, with about a second of delay from over 8 km away.' },
 ];
 
+export const PIP_BEATS: Beat[] = [
+  { title: 'It points things out', text: 'Ask Pip to show you something and it takes a screenshot of the page, finds the part in the picture and draws a circle, an arrow and a note over it.' },
+  { title: 'It builds its own apps', text: 'Pip writes apps when I ask and keeps them in a drawer, either Lua scripts that run on the tablet or web apps it serves from my server.' },
+  { title: 'A desktop for every chat', text: 'Pulling down the pill at the top opens the spotlight bar, and every conversation has its own desktop with its own Pip and colour.' },
+];
+
 export const BEAD_BEATS: Beat[] = [
   { title: 'It remembers your page', text: 'The Who’s reading list shows how far each reader has got, and tapping your own row opens the same chapter at the line you stopped on.' },
   { title: 'Reading together', text: 'Friends on the same book show a green ring and their chapter. You can tap to send a wave or a short note, which fades from their screen in seconds and is never saved.' },
@@ -222,6 +228,34 @@ export function BeadBook() {
         </div>
       </div>
       <Captions beats={BEAD_BEATS} />
+    </div>
+  );
+}
+
+/* ── Pip: the Tab5 itself, with three clips from the article's tablet screen ──
+   The body is drawn to the real proportions (128 x 80 mm, the panel a little
+   left of centre, the camera on the wider bezel). The clips cross as the
+   beats change: --f the first, --g the second, --l the third. */
+const PIP_CLIPS = [
+  { key: 'point', label: 'Pip circling the mitochondria on a cell diagram' },
+  { key: 'drawer', label: 'The app drawer rising and an app opening' },
+  { key: 'switch', label: 'The spotlight bar switching between desktops' },
+];
+
+export function PipTab() {
+  return (
+    <div className="hs-sp hs-pt">
+      <div className="hs-pt-visual" aria-hidden="true">
+        <div className="hs-pt-tab">
+          <div className="hs-pt-screen">
+            {PIP_CLIPS.map((c, i) => (
+              <video key={c.key} className={`hs-pt-clip is-${i + 1}`} muted loop playsInline preload="none" poster={`/videos/pip/${c.key}.webp`} data-src={`/videos/pip/${c.key}.mp4`} aria-label={c.label} />
+            ))}
+          </div>
+          <i className="hs-pt-cam" />
+        </div>
+      </div>
+      <Captions beats={PIP_BEATS} />
     </div>
   );
 }

@@ -32,9 +32,9 @@
    ──────────────────────────────────────────────────────────────── */
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Figtree, Newsreader } from 'next/font/google';
-import { LAYERS, READER_BEATS, BENCH, SHOW_BENCH, PHOTOS, OCR_CARD, JUNE_CARD, BEAD_CARD } from './content';
+import { LAYERS, READER_BEATS, BENCH, SHOW_BENCH, PHOTOS, OCR_CARD, JUNE_CARD, PIP_CARD, BEAD_CARD } from './content';
 import { FlagCard, ProjectGallery, Bento, usePeek, Crown, Star } from './Cards';
-import { JuneHud, BeadBook } from './SetPieces';
+import { JuneHud, PipTab, BeadBook } from './SetPieces';
 import AsciiLab from './AsciiLab';
 import type { Box } from './readerScene';
 import { IcGitHub, IcMail, IcServer, IcPhotos } from '../../components/Icons';
@@ -200,8 +200,8 @@ export default function HomeStory() {
     const evs = ['wheel', 'touchstart', 'keydown', 'pointerdown'] as const;
     const off = () => evs.forEach((e) => window.removeEventListener(e, skip));
     evs.forEach((e) => window.addEventListener(e, skip, { passive: true, once: true }));
-    // The scroll cue leaves on the first scroll and never comes back.
-    const scrolled = () => { if (window.scrollY < 4) return; el.classList.add('hs-scrolled'); window.removeEventListener('scroll', scrolled); };
+    // The scroll cue leaves once the page scrolls and comes back at the very top.
+    const scrolled = () => { el.classList.toggle('hs-scrolled', window.scrollY >= 4); };
     window.addEventListener('scroll', scrolled, { passive: true });
     scrolled();
     return () => { off(); window.removeEventListener('scroll', scrolled); };
@@ -406,7 +406,7 @@ export default function HomeStory() {
         document.fonts?.ready.then(onR);
         disposers.push(() => { near.disconnect(); window.removeEventListener('resize', onR); readerF.stop(); scene?.dispose(); });
 
-        /* ── Project June and BeadReader: the title, three beats, then the
+        /* ── Project June, Pip and BeadReader: the title, the beats, then the
            scene steps back into the card. Each value eases toward the scroll. ── */
         gsap.utils.toArray<HTMLElement>('.hs-fl').forEach((fl) => {
           const counters = Array.from(fl.querySelectorAll<HTMLElement>('[data-to]'));
@@ -570,8 +570,9 @@ export default function HomeStory() {
                 <GlassWord>Braven</GlassWord>{' '}
                 <GlassWord>Chiam</GlassWord>
               </h1>
+              <p className="hs-tagline">I make cool stuff</p>
             </div>
-            {/* a quiet cue to scroll: comes in once the opening has settled, leaves for good on the first scroll */}
+            {/* a quiet cue to scroll: comes in once the opening has settled, leaves while the page is scrolled */}
             <div className="hs-cue" aria-hidden="true">
               <div className="hs-cue-in"><span>Scroll</span><i className="hs-cue-line"><b /></i></div>
             </div>
@@ -657,6 +658,24 @@ export default function HomeStory() {
             </div>
           </section>
 
+          {/* ── Pip ── */}
+          <section className="hs-fl is-pip" id="pip" data-tone="dark">
+            <div className="hs-fl-stage">
+              <div className="hs-fl-scene" aria-hidden="true">
+                <img className="hs-fl-photo" src="/images/pip/desk-photo.webp" alt="" loading="lazy" />
+              </div>
+              <div className="hs-fl-head">
+                <p className="hs-tag"><Star />Highlighted software build</p>
+                <h2 className="hs-fl-title"><Chars text="Pip" /></h2>
+                <Sub>A desk pet with an AI agent for a brain, built during my internship at M5Stack.</Sub>
+              </div>
+              <PipTab />
+              <div className="hs-fl-card hs-stagecard">
+                <FlagCard p={PIP_CARD} onPeek={peek.show} variant="pip" />
+              </div>
+            </div>
+          </section>
+
           {/* ── BeadReader ── */}
           <section className="hs-fl is-bead" id="beadreader" data-tone="dark">
             <div className="hs-fl-stage">
@@ -664,7 +683,7 @@ export default function HomeStory() {
                 <img className="hs-fl-photo" src="/images/home/beadreader-phones.webp" alt="" loading="lazy" />
               </div>
               <div className="hs-fl-head">
-                <p className="hs-tag"><Star />Highlighted software build</p>
+                <p className="hs-tag"><Star />Highlighted project</p>
                 <h2 className="hs-fl-title"><Chars text="BeadReader" /></h2>
                 <Sub>A private book reader for a few friends.</Sub>
               </div>
@@ -680,8 +699,8 @@ export default function HomeStory() {
             <Tear at="top" seed={9} />
             <div className="hs-wrap">
               <div className="hs-chead hs-rise">
-                <h2 className="hs-ctitle">More projects</h2>
-                <Sub>See all my other projects.</Sub>
+                <h2 className="hs-ctitle">All projects</h2>
+                <Sub>Everything I have built, at school, on my own and on internship.</Sub>
               </div>
               <ProjectGallery onPeek={peek.show} />
             </div>

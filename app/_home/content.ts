@@ -34,7 +34,7 @@ export type Flagship = {
   poster: string;
   posterAlt: string;
   read: string;
-  extra: { label: string; url: string; kind: 'play' | 'github' | 'report' };
+  extra?: { label: string; url: string; kind: 'play' | 'github' | 'report' };
 };
 
 export const OCR_CARD: Flagship = {
@@ -66,10 +66,23 @@ export const JUNE_CARD: Flagship = {
   extra: { label: 'Watch the build', url: 'https://youtu.be/MnkJsx-nwoE?si=kd1n5bYct6dWTcQC', kind: 'play' },
 };
 
+export const PIP_CARD: Flagship = {
+  id: 'proj-pip',
+  name: 'Pip',
+  badge: 'Highlighted software build',
+  kind: 'Internship project, M5Stack',
+  lead: 'A desk pet on an M5Stack Tab5 whose brain is the DeepSeek Harness on my server, so it can drive a browser, build its own apps and keep an eye on my other agents.',
+  stats: [{ v: '106 s', l: 'to build a timer app' }, { v: 'Lua', l: 'native applets' }, { v: 'Docker', l: 'web applets' }, { v: '1 desktop', l: 'for every chat' }],
+  tools: [{ src: '/images/esp-icon.webp', alt: 'ESP32-P4' }, { src: '/images/PlatformIO-icon.webp', alt: 'PlatformIO' }, { src: '/images/docker-icon.webp', alt: 'Docker' }],
+  poster: '/images/pip-pf-context.webp',
+  posterAlt: 'Pip, a cyan desk pet with a light bulb, on the M5Stack Tab5',
+  read: '/pip',
+};
+
 export const BEAD_CARD: Flagship = {
   id: 'proj-beadreader',
   name: 'BeadReader',
-  badge: 'Highlighted software build',
+  badge: 'Highlighted project',
   kind: 'Personal project',
   lead: 'A book reader where I publish books in Markdown or as webtoons, my friends sign in with one access code, and anyone on the same book can see the others reading live.',
   stats: [{ v: 'Live', l: 'read-together presence' }, { v: 'SQL', l: 'enforced content gate' }, { v: 'Offline', l: 'works without a connection' }, { v: '1 click', l: 'to deploy your own' }],
@@ -80,13 +93,18 @@ export const BEAD_CARD: Flagship = {
   extra: { label: 'GitHub', url: 'https://github.com/New-Kringster/BeadReader', kind: 'github' },
 };
 
-/* ── The project gallery (everything that is not a flagship) ── */
+/* ── The project gallery: every project, the story-scroll ones first ── */
+export type ProjectType = 'personal' | 'school' | 'internship';
+export const TYPE_LABEL: Record<ProjectType, string> = { personal: 'Personal', school: 'School', internship: 'Internship' };
 export type Project = {
-  id: string; title: string; blurb: string; img: string; type: 'personal' | 'school';
-  highlight?: boolean; url: string | null; icons: { src: string; alt: string }[];
+  id: string; title: string; blurb: string; img: string; type: ProjectType;
+  flagship?: boolean; highlight?: boolean; url: string | null; icons: { src: string; alt: string }[];
 };
 export const PROJECTS: Project[] = [
-  { id: 'proj-pip', title: 'Pip', blurb: 'A desk pet on an M5Stack Tab5 with an AI agent harness for a brain, so it can drive a browser and build its own apps.', img: '/images/pip-pf-context.webp', type: 'personal', highlight: true, url: '/pip', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32-P4' }, { src: '/images/PlatformIO-icon.webp', alt: 'PlatformIO' }, { src: '/images/docker-icon.webp', alt: 'Docker' }] },
+  { id: 'proj-waterslop', title: 'OCR Reader', blurb: 'A battery-powered camera that reads a water meter, where a neural network on an ESP32-S3 reads the drums and only the number goes out over LoRaWAN.', img: '/images/ocr-reader-pf-context.webp', type: 'school', flagship: true, url: '/waterslop', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32-S3' }, { src: '/images/Kicad-icon.webp', alt: 'KiCad' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }] },
+  { id: 'proj-june', title: 'Project June', blurb: 'A 5G rover whose three phones stream its view to my console, which I drive with an Xbox controller from anywhere with signal.', img: '/images/ProjJuneBanner1.webp', type: 'personal', highlight: true, url: '/project-june', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32-S3' }, { src: '/images/Kicad-icon.webp', alt: 'KiCad' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }] },
+  { id: 'proj-pip', title: 'Pip', blurb: 'A desk pet on an M5Stack Tab5 with an AI agent harness for a brain, so it can drive a browser and build its own apps.', img: '/images/pip-pf-context.webp', type: 'internship', highlight: true, url: '/pip', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32-P4' }, { src: '/images/PlatformIO-icon.webp', alt: 'PlatformIO' }, { src: '/images/docker-icon.webp', alt: 'Docker' }] },
+  { id: 'proj-beadreader', title: 'BeadReader', blurb: 'A private book reader for a few friends, who sign in with one access code and can see each other reading live.', img: '/images/beadreader-pf-context.webp', type: 'personal', highlight: true, url: '/beadreader', icons: [{ src: '/images/nextjs-icon.webp', alt: 'Next.js' }, { src: '/images/supabase-icon.webp', alt: 'Supabase' }, { src: '/images/cloudflare-icon.webp', alt: 'Cloudflare R2' }] },
   { id: 'proj-lora', title: 'LoRA Messenger', blurb: 'Two ESP32 handhelds that send text over LoRa and rough two-way voice over ESP-NOW, on my first PCB.', img: '/images/borlocator-pf-context.webp', type: 'personal', highlight: true, url: '/brolocator', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32' }, { src: '/images/Kicad-icon.webp', alt: 'KiCad' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }] },
   { id: 'proj-lumen', title: 'LUMEN', blurb: 'A voice-controlled room on an ESP32, where Whisper and DeepSeek turn speech into one JSON command sent over MQTT.', img: '/images/lumen-pf-context.webp', type: 'school', highlight: true, url: '/lumen', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32' }, { src: '/images/python-icon.webp', alt: 'Python' }, { src: '/images/docker-icon.webp', alt: 'Docker' }] },
   { id: 'proj-ema', title: 'EMA Smart Home', blurb: 'A team smart home, graded A, where four BeagleBone Black nodes report to a SocketIO server with a live 3D dashboard.', img: '/images/Ema-pf-context.webp', type: 'school', url: '/csdp', icons: [{ src: '/images/figma-icon.webp', alt: 'Figma' }, { src: '/images/resolve-icon.webp', alt: 'DaVinci Resolve' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }] },

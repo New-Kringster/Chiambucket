@@ -19,7 +19,7 @@ import AiMark from './AiMark';
 
 /* Project order = the homepage gallery order (also the ALL_PROJECTS order). */
 export const PEEK_ORDER: string[] = [
-  'proj-waterslop', 'proj-june', 'proj-beadreader', 'proj-pip', 'proj-lora', 'proj-lumen', 'proj-ema', 'proj-pandus', 'proj-elecf',
+  'proj-waterslop', 'proj-june', 'proj-pip', 'proj-beadreader', 'proj-lora', 'proj-lumen', 'proj-ema', 'proj-pandus', 'proj-elecf',
   'proj-kauli', 'proj-sol', 'proj-copyboard', 'proj-webdev', 'proj-mc',
 ];
 
@@ -87,7 +87,7 @@ export function PeekModalContent({ id }: { id: string }) {
     );
     case 'proj-pip': return (
       <>
-        {hero('/images/pip-pf-context.webp', 'Pip, a cyan desk pet, on the M5Stack Tab5', ['Personal Project'], 'highlight')}
+        {hero('/images/pip-pf-context.webp', 'Pip, a cyan desk pet, on the M5Stack Tab5', ['Internship Project'], 'highlight')}
         <div className="hp-rd-body">
           <h2 className="hp-md-title">Pip</h2>
           <p className="hp-md-meta">1 Week · M5Stack Tab5 · ESP32-P4 · DeepSeek Harness · Lua · Docker</p>

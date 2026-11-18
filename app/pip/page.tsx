@@ -116,7 +116,7 @@ export default function PipPage() {
               </span>
               <AiMark project="proj-pip" className="pp-ai" />
             </div>
-            <p className="pp-hero-meta">Personal project, November 2026. ESP32-P4, C++, Lua, Node, Python, Docker.</p>
+            <p className="pp-hero-meta">Internship project at M5Stack, November 2026. ESP32-P4, C++, Lua, Node, Python, Docker.</p>
           </div>
         } />
       <div className="pp-chapter" style={{ ['--acc' as string]: C.cyan }}>

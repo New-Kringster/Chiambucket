@@ -2031,6 +2031,10 @@ html[data-theme="paper"] {
    personal = warm amber, school = cool teal. Never both on the accent token. */
 .hp-pf-type.personal { background: rgba(239,122,5,0.9); color: #1a0e00; }
 .hp-pf-type.school { background: rgba(94,178,196,0.92); color: #04212a; }
+.hp-pf-type.internship { display: inline-flex; align-items: center; gap: 0.35rem; background: rgba(226,232,236,0.92); color: #14181c; }
+/* the M5Stack mark beside the Internship category, in the badge's text colour */
+.hp-m5 { display: inline-block; width: 1.35em; height: 1em; flex: none; background: currentColor;
+  -webkit-mask: url(/images/pip/m5stack-mark.svg) center / contain no-repeat; mask: url(/images/pip/m5stack-mark.svg) center / contain no-repeat; }
 .hp-pf-star {
   position: absolute; top: 12px; right: 12px; z-index: 2;
   display: flex; align-items: center; gap: 5px;
