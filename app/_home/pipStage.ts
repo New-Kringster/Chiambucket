@@ -6,7 +6,10 @@
   On the title slide the tablet sits turned beside the title; as the title
   leaves it turns to face us and settles in the set piece's visual box
   (.hs-pt-visual), and its own screen plays the article's recordings for the
-  three beats. HomeStory hands it the section's scroll progress with set(p).
+  three beats. As the card comes up it turns back to the title slide's pose,
+  its screen returns to the home picture with Pip, and it settles in the
+  card's picture band (.hs-fc-media), so the card's picture is the live
+  tablet. HomeStory hands it the section's scroll progress with set(p).
   The scene and its videos load only once the section comes near, and it
   renders only while the section is on screen. Without WebGL the section gets
   .hs-pt-flat and CSS shows still pictures instead.
@@ -23,15 +26,19 @@ const TURN = [0.05, 0.2] as const;      // the title leaves and the tablet turns
 const CLIP_IN = [0.15, 0.21] as const;  // the first recording comes up over the home screen
 const SWITCH = [0.4, 0.62];             // where one recording hands over to the next
 const DIP = 0.03;                       // half the width of each hand-over
+const CARD = [0.8, 0.92] as const;      // the card comes up (HomeStory's --k)
 const CLIPS = ['point', 'drawer', 'switch'];
 
 export function createPipStage(section: HTMLElement) {
   const host = section.querySelector<HTMLElement>('.hs-pt-gl')!;
   const box = section.querySelector<HTMLElement>('.hs-pt-visual')!;
+  const stage = section.querySelector<HTMLElement>('.hs-fl-stage')!;
+  const media = section.querySelector<HTMLElement>('.hs-fc-media');
   let scene: Tab5Scene | null = null;
   let alive = true, near = false, inView = false, on = false, raf = 0, p = 0;
   let layer: HTMLVideoElement | null = null;
   let clips: HTMLVideoElement[] = [];
+  let turned: Rect | null = null, facing: Rect | null = null, card: Rect | null = null;
 
   const video = (src: string) => {
     const v = document.createElement('video');
@@ -43,17 +50,32 @@ export function createPipStage(section: HTMLElement) {
   };
 
   /* Where the body sits turned (beside the title; above it on phones) and facing us (the visual box). */
-  const frames = (): [Rect, Rect] => {
+  const frames = () => {
     const hr = host.getBoundingClientRect();
     const W = hr.width || 1, H = hr.height || 1;
     const navb = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hs-navb')) || 64;
     const wide = W / H > 1.05;
-    const turned: Rect = wide
+    const turnedR: Rect = wide
       ? { x: W * 0.44, y: navb + H * 0.07, w: W * 0.5, h: H * 0.54 }
       : { x: W * 0.05, y: navb + 8, w: W * 0.9, h: H * 0.42 };
     const br = box.getBoundingClientRect();
-    const facing: Rect = { x: br.left - hr.left, y: br.top - hr.top, w: br.width, h: br.height };
-    return [turned, facing];
+    facing = { x: br.left - hr.left, y: br.top - hr.top, w: br.width, h: br.height };
+    turned = turnedR;
+    card = media ? layoutRect(media) : null;
+  };
+  /* A box's place in the stage by layout, so the scale the card puts on the
+     scene (and on the picture band) while it comes up doesn't skew it. */
+  const layoutRect = (el: HTMLElement): Rect | null => {
+    let x = 0, y = 0, n: HTMLElement | null = el;
+    while (n && n !== stage) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent as HTMLElement | null; }
+    return n ? { x, y, w: el.offsetWidth, h: el.offsetHeight } : null;
+  };
+  /* The card's band in the canvas's own pixels: the scene (and the canvas in
+     it) shrinks about its centre by 1 - 0.06k as the card comes up. */
+  const cardFrame = (k: number): Rect => {
+    const s = 1 - 0.06 * k, cx = stage.offsetWidth / 2, cy = stage.offsetHeight / 2;
+    const r = card!;
+    return { x: cx + (r.x - cx) / s, y: cy + (r.y - cy) / s, w: r.w / s, h: r.h / s };
   };
 
   const play = (v: HTMLVideoElement | null | undefined, go: boolean) => {
@@ -62,17 +84,26 @@ export function createPipStage(section: HTMLElement) {
   };
 
   const apply = () => {
-    if (!scene) return;
-    scene.setProgress(ease(ramp(p, TURN[0], TURN[1])));
+    if (!scene || !turned || !facing) return;
+    const k = ease(ramp(p, CARD[0], CARD[1]));
+    if (k > 0 && card) {
+      // the card: from facing us back to the turned pose, in the card's picture band
+      scene.setFrames(cardFrame(k), facing);
+      scene.setProgress(1 - k);
+    } else {
+      scene.setFrames(turned, facing);
+      scene.setProgress(ease(ramp(p, TURN[0], TURN[1])));
+    }
     // which recording, and how much of it shows: in over the home screen, then a quick dip at each hand-over
     const idx = p < SWITCH[0] ? 0 : p < SWITCH[1] ? 1 : 2;
     let op = ease(ramp(p, CLIP_IN[0], CLIP_IN[1]));
     for (const s of SWITCH) op *= ease(clamp01(Math.abs(p - s) / DIP));
+    op *= 1 - k;
     const clip = clips[idx] ?? null;
     scene.setClip(clip, op);
     // Pip on the home screen gives way to the recordings, which have Pip in them
-    scene.setHandoff(0, 0, null, 1 - ease(ramp(p, CLIP_IN[0], CLIP_IN[1])));
-    play(layer, on && p < CLIP_IN[1] + 0.02);
+    scene.setHandoff(0, 0, null, Math.max(1 - ease(ramp(p, CLIP_IN[0], CLIP_IN[1])), k));
+    play(layer, on && (p < CLIP_IN[1] + 0.02 || k > 0));
     clips.forEach((v, i) => play(v, on && i === idx && op > 0));
   };
 
@@ -98,8 +129,7 @@ export function createPipStage(section: HTMLElement) {
           onReady: () => section.classList.add('hs-pt-ready'),
         });
       } catch { section.classList.add('hs-pt-flat'); return; }
-      const [a, b] = frames();
-      scene.setFrames(a, b);
+      frames();
       apply();
       scene.render();
       start();
@@ -120,7 +150,7 @@ export function createPipStage(section: HTMLElement) {
   });
   vis.observe(section);
 
-  const onResize = () => { if (!scene) return; scene.resize(); const [a, b] = frames(); scene.setFrames(a, b); };
+  const onResize = () => { if (!scene) return; scene.resize(); frames(); apply(); scene.render(); };
   window.addEventListener('resize', onResize);
   const onMove = (e: PointerEvent) => {
     if (e.pointerType !== 'mouse') return;

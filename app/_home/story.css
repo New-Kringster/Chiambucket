@@ -203,15 +203,6 @@ html.hs-home .footer { position: relative; z-index: 3; }
    copies (a cut-out shadow, the glass, a highlight, a rim). */
 .hs-name-wrap { position: absolute; left: 0; right: 0; top: 46%; transform: translateY(-50%); text-align: center; padding: 0 3vw; pointer-events: none; }
 .hs-name { margin: 0; font-size: min(13.4vw, 25vh); line-height: 1; letter-spacing: -0.035em; white-space: nowrap; }
-.hs .hs-tagline {
-  margin: clamp(0.4rem, 1.6vh, 1.2rem) 0 0;
-  font-family: var(--hs-sans), system-ui, sans-serif; font-weight: 600;
-  font-size: clamp(1.15rem, min(2.4vw, 4vh), 2.3rem); letter-spacing: -0.015em; line-height: 1.2;
-  color: rgba(255, 253, 244, 0.94);
-  text-shadow: 0 1px 2px rgba(31, 43, 28, 0.35), 0 4px 22px rgba(31, 43, 28, 0.4);
-  animation: hs-tag-in 1.2s cubic-bezier(0.22, 1, 0.36, 1) 1.35s backwards;
-}
-@keyframes hs-tag-in { from { opacity: 0; transform: translateY(0.6rem); } }
 .hs-gw, .hs-gw > span { font-family: var(--hs-sans), system-ui, sans-serif; font-weight: 800; }
 .hs-gw { position: relative; display: inline-block; animation: hs-focus 1.5s cubic-bezier(0.22, 1, 0.36, 1) 0.55s backwards; }
 .hs-gw + .hs-gw { animation-delay: 0.75s; }
@@ -254,7 +245,6 @@ html.hs-home .footer { position: relative; z-index: 3; }
   .hs-gw { display: block; width: fit-content; margin: 0 auto; }
   .hs-name { font-size: min(27vw, 22vh); line-height: 0.9; }
   .hs-name-wrap { top: 40%; }
-  .hs .hs-tagline { font-size: clamp(1.15rem, 5.4vw, 1.6rem); margin-top: 0.9rem; }
 }
 /* Skipping: every opening animation ends at once. */
 .hs-skip .hs-hero * { animation-duration: 1ms !important; animation-delay: 0s !important; }
@@ -499,13 +489,18 @@ html.hs-home .footer { position: relative; z-index: 3; }
    glow (Pip's colour) sits behind it. */
 .hs-fl.is-pip .hs-fl-scene { background: radial-gradient(55% 60% at 68% 42%, rgba(0, 190, 200, 0.16), rgba(0, 190, 200, 0) 70%), #000; }
 .hs-fl.is-pip .hs-fl-scene::after { background: linear-gradient(0deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 40%); }
-.hs-pt-gl { position: absolute; inset: 0; opacity: calc(1 - var(--k)); }
+.hs-pt-gl { position: absolute; inset: 0; }
 .hs-pt-gl canvas { display: block; width: 100% !important; height: 100% !important; opacity: 0; transition: opacity 0.8s; }
 .hs-fl.hs-pt-ready .hs-pt-gl canvas { opacity: 1; }
 /* the render of the same model, until WebGL is ready, and in its place without it */
 .hs-pt-still { position: absolute; right: 2vw; top: calc(var(--hs-navb, 64px) + 2vh); width: min(58vw, 120vh); height: auto; opacity: calc(1 - max(var(--f), var(--k))); transition: visibility 0s 0.8s; }
 .hs-fl.hs-pt-ready .hs-pt-still { visibility: hidden; }
 .hs-pt-visual { pointer-events: none; }
+/* the card's picture is the live tablet, which settles in its band; the
+   render stands in only without WebGL or with reduced motion */
+.hs-fc-media .hs-pt-cardstill { display: none; }
+.hs-fl.hs-pt-flat .hs-fc-media .hs-pt-cardstill { display: block; }
+.hs-fc.is-pip .hs-fc-poster { display: none; }
 /* the beats' stills: only without WebGL (and with reduced motion, below) */
 .hs-pt-shots { display: none; }
 .hs-fl.hs-pt-flat .hs-pt-shots { display: grid; place-items: center; }
@@ -1039,6 +1034,7 @@ html.hs-home .footer { position: relative; z-index: 3; }
   .hs-fl.is-bead { --gp: 1; --go: 1; --gi: 1; --lift: 0; --tap: 0; --push: 1; --scr: 1; --mark: 1; }
   .hs-fl.is-pip { --g: 0; }
   .hs-pt-gl { display: none; }
+  .hs-fc-media .hs-pt-cardstill { display: block; }
   .hs-pt-still { opacity: 1; }
   .hs-pt-shots { display: grid; gap: 1.2rem; }
   .hs-pt-shots > img { grid-area: auto; opacity: 1 !important; }

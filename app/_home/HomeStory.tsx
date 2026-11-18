@@ -617,7 +617,6 @@ export default function HomeStory() {
                 <GlassWord>Braven</GlassWord>{' '}
                 <GlassWord>Chiam</GlassWord>
               </h1>
-              <p className="hs-tagline">I make cool stuff</p>
             </div>
             {/* a quiet cue to scroll: comes in once the opening has settled, leaves while the page is scrolled */}
             <div className="hs-cue" aria-hidden="true">
@@ -720,7 +719,7 @@ export default function HomeStory() {
               </div>
               <PipTab />
               <div className="hs-fl-card hs-stagecard">
-                <FlagCard p={PIP_CARD} onPeek={peek.show} variant="pip" />
+                <FlagCard p={PIP_CARD} onPeek={peek.show} variant="pip" slot={<img className="hs-fc-slot hs-pt-cardstill" src={PIP_CARD.poster} alt={PIP_CARD.posterAlt} loading="lazy" />} />
               </div>
             </div>
           </section>
