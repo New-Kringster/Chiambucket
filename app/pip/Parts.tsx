@@ -55,7 +55,7 @@ export function Flow() {
           </div>
         ))}
       </div>
-      <figcaption>The tablet only draws Pip and the screen. Everything that thinks runs on a small Ubuntu VM on my desk, over Wi-Fi.</figcaption>
+      <figcaption>The tablet draws Pip and the screen, and it talks over Wi-Fi to a small Ubuntu VM on my desk, where everything else runs.</figcaption>
     </figure>
   );
 }

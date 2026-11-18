@@ -392,10 +392,10 @@ export function Opener({ id, desk, color, title, lede, clip, pipLabel }: {
    the row is off screen; reduced motion shows each cell's final state. The touch itself is a soft
    contact disc about a fingertip wide (~9 mm on the 110.7 mm panel), pressing in at the touch point. */
 const TOUCHES = [
-  { k: 'tap', img: '/images/pip/touch-docs.webp', title: 'Taps show.', text: 'A tap lands as a blue dot, then a green ring once the page has reacted.', alt: 'A touch on the round help button of the M5Stack Tab5 page: a blue dot, then a green ring' },
-  { k: 'drag', img: '/images/pip/touch-full.webp', title: 'Drags show.', text: 'A drag leaves a blue line behind the finger while the page scrolls.', alt: 'A touch dragging down the M5Stack Tab5 page, leaving a blue line' },
-  { k: 'expand', img: '/images/pip/touch-pane.webp', img2: '/images/pip/touch-full.webp', title: 'Any pane expands.', text: 'Tap Expand and the pane grows to the full screen.', alt: 'A touch on Expand on a pane, which grows to the full screen' },
-  { k: 'back', img: '/images/pip/touch-pane.webp', img2: '/images/pip/touch-full.webp', title: 'Back is always the same.', text: 'A swipe from left to right goes back, wherever you are.', alt: 'A touch swiping from left to right, sliding the screen back to the one before' },
+  { k: 'tap', img: '/images/pip/touch-docs.webp', title: 'Taps.', text: 'Each tap shows as a blue dot, which turns into a green ring once the page reacts.', alt: 'A touch on the round help button of the M5Stack Tab5 page: a blue dot, then a green ring' },
+  { k: 'drag', img: '/images/pip/touch-full.webp', title: 'Drags.', text: 'A drag leaves a blue line behind your finger as the page scrolls.', alt: 'A touch dragging down the M5Stack Tab5 page, leaving a blue line' },
+  { k: 'expand', img: '/images/pip/touch-pane.webp', img2: '/images/pip/touch-full.webp', title: 'Expand.', text: 'Tap Expand on any pane and it grows to fill the screen.', alt: 'A touch on Expand on a pane, which grows to the full screen' },
+  { k: 'back', img: '/images/pip/touch-pane.webp', img2: '/images/pip/touch-full.webp', title: 'Back.', text: 'Swipe from left to right to go back, wherever you are.', alt: 'A touch swiping from left to right, sliding the screen back to the one before' },
 ];
 
 export function Touches() {

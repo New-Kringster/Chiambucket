@@ -56,19 +56,19 @@ const CHAPTERS = [
 ];
 
 const MOODS: Mood[] = [
-  { key: 'asleep', name: 'Asleep', line: 'Left alone for a minute, it dims the screen and dozes off.', clip: V + 'm-asleep' },
-  { key: 'wake', name: 'Awake', line: 'Pick the tablet up, tap it, or let a reply arrive, and it wakes with a stretch.', clip: V + 'm-wake' },
-  { key: 'listen', name: 'Listening', line: 'Hold the screen to talk. It leans in with a hand to its ear.', clip: V + 'm-listen' },
-  { key: 'think', name: 'Thinking', line: 'While it works it twists, rubs its temples, and sometimes gets an idea.', clip: V + 'm-think' },
-  { key: 'happy', name: 'Happy', line: 'When something works, it hops.', clip: V + 'm-happy' },
-  { key: 'talk', name: 'Talking', line: 'Replies land in a bubble beside it, under the words it heard, with a soft chime.', clip: V + 'm-talk' },
+  { key: 'asleep', name: 'Asleep', line: 'If you leave it alone for a minute, it dims the screen and dozes off.', clip: V + 'm-asleep' },
+  { key: 'wake', name: 'Awake', line: 'It wakes with a stretch when you pick the tablet up or tap it, or when a reply arrives.', clip: V + 'm-wake' },
+  { key: 'listen', name: 'Listening', line: 'Hold the screen to talk, and it leans in with a hand to its ear.', clip: V + 'm-listen' },
+  { key: 'think', name: 'Thinking', line: 'While it works, it twists around and rubs its temples, and sometimes it gets an idea.', clip: V + 'm-think' },
+  { key: 'happy', name: 'Happy', line: 'It hops whenever something works out.', clip: V + 'm-happy' },
+  { key: 'talk', name: 'Talking', line: 'Its reply appears with a soft chime in a bubble beside it, just under what it heard you say.', clip: V + 'm-talk' },
 ];
 
 /* A new desktop, step by step (HatchSlides), as the tablet showed it. */
 const HATCH: HatchStep[] = [
   { src: V + 'newpip.webp', alt: 'The spotlight bar pulled down on Wavo\'s desktop, dragged past the last chip until a plus springs out; let go, and a new desktop arrives with an egg',
     caption: 'Drag past the last chip for a new desktop', clip: { src: V + 'newpip', poster: V + 'newpip.webp', ms: 4400 } },
-  { src: I + 'hatch-riva.webp', alt: 'Riva, a gold heart in a crown, hatched, with her first line in a bubble', caption: 'The egg hatches with a first line' },
+  { src: I + 'hatch-riva.webp', alt: 'Riva, a gold heart in a crown, hatched, with her first line in a bubble', caption: 'The egg hatches and the Pip says its first line' },
   { src: I + 'icard-riva.webp', alt: "Riva's card on the Tab5, written by her: a swaggering golden rival, theatrical, competitive and loyal, with her catchphrase, likes and dislikes", caption: 'Tap its name for the card it wrote' },
 ]
 
@@ -124,11 +124,11 @@ export default function PipPage() {
         <div className="pp-wrap">
           <Row title="Each expression is a different action" wide
             media={<Clip src={V + 'props'} poster={V + 'props.webp'} className="pp-pipvid pp-strip" label="Pips with a magnifying glass, binoculars, a megaphone and a paper plane" />}>
-            <p>A magnifying glass when it searches the web. Binoculars when it reads a page. A megaphone when it briefs a subagent. A paper plane when it messages another Pip.</p>
+            <p>Pip picks up a different prop for each job, so you can tell what it is doing at a glance: a magnifying glass when it searches the web, binoculars when it reads a page, a megaphone when it briefs a subagent and a paper plane when it messages another Pip.</p>
           </Row>
           <Row title="It lives on my desk" flip
             media={<figure className="pp-photo"><img src={I + 'desk-photo.webp'} alt="The M5Stack Tab5 on its keyboard on my desk, with Mopi, a cyan cloud in glasses, on its home screen" loading="lazy" decoding="async" /></figure>}>
-            <p>Pip runs on an M5Stack Tab5 clipped to its keyboard on my desk. This is Mopi, the Pip on my first desktop, sitting on its home screen until I need it.</p>
+            <p>Pip runs on an M5Stack Tab5 clipped to its keyboard on my desk. This is Mopi, the Pip on my first desktop, which waits on the home screen until I need it.</p>
           </Row>
         </div>
       </div>
@@ -140,19 +140,19 @@ export default function PipPage() {
         <div className="pp-wrap">
           <Row title="Browser use capabilities" wide
             media={<Win label="The page Pip is driving"><Clip src={V + 'cursor'} poster={V + 'cursor.webp'} className="pp-screen" label="Pip's cursor gliding over a YouTube video, turning on captions and setting the speed to 1.5x" /></Win>}>
-            <p>Ask for a video with captions on and Pip opens it, glides its cursor to the captions button, then finds the speed setting in the gear menu. This is recorded from the browser Pip drives on my server. On the tablet, Pip sits beside this page and watches.</p>
+            <p>When I ask for a video with captions on, Pip opens it, moves its cursor to the captions button and then sets the speed from the gear menu. The browser itself runs on my server, while the tablet shows the same page with Pip watching beside it.</p>
           </Row>
           <Row title="It points things out" flip
             media={<Tab><Clip src={V + 'point'} poster={V + 'point.webp'} className="pp-screen" label="An unlabelled animal cell diagram on the Tab5: Pip circles the two mitochondria with a Mitochondria note, then draws an arrow labelled Nucleus into the nucleus" /></Tab>}>
-            <p>Handy for studying. I put up an animal cell diagram with no labels and asked Pip to circle the mitochondria, then to show me the nucleus. Pip takes a screenshot of the page and looks at it, so it finds the parts from the picture itself, then draws circles, an arrow and a note over the diagram. This is the tablet&rsquo;s own screen, recorded in real time at a few frames a second.</p>
+            <p>This comes in handy for studying. I put up an unlabelled diagram of an animal cell and asked Pip to circle the mitochondria and then show me the nucleus. Because Pip can take a screenshot and look at it, it finds the parts in the picture by itself before drawing the circles, the arrow and the note over the diagram.</p>
           </Row>
           <Row title="Answers you can read"
             media={<Tab><img className="pp-screen" src={I + 'markdown.webp'} alt="A formatted reply on the Tab5: a bold title, a list with bold leads, and a line in the talk bubble" loading="lazy" decoding="async" /></Tab>}>
-            <p>Longer answers come as formatted text in a pane, with the short version in the bubble next to Pip.</p>
+            <p>Longer answers open as formatted text in a pane, while the short version stays in the bubble next to Pip.</p>
           </Row>
           <Row title="It asks before it guesses" flip
             media={<Tab><img className="pp-screen" src={I + 'question.webp'} alt="A multiple choice question from Pip on the Tab5: which part of the cell to point at first, with three options, Type an answer and Skip" loading="lazy" decoding="async" /></Tab>}>
-            <p>When Pip needs a decision it puts up a question. Tap an option, type on the keyboard, or hold Pip and say it.</p>
+            <p>When Pip needs me to decide something, it puts up a question, and I can answer by tapping an option, typing on the keyboard or holding Pip and saying it.</p>
           </Row>
           <div className="pp-touchwrap" data-pp-in><Touches /></div>
         </div>
@@ -165,7 +165,7 @@ export default function PipPage() {
         <div className="pp-wrap">
           <Row title="App Drawer" wide
             media={<Tab><Clip src={V + 'drawer'} poster={V + 'drawer.webp'} className="pp-screen" label="The applet drawer rising, the NCIR Thermometer info card, then the app launching and reading a sensor" /></Tab>}>
-            <p>Pulling up on the handle reveals the app drawer, where the apps Pip makes are saved. Native apps are built in Lua and run smoothly on the tablet. Container apps are web apps built in Docker containers on the DSH host and streamed to the Tab5. Container apps open up much more, like multiplayer games on your local network or even a video call.</p>
+            <p>Pulling up on the handle opens the app drawer, where the apps Pip makes are saved. Native apps are written in Lua and run smoothly on the tablet itself, while container apps are web apps that run in Docker on the DSH host and stream to the Tab5. Because they run on the server, container apps can do much more, such as multiplayer games on your local network or even a video call.</p>
           </Row>
           <div className="pp-pair" data-pp-in>
             <figure>
@@ -173,11 +173,11 @@ export default function PipPage() {
                 <img className="pp-call-mac" src={I + 'intercom-mac.webp'} alt="A MacBook showing the Intercom in a browser: the Tab5's camera view of me fills the window, with my own Mac camera preview beside it" loading="lazy" decoding="async" />
                 <Tab className="pp-call-tab"><img className="pp-screen" src={I + 'intercom-call.webp'} alt="The Intercom web applet on the Tab5 during the same call: my face from the Mac's camera fills the screen, a TALK button at the bottom and the tablet's own camera view in the corner" loading="lazy" decoding="async" /></Tab>
               </div>
-              <figcaption><b>Web applets</b> are pages Pip writes and serves from my server, and they can still use the tablet&rsquo;s camera, mics and speaker. This is the Intercom, a video call applet, during a real call: the Tab5 shows me from my Mac&rsquo;s camera, and the browser on my Mac shows me from the tablet&rsquo;s camera. The picture streams at about two frames a second to the tablet and one back, and the voice in short clips.</figcaption>
+              <figcaption><b>Web applets</b> are pages Pip writes and serves from my server, but they can still use the tablet&rsquo;s camera, mics and speaker. This is the Intercom, a video call applet Pip built, during a real call, so the Tab5 shows me through my Mac&rsquo;s camera while the browser on my Mac shows me through the tablet&rsquo;s.</figcaption>
             </figure>
             <figure>
               <Tab><img className="pp-screen" src={I + 'native.webp'} alt="The native NCIR Thermometer applet showing the object and ambient temperature with a trend graph" loading="lazy" decoding="async" /></Tab>
-              <figcaption><b>Native applets</b> are Lua scripts sent to the tablet on the fly. They run on the tablet itself, at full speed.</figcaption>
+              <figcaption><b>Native applets</b> are Lua scripts that Pip sends to the tablet on the fly, so they run on the tablet itself at full speed.</figcaption>
             </figure>
           </div>
           <div className="pp-built" data-pp-in>
@@ -197,35 +197,35 @@ export default function PipPage() {
           </div>
           <Row title="Hands off while it tests" flip
             media={<Tab><Clip src={V + 'devring'} poster={V + 'devring.webp'} className="pp-screen" label="A red border round the screen while a tester subagent taps a counter app: 0, 1, 2, 3, then back to 2" /></Tab>}>
-            <p>While a subagent builds or tests an app on screen, a red border goes round it, so I know to keep my hands off. Here a tester subagent taps through a counter app that a coder subagent had just written: up to 3, then back down to 2.</p>
+            <p>A red border goes around the screen whenever a subagent is building or testing an app on it, so I know to keep my hands off. In this clip, a tester subagent taps through a counter app that a coder subagent has just written, counting up to 3 and back down to 2.</p>
           </Row>
         </div>
       </div>
 
       {/* ── 4. Desktops (lime) ── */}
       <Opener id="desktops" desk={3} color={C.lime} title="Desktops" clip={V + 'o-lime'} pipLabel="A lime Pip in a party hat throwing a paper plane"
-        lede="One desktop for each conversation, each with its own Pip and its own colour." />
+        lede="Every conversation gets its own desktop, with its own Pip and colour." />
       <div className="pp-chapter" style={{ ['--acc' as string]: C.lime }}>
         <div className="pp-wrap">
           <Row title="Pull down to switch" wide
             media={<Tab><Clip src={V + 'switch'} poster={V + 'switch.webp'} className="pp-screen" label="On Mopi's desktop the pill at the top is pulled down into the spotlight bar, slides to Fizz's chip and lets go, and Fizz's desktop arrives; then the same from Fizz to Wavo" /></Tab>}>
-            <p>Pull the pill at the top of the screen down and it opens into the spotlight bar, with a chip for every desktop. Slide to one and let go, and that desktop comes up with its own Pip, picture and work. Here I go from Mopi to Fizz, then on to Wavo.</p>
+            <p>Pulling down the pill at the top of the screen opens the spotlight bar, which has a chip for every desktop. When you slide to one and let go, that desktop comes up with its own Pip, picture and work. In this clip I switch from Mopi to Fizz and then to Wavo.</p>
           </Row>
           <div className="pp-newpip" data-pp-in>
             <div className="pp-newpip-copy">
               <h3>Every Pip makes itself up</h3>
-              <p>A new desktop starts as an egg. Its Pip invents a personality, a name, a body, a hat and a home picture to match, then hatches. A tap on its name shows the card it wrote about itself. Here are eight of mine, in their own words.</p>
+              <p>Each new desktop starts as an egg, and its Pip makes up a personality, a name, a body, a hat and a home picture to match before it hatches. Tapping its name opens the card it wrote about itself, and these are eight of mine.</p>
               <PipDeck pips={PIPS.map((p) => ({ ...p, img: I + 'pips/' + p.name.toLowerCase() + '.webp' }))} />
             </div>
             <div className="pp-newpip-media"><HatchSlides steps={HATCH} /></div>
           </div>
           <Row title="Ask Pip from anywhere"
             media={<Tab><Clip src={V + 'ask'} poster={V + 'ask.webp'} className="pp-screen" label="The spotlight bar pulled down over Riva's home screen, the question What's a good name for a cactus? typed and sent, then Riva's reply: Prickly Pete, Spike Lee or Sir Pokes-A-Lot" /></Tab>}>
-            <p>The spotlight bar is also where you talk to Pip from anywhere: pull it down, or press Ctrl+Space on the keyboard, then type or speak. Here I ask Riva for a cactus name. The clip skips the few seconds she took to answer.</p>
+            <p>You can also talk to Pip from the spotlight bar on any screen, by pulling it down or pressing Ctrl+Space and then typing or speaking. Here I ask Riva to name a cactus.</p>
           </Row>
           <Row title="A control centre" flip
             media={<Tab><Clip src={V + 'control'} poster={V + 'control.webp'} className="pp-screen" label="The control centre dropping down over the thermometer app, then its settings page" /></Tab>}>
-            <p>Pull from the top right for brightness, volume, the mic and camera, and Exit applet. Settings sit one tap further in.</p>
+            <p>Pulling down from the top right opens the control centre, which has brightness, volume, the mic and camera and a button to exit the applet, and the full settings are one more tap away.</p>
           </Row>
         </div>
       </div>
@@ -237,15 +237,15 @@ export default function PipPage() {
         <div className="pp-wrap">
           <Row title="Subagents at work" wide
             media={<Clip src={V + 'crew'} poster={V + 'crew.webp'} className="pp-pipvid pp-strip" label="Five subagent pips at work: writing, typing, stacking blocks, reading and mixing a flask" />}>
-            <p>Each subagent gets a job and a prop to match: a notepad, a laptop, blocks, a book, a bubbling flask. A small busy Pip on the home screen opens the crew card, where each one says what it is up to.</p>
+            <p>Each subagent gets a job and a prop to match it, such as a notepad, a laptop, blocks, a book or a bubbling flask. While they work, a small busy Pip sits on the home screen, and tapping it opens the crew card, where each of them says what it is up to.</p>
           </Row>
           <figure className="pp-crewhome" data-pp-in>
             <Tab><img className="pp-screen" src={I + 'crew-home.webp'} alt="The crew card open on Zesto's home screen: three subagents, Researcher, Scout and Writer, each with a short thought" loading="lazy" decoding="async" /></Tab>
-            <figcaption>Tap the busy Pip and the crew card opens over the home screen: three subagents at work, each with a short thought.</figcaption>
+            <figcaption>The crew card with three subagents at work</figcaption>
           </figure>
           <Row title="Long jobs get a list" flip
             media={<figure className="pp-zoomlist" data-no-zoom><img src={I + 'desk-fizz.webp'} alt="A finished three step task list on Fizz's home screen: design and write the native Lua app, test it on the tablet, open it on the desktop" loading="lazy" decoding="async" /></figure>}>
-            <p>A long job becomes a task list on the home screen. Each step goes to a named subagent, a scout, a writer or a tester, and ticks off when it is done.</p>
+            <p>Pip turns a long job into a task list on the home screen and hands each step to a subagent, such as a scout, a writer or a tester, which ticks it off when it is done.</p>
           </Row>
           <Row title="It watches my other agents" wide
             media={
@@ -255,14 +255,14 @@ export default function PipPage() {
                 <li><Tab><img className="pp-screen" src={I + 'kimi-3.webp'} alt="Pip's reply on the Tab5: Kimi shipped it, the file is in the workspace and reads hello from Kimi" loading="lazy" decoding="async" /></Tab><span>Pip reports back</span></li>
               </ol>
             }>
-            <p>Pip lives inside the same harness as my coding sessions and sees which ones are running, done, stuck on a question or broken. It can also bring in agents from other providers. Here it hands a job to Kimi Code on my server: Kimi joins the crew card, its request to write a file comes to the tablet for me to approve, and Pip reports back once it is done.</p>
+            <p>Because Pip lives in the same harness as my coding sessions, it can see which ones are running, finished, stuck on a question or broken, and it can bring in agents from other providers too. Here it hands a job to Kimi Code on my server, so Kimi joins the crew card, its request to write a file comes to the tablet for me to approve, and Pip reports back once it is done.</p>
           </Row>
         </div>
       </div>
 
       {/* ── 6. How it works (orange) ── */}
       <Opener id="inside" desk={5} color={C.orange} title="How it works" clip={V + 'o-orange'} pipLabel="An orange Pip in glasses thinking, until a light bulb lights up"
-        lede="The tablet is the face. The thinking happens on my server." />
+        lede="The tablet is only the face, and all the thinking happens on my server." />
       <div className="pp-chapter" style={{ ['--acc' as string]: C.orange }}>
         <div className="pp-wrap">
           <div className="pp-how" data-pp-in>
@@ -284,9 +284,9 @@ export default function PipPage() {
           </div>
           <div className="pp-next" data-pp-in>
             <h3>Still in progress</h3>
-            <p>Pip is still being built, and it changes most weeks. Instructions for deploying your own will be added here in the future.</p>
+            <p>Pip is still being built and changes most weeks, so instructions for deploying your own will be added here later.</p>
           </div>
-          <p className="pp-credit" data-pp-in>The Tab5 in 3D at the top of this page is built on M5Stack&rsquo;s own Tab5 structure model from <a href="https://github.com/m5stack/M5_Hardware" target="_blank" rel="noopener">M5_Hardware</a> (MIT licence, copyright M5Stack), with the glass, screen and back added. Pip&rsquo;s animations are rendered from the firmware&rsquo;s actual drawing code. The screenshots and most clips come from the tablet&rsquo;s own screen. The gesture clips were recorded with the tablet slowed down 50 times and played back at true speed, so Pip&rsquo;s own small movements in them run fast. The browser clips are screen recordings of Pip&rsquo;s headless browser on the DSH host PC.</p>
+          <p className="pp-credit" data-pp-in>The Tab5 in 3D at the top of this page is built on M5Stack&rsquo;s own Tab5 structure model from <a href="https://github.com/m5stack/M5_Hardware" target="_blank" rel="noopener">M5_Hardware</a> (MIT licence, copyright M5Stack), with the glass, screen and back added. Pip&rsquo;s animations are rendered from the firmware&rsquo;s own drawing code, and the screenshots and clips come from the tablet&rsquo;s screen. The gesture clips were recorded with the tablet slowed down, so Pip moves a little fast in them.</p>
         </div>
       </div>
 
