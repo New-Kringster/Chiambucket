@@ -49,7 +49,7 @@ export function createPipStage(section: HTMLElement) {
     return v;
   };
 
-  /* Where the body sits turned (beside the title; above it on phones) and facing us (the visual box). */
+  /* Where the body sits turned (beside the title; above it on phones), facing us (the visual box) and in the card. */
   const frames = () => {
     const hr = host.getBoundingClientRect();
     const W = hr.width || 1, H = hr.height || 1;
@@ -61,7 +61,12 @@ export function createPipStage(section: HTMLElement) {
     const br = box.getBoundingClientRect();
     facing = { x: br.left - hr.left, y: br.top - hr.top, w: br.width, h: br.height };
     turned = turnedR;
-    card = media ? layoutRect(media) : null;
+    // the card's picture band, kept clear of the nav, with room for the turned tablet's near corner
+    const m = media ? layoutRect(media) : null;
+    if (m) {
+      const top = Math.max(m.y, navb + 12), h = m.y + m.h - top, f = 0.84;
+      card = { x: m.x + (m.w * (1 - f)) / 2, y: top + (h * (1 - f)) / 2, w: m.w * f, h: h * f };
+    } else card = null;
   };
   /* A box's place in the stage by layout, so the scale the card puts on the
      scene (and on the picture band) while it comes up doesn't skew it. */
