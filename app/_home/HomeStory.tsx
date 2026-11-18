@@ -528,6 +528,27 @@ export default function HomeStory() {
     return () => { cancelled = true; cleanup?.(); };
   }, []);
 
+  /* Arriving with a section in the address (My work from another page lands on
+     /#projects): the route change happens before this page has its height, so
+     the browser's own jump misses. Jump once the page is laid out, and once
+     more after fonts and images settle, unless the reader has scrolled since. */
+  useEffect(() => {
+    const id = decodeURIComponent(window.location.hash.slice(1));
+    if (!id) return;
+    let last = -1;
+    const go = () => {
+      const t = document.getElementById(id);
+      if (!t || (last >= 0 && Math.abs(window.scrollY - last) > 4)) return;
+      t.scrollIntoView({ block: 'start' });
+      last = window.scrollY;
+    };
+    const raf = requestAnimationFrame(go);
+    const later = window.setTimeout(go, 700);
+    document.fonts?.ready.then(go);
+    window.addEventListener('load', go, { once: true });
+    return () => { cancelAnimationFrame(raf); clearTimeout(later); window.removeEventListener('load', go); };
+  }, []);
+
   /* Photos: each column drifts at its own speed. Set up again whenever the
      number of columns changes (a resize), so columns added later drift too. */
   useEffect(() => {
