@@ -535,19 +535,27 @@ export default function HomeStory() {
   useEffect(() => {
     const id = decodeURIComponent(window.location.hash.slice(1));
     if (!id) return;
-    let last = -1;
+    // Settle on the section until the reader does anything themselves.
+    let user = false;
+    const evs = ['wheel', 'touchstart', 'keydown', 'pointerdown'] as const;
+    const mine = () => { user = true; };
+    evs.forEach((e) => window.addEventListener(e, mine, { passive: true, once: true }));
     const go = () => {
       const t = document.getElementById(id);
-      if (!t || (last >= 0 && Math.abs(window.scrollY - last) > 4)) return;
+      if (!t || user) return;
+      const top = t.getBoundingClientRect().top + window.scrollY;
       // instant: html's smooth scroll-behavior would animate it, and ScrollTrigger's refresh cuts that short
-      window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY, behavior: 'instant' });
-      last = window.scrollY;
+      if (Math.abs(window.scrollY - top) > 2) window.scrollTo({ top, behavior: 'instant' });
     };
     const raf = requestAnimationFrame(go);
-    const later = window.setTimeout(go, 700);
+    const timers = [300, 800, 1600].map((ms) => window.setTimeout(go, ms));
     document.fonts?.ready.then(go);
     window.addEventListener('load', go, { once: true });
-    return () => { cancelAnimationFrame(raf); clearTimeout(later); window.removeEventListener('load', go); };
+    return () => {
+      cancelAnimationFrame(raf); timers.forEach(clearTimeout);
+      window.removeEventListener('load', go);
+      evs.forEach((e) => window.removeEventListener(e, mine));
+    };
   }, []);
 
   /* Photos: each column drifts at its own speed. Set up again whenever the
