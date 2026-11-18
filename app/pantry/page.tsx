@@ -122,7 +122,12 @@ export default function PantryPage() {
           <section id="demo" className="art-section" data-reveal>
             <h2>Demo</h2>
             <p>I filmed this at my desk, first scanning products off a demo sheet on my laptop and then a real carton of 冰红茶, before scanning the carton a second time and moving to a second pantry.</p>
-            <DemoVideo />
+            <DemoVideo base={V} label="The tracker in use: scanning products, a real carton, scanning it again and switching pantries" moments={[
+              { t: 0, label: 'Scanning from the demo sheet', note: 'Nutella, Coca-Cola and Ritter Sport off my laptop screen' },
+              { t: 45, label: 'A real carton', note: 'A carton of 冰红茶, named by GS1 China' },
+              { t: 69, label: 'Scanning it again', note: 'The saved carton opens instead of being added twice' },
+              { t: 78, label: 'Another pantry', note: 'Switching to the fridge and adding to it' },
+            ]} />
           </section>
 
           <section id="try" className="art-section" data-reveal>

@@ -19,13 +19,13 @@ import AiMark from './AiMark';
 
 /* Project order = the homepage gallery order (also the ALL_PROJECTS order). */
 export const PEEK_ORDER: string[] = [
-  'proj-waterslop', 'proj-june', 'proj-pip', 'proj-beadreader', 'proj-pantry', 'proj-lora', 'proj-lumen', 'proj-ema', 'proj-pandus', 'proj-elecf',
+  'proj-waterslop', 'proj-june', 'proj-pip', 'proj-beadreader', 'proj-pantry', 'proj-ruler', 'proj-lora', 'proj-lumen', 'proj-ema', 'proj-pandus', 'proj-elecf',
   'proj-kauli', 'proj-sol', 'proj-copyboard', 'proj-webdev', 'proj-mc',
 ];
 
 const TITLES: Record<string, string> = {
   'proj-june': 'Project June', 'proj-lora': 'LoRA Messenger', 'proj-lumen': 'LUMEN',
-  'proj-beadreader': 'BeadReader', 'proj-waterslop': 'OCR Reader', 'proj-pip': 'Pip', 'proj-pantry': 'Pantry Expiry Tracker',
+  'proj-beadreader': 'BeadReader', 'proj-waterslop': 'OCR Reader', 'proj-pip': 'Pip', 'proj-pantry': 'Pantry Expiry Tracker', 'proj-ruler': 'Scroll Ruler',
   'proj-ema': 'EMA Smart Home', 'proj-pandus': 'Pandus Dispenser', 'proj-elecf': 'ELEC-F Concept',
   'proj-kauli': 'Kauli Concept', 'proj-sol': 'Series One Light', 'proj-copyboard': 'Copy Board',
   'proj-webdev': 'Web Development', 'proj-mc': 'Minecraft Live Map',
@@ -110,6 +110,20 @@ export function PeekModalContent({ id }: { id: string }) {
           {chapter('02', 'What to eat first', <><p>The home screen sorts the pantry by expiry and turns the count red within a day and amber within a week, while scanning something already on the list opens it instead of adding it twice.</p><img className="hp-rd-fig" src="/images/pantry/screen-home.webp" alt="The home screen sorted by expiry" loading="lazy" /></>)}
           {chapter('03', 'A server does the rest', <p>A Docker container on the home network keeps the list, looks up barcodes, serves a web page for managing pantries and publishes each pantry to Home Assistant over MQTT for reminders.</p>)}
           {cta('Try the tracker', 'The article has a working copy of its screen, the demo video and how to set one up.', 'Read the full article', '/pantry')}
+        </div>
+      </>
+    );
+    case 'proj-ruler': return (
+      <>
+        {hero('/images/scroll-ruler-pf-context.webp', 'The Scroll Ruler, an AtomS3R with a Unit Scroll plugged in', ['Internship Project'], 'internship')}
+        <div className="hp-rd-body">
+          <h2 className="hp-md-title">Scroll Ruler</h2>
+          <p className="hp-md-meta">M5Stack AtomS3R · Atomic Battery Base · Unit Scroll · C++</p>
+          <p className="hp-rd-lead">A digital ruler. You press the Unit Scroll&rsquo;s wheel down and roll it along whatever you want to measure, and the AtomS3R shows the distance in centimetres.</p>
+          {chapter('01', 'Calibrate once', <><p>The first time it starts, you roll exactly 10 cm along a real ruler and tap the screen to save the steps it counted, which teaches it how far the wheel travels per step. The calibration stays in flash after that.</p><img className="hp-rd-fig" src="/images/scroll-ruler/reading.webp" alt="The ruler reading 8.2 cm" loading="lazy" /></>)}
+          {chapter('02', 'Roll to measure', <p>The distance counts only while the wheel is pressed down, with the LED glowing green, so you can lift it off and set it down without losing the reading. Tapping the screen zeroes it, and holding the screen starts a new calibration.</p>)}
+          {chapter('03', 'Tested off the device', <p>The calibration and distance maths sit in one file with no hardware code, so eleven unit tests check them on a computer before the firmware goes onto the AtomS3R.</p>)}
+          {cta('Roll it yourself', 'The article has a working copy of the ruler, the demo video and how to flash one.', 'Read the full article', '/scroll-ruler')}
         </div>
       </>
     );
@@ -313,7 +327,7 @@ function PeekItem({ id, first, index }: { id: string; first: boolean; index: num
 /* The cover each project's reader opens with, for the peek of the next one. */
 const COVERS: Record<string, string> = {
   'proj-june': '/images/ProjJuneBanner1.webp', 'proj-lora': '/images/borlocator-pf-context.webp',
-  'proj-waterslop': '/images/ocr-reader-pf-context.webp', 'proj-pip': '/images/pip-pf-context.webp', 'proj-pantry': '/images/pantry-pf-context.webp',
+  'proj-waterslop': '/images/ocr-reader-pf-context.webp', 'proj-pip': '/images/pip-pf-context.webp', 'proj-pantry': '/images/pantry-pf-context.webp', 'proj-ruler': '/images/scroll-ruler-pf-context.webp',
   'proj-lumen': '/images/lumen-pf-context.webp', 'proj-beadreader': '/images/beadreader-pf-context.webp',
   'proj-ema': '/images/Ema-pf-context.webp', 'proj-pandus': '/images/pandusarticle.webp',
   'proj-elecf': '/images/elef2-pf-context.webp', 'proj-kauli': '/images/kauli3-pf-context.webp',

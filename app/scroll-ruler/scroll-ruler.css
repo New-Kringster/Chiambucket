@@ -1,0 +1,95 @@
+/* ───────────── Scroll Ruler (/scroll-ruler) ─────────────
+   Shares pantry.css for the demo player and the feature rows (the page's
+   main carries both .pt and .sr). Here: the AtomS3R rendered from M5Stack's
+   model (.sr-atom), the firmware's screens (.srs-*), and the working ruler
+   (.srx-*, RulerSim.tsx). Screen colours are the firmware's RGB565 values. */
+.sr {
+  --sr-live: #00fc42; --sr-cal: #4aacff; --sr-warn: #ffa400; --sr-dim: #848284; --sr-rule: #212021; --sr-hint: #5a595a;
+  --sr-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --sr-sans: 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* ── The AtomS3R: the render of M5Stack's model, the panel on its display window (16.36 % to 83.7 %) ── */
+.sr-atom { position: relative; width: 100%; aspect-ratio: 961 / 960; }
+.sr-atom-frame { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; user-select: none; filter: drop-shadow(0 18px 22px rgba(2, 6, 16, 0.55)) drop-shadow(0 3px 5px rgba(0, 0, 0, 0.35)); }
+.sr-atom-screen { position: absolute; left: 17.4%; top: 17.4%; width: 65.2%; aspect-ratio: 1; overflow: hidden; background: #000; border-radius: 1.2%; container-type: inline-size; }
+.sr-atom-screen::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(155deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0) 40%); }
+
+/* ── The firmware's screens, in panel pixels (--u = 1 of 128) ── */
+.srs { --u: calc(100cqw / 128); position: absolute; inset: 0; color: #fff; font-family: var(--sr-sans); }
+.srs > * { position: absolute; white-space: nowrap; line-height: 1; }
+.srs-title { left: calc(var(--u) * 4); top: calc(var(--u) * 9); transform: translateY(-50%); font-size: calc(var(--u) * 12); font-weight: 600; letter-spacing: 0.02em; }
+.srs-title.is-cal { color: var(--sr-cal); }
+.srs-tag { right: calc(var(--u) * 4); top: calc(var(--u) * 2); height: calc(var(--u) * 14); padding: 0 calc(var(--u) * 4); border-radius: calc(var(--u) * 4); display: grid; place-items: center; font: 700 calc(var(--u) * 8) / 1 var(--sr-mono); color: #000; }
+.srs-tag.is-live { background: var(--sr-live); }
+.srs-tag.is-dim { background: var(--sr-dim); }
+.srs-tag.is-warn { background: var(--sr-warn); }
+.srs-rule { left: 0; right: 0; top: calc(var(--u) * 19); height: calc(var(--u) * 1); background: var(--sr-rule); }
+.srs-big { left: 50%; transform: translate(-50%, -50%); font-size: calc(var(--u) * 40); font-weight: 800; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+.srs-big.is-long { font-size: calc(var(--u) * 31); }
+.srs-big.is-live, .srs-mid.is-live { color: var(--sr-live); }
+.srs-unit { left: 50%; transform: translate(-50%, -50%); font-size: calc(var(--u) * 12); color: var(--sr-dim); }
+.srs-small { left: 50%; transform: translate(-50%, -50%); font: 500 calc(var(--u) * 8) / 1 var(--sr-mono); }
+.srs-mid { left: 50%; transform: translate(-50%, -50%); font-size: calc(var(--u) * 12); font-weight: 600; }
+.srs .is-dim { color: var(--sr-dim); }
+.srs .is-hint { color: var(--sr-hint); }
+.srs-mid.is-warn { color: var(--sr-warn); }
+
+/* ── Feature rows: one or two screens beside the copy ── */
+.sr-screens { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 16px; max-width: 420px; margin: 0 auto; }
+.sr-screens figure { margin: 0; }
+.sr-screens figcaption { font-family: 'inter'; font-size: 0.78rem; color: rgba(232, 232, 232, 0.55); text-align: center; margin-top: 8px; }
+.sr-feat-media > .sr-atom { max-width: 240px; margin: 0 auto; }
+.sr-photo { margin: 0; }
+.sr-photo img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 16px; display: block; border: 1px solid rgba(255, 255, 255, 0.08); }
+.sr-photo figcaption { font-family: 'inter'; font-size: 0.78rem; color: rgba(232, 232, 232, 0.5); margin-top: 8px; }
+
+/* ───────────── The working ruler (RulerSim) ───────────── */
+.srx { margin: 22px 0 6px; user-select: none; -webkit-user-select: none; display: grid; gap: 18px; }
+.srx-top { display: grid; justify-items: center; gap: 12px; }
+.srx-btn { display: block; width: min(250px, 62vw); padding: 0; border: 0; background: none; cursor: pointer; border-radius: 22%; transition: transform 0.12s ease; -webkit-tap-highlight-color: transparent; }
+.srx-btn.is-down { transform: scale(0.97) translateY(1px); }
+.srx-btn:focus-visible { outline: 2px solid rgba(var(--sa-accent), 0.9); outline-offset: 6px; }
+.pt .srx-live { font-family: 'inter'; font-size: 0.8rem; line-height: 1.5; color: rgba(232, 232, 232, 0.5); text-align: center; min-height: 3em; margin: 0 auto; max-width: 40ch; }
+
+.srx-ruler { display: grid; justify-items: center; gap: 12px; }
+.srx-track { position: relative; width: 100%; height: 132px; touch-action: none; cursor: copy; }
+/* the ruler: clear plastic with black ticks, like the one in the video */
+.srx-scale { position: absolute; left: 0; right: 0; bottom: 0; height: 46px; border-radius: 4px; background: linear-gradient(180deg, rgba(236, 240, 244, 0.22), rgba(220, 226, 232, 0.12)); border: 1px solid rgba(255, 255, 255, 0.28); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 10px 24px -14px rgba(0, 0, 0, 0.8); overflow: visible; }
+.srx-scale > i { position: absolute; top: 0; width: 1px; height: 9px; background: rgba(240, 242, 246, 0.75); transform: translateX(-0.5px); }
+.srx-scale > i.half { height: 14px; }
+.srx-scale > i.cm { height: 20px; background: #fff; }
+.srx-scale > span { position: absolute; top: 22px; transform: translateX(-50%); font: 600 0.72rem/1 'dmsans', sans-serif; color: rgba(245, 247, 250, 0.9); }
+.srx-scale > span:first-of-type { transform: none; }
+.srx-scale > span:last-of-type { transform: translateX(-100%); }
+
+/* the Unit Scroll from above: a white unit with its wheel at the front and the
+   triangle that marks where the wheel touches */
+.srx-puck { position: absolute; bottom: 30px; width: 74px; height: 92px; margin-left: -37px; padding: 0; border: 0; background: none; cursor: grab; touch-action: none; transition: transform 0.16s ease, filter 0.16s ease; }
+.srx-puck.is-pressed { cursor: grabbing; transform: translateY(3px); }
+.srx-puck.is-lifted { transform: translateY(-12px) scale(1.04); filter: drop-shadow(0 16px 12px rgba(0, 0, 0, 0.45)); }
+.srx-puck:focus-visible { outline: 2px solid rgba(var(--sa-accent), 0.9); outline-offset: 4px; border-radius: 12px; }
+.srx-puck-body { position: absolute; inset: 0 0 12px; border-radius: 12px; background: linear-gradient(160deg, #f6f5f2 0%, #e2e1dc 55%, #cfcec8 100%); box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, 0.9), inset 0 -3px 6px rgba(0, 0, 0, 0.15), 0 12px 22px -12px rgba(0, 0, 0, 0.8); display: block; }
+.srx-puck-label { position: absolute; left: 50%; top: 18px; transform: translateX(-50%); font: 800 0.62rem/1 'dmsans', sans-serif; letter-spacing: 0.12em; color: #1f2a44; }
+.srx-led { position: absolute; left: 50%; top: 34px; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: #3a3a3a; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5); transition: background-color 0.15s ease, box-shadow 0.15s ease; }
+.srx-led.is-green { background: #3dff7a; box-shadow: 0 0 10px 3px rgba(61, 255, 122, 0.7); }
+.srx-led.is-blue { background: #4a8cff; box-shadow: 0 0 10px 3px rgba(74, 140, 255, 0.65); }
+.srx-led.is-amber { background: #ffb020; box-shadow: 0 0 10px 3px rgba(255, 176, 32, 0.65); }
+.srx-wheel { position: absolute; left: 50%; bottom: -6px; width: 40px; height: 14px; margin-left: -20px; border-radius: 6px; background: repeating-linear-gradient(90deg, #6d6f74 0 3px, #8b8d92 3px 6px); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
+.srx-mark { position: absolute; left: 50%; bottom: 0; width: 0; height: 0; margin-left: -6px; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 9px solid #ff5a4f; filter: drop-shadow(0 0 4px rgba(255, 90, 79, 0.6)); }
+.srx-reset { font-family: 'inter'; font-size: 0.78rem; color: rgba(232, 232, 232, 0.6); background: none; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 999px; padding: 7px 14px; cursor: pointer; transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease; }
+.srx-reset:hover { color: #f0f0f0; border-color: rgba(255, 255, 255, 0.3); }
+.srx-reset:active { transform: scale(0.97); }
+.srx-reset:focus-visible { outline: 2px solid rgba(var(--sa-accent), 0.9); outline-offset: 2px; }
+
+@media (max-width: 520px) {
+  .srx-puck { width: 58px; height: 78px; margin-left: -29px; }
+  .srx-puck-label { font-size: 0.52rem; top: 15px; }
+  .srx-led { top: 29px; }
+  .srx-wheel { width: 32px; margin-left: -16px; }
+  .srx-scale > span { font-size: 0.62rem; }
+  .srx-scale > span:nth-of-type(even) { visibility: hidden; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .srx-btn, .srx-puck, .srx-led, .srx-reset { transition: none; }
+}
