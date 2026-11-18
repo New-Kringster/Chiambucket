@@ -583,7 +583,7 @@ export const SCENES: Scene[] = [
   },
   {
     id: 'ref-avg', stage: 'Refiner · pass 1', title: 'Every map is averaged into one row and one column', dur: 8,
-    body: 'Block 4 is 32 maps stacked into a slab, and each map peels off in turn. Its 32 columns average down to 32 values for one row of the column-average map, and its 12 rows average across to 12 values for one column of the row-average map. The column map finds left and right, and the row map finds top and bottom.',
+    body: 'Block 4 is a slab of 32 maps, and each one peels off in turn. Its 32 columns average into one row of the column-average map and its 12 rows into one column of the row-average map, so the first finds left and right and the second top and bottom.',
     view: { x: PX, y: PAN.ref1.y + 300, w: PW, h: 360 },
     draw: (ctx, env, p) => refAvg(ctx, env, PAN.ref1.y, PD1, p),
   },
@@ -669,7 +669,7 @@ export const SCENES: Scene[] = [
   },
   {
     id: 'dense', stage: 'Reader 1', title: 'The dense layer turns 768 numbers into 96 units', dur: 7, until: 'drums',
-    body: 'Each of the 96 units has its own 768 weights, so every number is multiplied by its weight, the 768 products and an offset are added up, and anything below zero becomes zero. Unit 69 is shown slowly first, then the other 95 work the same way.',
+    body: 'Each of the 96 units multiplies every number by its own weight, adds up the 768 products and an offset, and turns anything below zero into zero. Unit 69 goes first and slowly, then the other 95 do the same.',
     view: { x: PX + RX, y: RP[0].dense - 20, w: PW, h: 240 },
     draw: right((ctx, env, p) => readerDense(ctx, env, 0, p)),
   },
@@ -788,7 +788,7 @@ export const SCENES: Scene[] = [
   },
   {
     id: 'finale', stage: 'DrumNet V10', title: 'The whole pipeline running at once', dur: 14,
-    body: 'Every stage runs at once, one more time, from the thumbnail into the spotter and the crop through the refiner twice to the window cut into six cells, three readers for each, the vote and the carry rule. The reader takes about two seconds to produce one number.',
+    body: 'Every stage runs at once one more time, from the thumbnail and the spotter through the refiner, the six cells, the three readers, the vote and the carry rule, which takes the reader about two seconds per number.',
     view: { x: 0, y: 0, w: MAP.w, h: MAP.h }, full: true,
     draw: () => {},
   },
