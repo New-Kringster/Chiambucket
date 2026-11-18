@@ -1,7 +1,7 @@
 'use client';
 /* Project cards for the homepage story: the full-screen flagship card, the
    project gallery (with the shared peek reader) and the What I do bento. */
-import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import AiMark from '../../components/AiMark';
 import InfoModal, { type InfoItem } from '../../components/InfoModal';
 import LazyVideo from '../../components/LazyVideo';
@@ -109,6 +109,31 @@ function bySize(list: Project[]): { p: Project; size: Size; pair?: boolean }[] {
 export function ProjectGallery({ onPeek }: { onPeek: (id: string) => void }) {
   const [filter, setFilter] = useState<'all' | ProjectType>('all');
   const shown = bySize(PROJECTS.filter((p) => filter === 'all' || p.type === filter));
+  /* Each card rises in once, the first time it comes into view. The observer
+     is set up again for every filter, so cards a filter brings up are never
+     left hidden (a page-wide scroll batch used to miss them). */
+  const grid = useRef<HTMLUListElement>(null);
+  useEffect(() => {
+    const cards = Array.from(grid.current?.querySelectorAll<HTMLElement>('.hs-pc:not(.is-in)') ?? []);
+    if (!cards.length) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+      cards.forEach((c) => c.classList.add('is-in'));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      let k = 0;
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        const el = e.target as HTMLElement;
+        el.style.setProperty('--rise-d', `${k++ * 70}ms`);
+        el.classList.add('is-in');
+        io.unobserve(el);
+        setTimeout(() => el.style.removeProperty('--rise-d'), 1200);
+      }
+    }, { rootMargin: '0px 0px -6% 0px' });
+    cards.forEach((c) => io.observe(c));
+    return () => io.disconnect();
+  }, [filter]);
   return (
     <>
       <div className="hs-pg-filters" role="group" aria-label="Show projects">
@@ -119,7 +144,7 @@ export function ProjectGallery({ onPeek }: { onPeek: (id: string) => void }) {
           </button>
         ))}
       </div>
-      <ul className="hs-pg">
+      <ul className="hs-pg" ref={grid}>
         {shown.map(({ p, size, pair }, i) => (
           <li key={p.id} className={`hs-pc is-${size}${pair ? ' is-pair' : ''}${p.url ? '' : ' is-soon'}`} style={{ '--i': i } as CSSProperties}>
             <div className="hs-pc-thumb">

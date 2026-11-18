@@ -42,7 +42,7 @@ export const OCR_CARD: Flagship = {
   name: 'OCR Reader',
   badge: 'Flagship project',
   gold: true,
-  kind: 'School project, Nanyang Polytechnic',
+  kind: 'Personal project',
   lead: 'I built this water meter reader end to end, from the board and a case with no screws to DrumNet, a neural network that reads the drums on the chip, so only the number goes out over LoRaWAN.',
   stats: [{ v: '693K', l: 'parameter model' }, { v: '~2 s', l: 'per reading' }, { v: '4-layer', l: 'custom PCB' }, { v: 'LoRaWAN', l: 'low-power link' }],
   tools: [{ src: '/images/esp-icon.webp', alt: 'ESP32-S3' }, { src: '/images/Kicad-icon.webp', alt: 'KiCad' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }, { src: '/images/PlatformIO-icon.webp', alt: 'PlatformIO' }],
@@ -101,7 +101,7 @@ export type Project = {
   flagship?: boolean; highlight?: boolean; url: string | null; icons: { src: string; alt: string }[];
 };
 export const PROJECTS: Project[] = [
-  { id: 'proj-waterslop', title: 'OCR Reader', blurb: 'A battery-powered camera that reads a water meter, where a neural network on an ESP32-S3 reads the drums and only the number goes out over LoRaWAN.', img: '/images/ocr-reader-pf-context.webp', type: 'school', flagship: true, url: '/waterslop', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32-S3' }, { src: '/images/Kicad-icon.webp', alt: 'KiCad' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }] },
+  { id: 'proj-waterslop', title: 'OCR Reader', blurb: 'A battery-powered camera that reads a water meter, where a neural network on an ESP32-S3 reads the drums and only the number goes out over LoRaWAN.', img: '/images/ocr-reader-pf-context.webp', type: 'personal', flagship: true, url: '/waterslop', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32-S3' }, { src: '/images/Kicad-icon.webp', alt: 'KiCad' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }] },
   { id: 'proj-june', title: 'Project June', blurb: 'A 5G rover whose three phones stream its view to my console, which I drive with an Xbox controller from anywhere with signal.', img: '/images/ProjJuneBanner1.webp', type: 'personal', highlight: true, url: '/project-june', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32-S3' }, { src: '/images/Kicad-icon.webp', alt: 'KiCad' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }] },
   { id: 'proj-pip', title: 'Pip', blurb: 'A desk pet on an M5Stack Tab5 with an AI agent harness for a brain, so it can drive a browser and build its own apps.', img: '/images/pip-pf-context.webp', type: 'internship', highlight: true, url: '/pip', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32-P4' }, { src: '/images/PlatformIO-icon.webp', alt: 'PlatformIO' }, { src: '/images/docker-icon.webp', alt: 'Docker' }] },
   { id: 'proj-beadreader', title: 'BeadReader', blurb: 'A private book reader for a few friends, who sign in with one access code and can see each other reading live.', img: '/images/beadreader-pf-context.webp', type: 'personal', highlight: true, url: '/beadreader', icons: [{ src: '/images/nextjs-icon.webp', alt: 'Next.js' }, { src: '/images/supabase-icon.webp', alt: 'Supabase' }, { src: '/images/cloudflare-icon.webp', alt: 'Cloudflare R2' }] },

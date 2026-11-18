@@ -482,12 +482,7 @@ export default function HomeStory() {
             scrollTrigger: { trigger: r, start: 'top 90%', toggleActions: 'play none none reverse' } });
         });
 
-        /* ── Projects: cards rise in a wave ── */
-        ScrollTrigger.batch('.hs-pc', {
-          start: 'top 92%',
-          onEnter: (b) => gsap.fromTo(b, { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, ease: 'expo.out', stagger: 0.07, overwrite: true }),
-          onLeaveBack: (b) => gsap.to(b, { y: 60, opacity: 0, duration: 0.3, overwrite: true }),
-        });
+        /* Projects: the gallery reveals its own cards (Cards.tsx), so a filter never hides one */
 
         /* ── On the bench (off the page for now) ── */
         if (SHOW_BENCH) {

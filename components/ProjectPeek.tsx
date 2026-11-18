@@ -158,7 +158,7 @@ export function PeekModalContent({ id }: { id: string }) {
     );
     case 'proj-waterslop': return (
       <>
-        {hero('/images/ocr-reader-pf-context.webp', 'OCR Reader with DrumNet: a fully vertically-integrated OCR water meter solution', ['School Project'], 'highlight')}
+        {hero('/images/ocr-reader-pf-context.webp', 'OCR Reader with DrumNet: a fully vertically-integrated OCR water meter solution', ['Personal Project'], 'highlight')}
         <div className="hp-rd-body">
           <h2 className="hp-md-title">OCR Reader</h2>
           <p className="hp-md-meta">NYP ECE · ESP32-S3 · OV2640 · DrumNet · LoRaWAN · KiCad · Onshape</p>
