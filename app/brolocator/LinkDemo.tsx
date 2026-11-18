@@ -30,7 +30,7 @@ const RADIO: Record<Radio, {
     carries: 'Short text packets',
     module: 'Ebyte E220-900D',
     glyph: 'wave',
-    blurb: 'Reaches much further than ESP-NOW, but only has the bandwidth for text.',
+    blurb: 'LoRa reaches much further than ESP-NOW, but it only has the bandwidth for text.',
   },
   espnow: {
     label: 'Voice over ESP-NOW',
@@ -39,7 +39,7 @@ const RADIO: Record<Radio, {
     carries: 'Crude full-duplex voice',
     module: 'The ESP32 itself',
     glyph: 'bolt',
-    blurb: 'A direct link between the two ESP32s. Fast enough for crude two-way voice, but only at short range.',
+    blurb: 'ESP-NOW is a direct link between the two ESP32s, fast enough for crude two-way voice but only at short range.',
   },
 };
 

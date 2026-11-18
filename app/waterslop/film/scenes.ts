@@ -60,11 +60,11 @@ const RH = 1460;
 export const PAN = {
   input: { x: PX, y: 0, w: PW, h: 440, title: 'Input', sub: 'one photo from the reader' },
   spotter: { x: PX, y: 520, w: PW, h: 760, title: 'DetNet Spotter', sub: 'a rough box around the digit window' },
-  ref1: { x: PX, y: 1360, w: PW, h: 1000, title: 'RefNet Refiner · pass 1', sub: 'pin the four edges inside the rough box' },
-  ref2: { x: PX, y: 2440, w: PW, h: 1000, title: 'RefNet Refiner · pass 2', sub: 'expand, crop again, the same network again' },
+  ref1: { x: PX, y: 1360, w: PW, h: 1000, title: 'RefNet Refiner · pass 1', sub: 'find the four edges inside the rough box' },
+  ref2: { x: PX, y: 2440, w: PW, h: 1000, title: 'RefNet Refiner · pass 2', sub: 'expand, crop again and rerun the network' },
   cut: { x: PX + RX, y: 0, w: PW, h: 360, title: 'Cut into digits', sub: 'one cell per drum' },
   reader1: { x: PX + RX, y: 440, w: PW, h: RH, title: 'DrumNet Reader 1', sub: 'which digit shows, and how far it has turned' },
-  reader2: { x: PX + RX, y: 440 + RH + 80, w: PW, h: RH, title: 'DrumNet Reader 2', sub: 'the same net, a different random start' },
+  reader2: { x: PX + RX, y: 440 + RH + 80, w: PW, h: RH, title: 'DrumNet Reader 2', sub: 'the same net from a different random start' },
   reader3: { x: PX + RX, y: 440 + 2 * (RH + 80), w: PW, h: RH, title: 'DrumNet Reader 3', sub: 'the tie breaker' },
   vote: { x: PX + RX, y: 440 + 3 * (RH + 80), w: PW, h: 1230, title: 'Ensemble vote and reading', sub: 'average, carry rule, reading' },
 };
@@ -214,7 +214,7 @@ function refAvg(ctx: Ctx, env: Env, y0: number, D: ReturnType<typeof passData>, 
   if (first > 0 && peeled === 0) squash(ctx, env, y0, D.slices[0], 0, first);
   if (peeled > 0 && peeled < 32) { const s = peeled; const lt = (restT * 31) % 1; squash(ctx, env, y0, D.slices[s], s, lt); }
   if (peeled >= 32) avgMaps(ctx, env, y0, D, 32);
-  if (p < 0.32) { txt(ctx, env, 'map 1 peels off: each of its 32 columns averages to one value,', 560, k.y - 110, 13, { c: C.red, alpha: clamp01(first * 3) }); txt(ctx, env, 'and each of its 12 rows to one value', 560, k.y - 92, 13, { c: C.red, alpha: clamp01(first * 3) }); }
+  if (p < 0.32) { txt(ctx, env, 'as map 1 peels off, each of its 32 columns averages to one value,', 560, k.y - 110, 13, { c: C.red, alpha: clamp01(first * 3) }); txt(ctx, env, 'and each of its 12 rows to one value', 560, k.y - 92, 13, { c: C.red, alpha: clamp01(first * 3) }); }
   else if (p < 0.9) txt(ctx, env, `map ${Math.min(32, peeled + 1)} of 32`, 560, k.y - 92, 13, { c: C.red });
 }
 /* a copy of a map morphing from its own box into a strip's box */
@@ -286,7 +286,7 @@ function refNetDraw(ctx: Ctx, env: Env, L: ReturnType<typeof refNet>, P: Pass, p
 function readerNet(ctx: Ctx, env: Env, k: number, i: number, p: number) {
   const L = RP[k].net;
   drawNet(ctx, env, L, p, (r) => { frame(ctx, env, r); tile(ctx, env, cutFeats, i, r, { pixel: false }); txt(ctx, env, `drum ${i + 1} · 32 × 64`, r.x + r.w / 2, r.y + r.h + 24, 13, { a: 'center', c: C.muted }); });
-  if (k > 0) txt(ctx, env, 'maps and units shown are reader 1’s; the digit and roll are this reader’s own', 120, RP[k].note, 11, { c: C.dim });
+  if (k > 0) txt(ctx, env, 'maps and units shown are reader 1’s, but the digit and roll are this reader’s own', 120, RP[k].note, 11, { c: C.dim });
 }
 function readerFlatten(ctx: Ctx, env: Env, k: number, p: number) {
   const FY = RP[k].flat;
@@ -441,7 +441,7 @@ function voteSlot(ctx: Ctx, env: Env, i: number, g: number) {
   txt(ctx, env, `${mi}`, slot.x + 56, slot.y + 100, 26, { font: SERIF, c: low ? C.red : C.ink, alpha: g });
   txt(ctx, env, pct(VT.conf[i]), slot.x + 82, slot.y + 100, 14, { font: MONO, c: low ? C.red : C.muted, alpha: g });
   txt(ctx, env, `drum ${i + 1}`, slot.x + 22, slot.y + 104, 10, { a: 'center', c: C.dim, alpha: g });
-  if (low) txt(ctx, env, 'least sure: reader 3 read a 0 and was outvoted', slot.x + 56, slot.y + 120, 10, { c: C.red, alpha: g });
+  if (low) txt(ctx, env, 'least sure, as reader 3 read a 0 and was outvoted', slot.x + 56, slot.y + 120, 10, { c: C.red, alpha: g });
 }
 
 /* ── scenes ── */
@@ -450,13 +450,13 @@ export const SCENES: Scene[] = [
     // The photo the 3D chapter's capture just took. DrumNetFilm draws this scene
     // full-bleed (cover), exactly like the chapter's last frame, then pulls back.
     id: 'photo', stage: 'Capture', title: 'The photo the reader just took', dur: 0.4,
-    body: 'One 800 × 600 frame in grey. Everything from here on runs on the ESP32-S3, on this one photo.',
+    body: 'This is one 800 × 600 frame in grey, and everything from here on runs on the ESP32-S3 using only this photo.',
     view: { ...PAN.input, y: -20, h: 500 }, until: 'downscale',
     draw: (ctx, env) => { img(ctx, env, 'photo.webp', PHOTO); },
   },
   {
     id: 'downscale', stage: 'Input', title: 'Downscale the capture', dur: 4,
-    body: 'The reader captures the meter at 800 × 600 in grey. For the spotter it is downscaled to 320 × 240: four times fewer numbers, so the rough search runs quickly and cheaply.',
+    body: 'The reader captures the meter at 800 × 600 in grey, and for the spotter it is downscaled to 320 × 240, which has four times fewer numbers, so the rough search runs quickly and cheaply.',
     view: { ...PAN.input, y: -20, h: 500 },
     draw: (ctx, env, p) => {
       frame(ctx, env, PHOTO); img(ctx, env, 'photo.webp', PHOTO);
@@ -474,13 +474,13 @@ export const SCENES: Scene[] = [
   },
   {
     id: 'spot-net', stage: 'Spotter', title: 'Five blocks shrink the thumbnail to a 10 × 7 grid', dur: 10,
-    body: 'Each block slides a 3 × 3 kernel over its input, keeps the strong responses (ReLU) and halves the size (max-pool). The thumbnail becomes 8 maps, then 16, 24, 32, 32, each half the size of the last, until one cell of the last block stands for a 32 × 34 patch of the thumbnail.',
+    body: 'Each block slides a 3 × 3 kernel over its input, keeps the strong responses (ReLU) and halves the size (max-pool). The thumbnail becomes 8 maps, then 16, 24, 32 and 32, each half the size of the last, until one cell of the last block stands for a 32 × 34 patch of the thumbnail.',
     view: { x: PX, y: PAN.spotter.y, w: PW, h: 360 },
     draw: (ctx, env, p) => drawNet(ctx, env, SPOT_NET, p, (r) => { thumbTile(ctx, env, r); txt(ctx, env, 'thumbnail', r.x + r.w / 2, r.y + r.h + 24, 15, { a: 'center', w: 700 }); txt(ctx, env, '320 × 240', r.x + r.w / 2, r.y + r.h + 42, 12.5, { a: 'center', c: C.muted }); }),
   },
   {
-    id: 'spot-head', stage: 'Spotter', title: 'The score map picks the cell, the other four say where', dur: 10,
-    body: 'A 1 × 1 convolution turns block 5 into five 10 × 7 maps. The score map chooses the cell most likely to hold the centre of the digit window. That position is handed down to the dx, dy, width and height maps, read at the same cell, and together they draw a box on the thumbnail.',
+    id: 'spot-head', stage: 'Spotter', title: 'The score map picks the cell and the other four say where', dur: 10,
+    body: 'A 1 × 1 convolution turns block 5 into five 10 × 7 maps, and the score map chooses the cell most likely to hold the centre of the digit window. That position is handed to the dx, dy, width and height maps, which are read at the same cell, and together they draw a box on the thumbnail.',
     view: { x: PX, y: 870, w: PW, h: 420 },
     draw: (ctx, env, p) => {
       const names = ['score', 'dx', 'dy', 'w', 'h'];
@@ -576,26 +576,26 @@ export const SCENES: Scene[] = [
     },
   },
   {
-    id: 'ref-net', stage: 'Refiner · pass 1', title: 'Four blocks, down to 32 maps of 32 × 12', dur: 7,
-    body: 'The crop is converted to grey and resized to 256 × 96. RefNet runs the same kind of blocks as the spotter, four of them, and the last one does not pool, so block 4 keeps 32 maps of 32 × 12: one column per 8 pixels of the crop.',
+    id: 'ref-net', stage: 'Refiner · pass 1', title: 'Four blocks bring the crop down to 32 maps of 32 × 12', dur: 7,
+    body: 'The crop is converted to grey and resized to 256 × 96, and RefNet runs four of the same kind of blocks as the spotter. The last one does not pool, so block 4 keeps 32 maps of 32 × 12, one column for every 8 pixels of the crop.',
     view: { x: PX, y: PAN.ref1.y, w: PW, h: 320 },
     draw: (ctx, env, p) => refNetDraw(ctx, env, REF1_NET, P1, p),
   },
   {
-    id: 'ref-avg', stage: 'Refiner · pass 1', title: 'Every map is squashed into one row and one column', dur: 8,
-    body: 'Block 4 is 32 maps stacked into a slab. Each map peels off: its 32 columns average down to 32 values, one row of the column-average map, and its 12 rows average across to 12 values, one column of the row-average map. The column map will find left and right; the row map, top and bottom.',
+    id: 'ref-avg', stage: 'Refiner · pass 1', title: 'Every map is averaged into one row and one column', dur: 8,
+    body: 'Block 4 is 32 maps stacked into a slab, and each map peels off in turn. Its 32 columns average down to 32 values for one row of the column-average map, and its 12 rows average across to 12 values for one column of the row-average map. The column map finds left and right, and the row map finds top and bottom.',
     view: { x: PX, y: PAN.ref1.y + 300, w: PW, h: 360 },
     draw: (ctx, env, p) => refAvg(ctx, env, PAN.ref1.y, PD1, p),
   },
   {
     id: 'ref-heads', stage: 'Refiner · pass 1', title: 'The average maps become score and offset strips', dur: 10,
-    body: 'A 1 × 1 convolution reads every column of the column map and turns it into four strips: a left score and offset, a right score and offset. The row map becomes four more for top and bottom. The highest score names the cell, its offset says where inside the cell the edge is, and the four edges become the box.',
+    body: 'A 1 × 1 convolution reads every column of the column map and turns it into four strips, a score and an offset for the left edge and the same for the right, while the row map becomes four more for top and bottom. The highest score picks the cell, its offset says where the edge sits inside that cell, and the four edges make the box.',
     view: { x: PX, y: PAN.ref1.y + 630, w: PW, h: 370 },
     draw: (ctx, env, p) => refHeads(ctx, env, PAN.ref1.y, P1, PD1, p, C.red),
   },
   {
-    id: 'ref-pass2', stage: 'Refiner · pass 2', title: 'Expand the box, crop again, the same network again', dur: 10,
-    body: 'The pass 1 box is only as centred as the spotter’s guess, so it is expanded, cropped again and sent through the very same refiner: the same four blocks, the same heads, the same 15,400 weights. Pass 2 is pass 1 over again, quickly. Its box goes to the reader.',
+    id: 'ref-pass2', stage: 'Refiner · pass 2', title: 'Expand the box, crop again and run the same network', dur: 10,
+    body: 'The pass 1 box is only as centred as the spotter’s guess, so it is expanded, cropped again and sent through the very same refiner, with the same four blocks, heads and 15,400 weights. Pass 2 replays pass 1 quickly, and its box goes on to the reader.',
     view: { x: PX, y: PAN.ref1.y, w: PW, h: 2100 },
     draw: (ctx, env, p) => {
       const cr = CROP(PAN.ref1.y);
@@ -628,7 +628,7 @@ export const SCENES: Scene[] = [
   },
   {
     id: 'cut', stage: 'Cut', title: 'Cut the window into drums', dur: 6,
-    body: 'The drum layout was set at setup: 4 whole drums and 2 decimal drums. The window is sliced into six equal cells, each is turned grey and stretched to full contrast at 32 × 64, and each goes to the readers. We follow the sixth drum, the 7.',
+    body: 'The layout of 4 whole drums and 2 decimal drums was set during setup, so the window is sliced into six equal cells, and each one is turned grey, stretched to full contrast at 32 × 64 and sent to the readers. We follow the sixth drum, the 7.',
     view: { x: PX + RX, y: PAN.cut.y, w: PW, h: 360 },
     draw: right((ctx, env, p) => {
       const a1 = seg(p, 0, 0.15), a2 = segL(p, 0.15, 0.42), a3 = seg(p, 0.45, 0.68), a4 = seg(p, 0.7, 0.84), a5 = seg(p, 0.86, 1);
@@ -657,43 +657,43 @@ export const SCENES: Scene[] = [
   },
   {
     id: 'rd-net', stage: 'Reader 1', title: 'A reader turns one cell into 96 tiny maps', dur: 7, until: 'drums',
-    body: 'The reader is the same recipe once more, four blocks of 3 × 3 convolution, ReLU and max-pool, but wider: 16, 48, 96, 96 maps. The 32 × 64 cell ends as 96 maps of 2 × 4, where one cell stands for a 16 × 16 patch of the drum.',
+    body: 'The reader uses the same four blocks of 3 × 3 convolution, ReLU and max-pool once more, but wider, with 16, 48, 96 and 96 maps, so the 32 × 64 cell ends as 96 maps of 2 × 4, where one cell stands for a 16 × 16 patch of the drum.',
     view: { x: PX + RX, y: PAN.reader1.y, w: PW, h: 380 },
     draw: right((ctx, env, p) => readerNet(ctx, env, 0, 5, p)),
   },
   {
-    id: 'flatten', stage: 'Reader 1', title: 'Flatten: 96 maps become one list of 768', dur: 7, until: 'drums',
-    body: 'Nothing is computed here. The first map is pulled off the block and its 2 × 4 cells are read row by row into a line of 8; the other 95 maps follow and the block empties, so the list is always in the same order, map 1 first and map 96 last. 768 numbers.',
+    id: 'flatten', stage: 'Reader 1', title: 'Flattening 96 maps into one list of 768', dur: 7, until: 'drums',
+    body: 'Nothing is computed here. The first map is pulled off the block and its 2 × 4 cells are read row by row into a line of 8, then the other 95 maps follow until the block is empty, so the 768 numbers are always in the same order, with map 1 first and map 96 last.',
     view: { x: PX + RX, y: RP[0].flat - 20, w: PW, h: 250 },
     draw: right((ctx, env, p) => readerFlatten(ctx, env, 0, p)),
   },
   {
-    id: 'dense', stage: 'Reader 1', title: 'The dense layer: 768 numbers become 96 units', dur: 7, until: 'drums',
-    body: 'Each of the 96 units has its own 768 weights. Every number is multiplied by its weight, all 768 products are added, an offset is added, and anything below zero becomes zero. Unit 69 first, slowly; then the other 95 the same way.',
+    id: 'dense', stage: 'Reader 1', title: 'The dense layer turns 768 numbers into 96 units', dur: 7, until: 'drums',
+    body: 'Each of the 96 units has its own 768 weights, so every number is multiplied by its weight, the 768 products and an offset are added up, and anything below zero becomes zero. Unit 69 is shown slowly first, then the other 95 work the same way.',
     view: { x: PX + RX, y: RP[0].dense - 20, w: PW, h: 240 },
     draw: right((ctx, env, p) => readerDense(ctx, env, 0, p)),
   },
   {
-    id: 'digit', stage: 'Reader 1', title: 'The digit head: ten scores, a softmax, one answer', dur: 7, until: 'drums',
-    body: 'Each digit 0 to 9 has its own 96 weights and offset, so ten weighted sums give ten scores. Softmax raises e to every score and divides by the total, which turns one clear lead into nearly all of the probability. The 7 wins at 96.4 %; that percentage is the confidence.',
+    id: 'digit', stage: 'Reader 1', title: 'The digit head turns ten scores into one answer', dur: 7, until: 'drums',
+    body: 'Each digit 0 to 9 has its own 96 weights and offset, so ten weighted sums give ten scores. Softmax raises e to every score and divides by the total, which turns one clear lead into nearly all of the probability. The 7 wins at 96.4 %, and that percentage is the confidence.',
     view: { x: PX + RX, y: RP[0].digit - 20, w: PW, h: 380 },
     draw: right((ctx, env, p) => readerDigit(ctx, env, 0, 5, p)),
   },
   {
-    id: 'roll', stage: 'Reader 1', title: 'The roll head: how far the drum has turned', dur: 5, until: 'drums',
-    body: 'One more weighted sum of the 96 units gives a roll score, squashed by tanh into −0.5 to +0.5: how far past its mark the drum sits. This 7 has rolled 3.7 % of a step towards the 8.',
+    id: 'roll', stage: 'Reader 1', title: 'The roll head measures how far the drum has turned', dur: 5, until: 'drums',
+    body: 'One more weighted sum of the 96 units gives a roll score, which tanh squashes into −0.5 to +0.5 to say how far past its mark the drum sits. This 7 has rolled 3.7 % of a step towards the 8.',
     view: { x: PX + RX, y: RP[0].roll - 20, w: PW, h: 240 },
     draw: right((ctx, env, p) => readerRoll(ctx, env, 0, 5, p)),
   },
   {
     id: 'readers3', stage: 'Reader ensemble', title: 'Readers 2 and 3 read the same drum', dur: 8, until: 'drums',
-    body: 'Three copies of the reader share one architecture but were trained from different random starts, so they make different mistakes. The same cell goes through readers 2 and 3 the same way, quickly; each gives its own ten percentages and its own roll.',
+    body: 'Three copies of the reader share one architecture but were trained from different random starts, so they make different mistakes. The same cell goes through readers 2 and 3 the same way, quickly, and each gives its own ten percentages and its own roll.',
     view: { x: PX + RX, y: PAN.reader2.y - 20, w: PW, h: 2 * RH + 120 },
     draw: right((ctx, env, p) => { readerAll(ctx, env, 1, 5, segL(p, 0, 0.92)); readerAll(ctx, env, 2, 5, segL(p, 0.08, 1)); }),
   },
   {
     id: 'vote', stage: 'Vote', title: 'Three answers are averaged into one', dur: 7,
-    body: 'The three readers’ answers come down to the vote. Their probability lists are averaged, so each reader has the same voting power and the third breaks ties. The averaged list gives the digit and its confidence; the three rolls are averaged too. Drum 6: a 7 at 98.8 %.',
+    body: 'The three readers’ answers come down to the vote, where their probability lists are averaged, so each reader has the same voting power and the third breaks ties. The averaged list gives the digit and its confidence, the three rolls are averaged too, and drum 6 comes out as a 7 at 98.8 %.',
     view: { x: PX + RX, y: VOTE_Y - 30, w: PW, h: 360 },
     viewAt: (p) => (p < 0.3 ? { x: PX + RX, y: RP[0].digit + 60, w: PW, h: VOTE_Y + 330 - (RP[0].digit + 60) } : { x: PX + RX, y: VOTE_Y - 30, w: PW, h: 360 }),
     draw: right((ctx, env, p) => {
@@ -731,7 +731,7 @@ export const SCENES: Scene[] = [
   },
   {
     id: 'drums', stage: 'Vote', title: 'Every other drum goes through the same machinery', dur: 14,
-    body: 'The other five cells take the same trip, quickly: four blocks, flatten, dense, the two heads, in all three readers at once, then the vote. Six averaged answers line up before the carry rule. Drum 3 is the least sure, a 9 at 71.5 %, because reader 3 saw a 0 and was outvoted.',
+    body: 'The other five cells go through the same steps quickly, the four blocks, flatten, dense and the two heads in all three readers at once, then the vote, until six averaged answers line up before the carry rule. Drum 3 is the least sure, a 9 at 71.5 %, because reader 3 saw a 0 and was outvoted.',
     view: { x: PX + RX, y: PAN.cut.y - 20, w: PW, h: PAN.vote.y + 560 - PAN.cut.y + 40 },
     draw: right((ctx, env, p) => {
       voteSlot(ctx, env, 5, seg(p, 0, 0.08));
@@ -747,7 +747,7 @@ export const SCENES: Scene[] = [
   },
   {
     id: 'carry', stage: 'Vote', title: 'The carry rule, then the reading', dur: 9,
-    body: 'A drum may only be mid-roll if the drum to its right is on 9 or 0, or it is the last drum. Then its roll is trusted and the digit may step on. If the right drum sits on 1 to 8, this drum is locked to its nearest digit. That is what keeps 79 rolling to 80 from reading as 89. Here every roll is inside the dead band, so each drum keeps its digit: 0092.07.',
+    body: 'A drum may only be mid-roll if the drum to its right is on 9 or 0, or if it is the last drum, and then its roll is trusted and the digit may step on. If the right drum sits on 1 to 8, this drum is locked to its nearest digit, which keeps 79 rolling to 80 from reading as 89. Here every roll is inside the dead band, so each drum keeps its digit and the reading is 0092.07.',
     view: { x: PX + RX, y: DRUMS_Y - 20, w: PW, h: 800 },
     draw: right((ctx, env, p) => {
       const a1 = segL(p, 0, 0.3), a2 = segL(p, 0.3, 0.62), a3 = seg(p, 0.64, 0.8), a4 = seg(p, 0.8, 1);
@@ -772,7 +772,7 @@ export const SCENES: Scene[] = [
         txt(ctx, env, String(n), x + 40, CARRY_Y + 232, 56, { a: 'center', w: 700, c: C.white, alpha: ra });
         txt(ctx, env, free ? `${n} → ${(n + 1) % 10} allowed` : `${n}, absolute`, x + 40, CARRY_Y + 292, 11, { a: 'center', c: free ? C.muted : C.red, alpha: a3 });
       }
-      txt(ctx, env, '79 rolling to 80 could read as 89: the rule picks the preceding number instead', 170, CARRY_Y + 316, 12, { c: C.dim, alpha: a3 * (1 - a4) });
+      txt(ctx, env, '79 rolling to 80 could read as 89, so the rule picks the preceding number instead', 170, CARRY_Y + 316, 12, { c: C.dim, alpha: a3 * (1 - a4) });
       const W: Rect = { x: 120, y: READ_Y + 30, w: 400, h: 132 };
       frame(ctx, env, W, { alpha: a4 }); img(ctx, env, 'vote-window.webp', W, { alpha: a4 });
       VT.near.forEach((n, i) => txt(ctx, env, String(n), W.x + W.w * ((CT.cuts[i] + CT.cuts[i + 1]) / 2 / CT.win_w), READ_Y + 18, 22, { a: 'center', w: 700, c: i >= VT.dot ? C.red : C.ink, alpha: a4 }));
@@ -787,8 +787,8 @@ export const SCENES: Scene[] = [
     }),
   },
   {
-    id: 'finale', stage: 'DrumNet V10', title: 'The whole machine, running', dur: 14,
-    body: 'Every stage at once, one more time: the thumbnail into the spotter, the crop through the refiner twice, the window into six cells, three readers each, the vote and the carry rule. About two seconds on the reader for one number.',
+    id: 'finale', stage: 'DrumNet V10', title: 'The whole pipeline running at once', dur: 14,
+    body: 'Every stage runs at once, one more time, from the thumbnail into the spotter and the crop through the refiner twice to the window cut into six cells, three readers for each, the vote and the carry rule. The reader takes about two seconds to produce one number.',
     view: { x: 0, y: 0, w: MAP.w, h: MAP.h }, full: true,
     draw: () => {},
   },

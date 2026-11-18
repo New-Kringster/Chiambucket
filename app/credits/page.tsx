@@ -3,16 +3,16 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Credits | Braven Chiam',
   description:
-    'Colophon for chiambucket.com: built with Claude, hosted on Vercel, made with Next.js, and a self-hosted Lychee gallery for the photos.',
+    'The colophon for chiambucket.com, which is built with Claude and Next.js, hosted on Vercel, and uses a self-hosted Lychee gallery for the photos.',
   alternates: { canonical: 'https://www.chiambucket.com/credits' },
   openGraph: {
     title: 'Credits | Braven Chiam',
-    description: 'How this site is built and hosted, and the tools behind it.',
+    description: 'How this site is built and hosted, and which tools are behind it.',
     url: 'https://www.chiambucket.com/credits',
   },
   twitter: {
     title: 'Credits | Braven Chiam',
-    description: 'Built with Claude, hosted on Vercel.',
+    description: 'This site is built with Claude and hosted on Vercel.',
   },
 };
 
@@ -23,9 +23,9 @@ export default function CreditsPage() {
         <div className="ct-aura"></div>
 
         <span className="ct-kicker">Credits</span>
-        <h1 className="ct-title">Credits &amp; <em>content.</em></h1>
+        <h1 className="ct-title">Credits &amp; <em>content</em></h1>
         <p className="ct-sub">
-          How this site is built and hosted, and the tools behind it.
+          This page explains how the site is built and hosted, and which tools are behind it.
         </p>
       </section>
 
@@ -41,7 +41,7 @@ export default function CreditsPage() {
               I designed and built this site with Claude, an AI model from{' '}
               <a href="https://www.anthropic.com" target="_blank" rel="noopener">Anthropic</a>.
               Claude helped with the layout, wrote much of the code, tightened the copy and
-              helped me debug. I decided what stayed, what changed and how it looks.
+              helped me debug, while I decided what stayed, what changed and how it looks.
             </p>
           </article>
 
@@ -56,8 +56,8 @@ export default function CreditsPage() {
               Insights count visits and measure page speed.
             </p>
             <p>
-              My homelab still runs the photo gallery and my other self-hosted services. The
-              public site runs on Vercel because managed hosting keeps it faster and more
+              My homelab still runs the photo gallery and my other self-hosted services, but
+              the public site runs on Vercel because managed hosting keeps it faster and more
               reliable.
             </p>
           </article>

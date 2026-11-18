@@ -24,7 +24,7 @@ const START: Room = {
   buzzer: false,
   auto: true,
   timer: null,
-  reply: 'Ready. Say "Hello Robot" or hold to talk.',
+  reply: 'Say "Hello Robot" or hold the button to talk.',
 };
 
 /* ── The demo script: each line is one real LUMEN exchange ───────── */

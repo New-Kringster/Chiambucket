@@ -229,7 +229,7 @@ export default function AiUsePage() {
         <div className="hp-section">
           <header className="ai-intro">
             <h2 className="ai-h2" id="ai-cmp-h">The levels side by side</h2>
-            <p>The same questions, answered for each level.</p>
+            <p>Each row asks the same question of all four levels.</p>
           </header>
 
           <div className="ai-cmp-wrap">
@@ -272,8 +272,8 @@ export default function AiUsePage() {
             <h2 className="ai-h2" id="ai-dl-h">Download the marks</h2>
             <p>
               Each level comes as a label, a smaller icon, and vertical and horizontal versions
-              with a QR code that links back to this page. All are SVG. Use them to mark your own
-              projects.
+              with a QR code that links back to this page, all as SVG files you can use to mark
+              your own projects.
             </p>
           </header>
 

@@ -30,9 +30,9 @@ export default function ContactClient() {
         <div className="cx-monolith" aria-hidden="true"></div>
 
         <span className="ct-kicker">Contact</span>
-        <h1 className="ct-title cx-title">Let&apos;s <em>talk.</em></h1>
+        <h1 className="ct-title cx-title">Let&apos;s <em>talk</em></h1>
         <p className="ct-sub">
-          Email is the fastest way to reach me. I&apos;m also on the sites below.
+          Email is the fastest way to reach me, and I&apos;m also on the sites below.
         </p>
 
         <div className="ct-email-card cx-card">

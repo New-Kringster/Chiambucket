@@ -55,11 +55,11 @@ export const SERVERS: Server[] = [
       { k: 'Fast pool', v: '2 × 2 TB NVMe, ZFS mirror' },
     ],
     blurb:
-      'The main server. A parity-protected Unraid array holds bulk data, a ZFS NVMe mirror holds anything that needs speed, and it runs most of the Docker containers.',
+      'This is the main server, where a parity-protected Unraid array holds bulk data, a ZFS NVMe mirror holds anything that needs speed, and most of the Docker containers run.',
     detail: {
-      tagline: 'Storage and most of the services.',
+      tagline: 'Storage and most of the services',
       story: [
-        'Unraid pools mismatched drives into one parity-protected array for bulk data. A separate ZFS mirror of two NVMe drives holds Docker app data, databases and VM disks.',
+        'Unraid pools mismatched drives into one parity-protected array for bulk data, while a separate ZFS mirror of two NVMe drives holds Docker app data, databases and VM disks.',
         'Almost every service on this page runs here, including everything behind the chiambucket.com subdomains. The GTX 1070 handles video transcoding and the machine learning behind Immich search and face grouping.',
         'I change this machine as little as possible because everything else depends on it.',
       ],
@@ -89,12 +89,12 @@ export const SERVERS: Server[] = [
       { k: 'Hosts', v: 'CasaOS and Debian VMs' },
     ],
     blurb:
-      'A small ThinkCentre that used to be my main server. It is now the always-on node of a Proxmox cluster and runs the CasaOS and Debian VMs from its own 1 TB SSD.',
+      'CaCa is a small ThinkCentre that used to be my main server, and it is now the always-on node of a Proxmox cluster, running the CasaOS and Debian VMs from its own 1 TB SSD.',
     detail: {
-      tagline: 'The always-on Proxmox node.',
+      tagline: 'The Proxmox node that stays on',
       story: [
-        'CaCa was my main server before NewMain. Now it is the always-on half of a two-node Proxmox cluster with Adell.',
-        'It boots Proxmox from a 1 TB NVMe SSD inside it. The CasaOS and Debian virtual machines that used to run on bare metal run from the same disk.',
+        'CaCa was my main server before NewMain, and now it is the always-on half of a two-node Proxmox cluster with Adell.',
+        'It boots Proxmox from a 1 TB NVMe SSD inside it, and the CasaOS and Debian virtual machines that used to run on bare metal now run from the same disk.',
         'It draws little power, so it stays on around the clock while Adell sleeps.',
       ],
       highlights: [
@@ -122,12 +122,12 @@ export const SERVERS: Server[] = [
       { k: 'Power', v: 'Wake-on-LAN only' },
     ],
     blurb:
-      'Twenty Xeon cores and 128 GB of RAM in the same Proxmox cluster as CaCa. It uses a lot of power, so it stays off until I wake it through UpSnap.',
+      'Adell has twenty Xeon cores and 128 GB of RAM and sits in the same Proxmox cluster as CaCa, but it uses a lot of power, so it stays off until I wake it through UpSnap.',
     detail: {
-      tagline: 'The big machine, woken when I need it.',
+      tagline: 'The big machine I wake when I need it',
       story: [
-        'Adell is the big machine in the cluster: two Xeons with twenty cores between them and 128 GB of RAM. It uses too much power to leave running.',
-        'When a job needs it, I press wake in UpSnap. UpSnap sends a Wake-on-LAN packet, Adell boots over the network, runs the job, then goes back to sleep.',
+        'Adell is the big machine in the cluster, with two Xeons that have twenty cores between them and 128 GB of RAM, so it uses too much power to leave running.',
+        'When a job needs it, I press wake in UpSnap, which sends a Wake-on-LAN packet, and Adell boots over the network, runs the job and then goes back to sleep.',
       ],
       highlights: [
         'Twenty Xeon cores, 128 GB RAM',
@@ -165,43 +165,43 @@ export const CATEGORIES = [
 export const SERVICES: Service[] = [
   {
     name: 'OpenClaw', icon: '/images/openclaw-icon.webp', category: 'For my projects', weight: 'dev', hosts: ['NewMain'], featured: true,
-    blurb: 'What I am building now: a runner that lets AI agents do real tasks on the lab. Not finished.',
+    blurb: 'I am building OpenClaw now, a runner that lets AI agents do real tasks on the lab, and it is not finished yet.',
     long: [
       'The goal is to give an agent a safe place inside the lab where it can start a container, check a service, deploy a small app and report back.',
-      'It follows on from giving Claude SSH access to a VM for deploying my apps. The next step is letting it run parts of the lab while I review the results.',
+      'It follows on from giving Claude SSH access to a VM for deploying my apps, and the next step is letting it run parts of the lab while I review the results.',
     ],
   },
 
   // Access
   {
     name: 'Nginx Proxy Manager', icon: '/images/npm-icon.webp', category: 'Access', weight: 'very-high', hosts: ['NewMain'],
-    blurb: 'The reverse proxy for every public service. It terminates SSL, routes each chiambucket.com subdomain to its container, and has a CrowdSec bouncer that bans hostile IPs.',
+    blurb: 'It sits in front of every public service as the reverse proxy, terminating SSL, routing each chiambucket.com subdomain to its container and running a CrowdSec bouncer that bans hostile IPs.',
     long: [
-      'All public traffic arrives at one address and goes to NPM first. It terminates SSL and forwards each subdomain to the right container, so no container is exposed directly.',
-      'CrowdSec watches the traffic for attack patterns and bans the source. If NPM goes down, every public service goes down with it.',
+      'All public traffic arrives at one address and goes to NPM first, so no container is exposed to the internet directly.',
+      'CrowdSec watches the traffic for attack patterns and bans the source. Because everything passes through NPM, every public service goes down whenever NPM does.',
     ],
   },
   {
     name: 'Tailscale', icon: '/images/tailscale-icon.webp', category: 'Access', weight: 'high', hosts: ['NewMain'],
-    blurb: 'A WireGuard mesh that puts all my devices on one private network. I use it to SSH in and edit configs from anywhere.',
+    blurb: 'It is a WireGuard mesh that puts all my devices on one private network, which I use to SSH in and edit configs from anywhere.',
   },
   {
     name: 'Shadowsocks', icon: '/images/shadowsocks-icon.png', iconRound: true, category: 'Access', weight: 'high', hosts: ['NewMain'],
-    blurb: 'A proxy that makes my traffic look like ordinary HTTPS, so I can reach home from restricted school networks.',
+    blurb: 'It is a proxy that makes my traffic look like ordinary HTTPS, so I can reach home from restricted school networks.',
   },
   {
     name: 'Twingate', icon: '/images/twingate-icon.webp', category: 'Access', weight: 'low', hosts: ['NewMain'],
-    blurb: 'A zero trust connector I keep as another way in, alongside Teleport, WireGuard and Unraid Connect.',
+    blurb: 'It is a zero trust connector that I keep as another way in, alongside Teleport, WireGuard and Unraid Connect.',
   },
   {
     name: 'Pi-hole', icon: '/images/pihole-icon.png', iconRound: true, category: 'Access', weight: 'diagnostic', hosts: ['NewMain'],
-    blurb: 'DNS-level ad and tracker blocking for the whole network. I mostly use it for troubleshooting now.',
+    blurb: 'It blocks ads and trackers at the DNS level for the whole network, though I mostly use it for troubleshooting now.',
   },
 
   // Files
   {
     name: 'Immich', icon: '/images/immich-icon.webp', category: 'Files', weight: 'extreme', hosts: ['NewMain'],
-    blurb: 'My photo library, in place of Google Photos. Phones back up to it automatically, with search and albums. The service I use most.',
+    blurb: 'Immich replaces Google Photos as my photo library, with automatic phone backups, search and albums, and it is the service I use most.',
     long: [
       'Every photo and video from my phone backs up here automatically and stays on my own storage.',
       'It is the heaviest service on NewMain. The GTX 1070 runs the machine learning for search and face grouping, and sizing it taught me how to budget CPU, GPU, memory and storage for a real workload.',
@@ -209,94 +209,93 @@ export const SERVICES: Service[] = [
   },
   {
     name: 'Lychee', icon: '/images/lychee-icon.webp', category: 'Files', weight: 'high', hosts: ['NewMain'],
-    blurb: 'The photo gallery behind the photography page on this site.',
+    blurb: 'Lychee is the photo gallery behind the photography page on this site.',
     url: 'https://photos.chiambucket.com', statusKey: 'photos.chiambucket.com',
   },
   {
     name: 'Pingvin Share', icon: '/images/pingvin-icon.png', iconRound: true, category: 'Files', weight: 'high', hosts: ['NewMain'],
-    blurb: 'Upload a large file and get a link to send. For files too big for chat apps.',
+    blurb: 'I upload files that are too big for chat apps here and get a link to send.',
     url: 'https://share.chiambucket.com', statusKey: 'share.chiambucket.com',
   },
   {
     name: 'PairDrop', icon: '/images/pairdrop-icon.png', iconRound: true, category: 'Files', weight: 'high', hosts: ['NewMain'],
-    blurb: 'Send a file between any two devices from the browser, like AirDrop. No accounts.',
+    blurb: 'It sends a file between any two devices from the browser, like AirDrop, without any accounts.',
     url: 'https://drop.chiambucket.com', statusKey: 'drop.chiambucket.com',
   },
   {
     name: 'File Browser Quantum', icon: '/images/fbq-icon.webp', category: 'Files', weight: 'high', hosts: ['NewMain'],
-    blurb: 'Browser access to the same files I use over NFS and SMB at home, with share links. I tried Nextcloud, FileBrowser, Alist and SFTPGo before this.',
+    blurb: 'It gives me browser access and share links for the same files I use over NFS and SMB at home.',
     long: [
-      'It serves the same data I already reach over NFS and SMB, and adds share links.',
-      'Before it I used Nextcloud, the original FileBrowser, Alist and SFTPGo. This is the one I kept.',
+      'Before it I used Nextcloud, the original FileBrowser, Alist and SFTPGo, and this is the one I kept.',
     ],
   },
   {
     name: 'Syncthing', icon: '/images/syncthing-icon.webp', category: 'Files', weight: 'low', hosts: ['NewMain'],
-    blurb: 'Continuous, versioned file sync between my devices.',
+    blurb: 'It keeps files in sync between my devices all the time, with versioning.',
   },
 
   // Media and tools
   {
     name: 'Fireshare', icon: '/images/fireshare-icon.webp', iconRound: true, category: 'Media and tools', weight: 'moderate', hosts: ['NewMain'],
-    blurb: 'A place for my friends and me to upload and share game clips, with no upload limits.',
+    blurb: 'My friends and I upload and share game clips here, with no upload limits.',
     url: 'https://clips.chiambucket.com', statusKey: 'clips.chiambucket.com',
   },
   {
     name: 'Neko Rooms', icon: '/images/neko-icon.png', iconRound: true, category: 'Media and tools', weight: 'high', hosts: ['NewMain'],
-    blurb: 'A shared browser in a tab. We join the same room to watch or research on one screen.',
+    blurb: 'It runs a shared browser in a tab, so we can join the same room to watch or research on one screen.',
   },
   {
     name: 'Crafty', icon: '/images/crafty-icon.webp', category: 'Media and tools', weight: 'moderate', hosts: ['NewMain', 'CasaOS VM'],
-    blurb: 'A Minecraft server manager. It runs in two places so a world can always be started.',
+    blurb: 'Crafty manages my Minecraft servers, and it runs in two places so a world can always be started.',
   },
   {
     name: 'Paperless-NGX', icon: '/images/paperless-icon.webp', category: 'Media and tools', weight: 'low', hosts: ['NewMain'],
-    blurb: 'A document archive that OCRs every PDF and scan so I can search them from any device.',
+    blurb: 'It is a document archive that OCRs every PDF and scan, so I can search them from any device.',
   },
   {
     name: 'VS Code Server', icon: '/images/vscode-icon.webp', category: 'Media and tools', weight: 'low', hosts: ['NewMain'],
-    blurb: 'VS Code in the browser, for editing config files on the server.',
+    blurb: 'It runs VS Code in the browser, so I can edit config files on the server.',
   },
 
   // Monitoring
   {
     name: 'UpStat', icon: '/images/hl2/upstat-icon.png', category: 'Monitoring', weight: 'high', hosts: ['NewMain'],
-    blurb: 'Tracks uptime and response time for every service and container, so I hear about problems first.',
+    blurb: 'It tracks uptime and response time for every service and container, so I hear about problems first.',
   },
   {
     name: 'NetData', icon: '/images/netdata-icon.webp', category: 'Monitoring', weight: 'low', hosts: ['NewMain'],
-    blurb: 'Per-second metrics for CPU, disks, network and containers.',
+    blurb: 'It records per-second metrics for CPU, disks, network and containers.',
   },
   {
     name: 'UpSnap', icon: '/images/upsnap-icon.webp', category: 'Monitoring', weight: 'high', hosts: ['NewMain'],
-    blurb: 'A Wake-on-LAN panel. This is how I turn Adell on.',
+    blurb: 'It is a Wake-on-LAN panel, and it is how I turn Adell on.',
   },
   {
     name: 'OpenSpeedTest', icon: '/images/ost-icon.webp', category: 'Monitoring', weight: 'moderate', hosts: ['NewMain'],
-    blurb: 'A self-hosted speed test for measuring throughput between the server and wherever I am.',
+    blurb: 'It is a self-hosted speed test that measures throughput between the server and wherever I am.',
     url: 'https://speedtest.chiambucket.com', statusKey: 'speedtest.chiambucket.com',
   },
   {
     name: 'Portainer', icon: '/images/portainer-icon.webp', category: 'Monitoring', weight: 'moderate', hosts: ['NewMain', 'CasaOS VM'],
-    blurb: 'A web UI for Docker on both the Unraid host and the CasaOS VM.',
+    blurb: 'It gives me a web UI for Docker on both the Unraid host and the CasaOS VM.',
   },
 
   // For my projects
   {
     name: 'coturn', icon: '/images/coturn-icon.png', iconRound: true, category: 'For my projects', weight: 'low', hosts: ['NewMain'],
-    blurb: 'A TURN and STUN server I set up for Project June, so its three WebRTC camera streams get through cellular NAT.',
+    blurb: 'I set up this TURN and STUN server for Project June, so its three WebRTC camera streams can get through cellular NAT.',
     long: [
-      'Project June streams three live camera feeds over 5G. Cellular networks put devices behind layers of NAT that WebRTC cannot cross on its own.',
-      'My own TURN and STUN server gives the streams a fixed public address to meet at, so I can drive the rover from anywhere. It uses little CPU.',
+      'Project June streams three live camera feeds over 5G, but cellular networks put devices behind layers of NAT that WebRTC cannot cross on its own.',
+      'My own TURN and STUN server gives the streams a fixed public address to meet at, so I can drive the rover from anywhere, and it uses little CPU.',
     ],
   },
   {
     name: 'Mosquitto', icon: '/images/mosquitto-icon.svg', category: 'For my projects', weight: 'low', hosts: ['NewMain'],
-    blurb: 'An MQTT broker, first set up for Project June telemetry and control. It now carries messages between my ESP32 school projects and their dashboards.',
+    blurb: "I first set up this MQTT broker for Project June's telemetry and control, and it now carries messages between my ESP32 school projects and their dashboards.",
   },
   {
     name: 'Nginx', icon: '/images/nginx-icon.webp', iconRound: true, category: 'For my projects', weight: 'high', hosts: ['NewMain'],
-    blurb: 'Two small nginx containers that serve my static sites and project demos.',
+    blurb: 'Two small nginx containers serve my static sites and project demos.',
   },
 ];
 
@@ -304,10 +303,10 @@ export const SERVICES: Service[] = [
    the rack (the "home" node on the page). */
 export interface AccessMethod { name: string; type: string; note: string; primary?: boolean }
 export const ACCESS_METHODS: AccessMethod[] = [
-  { name: 'Tailscale', type: 'Mesh VPN', note: 'A WireGuard mesh with one login across all my devices. The one I use every day.', primary: true },
-  { name: 'WireGuard', type: 'Tunnel', note: 'A plain encrypted tunnel into the network, with no third party.' },
-  { name: 'UniFi Teleport', type: 'Built-in VPN', note: 'A VPN issued by the UDM Pro, with no client to configure.' },
-  { name: 'Twingate', type: 'Zero trust', note: 'Access checked per identity, with no inbound ports open.' },
-  { name: 'Shadowsocks', type: 'Proxy', note: 'Traffic that looks like HTTPS, for restricted school and office Wi-Fi.' },
-  { name: 'Unraid Connect', type: 'Vendor service', note: 'Direct access to the Unraid server from my Unraid account.' },
+  { name: 'Tailscale', type: 'Mesh VPN', note: 'It is a WireGuard mesh with one login across all my devices, and it is the one I use every day.', primary: true },
+  { name: 'WireGuard', type: 'Tunnel', note: 'It is a plain encrypted tunnel into the network with no third party involved.' },
+  { name: 'UniFi Teleport', type: 'Built-in VPN', note: 'The UDM Pro issues this VPN itself, so there is no client to configure.' },
+  { name: 'Twingate', type: 'Zero trust', note: 'It checks access per identity and keeps every inbound port closed.' },
+  { name: 'Shadowsocks', type: 'Proxy', note: 'It makes my traffic look like HTTPS, so I can get through restricted school and office Wi-Fi.' },
+  { name: 'Unraid Connect', type: 'Vendor service', note: 'It gives me direct access to the Unraid server from my Unraid account.' },
 ];

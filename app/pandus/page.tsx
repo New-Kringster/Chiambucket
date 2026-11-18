@@ -7,7 +7,7 @@ import DispenseDemo from './DispenseDemo';
 import { IcCube } from '../../components/Icons';
 
 const DESCRIPTION =
-  'My first school project at Nanyang Polytechnic: a syrup dispenser made of six 3D-printed parts, run by an Arduino Uno from Python with PyFirmata.';
+  'My first school project at Nanyang Polytechnic was a syrup dispenser made of six 3D-printed parts and run by an Arduino Uno, which I programmed from Python with PyFirmata.';
 
 export const metadata: Metadata = {
   title: 'Pandus Dispenser | Braven Chiam',
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://www.chiambucket.com/pandus' },
   openGraph: {
     title: 'Pandus Dispenser | Braven Chiam',
-    description: 'A syrup dispenser made of six 3D-printed parts, run by an Arduino Uno with PyFirmata.',
+    description: 'Pandus is a syrup dispenser made of six 3D-printed parts and run by an Arduino Uno with PyFirmata.',
     url: 'https://www.chiambucket.com/pandus',
     type: 'article',
     images: [{ url: '/images/pandusarticle.webp' }],
@@ -53,7 +53,7 @@ export default function PandusPage() {
             <span className="hp-md-tag school">School project</span>
           </div>
           <h1 className="art-title">Pandus <em>Dispenser</em></h1>
-          <p className="art-lead">My first school project: a syrup dispenser made of six 3D-printed parts and run by an Arduino Uno. I built it from the parts we were given in class plus a few I bought.</p>
+          <p className="art-lead">Pandus was my first school project, a syrup dispenser made of six 3D-printed parts and run by an Arduino Uno. I built it from the parts we were given in class, plus a few that I bought.</p>
           <div className="art-toolrow">
             <span className="hp-key">Built with</span>
             <div className="icon-stack">
@@ -105,7 +105,7 @@ export default function PandusPage() {
 
           <section id="ProjectBackground" className="art-section" data-reveal>
             <h2>Background</h2>
-            <p>Pandus was my first major project as a first-year student at Nanyang Polytechnic. The brief was open, with no theme. We were given an Arduino Uno, a 4G servo, LEDs, buttons, sliding switches, an infrared collision detection module and a bundle of wires.</p>
+            <p>Pandus was my first major project as a first-year student at Nanyang Polytechnic, and the brief was open with no theme. We were given an Arduino Uno, a 4G servo, LEDs, buttons, sliding switches, an infrared collision detection module and a bundle of wires.</p>
             <p>I planned a water dispenser, but someone else had already chosen that, so I made a syrup dispenser instead.</p>
             <figure className="art-fig">
               <img src="/images/pandus-article-img1.webp" alt="Filming part of the Pandus video" loading="lazy" />
@@ -115,13 +115,13 @@ export default function PandusPage() {
 
           <section id="DesignProcess" className="art-section" data-reveal>
             <h2>Design</h2>
-            <p>I designed Pandus in Onshape. I had little experience with it, so learning the software took a lot of the time. There was no time left for prototypes, so I sent the final design straight to the 3D printer, and every part fit on the first print.</p>
+            <p>I designed Pandus in Onshape, and because I had little experience with it, learning the software took up a lot of the time. That left no time for prototypes, so I sent the final design straight to the 3D printer, and every part fit on the first print.</p>
             <img src="/images/pandus2.webp" alt="Exploded view of the Pandus model in Onshape" loading="lazy" />
             <img src="/images/pandus3.webp" alt="The assembled Pandus model in Onshape" loading="lazy" />
             <div className="art-repo">
               <div className="art-repo-text">
                 <strong>3D model</strong>
-                <span>The Pandus model in Onshape, which you can rotate and take apart.</span>
+                <span>You can rotate the Pandus model in Onshape and take it apart.</span>
               </div>
               <a className="hp-btn" href="https://cad.onshape.com/documents/5010f3da2be8b0cad10575b0/w/c1baff5b3751dfe2426baad4/e/d042961855d215532e28db65" target="_blank" rel="noopener"><IcCube /> Open the 3D model in Onshape</a>
             </div>
@@ -129,14 +129,14 @@ export default function PandusPage() {
 
           <section id="ControlnFunction" className="art-section" data-reveal>
             <h2>Control</h2>
-            <p>We were taught to program the Arduino from Python with the Firmata library. On top of the class parts I bought high-power LEDs, a DC pump and a relay board, and used a separate power bank for the high-current parts.</p>
-            <p>The demo below runs one dispense cycle from the flow chart further down. Pick a level to run it yourself.</p>
+            <p>We were taught to program the Arduino from Python with the Firmata library. On top of the class parts, I bought high-power LEDs, a DC pump and a relay board, and I powered the high-current parts from a separate power bank.</p>
+            <p>The demo below runs one dispense cycle from the flow chart further down, and you can pick a level to run it yourself.</p>
 
             <DispenseDemo />
 
-            <img src="/images/pandus4.webp" alt="Flow chart: the infrared sensor opens the servo and lights the LED, select sets the level, confirm runs the pump for 3, 4 or 5 seconds" loading="lazy" />
-            <img src="/images/pandus5.webp" alt="Circuit diagram: Arduino Uno, servo, infrared sensor, relays, DC pump, high-power LED, buzzer, buttons and indicator LEDs" loading="lazy" />
-            <img src="/images/pandus6.webp" alt="The wiring inside Pandus: relay board, buttons and indicator LEDs" loading="lazy" />
+            <img src="/images/pandus4.webp" alt="Flow chart in which the infrared sensor opens the servo and lights the LED, the select button sets the level and the confirm button runs the pump for 3, 4 or 5 seconds" loading="lazy" />
+            <img src="/images/pandus5.webp" alt="Circuit diagram of the Arduino Uno, servo, infrared sensor, relays, DC pump, high-power LED, buzzer, buttons and indicator LEDs" loading="lazy" />
+            <img src="/images/pandus6.webp" alt="The wiring inside Pandus, with the relay board, buttons and indicator LEDs" loading="lazy" />
             <img src="/images/pandus7.webp" alt="The breadboard, buzzer and Arduino Uno inside Pandus" loading="lazy" />
           </section>
 

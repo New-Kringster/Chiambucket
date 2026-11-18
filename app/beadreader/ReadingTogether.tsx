@@ -19,8 +19,8 @@ type Bubble = { row: number; kind: 'wave' | 'note'; text?: string } | null;
 type Beat = { caption: string; bubble: Bubble; samInBook: boolean };
 const BEATS: Beat[] = [
   { caption: 'Mara is on chapter 12 of the book you are reading, so her avatar has the green ring.', bubble: null, samInBook: false },
-  { caption: 'Tap a reader to send a wave. It shows on their screen, then fades.', bubble: { row: 0, kind: 'wave' }, samInBook: false },
-  { caption: 'Or send a short note. It is gone in a few seconds and nothing is saved.', bubble: { row: 1, kind: 'note', text: 'loved that twist!' }, samInBook: false },
+  { caption: 'Tap a reader to send a wave, which shows on their screen and then fades.', bubble: { row: 0, kind: 'wave' }, samInBook: false },
+  { caption: 'You can also send a short note, which is gone in a few seconds and never saved.', bubble: { row: 1, kind: 'note', text: 'loved that twist!' }, samInBook: false },
   { caption: 'Sam opens the same book and gets a green ring too.', bubble: null, samInBook: true },
 ];
 
@@ -133,7 +133,7 @@ export default function ReadingTogether() {
             <p className="rt-cap rt-cap-sizer" aria-hidden="true">{LONGEST_CAPTION}</p>
             <p className="rt-cap">{current.caption}</p>
           </div>
-          <div className="rt-dots" role="tablist" aria-label="Presence beats">
+          <div className="rt-dots" role="tablist" aria-label="Demo steps">
             {BEATS.map((b, n) => (
               <button
                 key={n}
@@ -145,7 +145,7 @@ export default function ReadingTogether() {
               />
             ))}
           </div>
-          <span className="rt-legend"><span className="rt-legend-dot" /> Green ring: in the same book as you</span>
+          <span className="rt-legend"><span className="rt-legend-dot" /> A green ring marks a reader in your book</span>
         </div>
 
         <style>{`

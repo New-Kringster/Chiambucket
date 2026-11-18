@@ -582,7 +582,7 @@ export default function HomeStory() {
         <section className="hs-paper hs-hello" id="hello" data-tone="paper">
           <div className="hs-wrap">
             <p className="hs-said">
-              <Words text="I’m a third-year Electronic and Computer Engineering student at Nanyang Polytechnic. I started by taking apart a broken radio to see how it worked. Now I design circuit boards, write firmware, build web apps and run the homelab they live on." />
+              <Words text="I’m a third-year Electronic and Computer Engineering student at Nanyang Polytechnic. I started by taking apart a broken radio to see how it worked, and now I design circuit boards, write firmware, build web apps and run the homelab they live on." />
             </p>
             <div className="hs-layers">
               <h2 className="hs-layers-h">From the chip to the cloud</h2>
@@ -728,7 +728,7 @@ export default function HomeStory() {
               <p className="hs-tag">Infrastructure</p>
               <h2 className="hs-ctitle">HomeLab</h2>
               <Sub>Three servers at home that my projects run on.</Sub>
-              <p className="hs-lead hs-rise">They hold my photo library and my files, and run the MQTT and TURN servers that Project June and LUMEN use. They run on solar export credits. This site is hosted on Vercel.</p>
+              <p className="hs-lead hs-rise">They hold my photo library and my files and run the MQTT and TURN servers that Project June and LUMEN use, and solar export credits pay for their power. This site itself is hosted on Vercel.</p>
               <dl className="hs-facts hs-rise">
                 <div><dt>3</dt><dd>servers</dd></div>
                 <div><dt>24 TB</dt><dd>usable storage</dd></div>
@@ -775,7 +775,7 @@ export default function HomeStory() {
               <span className="hs-ct-w" aria-hidden="true"><Chars text="Say" /></span>{' '}
               <span className="hs-ct-w" aria-hidden="true"><Chars text="hello." /></span>
             </h2>
-            <p className="hs-contact-line">Questions about a build, or something you want made? Email me.</p>
+            <p className="hs-contact-line">If you have a question about a build or something you want made, send me an email.</p>
             <a className="hs-contact-mail" href="mailto:braven@chiambucket.com">braven@chiambucket.com</a>
             <div className="hs-btns">
               <a className="hs-btn is-primary" href="mailto:braven@chiambucket.com"><IcMail /> Email me</a>

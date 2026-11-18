@@ -6,7 +6,7 @@ export default function Footer() {
   return (
     <div className="footer">
       <button onClick={() => { window.location.href = '/'; }} className="footer-left">
-        <img src="/images/logo.webp" alt="Logo" className="footer-left-img" />
+        <img src="/images/logo.webp" alt="Chiambucket logo" className="footer-left-img" />
         <span className="footer-left-text">Chiambucket Home</span>
       </button>
 
@@ -44,8 +44,8 @@ export default function Footer() {
       <div className="footer-right">
         <span className="footer-right-text">
           &copy; Chiambucket 2025<br />
-          Credits to content{' '}
-          <button onClick={() => { window.location.href = '/credits'; }}>HERE</button>
+          Credits for the content are{' '}
+          <button onClick={() => { window.location.href = '/credits'; }}>here</button>
         </span>
       </div>
     </div>

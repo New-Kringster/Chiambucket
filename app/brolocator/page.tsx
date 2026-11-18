@@ -7,7 +7,7 @@ import LinkDemo from './LinkDemo';
 import { IcGitHub, IcDownload, IcCube } from '../../components/Icons';
 
 const DESCRIPTION =
-  'My first PCB: an ESP32 handheld that sends text over LoRa with no internet and does crude full-duplex voice over ESP-NOW. KiCAD board, 3D-printed Onshape case, PlatformIO firmware.';
+  'My first PCB, an ESP32 handheld that sends text over LoRa with no internet and does crude full-duplex voice over ESP-NOW, with a KiCAD board, a 3D-printed Onshape case and PlatformIO firmware.';
 
 export const metadata: Metadata = {
   title: 'LoRA Messenger | Braven Chiam',
@@ -55,7 +55,7 @@ export default function BrolocatorPage() {
             <AiMark project="proj-lora" />
           </div>
           <h1 className="art-title">LoRA <em>Messenger</em></h1>
-          <p className="art-lead">My first PCB and my first ESP32 project. Two of these handhelds text each other over LoRa with no internet, and do crude full-duplex two-way voice over ESP-NOW when they are in range. I called it Brolocator while I was building it.</p>
+          <p className="art-lead">This was my first PCB and my first ESP32 project, a pair of handhelds that text each other over LoRa with no internet and do crude full-duplex two-way voice over ESP-NOW when they are in range. I called it Brolocator while I was building it.</p>
           <div className="art-toolrow">
             <span className="hp-key">Built with</span>
             <div className="icon-stack">
@@ -112,33 +112,33 @@ export default function BrolocatorPage() {
           <section id="Functionality" className="art-section" data-reveal>
             <h2>What it does</h2>
             <ul>
-              <li>Sends text messages over LoRa, across long distances</li>
-              <li>Two-way voice over ESP-NOW when the other unit is in range</li>
+              <li>Sends text messages over LoRa across long distances</li>
+              <li>Does two-way voice over ESP-NOW when the other unit is in range</li>
               <li>Runs on rechargeable LiPo batteries</li>
-              <li>Two displays</li>
-              <li>A range-test mode</li>
-              <li>A simple menu UI</li>
+              <li>Has two displays</li>
+              <li>Has a range-test mode</li>
+              <li>Uses a simple menu UI</li>
             </ul>
-            <p>The two radios do different jobs. LoRa reaches further but only carries short text packets. ESP-NOW is short range but fast enough for crude two-way voice. The demo below shows both.</p>
+            <p>The two radios do different jobs, because LoRa reaches further but only carries short text packets, while ESP-NOW is short range but fast enough for crude two-way voice. The demo below shows both of them.</p>
 
             <LinkDemo />
 
             <div className="art-grid">
-              <img src="/images/Brolocator1.webp" alt="LoRA Messenger, front" loading="lazy" />
-              <img src="/images/Brolocator2.webp" alt="LoRA Messenger, side" loading="lazy" />
+              <img src="/images/Brolocator1.webp" alt="The front of the LoRA Messenger" loading="lazy" />
+              <img src="/images/Brolocator2.webp" alt="The side of the LoRA Messenger" loading="lazy" />
               <img src="/images/Brolocator3.webp" alt="Close-up of the displays" loading="lazy" />
               <img src="/images/Brolocator4.webp" alt="The menu UI" loading="lazy" />
               <img src="/images/Brolocator5.webp" alt="The messaging screen" loading="lazy" />
-              <img src="/images/Brolocator6.webp" alt="Range-test mode" loading="lazy" />
+              <img src="/images/Brolocator6.webp" alt="The range-test mode" loading="lazy" />
             </div>
           </section>
 
           <section id="ProjectDevelopment" className="art-section" data-reveal>
             <h2>Development</h2>
-            <p>This was my first deep dive into microcontrollers and my first PCB. I learned how to use each component with help from YouTube and ChatGPT.</p>
+            <p>This was my first deep dive into microcontrollers and my first PCB, so I learned how to use each component with help from YouTube and ChatGPT.</p>
             <figure className="art-fig">
               <img src="/images/Brolocator7.webp" alt="Breadboard prototype with the ESP32, LoRa module, I2S mic and speaker, two OLED displays, rotary encoder and buttons" loading="lazy" />
-              <figcaption>Breadboard prototype: ESP32 DevKit, Ebyte E220-900D LoRa module, I2S mic and speaker, two I2C OLED displays, rotary encoder and buttons</figcaption>
+              <figcaption>The breadboard prototype with an ESP32 DevKit, an Ebyte E220-900D LoRa module, an I2S mic and speaker, two I2C OLED displays, a rotary encoder and buttons</figcaption>
             </figure>
           </section>
 
@@ -149,14 +149,14 @@ export default function BrolocatorPage() {
             <div className="art-repo">
               <div className="art-repo-text">
                 <strong>PlatformIO project</strong>
-                <span>The complete firmware project, ready to open in PlatformIO.</span>
+                <span>This is the complete firmware project, ready to open in PlatformIO.</span>
               </div>
               <a className="hp-btn" href="https://file.chiambucket.com/public/api/raw?hash=Uw31ufKRXVAmviDG4Y3zsw" target="_blank" rel="noopener"><IcDownload /> Download the project</a>
             </div>
             <div className="art-repo">
               <div className="art-repo-text">
                 <strong>Source on GitHub</strong>
-                <span>The firmware source.</span>
+                <span>The firmware source code is on GitHub.</span>
               </div>
               <a className="hp-btn" href="https://github.com/New-Kringster/Bro_Locator" target="_blank" rel="noopener"><IcGitHub /> View the code on GitHub</a>
             </div>
@@ -177,7 +177,7 @@ export default function BrolocatorPage() {
             <div className="art-repo">
               <div className="art-repo-text">
                 <strong>KiCAD files</strong>
-                <span>The full KiCAD project for the board.</span>
+                <span>This is the full KiCAD project for the board.</span>
               </div>
               <a className="hp-btn" href="https://file.chiambucket.com/public/api/raw?hash=y5dKQ_glrduAHZ2b09PwFw" target="_blank" rel="noopener"><IcDownload /> Download the KiCAD files</a>
             </div>
@@ -185,23 +185,23 @@ export default function BrolocatorPage() {
 
           <section id="threeDDesign" className="art-section" data-reveal>
             <h2>Case</h2>
-            <p>I modelled the case in Onshape and 3D printed it. The live model is linked below.</p>
+            <p>I modelled the case in Onshape and 3D printed it, and the live model is linked below.</p>
             <figure className="art-fig">
               <img src="/images/Brolocator12.webp" alt="Case model in Onshape" loading="lazy" />
               <figcaption>The case in Onshape</figcaption>
             </figure>
             <figure className="art-fig">
               <img src="/images/Brolocator16.webp" alt="Printed case iterations side by side" loading="lazy" />
-              <figcaption>Printed iterations</figcaption>
+              <figcaption>The printed iterations of the case</figcaption>
             </figure>
             <figure className="art-fig">
               <img src="/images/Brolocator17.webp" alt="Case clips before and after reinforcing" loading="lazy" />
-              <figcaption>Fixing a failure: reinforced, stronger clips</figcaption>
+              <figcaption>The case clips before and after I reinforced them</figcaption>
             </figure>
             <div className="art-repo">
               <div className="art-repo-text">
                 <strong>Onshape model</strong>
-                <span>The live 3D model of the case.</span>
+                <span>This is the live 3D model of the case.</span>
               </div>
               <a className="hp-btn" href="https://cad.onshape.com/documents/06f42027d48061220c14a0ca/w/a8ae7436030816f045f9e912/e/ee2cc98ca48e0de54fb6f19a?renderMode=0&uiState=69242b3fb36228e1cf876de1" target="_blank" rel="noopener"><IcCube /> Open the 3D model in Onshape</a>
             </div>
@@ -219,7 +219,7 @@ export default function BrolocatorPage() {
             </figure>
             <figure className="art-fig">
               <img src="/images/Brolocator15.webp" alt="The finished LoRA Messenger" loading="lazy" />
-              <figcaption>Finished</figcaption>
+              <figcaption>The finished LoRA Messenger</figcaption>
             </figure>
           </section>
 

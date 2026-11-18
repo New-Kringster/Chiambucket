@@ -53,28 +53,28 @@ const LINK: LinkNode[] = [
     label: 'Xbox controller',
     sub: 'Bluetooth to the console',
     icon: <PadIcon />,
-    blurb: 'The controller pairs with the web console over Bluetooth. The console turns stick and trigger input into movement commands and publishes them over MQTT.',
+    blurb: 'The controller pairs with the web console over Bluetooth, and the console turns stick and trigger input into movement commands that it publishes over MQTT.',
   },
   {
     key: 'server',
     label: 'Server',
     sub: 'MQTT, signalling, TURN',
     icon: <ServerIcon />,
-    blurb: 'Mosquitto brokers the commands and the telemetry. A Node.js Socket.IO server serves the console and does the WebRTC signalling, and CoTURN relays the video so it works over mobile data.',
+    blurb: 'Mosquitto brokers the commands and the telemetry, a Node.js Socket.IO server serves the console and handles the WebRTC signalling, and CoTURN relays the video so that it works over mobile data.',
   },
   {
     key: 'phones',
     label: 'Three phones',
     sub: '5G hotspot and cameras',
     icon: <PhoneIcon />,
-    blurb: 'Phone 1 is the main 5G hotspot and the front camera. Phone 2 is a second hotspot and the left camera. Phone 3 joins the hotspot and is the right camera. Each sends its view as a WebRTC stream.',
+    blurb: 'Phone 1 is the main 5G hotspot and the front camera, Phone 2 is a second hotspot and the left camera, and Phone 3 joins the hotspot as the right camera, with each one sending its view as a WebRTC stream.',
   },
   {
     key: 'rover',
     label: 'ESP32-S3',
     sub: 'On the rover',
     icon: <RoverIcon />,
-    blurb: 'Joins the phone hotspot over Wi-Fi, drives the motor through the MOSFET driver and sends sensor data back over MQTT in three packets at about 10 Hz.',
+    blurb: 'It joins the phone hotspot over Wi-Fi, drives the motor through the MOSFET driver and sends the sensor data back over MQTT in three packets at about 10 Hz.',
   },
 ];
 /* The longest blurb sizes the blurb box, so cycling never reflows the page. */
@@ -130,9 +130,9 @@ const baseVals = (b: TeleBase): Record<string, string> =>
 type FeedKey = 'left' | 'center' | 'right';
 type Feed = { key: FeedKey; label: string; phone: string; note: string };
 const FEEDS: Feed[] = [
-  { key: 'left', label: 'Left', phone: 'Phone 2', note: 'Phone 2: the second hotspot and the left camera.' },
-  { key: 'center', label: 'Front', phone: 'Phone 1', note: 'Phone 1: the main 5G hotspot and the front camera.' },
-  { key: 'right', label: 'Right', phone: 'Phone 3', note: 'Phone 3: joins the hotspot and is the right camera.' },
+  { key: 'left', label: 'Left', phone: 'Phone 2', note: 'Phone 2 is the second hotspot and the left camera.' },
+  { key: 'center', label: 'Front', phone: 'Phone 1', note: 'Phone 1 is the main 5G hotspot and the front camera.' },
+  { key: 'right', label: 'Right', phone: 'Phone 3', note: 'Phone 3 joins the hotspot and is the right camera.' },
 ];
 const camSrc = (k: FeedKey, m: Mode) => `/videos/rover-${k}-${m}.mp4`;
 

@@ -40,7 +40,7 @@ export default function PairCompare() {
         <div className="pc-div" aria-hidden="true"><span /></div>
         <span className="pc-tag l">real</span><span className="pc-tag r">SimGen2</span>
       </div>
-      <input className="pc-range" type="range" min={0} max={1000} value={Math.round(pos * 1000)} onChange={(e) => setPos(+e.target.value / 1000)} aria-label="Reveal: left is the real capture, right is SimGen2" />
+      <input className="pc-range" type="range" min={0} max={1000} value={Math.round(pos * 1000)} onChange={(e) => setPos(+e.target.value / 1000)} aria-label="Divider between the real capture on the left and SimGen2 on the right" />
       <div className="pc-thumbs" role="tablist" aria-label="Pairs">
         {PAIRS.map((q, k) => (
           <button key={q.n} type="button" role="tab" aria-selected={k === i} className={k === i ? 'on' : undefined} onClick={() => setI(k)} title={q.meter}>

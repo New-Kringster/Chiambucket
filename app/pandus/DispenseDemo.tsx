@@ -14,22 +14,22 @@ type Led = 'red' | 'yellow' | 'green';
 const SPRING = [0.16, 1, 0.3, 1] as const;
 
 const LEVELS: Record<Level, { label: string; fill: number; pumpS: number; leds: Led[]; ledText: string }> = {
-  1: { label: 'Level 1', fill: 0.45, pumpS: 3, leds: ['red'], ledText: 'red' },
-  2: { label: 'Level 2', fill: 0.65, pumpS: 4, leds: ['red', 'yellow'], ledText: 'red and yellow' },
-  3: { label: 'Level 3', fill: 0.86, pumpS: 5, leds: ['red', 'yellow', 'green'], ledText: 'red, yellow and green' },
+  1: { label: 'Level 1', fill: 0.45, pumpS: 3, leds: ['red'], ledText: 'the red LED' },
+  2: { label: 'Level 2', fill: 0.65, pumpS: 4, leds: ['red', 'yellow'], ledText: 'the red and yellow LEDs' },
+  3: { label: 'Level 3', fill: 0.86, pumpS: 5, leds: ['red', 'yellow', 'green'], ledText: 'all three LEDs' },
 };
 const LEVEL_ORDER: Level[] = [1, 2, 3];
 const ALL_LEDS: Led[] = ['red', 'yellow', 'green'];
 
 const PHASES: { key: Phase; label: string; blurb: string }[] = [
-  { key: 'idle', label: 'Waiting', blurb: 'Waiting for the infrared collision detection module to detect a cup.' },
-  { key: 'wake', label: 'Cup in', blurb: 'A cup triggers the infrared module. The servo turns to 180° and opens the door over the buttons, the high-power LED turns on and the level resets to 1.' },
-  { key: 'select', label: 'Select', blurb: 'The select button steps through levels 1, 2 and 3. The indicator LEDs show the level: red, red and yellow, or all three.' },
+  { key: 'idle', label: 'Waiting', blurb: 'The dispenser waits for the infrared collision detection module to detect a cup.' },
+  { key: 'wake', label: 'Cup in', blurb: 'When a cup triggers the infrared module, the servo turns to 180° to open the door over the buttons, the high-power LED turns on and the level resets to 1.' },
+  { key: 'select', label: 'Select', blurb: 'The select button steps through levels 1, 2 and 3, and the indicator LEDs show which one is chosen.' },
   { key: 'pour', label: 'Pour', blurb: 'The confirm button switches the DC pump on through the relay for 3, 4 or 5 seconds, depending on the level.' },
   { key: 'done', label: 'Done', blurb: 'The pump stops and everything turns off until the next cup.' },
 ];
 const phaseText = (p: Phase, l: Level) =>
-  (PHASES.find((x) => x.key === p)?.blurb ?? '') + (p === 'select' ? ` Now on level ${l}: ${LEVELS[l].ledText}.` : '');
+  (PHASES.find((x) => x.key === p)?.blurb ?? '') + (p === 'select' ? ` It is on level ${l} now, which lights ${LEVELS[l].ledText}.` : '');
 /* Longest text any step can show: reserves the height so steps never reflow the page */
 const LONGEST_BLURB = PHASES.flatMap((p) => LEVEL_ORDER.map((l) => phaseText(p.key, l))).reduce((a, t) => (t.length > a.length ? t : a), '');
 const PHASE_DURATIONS: Record<Phase, number> = { idle: 1800, wake: 1500, select: 1700, pour: 0, done: 2000 };
@@ -39,7 +39,7 @@ const COMPONENTS: { key: CompKey; label: string; full: string }[] = [
   { key: 'ir', label: 'IR module', full: 'Infrared collision detection module' },
   { key: 'servo', label: 'Door', full: 'Servo door over the buttons' },
   { key: 'led', label: 'LED', full: 'High-power LED over the cup' },
-  { key: 'pump', label: 'Pump', full: 'DC pump, switched by a relay' },
+  { key: 'pump', label: 'Pump', full: 'DC pump switched by a relay' },
 ];
 /* Each component's colour state and its label during each phase */
 type CompState = 'off' | 'standby' | 'active' | 'done';
@@ -194,7 +194,7 @@ export default function DispenseDemo() {
           />
 
           {/* The cup, sitting in the dispensing area */}
-          <div className="pd-dd-cup" role="img" aria-label={`Cup under the spout, ${phase === 'idle' ? 'empty, waiting' : phase === 'done' ? `filled at ${lv.label.toLowerCase()}` : pouring ? `filling at ${lv.label.toLowerCase()}` : 'empty'}`}>
+          <div className="pd-dd-cup" role="img" aria-label={`Cup under the spout, ${phase === 'idle' ? 'empty and waiting' : phase === 'done' ? `filled at ${lv.label.toLowerCase()}` : pouring ? `filling at ${lv.label.toLowerCase()}` : 'empty'}`}>
             <span className="pd-dd-cup-rim" aria-hidden="true" />
             <m.div
               className="pd-dd-water"

@@ -292,7 +292,7 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
 
   const sc = SCENES[k];
   return (
-    <section ref={section} id="drumnet" className="dnf" aria-label="DrumNet V10, the whole architecture animated">
+    <section ref={section} id="drumnet" className="dnf" aria-label="An animation of the whole DrumNet V10 architecture">
       <canvas ref={canvas} aria-hidden="true" />
       <div className="ws-stage-chapter dnf-chapter">{`Chapter - ${chapter}`}<span>DrumNet</span></div>
       <div ref={copy} className="dnf-copy" aria-live="polite">
@@ -300,7 +300,7 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
         <h2>{sc.title}</h2>
         <p className="dnf-body">{sc.body}</p>
       </div>
-      <p className={`dnf-nudge${nudge ? ' on' : ''}`} role="status">It plays on its own. The page carries on in a moment.</p>
+      <p className={`dnf-nudge${nudge ? ' on' : ''}`} role="status">The film plays on its own, and the page carries on in a moment.</p>
       <div className="dnf-bar">
         <div className="dnf-rail" role="list" aria-label="Scenes">
           {SCENES.map((s, i) => (

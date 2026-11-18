@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     title: 'Photography | Braven Chiam',
-    description: 'Photo albums by Braven Chiam: Europe, China, New Zealand, Hong Kong and more.',
+    description: 'Photo albums by Braven Chiam from Europe, China, New Zealand, Hong Kong and more.',
   },
 };
 

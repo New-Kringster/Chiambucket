@@ -9,7 +9,7 @@ import { IcGitHub } from '../../components/Icons';
 import PdfEmbed from '../../components/PdfEmbed';
 
 const DESCRIPTION =
-  'A school group project, graded A: four BeagleBone Black Wireless nodes (climate, bathroom, kitchen, intrusion) linked to a SocketIO web server that hosts a live dashboard with a Spline 3D view.';
+  'A smart home system my school team of five built and got an A for. Four BeagleBone Black Wireless nodes look after the climate, the bathroom, the kitchen and the door, and a SocketIO web server links them and hosts a live dashboard with a Spline 3D view.';
 
 export const metadata: Metadata = {
   title: 'EMA Smart Home | Braven Chiam',
@@ -56,7 +56,7 @@ export default function CsdpPage() {
             <AiMark project="proj-ema" />
           </div>
           <h1 className="art-title">EMA Smart <em>Home</em></h1>
-          <p className="art-lead">A smart home system on four BeagleBone Black Wireless boards, built to cut energy use. It was the most complex group project I have worked on and drew on several of our courses. We got an A.</p>
+          <p className="art-lead">This is a smart home system built on four BeagleBone Black Wireless boards to cut the energy a home uses. It was the most complex group project I have worked on and drew on several of our courses, and we got an A for it.</p>
           <div className="art-toolrow">
             <span className="hp-key">Built with</span>
             <div className="icon-stack">
@@ -215,7 +215,7 @@ export default function CsdpPage() {
 
           <section id="DesignProcess" className="art-section" data-reveal>
             <h2>Dashboard</h2>
-            <p>Most of the project was software, so the design work went into the dashboard: clear, readable, and quick to take in. We added a Spline 3D model of the home that shows each action as it happens. Try the <a href="https://csdpdemo.chiambucket.com" target="_blank" rel="noopener">live demo</a>.</p>
+            <p>Most of the project was software, so the design work went into making the dashboard clear, readable and quick to take in. We also added a Spline 3D model of the home that shows each action as it happens, and you can try it yourself in the <a href="https://csdpdemo.chiambucket.com" target="_blank" rel="noopener">live demo</a>.</p>
             <figure className="art-fig">
               <img src="/images/csdp2.webp" alt="Figma mockup of the dashboard" loading="lazy" />
               <figcaption>Figma mockup of the dashboard</figcaption>
@@ -232,25 +232,25 @@ export default function CsdpPage() {
 
           <section id="Climate" className="art-section" data-reveal>
             <h2>Climate node</h2>
-            <p>Monitors temperature, humidity and whether someone is in the room. The fan turns on only when a person is detected and the room is warm and humid.</p>
+            <p>The climate node monitors the temperature, the humidity and whether someone is in the room, and it turns the fan on only when a person is detected and the room is warm and humid.</p>
             <img src="/images/csdp5.webp" alt="Climate node hardware" loading="lazy" />
           </section>
 
           <section id="Bathroom" className="art-section" data-reveal>
             <h2>Bathroom node</h2>
-            <p>You set how long you want to shower for with the buttons and display. The timer starts when it detects you entering the shower, and a buzzer sounds when time is up.</p>
+            <p>You set how long you want to shower for with the buttons and display. The timer starts when the node detects you entering the shower, and a buzzer sounds when the time is up.</p>
             <img src="/images/csdp6.webp" alt="Bathroom node hardware" loading="lazy" />
           </section>
 
           <section id="Kitchen" className="art-section" data-reveal>
             <h2>Kitchen node</h2>
-            <p>Monitors the fridge&rsquo;s energy use and reports an energy score to the dashboard. It is also the fire alarm: if it detects an uncontrolled fire, the alarm sounds on every node.</p>
+            <p>The kitchen node monitors the fridge&rsquo;s energy use and reports an energy score to the dashboard. It also works as the fire alarm, so if it detects an uncontrolled fire, the alarm sounds on every node.</p>
             <img src="/images/csdp7.webp" alt="Kitchen node hardware" loading="lazy" />
           </section>
 
           <section id="Intrusion" className="art-section" data-reveal>
             <h2>Intrusion node</h2>
-            <p>Detects knocks on the door, and the door opening at unusual times, and sounds an alarm on every node.</p>
+            <p>The intrusion node detects knocks on the door and the door opening at unusual times, and when either happens it sounds an alarm on every node.</p>
             <img src="/images/csdp8.webp" alt="Intrusion node hardware" loading="lazy" />
           </section>
 
@@ -266,7 +266,7 @@ export default function CsdpPage() {
             <div className="art-repo">
               <div className="art-repo-text">
                 <strong>Source on GitHub</strong>
-                <span>The node code and the SocketIO dashboard server.</span>
+                <span>The repository holds the code for each node and for the SocketIO server that hosts the dashboard.</span>
               </div>
               <a className="hp-btn" href="https://github.com/New-Kringster/EMA-Smart-home-System" target="_blank" rel="noopener"><IcGitHub /> View the code on GitHub</a>
             </div>

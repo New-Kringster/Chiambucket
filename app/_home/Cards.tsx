@@ -137,7 +137,7 @@ export function Bento() {
       <ul className="hs-bento">
         {TILES.map((t) => (
           <li key={t.key} className={`hs-tile is-${t.size}`}>
-            <button type="button" onClick={() => setItem(t.item)} aria-label={`${t.word}: ${t.line} Open the details`}>
+            <button type="button" onClick={() => setItem(t.item)} aria-label={`${t.word}: ${t.line}. Open the details`}>
               <span className="hs-tile-media">
                 {t.video
                   ? <LazyVideo webm={t.video.webm} mp4={t.video.mp4} poster={t.video.poster} />

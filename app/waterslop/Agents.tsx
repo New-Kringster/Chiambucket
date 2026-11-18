@@ -76,11 +76,11 @@ const G = { fill: 'none', stroke: INK, strokeWidth: 1.3 } as const;
 const AGENTS: Agent[] = [
   { name: 'DrumNet Standard', persona: 'The purist', model: 'Fable 5.1, then Opus 5.5', job: 'Reads drums', data: 'Only images taken by Prototype V1, from the base DrumNet V1', fate: 'Halted after 1.5 weeks', state: 'halted',
     glyph: <g {...G}><circle cx="20" cy="20" r="14" /><circle cx="20" cy="20" r="5" fill={INK} stroke="none" /><path d="M20 6v4M20 30v4M6 20h4M30 20h4" /></g> },
-  { name: 'DrumNet Simulated', persona: 'The dreamer', model: 'Fable 5.1, then Opus 5.5', job: 'Reads drums', data: 'Only SimGen2 images, fully computer-generated, from the base DrumNet V1', fate: 'Won: renamed DrumNet, now at V10', state: 'won',
+  { name: 'DrumNet Simulated', persona: 'The dreamer', model: 'Fable 5.1, then Opus 5.5', job: 'Reads drums', data: 'Only SimGen2 images, fully computer-generated, from the base DrumNet V1', fate: 'Renamed DrumNet and now at V10', state: 'won',
     glyph: <g {...G}><circle cx="20" cy="20" r="14" strokeDasharray="2.5 3.5" /><rect x="14" y="14" width="12" height="12" /><rect x="18" y="18" width="4" height="4" fill={INK} stroke="none" /></g> },
   { name: 'DrumNet Premade', persona: 'The collector', model: 'Fable 5.1, then Opus 5.5', job: 'Reads drums', data: 'Every dataset: Prototype V1, SimGen2, Badger55, Jomjol-digits, from the dig-cont model', fate: 'Halted after 1.5 weeks', state: 'halted',
     glyph: <g {...G}><rect x="10" y="6" width="20" height="9" rx="1.5" /><rect x="8" y="15.5" width="24" height="9" rx="1.5" /><rect x="6" y="25" width="28" height="9" rx="1.5" /></g> },
-  { name: 'WindowNet', persona: 'The spotter', model: 'Opus 5.5', job: 'Finds the window', data: 'Trains the Spotter (DetNet) and Refiner (RefNet) that locate the drum window', fate: 'Still the weakest link: most wrong readings start here', state: 'on',
+  { name: 'WindowNet', persona: 'The spotter', model: 'Opus 5.5', job: 'Finds the window', data: 'Trains the Spotter (DetNet) and Refiner (RefNet) that locate the drum window', fate: 'Still the weakest link, where most wrong readings start', state: 'on',
     glyph: <g {...G}><rect x="7" y="12" width="26" height="16" rx="1.5" /><path d="M20 4v6M20 30v6M3 20h4M33 20h4" /><path d="M13 16v8M18 16v8M23 16v8M28 16v8" stroke={RED} /></g> },
   { name: 'Sim 2 Genius', persona: 'The stagehand', model: 'Opus 5.5', job: 'Runs the simulator', data: 'Operates, maintains and improves SimGen2 for the others', fate: 'Keeps the synthetic pictures coming', state: 'on',
     glyph: <g {...G}><circle cx="20" cy="20" r="14" /><path d="M8 20c3-7 6-7 9 0s6 7 9 0 3-7 6 0" /></g> },

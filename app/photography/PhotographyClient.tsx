@@ -9,23 +9,23 @@ const tools = [
     img: '/images/pr-icon.webp',
     name: 'Premiere Pro',
     maker: 'Adobe',
-    desc: 'What I learned video editing on. It crashed too often, so I moved to DaVinci Resolve.',
-    add: 'I learned it alongside Photoshop. I no longer use it.',
+    desc: 'I learned video editing on Premiere Pro, but it crashed too often, so I moved to DaVinci Resolve.',
+    add: 'I learned it alongside Photoshop and no longer use it.',
     chips: ['Video editing', 'Timelines', 'Where I started'],
   },
   {
     img: '/images/il-icon.webp',
     name: 'Illustrator',
     maker: 'Adobe',
-    desc: 'For logos and anything that has to scale cleanly as an SVG. I use it less than Photoshop.',
-    add: 'Logos, icons and other vector work.',
+    desc: 'I use Illustrator for logos and anything that has to scale cleanly as an SVG, though less often than Photoshop.',
+    add: 'I also draw icons and other vector artwork in it.',
     chips: ['Logos', 'Vector / SVG', 'Icons'],
   },
   {
     img: '/images/fm-icon.webp',
     name: 'Figma',
     maker: 'Figma',
-    desc: 'For designs built from shapes rather than photos. Most of my interfaces and posters start as Figma frames.',
+    desc: 'I use Figma for designs built from shapes rather than photos, so most of my interfaces and posters start there as frames.',
     add: 'I prototype interfaces and lay out posters here before building them in code or sending them to print.',
     chips: ['UI design', 'Prototyping', 'Layout'],
   },
@@ -34,23 +34,23 @@ const tools = [
     name: 'Photoshop',
     maker: 'Adobe',
     desc: 'My main tool since 2019. I had formal training through my school media club, and I use it for retouching photos and laying out posters.',
-    add: 'Retouching, compositing and poster layouts.',
+    add: 'Besides retouching and posters, I also use it for compositing.',
     chips: ['Photo editing', 'Posters', 'Compositing'],
   },
   {
     img: '/images/resolve-logo.webp',
     name: 'DaVinci Resolve',
     maker: 'Blackmagic Design',
-    desc: 'I edit my videos here: cutting, colour and export in one program. I rarely post them, but more are planned.',
-    add: 'It replaced Premiere Pro for me because editing, colour and export are in one program.',
+    desc: 'I edit my videos in Resolve because cutting, colour and export all happen in one program. I rarely post them, but more are planned.',
+    add: 'It replaced Premiere Pro for me, which kept crashing.',
     chips: ['Video editing', 'Colour grading', 'Project films'],
   },
   {
     img: '/images/lrc-logo.webp',
     name: 'Lightroom',
     maker: 'Adobe',
-    desc: 'Where most of my photos are finished. I use it to recover highlights, shadows and detail from RAW files that would otherwise be unusable.',
-    add: 'Most photos in the albums below went through Lightroom last.',
+    desc: 'Most of my photos are finished in Lightroom, where I recover highlights, shadows and detail from RAW files that would otherwise be unusable.',
+    add: 'It is usually the last program a photo in the albums below goes through.',
     chips: ['Photo editing', 'Colour', 'RAW workflow'],
   },
 ];
@@ -122,10 +122,10 @@ export default function PhotographyClient() {
         <div className="ct-aura"></div>
         <span className="ct-kicker">Photography</span>
         <h1 className="ct-title">
-          Photography <em>and design.</em>
+          Photography <em>and design</em>
         </h1>
         <p className="ct-sub">
-          Albums from Europe, China, New Zealand and Hong Kong, plus a set of ultrawide 21:9 frames. They are served from a Lychee gallery I host on my homelab. Below them are the programs I edit with.
+          These are my albums from Europe, China, New Zealand and Hong Kong, plus a set of ultrawide 21:9 frames, and they are served from a Lychee gallery I host on my homelab. The programs I edit with come first, and the albums follow.
         </p>
         <div className="ph-hero-btns">
           <a

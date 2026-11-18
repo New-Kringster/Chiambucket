@@ -76,12 +76,12 @@ export function PeekModalContent({ id }: { id: string }) {
         <div className="hp-rd-body">
           <h2 className="hp-md-title">Project June</h2>
           <p className="hp-md-meta">3 Weeks · Self-Learnt · 3D Design · Cellular · WebRTC · MQTT</p>
-          <p className="hp-rd-lead">A 5G rover I built in three weeks. It streams three live cameras, carries a full sensor suite, and drives from an Xbox controller anywhere with signal.</p>
+          <p className="hp-rd-lead">A 5G rover I built in three weeks, which streams three live cameras, carries a full sensor suite and drives from an Xbox controller anywhere with signal.</p>
           <div className="hp-md-video"><iframe src="https://www.youtube.com/embed/MnkJsx-nwoE" title="Project June" frameBorder={0} allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe></div>
-          {chapter('01', 'Three live video streams', <><p>Three cameras stream live over WebRTC, routed through a TURN server so the feeds punch through cellular NAT with low latency.</p><img className="hp-rd-fig" src="/images/ProjJune13.webp" alt="Project June cameras" loading="lazy" /></>)}
+          {chapter('01', 'Three live video streams', <><p>Three cameras stream live over WebRTC through a TURN server, so the feeds get through cellular NAT with low latency.</p><img className="hp-rd-fig" src="/images/ProjJune13.webp" alt="Project June cameras" loading="lazy" /></>)}
           {chapter('02', 'Control and telemetry', <p>MQTT carries control and telemetry over a Mosquitto broker, with custom PWM motor control and servo steering driven from an Xbox controller.</p>)}
-          {chapter('03', 'A full sensor suite', <><p>Neo8M GPS, gyroscope, accelerometer, magnetometer, barometer, ultrasonic distance sensor, DHT11, and a TEMT6000 light sensor.</p><img className="hp-rd-fig" src="/images/ProjJuneArchi.webp" alt="System architecture" loading="lazy" /></>)}
-          {cta('Want the full build log?', 'Photos, the architecture and every problem I hit.', 'Read the full article', '/project-june')}
+          {chapter('03', 'A full sensor suite', <><p>The rover carries a Neo8M GPS, a gyroscope, an accelerometer, a magnetometer, a barometer, an ultrasonic distance sensor, a DHT11 and a TEMT6000 light sensor.</p><img className="hp-rd-fig" src="/images/ProjJuneArchi.webp" alt="The Project June system architecture" loading="lazy" /></>)}
+          {cta('The full build log', 'The article covers the photos, the architecture and every problem I hit.', 'Read the full article', '/project-june')}
         </div>
       </>
     );
@@ -91,11 +91,11 @@ export function PeekModalContent({ id }: { id: string }) {
         <div className="hp-rd-body">
           <h2 className="hp-md-title">Pip</h2>
           <p className="hp-md-meta">1 Week · M5Stack Tab5 · ESP32-P4 · DeepSeek Harness · Lua · Docker</p>
-          <p className="hp-rd-lead">A desk pet on an M5Stack Tab5. Its brain is the DeepSeek Harness on my server, so it can drive a browser, build its own apps and keep an eye on my other agents.</p>
-          {chapter('01', 'A pet that shows its work', <><p>Pip sleeps when left alone, wakes when the tablet is picked up, twists and rubs its temples while it thinks, and hops when something works. It acts out each tool it uses: binoculars to read a page, a megaphone to brief a helper.</p><img className="hp-rd-fig" src="/videos/pip/props.webp" alt="Pip with a magnifying glass, binoculars, a megaphone and a paper plane" loading="lazy" /></>)}
-          {chapter('02', 'It uses the screen', <p>Answers come as pages and formatted text. Pip can click through those pages with its own cursor, ask multiple choice questions, and build small apps that land in a drawer: web pages served from the VM, or Lua scripts that run on the tablet itself.</p>)}
+          <p className="hp-rd-lead">A desk pet on an M5Stack Tab5 whose brain is the DeepSeek Harness on my server, so it can drive a browser, build its own apps and keep an eye on my other agents.</p>
+          {chapter('01', 'A pet that shows its work', <><p>Pip sleeps when you leave it alone, wakes when you pick up the tablet, twists and rubs its temples while it thinks, and hops when something works. It also acts out each tool it uses, picking up binoculars to read a page or a megaphone to brief a helper.</p><img className="hp-rd-fig" src="/videos/pip/props.webp" alt="Pip with a magnifying glass, binoculars, a megaphone and a paper plane" loading="lazy" /></>)}
+          {chapter('02', 'It uses the screen', <p>Answers come as pages and formatted text, and Pip can click through those pages with its own cursor or ask me multiple choice questions. It also builds small apps that it keeps in a drawer, either web pages served from my server or Lua scripts that run on the tablet itself.</p>)}
           {chapter('03', 'A hub for my agents', <><p>Pip runs inside the same harness as my coding sessions, hands long jobs to helper pips, and tells me when a session finishes or needs an answer.</p><img className="hp-rd-fig" src="/videos/pip/crew.webp" alt="Helper pips at work with a notepad, a laptop, blocks, a book and a flask" loading="lazy" /></>)}
-          {cta('See Pip move', 'The moods, the apps, the desktops and how it all connects.', 'Read the full article', '/pip')}
+          {cta('See Pip move', 'The article shows its moods, apps and desktops and how it all connects.', 'Read the full article', '/pip')}
         </div>
       </>
     );
@@ -106,10 +106,10 @@ export function PeekModalContent({ id }: { id: string }) {
           <h2 className="hp-md-title">LoRA Messenger</h2>
           <p className="hp-md-meta">3 Months · Self-Learnt · 3D Design · PCB Design</p>
           <p className="hp-rd-lead">A pair of handheld ESP32 messengers that talk to each other off-grid: text over long-range LoRa and two-way voice over ESP-NOW.</p>
-          {chapter('01', 'Two radios, two jobs', <><p>LoRa carries text over long range, while ESP-NOW carries low-latency two-way voice. Programmed on PlatformIO with the Arduino framework.</p><img className="hp-rd-fig" src="/images/Brolocator5.webp" alt="LoRA Messenger internals" loading="lazy" /></>)}
-          {chapter('02', 'A custom PCB, reflowed by hand', <><p>I designed the board in KiCAD and reflow-soldered the SMD components myself. A TP4056 circuit handles charging.</p><img className="hp-rd-fig" src="/images/Brolocator10.webp" alt="Custom PCB" loading="lazy" /></>)}
-          {chapter('03', 'Audio and enclosure', <><p>An I2S microphone and speaker handle calls, dual OLED displays show messages and status, all in a 3D-printed Onshape case.</p><img className="hp-rd-fig" src="/images/Brolocator14.webp" alt="3D-printed case" loading="lazy" /></>)}
-          {cta('See how it came together', 'The breadboard, the PCB respins and the takeaways.', 'Read the full article', '/brolocator')}
+          {chapter('01', 'Two radios, two jobs', <><p>LoRa carries text over long range while ESP-NOW carries low-latency two-way voice, and I programmed both handsets in PlatformIO with the Arduino framework.</p><img className="hp-rd-fig" src="/images/Brolocator5.webp" alt="LoRA Messenger internals" loading="lazy" /></>)}
+          {chapter('02', 'A custom PCB, reflowed by hand', <><p>I designed the board in KiCAD and reflow-soldered the SMD components myself, and a TP4056 circuit on it handles charging.</p><img className="hp-rd-fig" src="/images/Brolocator10.webp" alt="Custom PCB" loading="lazy" /></>)}
+          {chapter('03', 'Audio and enclosure', <><p>An I2S microphone and speaker handle calls and dual OLED displays show messages and status, all inside a 3D-printed case I modelled in Onshape.</p><img className="hp-rd-fig" src="/images/Brolocator14.webp" alt="3D-printed case" loading="lazy" /></>)}
+          {cta('See how it came together', 'The article covers the breadboard stage, the PCB respins and what I learned.', 'Read the full article', '/brolocator')}
         </div>
       </>
     );
@@ -119,12 +119,12 @@ export function PeekModalContent({ id }: { id: string }) {
         <div className="hp-rd-body">
           <h2 className="hp-md-title">LUMEN</h2>
           <p className="hp-md-meta">NYP IoT Programming · ESP32 · MicroPython · Whisper · DeepSeek · MQTT</p>
-          <p className="hp-rd-lead">A voice-controlled smart-room assistant. Say &ldquo;Hello Robot,&rdquo; speak, and the room answers: an ESP32 captures your voice, a FastAPI relay transcribes it and asks an LLM for one strict JSON command, and that fans back out over MQTT.</p>
+          <p className="hp-rd-lead">A voice-controlled smart-room assistant that wakes when you say &ldquo;Hello Robot&rdquo;. An ESP32 captures what you say next, a FastAPI relay transcribes it and asks an LLM for one strict JSON command, and that command goes back out to the room over MQTT.</p>
           <div className="hp-md-video"><video controls preload="metadata" poster="/images/lumen-demo-poster.webp" playsInline><source src="/videos/lumen-demo.webm" type="video/webm" /><source src="/videos/lumen-demo.mp4" type="video/mp4" /></video></div>
-          {chapter('01', 'Speech to one JSON command', <p>The ESP32 streams 16&nbsp;kHz audio to the server; through OpenRouter, Whisper transcribes it and a DeepSeek LLM parses it into exactly one validated command (action, sequence or timer), checked against a schema before it ever reaches the board.</p>)}
-          {chapter('02', 'Fitting it on a no-PSRAM board', <><p>The WROOM left about 33&nbsp;KB of free RAM with WiFi up, and a voice clip is roughly 96&nbsp;KB, so the audio is streamed over a raw socket as it records, never held whole. Peak memory during an upload is around 10&nbsp;KB.</p><img className="hp-rd-fig" src="/images/lumen-mic.webp" alt="The INMP441 microphone wired to the ESP32" loading="lazy" /></>)}
-          {chapter('03', 'A room you can talk to', <><p>Lights, a NeoPixel, a fan, a servo and a buzzer respond, with a local auto-mode and a web dashboard. Ask it to &ldquo;set the brightness to the humidity&rdquo; and it reads the live sensor and does exactly that.</p><img className="hp-rd-fig" src="/images/lumen-dashboard.webp" alt="The LUMEN web dashboard" loading="lazy" /></>)}
-          {cta('See the full build', 'The memory wall, the wiring and the interactive demo.', 'Read the full article', '/lumen')}
+          {chapter('01', 'Speech to one JSON command', <p>The ESP32 streams 16&nbsp;kHz audio to the server, where Whisper transcribes it through OpenRouter and a DeepSeek LLM turns it into exactly one command (an action, a sequence or a timer), which is checked against a schema before it reaches the board.</p>)}
+          {chapter('02', 'Fitting it on a no-PSRAM board', <><p>The WROOM had about 33&nbsp;KB of free RAM with WiFi up while a voice clip is roughly 96&nbsp;KB, so the audio is streamed over a raw socket as it records instead of being held in memory, and peak memory during an upload stays around 10&nbsp;KB.</p><img className="hp-rd-fig" src="/images/lumen-mic.webp" alt="The INMP441 microphone wired to the ESP32" loading="lazy" /></>)}
+          {chapter('03', 'A room you can talk to', <><p>Lights, a NeoPixel, a fan, a servo and a buzzer respond to commands, and there is a local auto mode and a web dashboard too. If you ask it to &ldquo;set the brightness to the humidity&rdquo;, it reads the live sensor and does exactly that.</p><img className="hp-rd-fig" src="/images/lumen-dashboard.webp" alt="The LUMEN web dashboard" loading="lazy" /></>)}
+          {cta('See the full build', 'The article covers the memory limits, the wiring and an interactive demo.', 'Read the full article', '/lumen')}
         </div>
       </>
     );
@@ -135,10 +135,10 @@ export function PeekModalContent({ id }: { id: string }) {
           <h2 className="hp-md-title">OCR Reader</h2>
           <p className="hp-md-meta">NYP ECE · ESP32-S3 · OV2640 · DrumNet · LoRaWAN · KiCad · Onshape</p>
           <p className="hp-rd-lead">A low-cost, battery-powered camera that mounts over a mechanical water meter and reads the drums with a 693K-parameter neural network running entirely on an ESP32-S3, then sends the number home over LoRaWAN.</p>
-          {chapter('01', 'DrumNet, on the chip', <><p>A spotter finds the digit window, a refiner pins its edges by averaging feature-map columns and rows, and three readers vote on every drum, carry rule included. All INT8, about 2 seconds per reading.</p><img className="hp-rd-fig" src="/images/waterslop/dia-vote.webp" alt="The DrumNet ensemble vote and reading" loading="lazy" /></>)}
-          {chapter('02', 'Trained by six agents', <><p>MeterSim renders labelled meters, SimGen2 fakes the camera, and six AI agents booked a scheduler for the GPU and the Jetson rig, running 24/7 over Tailscale and T3 Code.</p><img className="hp-rd-fig" src="/images/waterslop/metersim-designs.webp" alt="The nine meter designs in MeterSim" loading="lazy" /></>)}
-          {chapter('03', 'A board, a shell, a 9-hour reflow', <><p>A 4-layer KiCad PCB with battery management, LoRa and PWM LEDs, assembled by hand, debugged under a microscope, and housed in a toolless 3D-printed enclosure and meter adapter.</p><img className="hp-rd-fig" src="/images/waterslop/pcb-3d-top.webp" alt="3D render of the Prototype V2 board" loading="lazy" /></>)}
-          {cta('Walk the whole pipeline', 'A scroll-driven story: the DrumNet run step by step, the 3D board tour, a ConfigKing simulator and the full report.', 'Read the full article', '/waterslop')}
+          {chapter('01', 'DrumNet on the chip', <><p>A spotter finds the digit window, a refiner pins down its edges by averaging feature-map columns and rows, and three readers vote on every drum with the carry rule applied. The whole network runs in INT8 and takes about 2 seconds per reading.</p><img className="hp-rd-fig" src="/images/waterslop/dia-vote.webp" alt="The DrumNet ensemble vote and reading" loading="lazy" /></>)}
+          {chapter('02', 'Trained by six agents', <><p>MeterSim renders labelled meters and SimGen2 makes them look like camera shots, while six AI agents took turns on the GPU and the Jetson rig through a booking scheduler, running 24/7 over Tailscale and T3 Code.</p><img className="hp-rd-fig" src="/images/waterslop/metersim-designs.webp" alt="The nine meter designs in MeterSim" loading="lazy" /></>)}
+          {chapter('03', 'A board, a shell, a 9-hour reflow', <><p>The 4-layer KiCad PCB carries battery management, LoRa and PWM LEDs, and I assembled it by hand, debugged it under a microscope and housed it in a toolless 3D-printed enclosure with a meter adapter.</p><img className="hp-rd-fig" src="/images/waterslop/pcb-3d-top.webp" alt="3D render of the Prototype V2 board" loading="lazy" /></>)}
+          {cta('Walk through the whole pipeline', 'The article follows the DrumNet run step by step, with a 3D board tour, a ConfigKing simulator and the full report.', 'Read the full article', '/waterslop')}
         </div>
       </>
     );
@@ -148,11 +148,11 @@ export function PeekModalContent({ id }: { id: string }) {
         <div className="hp-rd-body">
           <h2 className="hp-md-title">BeadReader</h2>
           <p className="hp-md-meta">Web App · Next.js · Supabase · Cloudflare R2 · Tailwind v4 · Self-Learnt</p>
-          <p className="hp-rd-lead">A small, private online book reader for a handful of friends. Log in with one access code, and the app remembers exactly where you left off, shows who else is reading, and tracks everyone&apos;s progress.</p>
-          {chapter('01', 'A library that remembers you', <><p>Open a book and it jumps back to the exact chapter and scroll position, stored as a fraction so it survives font-size changes. Colour, font and layout are saved per reader.</p><img className="hp-rd-fig" src="/images/beadreader/reader-paper.webp" alt="The reading view" loading="lazy" /></>)}
-          {chapter('02', 'Reading together', <><p>See who is online, spot a friend in the same book by their green ring and chapter number, and send a wave or a short disappearing note.</p><img className="hp-rd-fig" src="/images/beadreader/reader-menu.webp" alt="Presence and quick messages" loading="lazy" /></>)}
-          {chapter('03', 'A gate enforced in SQL', <p>Explicit chapters are gated in the database query itself, so gated text never leaves the server for a reader without access. The same chapter adapts per reader, down to a cal mode that removes it entirely.</p>)}
-          {cta('See the whole build', 'Presence, the content gate, webtoons and the stack.', 'Read the full article', '/beadreader')}
+          <p className="hp-rd-lead">A small, private online book reader for a handful of friends, who log in with one access code. The app remembers exactly where you left off, shows who else is reading and tracks everyone&apos;s progress.</p>
+          {chapter('01', 'A library that remembers you', <><p>When you open a book, it jumps back to the exact chapter and scroll position, which is stored as a fraction so it still lines up after a font-size change, and each reader&apos;s colour, font and layout are saved too.</p><img className="hp-rd-fig" src="/images/beadreader/reader-paper.webp" alt="The reading view" loading="lazy" /></>)}
+          {chapter('02', 'Reading together', <><p>You can see who is online, spot a friend in the same book by their green ring and chapter number, and send them a wave or a short note that disappears.</p><img className="hp-rd-fig" src="/images/beadreader/reader-menu.webp" alt="Presence and quick messages" loading="lazy" /></>)}
+          {chapter('03', 'A gate enforced in SQL', <p>Explicit chapters are gated in the database query itself, so gated text never leaves the server for a reader without access. The same chapter can look different for each reader, and cal mode removes it entirely.</p>)}
+          {cta('See the whole build', 'The article covers presence, the content gate, webtoons and the stack.', 'Read the full article', '/beadreader')}
         </div>
       </>
     );
@@ -162,12 +162,12 @@ export function PeekModalContent({ id }: { id: string }) {
         <div className="hp-rd-body">
           <h2 className="hp-md-title">EMA Smart Home System</h2>
           <p className="hp-md-meta">3 Months · School Group Project · Python · WebSocket · Spline 3D</p>
-          <p className="hp-rd-lead">A smart home my team of five built for a module on sustainable living, graded A. Four BeagleBone nodes report to a SocketIO server behind a live 3D dashboard.</p>
+          <p className="hp-rd-lead">A smart home my team of five built for a module on sustainable living, which was graded A. Four BeagleBone nodes report to a SocketIO server that runs a live 3D dashboard.</p>
           <div className="hp-md-video"><iframe src="https://www.youtube.com/embed/PFhsRaakJAs" title="EMA Smart Home" frameBorder={0} allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe></div>
-          {chapter('01', 'Four nodes, one job each', <><p>Climate, bathroom, kitchen (fridge energy and a fire alarm) and intrusion. Each BeagleBone Black Wireless carries MikroBUS sensor modules.</p><img className="hp-rd-fig" src="/images/csdp7.webp" alt="The kitchen node hardware" loading="lazy" /></>)}
+          {chapter('01', 'Four nodes, one job each', <><p>The four nodes cover climate, the bathroom, the kitchen (fridge energy and a fire alarm) and intrusion, and each BeagleBone Black Wireless carries MikroBUS sensor modules.</p><img className="hp-rd-fig" src="/images/csdp7.webp" alt="The kitchen node hardware" loading="lazy" /></>)}
           {chapter('02', 'One server for all of them', <><p>Every node connects to a SocketIO web server, which hosts the dashboard and sounds the fire alarm on every node at once.</p><img className="hp-rd-fig" src="/images/csdp9.webp" alt="How each part of the system connects" loading="lazy" /></>)}
-          {chapter('03', 'A live 3D dashboard', <><p>The dashboard shows live data on a Spline 3D model of the house. I designed the UI in Figma.</p><img className="hp-rd-fig" src="/images/Cdyspstart.webp" alt="EMA 3D dashboard" loading="lazy" /></>)}
-          {cta('Try it or read the write-up', 'A live demo of the dashboard, plus the full project article.', 'Live demo', 'https://csdpdemo.chiambucket.com', { label: 'Read the article', url: '/csdp' })}
+          {chapter('03', 'A live 3D dashboard', <><p>The dashboard shows live data on a Spline 3D model of the house, and I designed its UI in Figma.</p><img className="hp-rd-fig" src="/images/Cdyspstart.webp" alt="EMA 3D dashboard" loading="lazy" /></>)}
+          {cta('Try it or read the write-up', 'There is a live demo of the dashboard as well as the full project article.', 'Live demo', 'https://csdpdemo.chiambucket.com', { label: 'Read the article', url: '/csdp' })}
         </div>
       </>
     );
@@ -177,11 +177,11 @@ export function PeekModalContent({ id }: { id: string }) {
         <div className="hp-rd-body">
           <h2 className="hp-md-title">Pandus Dispenser</h2>
           <p className="hp-md-meta">1 Month · First School Project · 3D Design · PyFirmata</p>
-          <p className="hp-rd-lead">My first school project: a six-part 3D-printed syrup dispenser. Every part fit on the first print.</p>
+          <p className="hp-rd-lead">My first school project was a six-part 3D-printed syrup dispenser, and every part fit on the first print.</p>
           <div className="hp-md-video"><iframe src="https://www.youtube.com/embed/fIJQzOhCKQU" title="Pandus Dispenser" frameBorder={0} allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe></div>
-          {chapter('01', 'What it does', <><p>Three cup sizes, wake on approach, a servo door and a high-power LED to light the cup.</p><img className="hp-rd-fig" src="/images/pandus2.webp" alt="The Pandus model in Onshape" loading="lazy" /></>)}
+          {chapter('01', 'What it does', <><p>It pours three cup sizes, wakes when someone walks up, and has a servo door and a high-power LED to light the cup.</p><img className="hp-rd-fig" src="/images/pandus2.webp" alt="The Pandus model in Onshape" loading="lazy" /></>)}
           {chapter('02', 'Control and components', <><p>An Arduino Uno R3 driven with PyFirmata runs a servo, LEDs, a relay board, buttons, a DC pump and an infrared collision detection module.</p><img className="hp-rd-fig" src="/images/pandus5.webp" alt="The Pandus flowchart" loading="lazy" /></>)}
-          {cta('The full build', "The parts, the flowcharts and the Onshape model.", 'Read the full article', '/pandus')}
+          {cta('The full build', 'The article covers the parts, the flowcharts and the Onshape model.', 'Read the full article', '/pandus')}
         </div>
       </>
     );
@@ -193,10 +193,10 @@ export function PeekModalContent({ id }: { id: string }) {
           <p className="hp-md-meta">Safe Freezer Storage System · Team of 4 · Engineering Course · M5Stack · ToF + PIR</p>
           <p className="hp-rd-lead">A freezer safety system my team and I designed for an engineering course. Walk-in factory freezers can trap the people working inside them, so ELEC-F watches the door and the room and sounds the alarm before the cold turns dangerous.</p>
           <div className="hp-md-video"><iframe src="https://www.youtube.com/embed/8De2ahk-GPo" title="ELEC-F Safe Freezer System" frameBorder={0} allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe></div>
-          {chapter('01', 'The problem', <><p>Faulty latches, frozen seals or simple unawareness can leave a worker shut inside a walk-in freezer, where hypothermia sets in fast. ELEC-F exists to cut that time down and reassure whoever is trapped.</p><img className="hp-rd-fig" src="/images/elecf-prototype1.avif" alt="The ELEC-F freezer prototype" loading="lazy" /></>)}
-          {chapter('02', 'How it works', <><p>A ToF sensor reads whether the door is open or closed, and a PIR sensor checks if anyone is still inside. Shut the door with a person in, and a timer arms. Overrun it, and the RGB unit flashes while the buzzer sounds.</p><img className="hp-rd-fig" src="/images/elecf-door-armed.png" alt="ELEC-F armed state on the M5Stack" loading="lazy" /></>)}
+          {chapter('01', 'The problem', <><p>Faulty latches, frozen seals or simple unawareness can leave a worker shut inside a walk-in freezer, where hypothermia sets in fast. ELEC-F is there to shorten that time and reassure whoever is trapped.</p><img className="hp-rd-fig" src="/images/elecf-prototype1.avif" alt="The ELEC-F freezer prototype" loading="lazy" /></>)}
+          {chapter('02', 'How it works', <><p>A ToF sensor reads whether the door is open or closed, and a PIR sensor checks if anyone is still inside. If the door shuts with a person inside, a timer starts, and when it runs out the RGB unit flashes and the buzzer sounds.</p><img className="hp-rd-fig" src="/images/elecf-door-armed.png" alt="ELEC-F armed state on the M5Stack" loading="lazy" /></>)}
           {chapter('03', 'Built on M5Stack', <><p>Two M5Stack Fire controllers and a Mini Hub tie the ToF, PIR and RGB units together, chosen because they keep working at the sub-zero temperatures a freezer demands.</p><img className="hp-rd-fig" src="/images/elecf-controller-sensors.png" alt="The M5Stack controller wired to its sensors" loading="lazy" /></>)}
-          {cta('See the full concept', 'The research, the build and an interactive walkthrough.', 'Read the full article', '/elecf')}
+          {cta('See the full concept', 'The article covers the research, the build and an interactive walkthrough.', 'Read the full article', '/elecf')}
         </div>
       </>
     );
@@ -207,8 +207,8 @@ export function PeekModalContent({ id }: { id: string }) {
           <h2 className="hp-md-title">Kauli Concept</h2>
           <p className="hp-md-meta">Concept · Communication Skills · 3D in Blender</p>
           <p className="hp-rd-lead">An original product concept I created and pitched for a communication-skills project, presented with 3D scenes built in Blender.</p>
-          {chapter('01', 'Idea to presentation', <><p>The brief was as much about communicating an idea as having one. I designed the concept, rendered it in Blender, and built the deck around making it land with an audience.</p><img className="hp-rd-fig" src="/images/kauli-obj.webp" alt="Kauli concept render" loading="lazy" /></>)}
-          {soon('Kauli concept', 'The renders and pitch will get a full write-up.')}
+          {chapter('01', 'Idea to presentation', <><p>The brief was about communicating an idea as well as having one, so I designed the concept, rendered it in Blender and built the deck to present it clearly to an audience.</p><img className="hp-rd-fig" src="/images/kauli-obj.webp" alt="Kauli concept render" loading="lazy" /></>)}
+          {soon('Kauli concept', 'The renders and the pitch will get a full write-up.')}
         </div>
       </>
     );
@@ -218,7 +218,7 @@ export function PeekModalContent({ id }: { id: string }) {
         <div className="hp-rd-body">
           <h2 className="hp-md-title">Series One Light</h2>
           <p className="hp-md-meta">Personal · 3D Design · Ultralight 20g</p>
-          <p className="hp-rd-lead">My own take on the popular ZeroMouse: an ultralight 20g gaming mouse I designed from scratch to play a little sharper in FPS games.</p>
+          <p className="hp-rd-lead">My own take on the popular ZeroMouse, an ultralight 20g gaming mouse I designed from scratch to play a little better in FPS games.</p>
           {chapter('01', 'Designing for grams', <p>Every part of the shell was modelled to shed weight without losing rigidity, balancing grip comfort against the goal of reaching around 20 grams.</p>)}
           {soon('Series One Light', 'The model and its trade-offs will get a full write-up.')}
         </div>
@@ -231,7 +231,7 @@ export function PeekModalContent({ id }: { id: string }) {
           <h2 className="hp-md-title">Copy Board</h2>
           <p className="hp-md-meta">Personal · PCB Design · KiCAD · 1 Week</p>
           <p className="hp-rd-lead">A from-scratch KiCAD recreation of NYP&apos;s ATMega328 dev board, made so I could have my own copy to work with at home.</p>
-          {chapter('01', 'Reverse-engineered, then rebuilt', <p>I worked from the school board&apos;s schematic to recreate it in KiCAD. Some parts were out of production so I sourced substitutes and used it as my first proper run at reflow soldering.</p>)}
+          {chapter('01', 'Reverse-engineered, then rebuilt', <p>I recreated the school board in KiCAD from its schematic, and because some parts were out of production I sourced substitutes, then used the board as my first proper attempt at reflow soldering.</p>)}
           {soon('Copy Board', 'Sourcing parts, the layout and the reflow will get a full write-up.')}
         </div>
       </>
@@ -242,8 +242,8 @@ export function PeekModalContent({ id }: { id: string }) {
         <div className="hp-rd-body">
           <h2 className="hp-md-title">Web Development Project</h2>
           <p className="hp-md-meta">School · HTML &amp; CSS · First Website</p>
-          <p className="hp-rd-lead">The first fully functional website I built, HTML and CSS, as the final assignment for my web development class. The Chiambucket site was my second attempt.</p>
-          {chapter('01', 'Where it started', <p>This was my introduction to building for the web. You can see how far the craft has come since then.</p>)}
+          <p className="hp-rd-lead">The first fully functional website I built, in HTML and CSS, for the final assignment of my web development class. This site was my second attempt.</p>
+          {chapter('01', 'Where it started', <p>This was my introduction to building for the web, and it shows how far my work has come since then.</p>)}
           {soon('See where it began', 'The site is still online.', { label: 'Live demo', url: 'https://tht.chiambucket.com' })}
         </div>
       </>
@@ -256,7 +256,7 @@ export function PeekModalContent({ id }: { id: string }) {
           <p className="hp-md-meta">Personal · Docker · Paper &amp; Dynmap</p>
           <p className="hp-rd-lead">A self-hosted Minecraft server on the homelab, with a live web map of the multiplayer world that anyone can pan around in real time.</p>
           {chapter('01', 'Server and map', <p>A Paper server runs in Docker with the Dynmap plugin generating a live, interactive map that updates as players explore and build.</p>)}
-          {soon('Explore the world live', 'The map updates as players explore.', { label: 'Open live map', url: 'https://map.chiambucket.com' })}
+          {soon('Explore the world live', 'The live map is open to anyone.', { label: 'Open the live map', url: 'https://map.chiambucket.com' })}
         </div>
       </>
     );

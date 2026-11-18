@@ -30,25 +30,25 @@ const NODES: SpokeNode[] = [
     id: 'climate',
     name: 'Climate',
     short: 'Fan control',
-    does: 'Turns the fan on only when someone is in the room and it is warm and humid.',
+    does: 'It turns the fan on only when someone is in the room and the air is warm and humid.',
     hardware: 'BME680 temperature and humidity sensor, PIR presence sensor, 8x8 LED matrix, buzzer',
-    alarm: 'Sounds when any node raises the alarm',
+    alarm: 'It sounds whenever any node raises the alarm',
     icon: 'climate',
   },
   {
     id: 'bathroom',
     name: 'Bathroom',
     short: 'Shower timer',
-    does: 'A shower timer you set with the buttons. It starts when you walk into the shower.',
+    does: 'It times your shower to the length you set with the buttons, starting when you walk in.',
     hardware: 'PIR sensor, OLED display, capacitive buttons, buzzer',
-    alarm: 'Three-tone buzzer when the time is up',
+    alarm: 'It plays three tones when the time is up',
     icon: 'bathroom',
   },
   {
     id: 'kitchen',
     name: 'Kitchen',
     short: 'Energy and fire',
-    does: 'Reports the fridge\u2019s energy use to the dashboard as a score, and watches for fire.',
+    does: 'It reports the fridge\u2019s energy use to the dashboard as a score and watches for fire.',
     hardware: 'Analog current sensor, Flame Click, OLED display, buzzer',
     alarm: 'A fire sets off the alarm on every node',
     icon: 'flame',
@@ -57,7 +57,7 @@ const NODES: SpokeNode[] = [
     id: 'intrusion',
     name: 'Intrusion',
     short: 'Door security',
-    does: 'Watches the door for knocks, and for it opening at unusual times.',
+    does: 'It watches the door for knocks and for the door opening at unusual times.',
     hardware: 'Reed switch on the door, vibration sensor for knocks, buzzer',
     alarm: 'Either event sets off the alarm on every node',
     icon: 'intrusion',
@@ -134,9 +134,9 @@ const lerp = (from: number, to: number, t: number) => r4(from + (to - from) * t)
 type AlertPhase = 'idle' | 'arming' | 'travelling' | 'received';
 
 const STATUS: Record<Exclude<AlertPhase, 'idle'>, string> = {
-  arming: 'Flame detected, kitchen buzzer sounding',
+  arming: 'The kitchen sees a flame and its buzzer sounds',
   travelling: 'Alarm on its way to the server',
-  received: 'Server broadcasts the alarm, every node sounds',
+  received: 'The server broadcasts the alarm and every node sounds',
 };
 
 export default function NodeMap() {
@@ -329,7 +329,7 @@ export default function NodeMap() {
             })}
           </div>
 
-          <p className="cs-nm-caption">Each line is a SocketIO link. Dots are readings on their way to the server.</p>
+          <p className="cs-nm-caption">Each line is a SocketIO link, and the dots are readings on their way to the server.</p>
         </div>
 
         {/* ── Detail panel ── */}
@@ -387,7 +387,7 @@ export default function NodeMap() {
                 <span className="cs-nm-status-dot" />
                 {alert !== 'idle' && node.id === FIRE
                   ? STATUS[alert]
-                  : 'Connected, sending readings to the server'}
+                  : 'Connected and sending readings to the server'}
               </div>
             </m.div>
           </AnimatePresence>
@@ -402,7 +402,7 @@ export default function NodeMap() {
               <span className="cs-nm-sim-dot" aria-hidden="true" />
               {isAlerting ? 'Alarm running' : 'Simulate a kitchen fire'}
             </button>
-            <p className="cs-nm-hint">The kitchen node detects a flame, the server receives the alarm and sends it to every node.</p>
+            <p className="cs-nm-hint">When the kitchen node detects a flame, the server receives the alarm and sends it on to every node.</p>
           </div>
         </div>
       </div>

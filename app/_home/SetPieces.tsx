@@ -15,14 +15,14 @@ import type { CSSProperties, ReactNode } from 'react';
 export type Beat = { title: string; text: string };
 
 export const JUNE_BEATS: Beat[] = [
-  { title: 'Three phones, three live feeds', text: 'Phone 1 is the main 5G hotspot and the front camera, phone 2 the second hotspot and the left camera, phone 3 the right camera. Each streams its view to my console over WebRTC.' },
+  { title: 'Three live feeds from three phones', text: 'Phone 1 is the main 5G hotspot and the front camera, phone 2 is the second hotspot and the left camera, and phone 3 is the right camera. Each one streams its view to my console over WebRTC.' },
   { title: 'Telemetry from the night run', text: 'The ESP32-S3 joins the phone hotspot and sends its GPS, temperature, humidity and light readings back over MQTT, about ten times a second.' },
-  { title: 'From a controller to the road', text: 'An Xbox controller drives it through my web console. Commands go over MQTT through my server and the video comes back through my TURN server, with about a second of delay from over 8 km away.' },
+  { title: 'From a controller to the road', text: 'I drive it with an Xbox controller through my web console. The commands go over MQTT through my server and the video comes back through my TURN server, with about a second of delay from over 8 km away.' },
 ];
 
 export const BEAD_BEATS: Beat[] = [
-  { title: 'It remembers your page', text: 'Who’s reading shows each reader’s progress through the book. Tap yours and it opens on the same chapter, scrolled to the line you stopped on.' },
-  { title: 'Reading together', text: 'Friends on the same book get a green ring and their chapter. Tap to send a wave or a short note: it shows on their screen, fades in seconds and nothing is saved.' },
+  { title: 'It remembers your page', text: 'The Who’s reading list shows how far each reader has got, and tapping your own row opens the same chapter at the line you stopped on.' },
+  { title: 'Reading together', text: 'Friends on the same book show a green ring and their chapter. You can tap to send a wave or a short note, which fades from their screen in seconds and is never saved.' },
 ];
 
 function Captions({ beats }: { beats: Beat[] }) {

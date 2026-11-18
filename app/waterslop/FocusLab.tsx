@@ -12,8 +12,8 @@ const LENSES = [{ key: '160', label: '160° lens' }, { key: '120', label: '120°
 const DISTS = ['3', '4', '6'] as const;
 const CHARTS = [{ key: 'b', label: 'Chart B (ISO 12233)' }, { key: 'a', label: 'Chart A (hand-drawn)' }] as const;
 const NOTE: Record<string, string> = {
-  '160': 'The 160° variant focuses well on close objects. On this lens the focus seems to taper off towards the left of the image from the centre, while the effect is nowhere near as strong in the opposite direction.',
-  '120': 'It is very clear that the 120° variant is unable to focus well on close objects (macro). Its focus tapering is conical and even, as expected from a fixed-focus lens.',
+  '160': 'The 160° variant focuses well on close objects, but its focus seems to taper off from the centre towards the left of the image, and the effect is nowhere near as strong towards the right.',
+  '120': 'The 120° variant clearly cannot focus well on close objects (macro), and its focus tapers off evenly in a cone, as expected from a fixed-focus lens.',
 };
 
 function Seg<T extends string>({ items, value, set, label }: { items: ReadonlyArray<{ key: T; label: string }>; value: T; set: (v: T) => void; label: string }) {
@@ -75,18 +75,18 @@ const ROWS: Frame[] = [
     id: 'cam-why', eyebrow: 'Camera choice', title: 'A macro camera, wide enough for the drums',
     body: (
       <>
-        <p>I needed a capable macro camera, wide enough to capture the full width of the meter barrels while in close proximity to the meter. There were no options that were both low cost and of the correct connector type from reputable retailers, so I bought two OV2640 cameras from Lazada, one with a 160° field-of-view lens and one with 120°. They were not advertised as macro, but an intrinsic property of wide-angle lenses is their ultra-short focusing distance and much deeper apparent depth of field.</p>
-        <p>The test was simple: take an image with both cameras at 3 cm, 4 cm and 6 cm, against two focusing charts. Chart A was hand-drawn by me; Chart B is Stephen H. Westin&rsquo;s ISO 12233 chart from Cornell. Using a spare ESP32-S3 cam board and a simple web applet written with an AI agent, the camera was mounted to the side of a box with a ruler starting from the lens, and the charts sat on a movable stand.</p>
+        <p>I needed a capable macro camera that was wide enough to capture the full width of the meter barrels from very close to the meter. No reputable retailer had an option that was both low-cost and had the right connector, so I bought two OV2640 cameras from Lazada, one with a 160° field-of-view lens and one with a 120° lens. They were not sold as macro cameras, but wide-angle lenses naturally have a very short focusing distance and a much deeper apparent depth of field.</p>
+        <p>For the test I took an image with both cameras at 3 cm, 4 cm and 6 cm against two focusing charts. Chart A is one I drew by hand, and Chart B is Stephen H. Westin&rsquo;s ISO 12233 chart from Cornell. Each camera ran on a spare ESP32-S3 cam board with a simple web applet written with an AI agent, and it was mounted on the side of a box with a ruler running out from the lens, while the charts sat on a movable stand.</p>
       </>
     ),
     visual: <img src={I + 'focus-setup.webp'} alt="The focus test box with the ESP32 cam board on the side and a ruler on the floor" loading="lazy" decoding="async" />,
   },
   {
-    id: 'cam-lab', eyebrow: 'The focus test', title: 'The chosen setup: 160° at 4 cm',
+    id: 'cam-lab', eyebrow: 'The focus test', title: 'The chosen setup, 160° at 4 cm',
     body: (
       <>
-        <p>Pick a lens, a distance and a chart: the full capture, with its centre, left and right cut from the same frame at actual pixels. These are fixed-focus lenses, so focus is permanently set at the factory. Moving forward I use the 160° variant at 4 cm.</p>
-        <p className="ws-note">On the 160° variant, focus tapers off towards the left of the image from the centre, while the effect is nowhere near as strong in the opposite direction. The chart was perpendicular to the camera with no major slants or dents, and the 120° variant tapers conically and evenly, so this points towards a manufacturing defect; I have no extra cameras to test if that is true.</p>
+        <p>Pick a lens, a distance and a chart to see the full capture, with its centre, left and right cut from the same frame at actual pixels. These are fixed-focus lenses, so the focus is set permanently at the factory, and from here on I use the 160° variant at 4 cm.</p>
+        <p className="ws-note">The chart was square to the camera with no major slants or dents, and the 120° variant tapers evenly, so the lopsided focus of the 160° variant points towards a manufacturing defect, although I have no spare cameras to test whether that is true.</p>
       </>
     ),
     visual: <FocusLab />,
@@ -97,7 +97,7 @@ export default function CameraChapter({ chapter }: { chapter: string }) {
   return (
     <>
       <Cover id="camera" chapter={chapter} title="Camera choice" lines={['Camera', 'choice']} contents={[{ label: 'Two OV2640 lenses', href: '#cam-why' }, { label: 'The focus test', href: '#cam-lab' }]}
-        bg="focus-160-4b.webp" lede="Two OV2640 lenses, tested on a resolution chart at 3, 4 and 6 cm." />
+        bg="focus-160-4b.webp" lede="I tested two OV2640 lenses against focusing charts at 3, 4 and 6 cm." />
       <Page id="camera-body" title="Camera choice" rows={ROWS} />
     </>
   );

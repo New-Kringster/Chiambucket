@@ -3,7 +3,7 @@ import HomelabClient from './HomelabClient';
 import { SERVICES } from './data';
 
 const description =
-  'Three servers at home running my photo library, file sharing, and the MQTT and TURN servers that Project June and LUMEN use. Hardware, network map, storage, services and live status.';
+  'I run three servers at home for my photo library, file sharing, and the MQTT and TURN servers that Project June and LUMEN use. This page covers their hardware, network map, storage, services and live status.';
 
 export const metadata: Metadata = {
   title: 'Homelab | Braven Chiam',

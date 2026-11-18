@@ -21,7 +21,7 @@ const STEPS: Step[] = [
     img: '/images/elecf-door-open.png',
     label: 'Door open',
     title: 'Set the timer',
-    desc: 'A worker walks into the freezer. The PIR sensor picks up their body heat and movement, and the ToF sensor reads the door as open. On the M5Stack you set how long the door may stay shut.',
+    desc: 'When a worker walks in, the PIR sensor picks up their body heat and movement and the ToF sensor reads the door as open. You then set on the M5Stack how long the door may stay shut.',
     pir: 'Person inside',
     tof: 'Door open',
     tofClosed: false,
@@ -33,7 +33,7 @@ const STEPS: Step[] = [
     img: '/images/elecf-door-armed.png',
     label: 'Door closed',
     title: 'Timer running',
-    desc: 'The door shuts. The ToF sensor reads it as closed and the timer starts. If the room empties before the time runs out, the system resets.',
+    desc: 'When the door shuts, the ToF sensor reads it as closed and the timer starts, but if the room empties before the time runs out, the system resets.',
     pir: 'Person inside',
     tof: 'Door closed',
     tofClosed: true,
@@ -45,7 +45,7 @@ const STEPS: Step[] = [
     img: '/images/elecf-warning.png',
     label: 'Time up',
     title: 'Alarm',
-    desc: 'The time runs out with someone still inside. The RGB unit flashes and the M5Stack buzzer sounds to alert anyone nearby. Opening the door stops the alarm.',
+    desc: 'If the time runs out with someone still inside, the RGB unit flashes and the M5Stack buzzer sounds to alert anyone nearby until the door is opened.',
     pir: 'Person inside',
     tof: 'Door closed',
     tofClosed: true,
@@ -97,7 +97,7 @@ export default function SafetySequence() {
             <m.img
               key={step.key}
               src={step.img}
-              alt={`M5Stack screen, ${step.label.toLowerCase()}: ${step.title.toLowerCase()}`}
+              alt={`The M5Stack screen during step ${i + 1}, ${step.title.toLowerCase()}`}
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 1.02 }}

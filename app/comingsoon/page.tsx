@@ -16,10 +16,10 @@ export default function ComingSoonPage() {
         <div className="cw-bloom" aria-hidden="true"></div>
 
         <span className="ct-kicker">Not written up yet</span>
-        <h1 className="ct-title cw-title">Coming <em>soon.</em></h1>
+        <h1 className="ct-title cw-title">Coming <em>soon</em></h1>
         <p className="ct-sub cw-sub">
-          I haven&apos;t finished this write-up. The projects I have written up are listed on the
-          homepage.
+          I haven&apos;t finished this write-up yet, but the projects I have written up are listed
+          on the homepage.
         </p>
 
         <div className="cw-btns">

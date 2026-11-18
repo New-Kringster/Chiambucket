@@ -126,7 +126,7 @@ export default function PromptReveal({ text }: { text: string }) {
   return (
     <div className={`lm-pr${open ? ' open' : ''}`}>
       <div className="lm-pr-head">
-        <span className="lm-pr-eyebrow">System prompt, from server/prompts.py</span>
+        <span className="lm-pr-eyebrow">The system prompt LUMEN sends the model</span>
         <div className="lm-pr-toggle" role="tablist" aria-label="Prompt view">
           <button type="button" role="tab" aria-selected={view === 'formatted'} className={`lm-pr-tab${view === 'formatted' ? ' on' : ''}`} onClick={() => setView('formatted')}>
             Formatted

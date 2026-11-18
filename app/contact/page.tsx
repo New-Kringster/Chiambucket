@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     title: 'Contact | Braven Chiam',
-    description: 'Email braven@chiambucket.com.',
+    description: 'Email me at braven@chiambucket.com.',
   },
 };
 

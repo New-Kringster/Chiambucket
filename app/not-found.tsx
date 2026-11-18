@@ -17,7 +17,7 @@ export default function NotFound() {
         <span className="ct-kicker nf-kick">Page not found</span>
         <h1 className="nf-code">404</h1>
         <p className="ct-sub nf-sub">
-          There is nothing at this address. The page may have moved, or the link may be wrong.
+          There is nothing at this address, so the page may have moved or the link may be wrong.
         </p>
         <div className="nf-btns">
           <Link href="/" className="hp-btn"><IcHome /> Go to the homepage</Link>

@@ -40,13 +40,13 @@ const EDGES: Array<{ id: string; a: string; b: string; tone: 'plain' | 'ok' | 'f
 const STEPS: Array<{ id: string; n: number; desc: string; tone?: 'ok' | 'red' }> = [
   { id: 'wake', n: 1, desc: 'The reader wakes from sleep and restores its configuration and LoRaWAN session from Non-Volatile Storage.' },
   { id: 'capture', n: 2, desc: 'The camera is initialised and a capture is taken with the LED lights.' },
-  { id: 'low', n: 3, desc: 'The image goes straight through the DrumNet readers using the stored ROI from setup, no WindowNet. The normal, cheapest path: a confident reading goes to the uplink, about 1.5 s awake in all.', tone: 'ok' },
+  { id: 'low', n: 3, desc: 'The image goes straight through the DrumNet readers using the ROI stored at setup, without WindowNet. This is the normal and cheapest path, and a confident reading goes on to the uplink after about 1.5 s awake in all.', tone: 'ok' },
   { id: 'full', n: 4, desc: 'Only if the readers report a low confidence does the full pipeline run as a backup, with WindowNet finding the window again.', tone: 'red' },
-  { id: 'check', n: 5, desc: 'The new reading’s confidence is checked. Most readings leave the loop here.' },
-  { id: 'alt', n: 6, desc: 'The spotter runs once more with a different backup set of weights, one last attempt this cycle.', tone: 'red' },
+  { id: 'check', n: 5, desc: 'The new reading’s confidence is checked, and most readings leave the loop here.' },
+  { id: 'alt', n: 6, desc: 'The spotter runs once more with a different backup set of weights as the last attempt in this cycle.', tone: 'red' },
   { id: 'reject', n: 7, desc: 'A failed attempt is stored in NVS for later evaluation and a low-confidence warning is reported on the dashboard.', tone: 'red' },
   { id: 'uplink', n: 8, desc: 'The LoRa link switches on and the reading is sent to the gateway.' },
-  { id: 'sleep', n: 9, desc: 'All peripherals shut down and the reader deep-sleeps until the RTC wakes it for the next cycle. Pressing BOOT wakes it for configuration.' },
+  { id: 'sleep', n: 9, desc: 'All peripherals shut down and the reader deep-sleeps until the RTC wakes it for the next cycle, although pressing BOOT wakes it for configuration.' },
 ];
 
 /* The chart, every node and edge numbered to match the steps beside it. */
@@ -97,13 +97,13 @@ const ROWS: Frame[] = [
     body: (
       <>
         <p>An Astra 6 agent was tasked with writing the firmware for the reader (Prototype V2) and for the M5Stack Cardputer Adv, which runs ConfigKing, the configuration console that lets onsite engineers configure readers for deployment and reconfigure them later. The agent was told to only write code using Fable 5.1.</p>
-        <p className="ws-note">My laptop, the LoRaWAN gateway (graciously provided by Mr Lee Chang Fatt) and the Jetson Nano were set up on the same network; the Cardputer and Prototype V2 were connected over USB serial to the laptop, and all four devices were made available to the agents.</p>
+        <p className="ws-note">My laptop, the LoRaWAN gateway (graciously provided by Mr Lee Chang Fatt) and the Jetson Nano were set up on the same network, the Cardputer and Prototype V2 were connected to the laptop over USB serial, and all four devices were made available to the agents.</p>
       </>
     ),
     visual: <img src={I + 'fw-setup.webp'} alt="The firmware development setup: the laptop, Jetson Nano, LoRaWAN gateway, Prototype V2 reader and the Cardputer, with the agents reaching them over the network" className="plate" loading="lazy" decoding="async" />,
   },
   {
-    id: 'fw-cycle', eyebrow: 'One wake cycle', title: 'Nine steps, most readings take five',
+    id: 'fw-cycle', eyebrow: 'One wake cycle', title: 'Nine steps, though most readings take five',
     body: (
       <ol className="ws-steps">
         {STEPS.map((s) => <li key={s.id} className={s.tone}><b>{N[s.id].title}</b>{s.desc}</li>)}
@@ -112,8 +112,8 @@ const ROWS: Frame[] = [
     visual: <Chart />,
   },
   {
-    id: 'fw-dashboard', eyebrow: 'Dashboard', title: 'Where the reading lands',
-    body: <p>After the reading is made it is sent to the LoRaWAN gateway, which forwards it over MQTT to the Jetson Nano, where it is stored. The Jetson serves the dashboard as a single HTML file whose JavaScript updates the values from the stored data. The dashboard is a demo and is not designed to scale to real deployments.</p>,
+    id: 'fw-dashboard', eyebrow: 'Dashboard', title: 'Where the reading is shown',
+    body: <p>After the reading is made it is sent to the LoRaWAN gateway, which forwards it over MQTT to the Jetson Nano, where it is stored. The Jetson serves the dashboard as a single HTML file whose JavaScript updates the values from the stored data, but the dashboard is only a demo and is not designed to scale to real deployments.</p>,
     visual: <img src={I + 'dashboard.webp'} alt="The reader monitor dashboard: a bench reader card reading 0092.07 cubic metres with a low confidence chip, and history charts and a table of nine readings" loading="lazy" decoding="async" />,
   },
 ];
@@ -122,7 +122,7 @@ export default function FirmwareChapter({ chapter }: { chapter: string }) {
   return (
     <>
       <Cover id="firmware" chapter={chapter} title="Firmware" lines={['Reader', 'firmware']} contents={[{ label: 'Written by an agent', href: '#fw-agents' }, { label: 'One wake cycle', href: '#fw-cycle' }, { label: 'The dashboard', href: '#fw-dashboard' }]}
-        bg="fw-setup.webp" lede="One wake cycle: wake, capture, read the drums, send the number home, sleep." />
+        bg="fw-setup.webp" lede="In one wake cycle the reader wakes, captures the meter, reads the drums, sends the number home and goes back to sleep." />
       <Page id="firmware-body" title="Firmware" rows={ROWS} />
     </>
   );

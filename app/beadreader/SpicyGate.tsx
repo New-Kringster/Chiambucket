@@ -15,8 +15,8 @@ const TRAIL = 'Morning came far too soon.';
 type ModeKey = 'full' | 'none' | 'cal';
 type Mode = { key: ModeKey; label: string; caption: string };
 const MODES: Mode[] = [
-  { key: 'full', label: 'Full access', caption: 'This reader has access. Tap the blurred line and it clears.' },
-  { key: 'none', label: 'No access', caption: 'Locked. The server never sends this reader the passage.' },
+  { key: 'full', label: 'Full access', caption: 'This reader has access, so a tap clears the blurred line.' },
+  { key: 'none', label: 'No access', caption: 'The server never sends this reader the locked passage.' },
   { key: 'cal', label: 'Cal mode', caption: 'The line is removed entirely, with no gap and no marker.' },
 ];
 

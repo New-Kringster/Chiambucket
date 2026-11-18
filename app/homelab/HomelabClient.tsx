@@ -108,12 +108,12 @@ export default function HomelabClient() {
           </motion.span>
           <motion.h1 className="hl2-title"
             initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}>
-            Three servers <em>in my room.</em>
+            Three servers <em>in my room</em>
           </motion.h1>
           <motion.p className="hl2-lead"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
             They run my photo library, my files, and the MQTT and TURN servers that Project June and
-            LUMEN use. It is also where I learn networking, storage and Docker, and where I host what I build.
+            LUMEN use, and they are also where I learn networking, storage and Docker and host what I build.
           </motion.p>
 
           <motion.div className="hl2-hero-stats"
@@ -140,20 +140,20 @@ export default function HomelabClient() {
       {/* ════════════ MISSION ════════════ */}
       <section className="hl2-band" id="mission">
         <div className="hl2-wrap">
-          <Reveal><SectionHead n="01" eyebrow="Why I run it" title="What it is for." /></Reveal>
+          <Reveal><SectionHead n="01" eyebrow="Why I run it" title="What it is for" /></Reveal>
           <Reveal delay={0.05}>
             <p className="hl2-mission-lead">
-              My hardware projects need servers to talk to. Project June streams its cameras through my
-              TURN server and uses my MQTT broker for telemetry and control. LUMEN&apos;s speech relay runs in
-              Docker here. Running these myself is how I learned networking, storage and deployment.
+              My hardware projects need servers to talk to, so Project June streams its cameras through my
+              TURN server and uses my MQTT broker for telemetry and control, while LUMEN&apos;s speech relay
+              runs in Docker here. Running these myself is how I learned networking, storage and deployment.
             </p>
           </Reveal>
           <div className="hl2-pillars">
             {[
-              { k: 'Servers and storage', d: 'Docker containers behind a reverse proxy, two storage tiers and backups, running services I use every day.', icon: 'cloud' },
-              { k: 'Networking', d: 'Four VLANs, RADIUS, WPA3-Enterprise Wi-Fi, and UniFi switches and access points.', icon: 'net' },
-              { k: 'Deploying my apps', d: 'Apps I build are deployed to a VM in the Proxmox cluster. Next I want agents to run parts of the lab themselves.', icon: 'code' },
-              { k: 'For my projects', d: 'coturn lets Project June stream video over 5G. Mosquitto carries messages for my ESP32 school projects.', icon: 'link' },
+              { k: 'Servers and storage', d: 'Docker containers run the services I use every day behind a reverse proxy, with two storage tiers and backups.', icon: 'cloud' },
+              { k: 'Networking', d: 'The network has four VLANs, RADIUS and WPA3-Enterprise Wi-Fi, running on UniFi switches and access points.', icon: 'net' },
+              { k: 'Deploying my apps', d: 'Apps I build are deployed to a VM in the Proxmox cluster, and next I want agents to run parts of the lab themselves.', icon: 'code' },
+              { k: 'For my projects', d: 'coturn lets Project June stream video over 5G, while Mosquitto carries messages for my ESP32 school projects.', icon: 'link' },
             ].map((p, i) => (
               <Reveal key={p.k} delay={i * 0.06} className="hl2-pillar">
                 <PillarIcon name={p.icon} />
@@ -168,7 +168,7 @@ export default function HomelabClient() {
       {/* ════════════ MACHINES ════════════ */}
       <section className="hl2-band hl2-band-alt" id="machines">
         <div className="hl2-wrap">
-          <Reveal><SectionHead n="02" eyebrow="Hardware" title="Servers." /></Reveal>
+          <Reveal><SectionHead n="02" eyebrow="Hardware" title="Servers" /></Reveal>
           <div className="hl2-machines">
             {SERVERS.map((s, i) => (
               <Reveal key={s.id} delay={i * 0.08} className={`hl2-machine ${s.status}`}
@@ -203,8 +203,8 @@ export default function HomelabClient() {
             </figure>
             <div className="hl2-rackreal-text">
               <span className="hl2-eyebrow">The rack</span>
-              <h3>All three in one cabinet.</h3>
-              <p>The rack sits in a corner of my room. The patch panel is at the top and the servers are behind the mesh door. Two run all the time; Adell stays off until I need it.</p>
+              <h3>All three servers in one cabinet</h3>
+              <p>The rack sits in a corner of my room, with the patch panel at the top and the servers behind the mesh door. Two of them run all the time, while Adell stays off until I need it.</p>
             </div>
           </Reveal>
         </div>
@@ -213,11 +213,11 @@ export default function HomelabClient() {
       {/* ════════════ SYSTEM MAP ════════════ */}
       <section className="hl2-band" id="map">
         <div className="hl2-wrap">
-          <Reveal><SectionHead n="03" eyebrow="Network" title="Network map." /></Reveal>
+          <Reveal><SectionHead n="03" eyebrow="Network" title="Network map" /></Reveal>
           <Reveal delay={0.05}>
             <p className="hl2-map-lead">
-              One UniFi network split into four VLANs. Select a device to see what it does, or a
-              VLAN to highlight the devices on it.
+              My home runs on one UniFi network split into four VLANs, and you can select a device to see
+              what it does or a VLAN to highlight the devices on it.
             </p>
           </Reveal>
           <Reveal delay={0.08}><SystemMap /></Reveal>
@@ -227,7 +227,7 @@ export default function HomelabClient() {
       {/* ════════════ STORAGE + PXE ════════════ */}
       <section className="hl2-band hl2-band-alt" id="storage">
         <div className="hl2-wrap">
-          <Reveal><SectionHead n="04" eyebrow="Storage and VMs" title="Storage and virtual machines." /></Reveal>
+          <Reveal><SectionHead n="04" eyebrow="Storage and VMs" title="Storage and virtual machines" /></Reveal>
           <div className="hl2-storage">
             <Reveal className="hl2-storage-col">
               <h3 className="hl2-sub">Storage on NewMain</h3>
@@ -237,14 +237,14 @@ export default function HomelabClient() {
                   <span className="hl2-disk parity">P</span><span className="hl2-disk parity">P</span>
                   <span className="hl2-disk">D</span><span className="hl2-disk">D</span><span className="hl2-disk">D</span>
                 </div>
-                <p>Two parity drives and three data drives. It holds PXE backups, archives and media, and survives two drives failing at once.</p>
+                <p>It has two parity drives and three data drives, so it survives two drives failing at once, and it holds PXE backups, archives and media.</p>
               </div>
               <div className="hl2-tier">
                 <div className="hl2-tier-head"><b>Fast pool</b><span>ZFS NVMe mirror</span></div>
                 <div className="hl2-disks">
                   <span className="hl2-disk nvme">NVMe</span><span className="hl2-disk nvme">NVMe</span>
                 </div>
-                <p>Two 2 TB NVMe drives in a ZFS mirror. Docker app data, VM disks and the PXE ISO library run from here.</p>
+                <p>Two 2 TB NVMe drives form a ZFS mirror, which Docker app data, VM disks and the PXE ISO library run from.</p>
               </div>
               <div className="hl2-proto">
                 <span className="hl2-sub small">Shared over</span>
@@ -255,10 +255,10 @@ export default function HomelabClient() {
             </Reveal>
             <Reveal delay={0.08} className="hl2-storage-col">
               <h3 className="hl2-sub">The Proxmox cluster</h3>
-              <p className="hl2-pxe-lead">CaCa and Adell form one Proxmox cluster. CaCa boots from its own 1 TB SSD and stays on. Adell boots over the network with no local OS drive, and I wake it when I need its cores.</p>
+              <p className="hl2-pxe-lead">CaCa and Adell form one Proxmox cluster. CaCa boots from its own 1 TB SSD and stays on, while Adell boots over the network with no local OS drive and I wake it when I need its cores.</p>
               <ul className="hl2-pxe-list">
-                <li><b>claudeplayground</b><span>An Ubuntu VM where I deploy apps I build. Claude has SSH access to ship them.</span></li>
-                <li><b>CasaOS and Debian</b><span>The VMs that used to run on bare metal.</span></li>
+                <li><b>claudeplayground</b><span>It is an Ubuntu VM where I deploy the apps I build, and Claude has SSH access to ship them.</span></li>
+                <li><b>CasaOS and Debian</b><span>These VMs used to run on bare metal.</span></li>
                 <li><b>Wake-on-LAN</b><span>UpSnap turns Adell on when a job needs it, so it only draws power while working.</span></li>
               </ul>
             </Reveal>
@@ -269,9 +269,9 @@ export default function HomelabClient() {
       {/* ════════════ THE STACK ════════════ */}
       <section className="hl2-band" id="stack">
         <div className="hl2-wrap">
-          <Reveal><SectionHead n="05" eyebrow="Software" title="Services." /></Reveal>
+          <Reveal><SectionHead n="05" eyebrow="Software" title="Services" /></Reveal>
           <Reveal delay={0.03}>
-            <p className="hl2-map-lead">The main ones, out of 38. Public services show live status, checked once a minute.</p>
+            <p className="hl2-map-lead">These are the main services out of 38, and the public ones show a live status that is checked once a minute.</p>
           </Reveal>
           <Reveal delay={0.04} className="hl2-stack-toolbar">
             <div className="hl2-filters" role="group" aria-label="Filter services">
@@ -347,9 +347,9 @@ export default function HomelabClient() {
       {/* ════════════ ACCESS ════════════ */}
       <section className="hl2-band hl2-band-alt" id="access">
         <div className="hl2-wrap">
-          <Reveal><SectionHead n="06" eyebrow="Remote access" title="Six ways in." /></Reveal>
+          <Reveal><SectionHead n="06" eyebrow="Remote access" title="Six ways in" /></Reveal>
           <Reveal delay={0.04}>
-            <p className="hl2-map-lead">Six separate ways in from outside, so one of them breaking does not lock me out.</p>
+            <p className="hl2-map-lead">I keep six separate ways in from outside, so one of them breaking does not lock me out.</p>
           </Reveal>
           <div className="hl2-roads">
             {ACCESS_METHODS.map((m, i) => (
@@ -373,7 +373,7 @@ export default function HomelabClient() {
                   <span className="hl2-road-type">The rack</span>
                 </div>
               </div>
-              <p className="hl2-road-note">Every path above ends here. If one fails, the other five still work.</p>
+              <p className="hl2-road-note">Every path above ends here.</p>
             </Reveal>
           </div>
         </div>
@@ -383,8 +383,8 @@ export default function HomelabClient() {
       <section className="hl2-band hl2-cta">
         <div className="hl2-wrap">
           <Reveal>
-            <h2 className="hl2-cta-title">What I am building now.</h2>
-            <p className="hl2-cta-sub">OpenClaw, a runner that lets AI agents do real tasks on the lab: start a container, check a service, deploy a small app and report back. It is not finished.</p>
+            <h2 className="hl2-cta-title">What I am building now</h2>
+            <p className="hl2-cta-sub">I am building OpenClaw, a runner that lets AI agents do real tasks on the lab, such as starting a container, checking a service, deploying a small app and reporting back, but it is not finished yet.</p>
             <div className="hl2-hero-cta">
               <a className="hl2-btn" href="/#portfolio-items-holder"><IcGrid /> See my projects</a>
               <a className="hl2-btn ghost" href="/contact"><IcMail /> Contact me</a>

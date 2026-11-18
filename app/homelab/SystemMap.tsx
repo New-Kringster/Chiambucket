@@ -9,29 +9,29 @@ interface Node {
 }
 const N: Record<string, Node> = {
   internet: { id: 'internet', x: 500, y: 22, w: 120, h: 46, label: 'Internet', sub: 'Public edge', vlan: 'core',
-    detail: 'Inbound traffic reaches one public address and goes straight to the gateway. Nothing behind it is reachable directly.' },
+    detail: 'Inbound traffic reaches one public address and goes straight to the gateway, so nothing behind it can be reached directly.' },
   udm: { id: 'udm', x: 466, y: 112, w: 188, h: 60, label: 'UDM Pro', sub: 'Gateway, firewall, RADIUS', vlan: 'core',
     detail: 'The UniFi Dream Machine Pro is the gateway, firewall, network controller and RADIUS server. It decides which VLAN can reach which, and authenticates the WPA3-Enterprise Wi-Fi.' },
   sw1: { id: 'sw1', x: 142, y: 246, w: 196, h: 56, label: 'USW Pro Max 24', sub: 'Server rack', vlan: 'core',
-    detail: 'The 24-port switch in the server rack. Each server connects to it with a redundant pair of links.' },
+    detail: 'This 24-port switch sits in the server rack, and each server connects to it with a redundant pair of links.' },
   sw2: { id: 'sw2', x: 476, y: 246, w: 168, h: 56, label: 'USW Flex 2.5G', sub: 'General', vlan: 'core',
-    detail: 'A 2.5 Gb switch for the faster everyday devices in the apartment.' },
+    detail: 'This 2.5 Gb switch connects the faster everyday devices in the apartment.' },
   sw3: { id: 'sw3', x: 842, y: 246, w: 176, h: 56, label: 'USW Lite 8 PoE', sub: 'Powers the APs', vlan: 'core',
-    detail: 'An 8-port PoE switch that connects and powers the five access points, one cable each.' },
+    detail: 'This 8-port PoE switch connects and powers the five access points, with one cable each.' },
   newmain: { id: 'newmain', x: 28, y: 410, w: 124, h: 64, label: 'NewMain', sub: 'Unraid', vlan: 'unraid',
-    detail: 'The Unraid server has a VLAN to itself. Trusted VLANs can reach it for storage and apps; the IoT VLAN cannot.' },
+    detail: 'The Unraid server has a VLAN to itself, which trusted VLANs can reach for storage and apps while the IoT VLAN cannot.' },
   caca: { id: 'caca', x: 178, y: 410, w: 124, h: 64, label: 'CaCa', sub: 'Always on', vlan: 'server',
-    detail: 'The always-on Proxmox node. It shares the server VLAN with Adell.' },
+    detail: 'CaCa is the Proxmox node that stays on, and it shares the server VLAN with Adell.' },
   adell: { id: 'adell', x: 328, y: 410, w: 124, h: 64, label: 'Adell', sub: 'On demand', vlan: 'server',
-    detail: 'The Proxmox node I wake when I need it. It shares the server VLAN with CaCa for live migration and PXE boot.' },
+    detail: 'Adell is the Proxmox node I wake when I need it, and it shares the server VLAN with CaCa for live migration and PXE boot.' },
   clients: { id: 'clients', x: 476, y: 412, w: 168, h: 60, label: 'Workstations', sub: 'Laptops, desktops', vlan: 'default',
-    detail: 'Everyday devices on the default VLAN. They can reach the servers; the IoT VLAN cannot reach them.' },
+    detail: 'Everyday devices sit on the default VLAN, where they can reach the servers but the IoT VLAN cannot reach them.' },
   aps: { id: 'aps', x: 842, y: 410, w: 176, h: 62, label: '5 UniFi APs', sub: 'Wi-Fi', vlan: 'core',
     detail: 'Five access points broadcast two separate Wi-Fi networks across the apartment, powered over PoE from the Lite 8.' },
   wmain: { id: 'wmain', x: 772, y: 548, w: 150, h: 56, label: 'Main WLAN', sub: 'WPA3-Enterprise', vlan: 'default',
     detail: 'The main Wi-Fi uses WPA3-Enterprise with RADIUS on the UDM Pro, so every device has its own credentials.' },
   wiot: { id: 'wiot', x: 938, y: 548, w: 146, h: 56, label: 'IoT WLAN', sub: 'Isolated', vlan: 'iot',
-    detail: 'Smart devices get internet access and nothing else. Firewall rules block them from every other VLAN.' },
+    detail: 'Smart devices get internet access and nothing else, because firewall rules block them from every other VLAN.' },
 };
 
 interface Edge { from: string; to: string; redundant?: boolean }
@@ -56,10 +56,10 @@ const LEGEND: { v: Vlan; label: string }[] = [
 ];
 
 const VLAN_INFO: Record<Vlan, { label: string; blurb: string }> = {
-  unraid: { label: 'Unraid VLAN', blurb: 'NewMain on its own. Trusted VLANs can reach it for storage and apps; the IoT VLAN cannot.' },
-  server: { label: 'Server VLAN', blurb: 'CaCa and Adell, the Proxmox cluster, on a shared segment so they can live-migrate VMs and PXE boot.' },
-  default: { label: 'Default VLAN', blurb: 'Workstations and the main WPA3-Enterprise Wi-Fi. They can reach the servers; the IoT VLAN cannot reach them.' },
-  iot: { label: 'IoT VLAN', blurb: 'Smart devices get internet access and nothing else. Firewall rules block this segment from every other VLAN.' },
+  unraid: { label: 'Unraid VLAN', blurb: 'NewMain sits on this VLAN by itself, and trusted VLANs can reach it for storage and apps while the IoT VLAN cannot.' },
+  server: { label: 'Server VLAN', blurb: 'CaCa and Adell, the Proxmox cluster, share this segment so they can live-migrate VMs and PXE boot.' },
+  default: { label: 'Default VLAN', blurb: 'Workstations and the main WPA3-Enterprise Wi-Fi sit here, and they can reach the servers while the IoT VLAN cannot reach them.' },
+  iot: { label: 'IoT VLAN', blurb: 'Smart devices get internet access and nothing else, because firewall rules block this segment from every other VLAN.' },
   core: { label: 'Core network', blurb: 'The gateway and switches that route between the VLANs.' },
 };
 

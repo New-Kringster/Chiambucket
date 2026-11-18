@@ -7,18 +7,18 @@ import type { InfoItem } from '../../components/InfoModal';
 
 /** The layers of a build, from the chip to the cloud (the Hello chapter). */
 export const LAYERS = [
-  { name: 'Firmware', line: 'C and C++ on ESP32, Arduino and M5Stack boards, or MicroPython when it suits.' },
-  { name: 'Hardware', line: 'Schematics and boards in KiCad, soldered at home, SMD parts included.' },
-  { name: 'Software', line: 'Web apps in Next.js and TypeScript, small Python servers in Docker.' },
-  { name: 'Infrastructure', line: 'A homelab on Unraid, Proxmox and Docker that my projects run on.' },
-  { name: 'Design', line: 'Enclosures in Onshape, renders in Blender, interfaces in Figma, films in DaVinci Resolve.' },
+  { name: 'Firmware', line: 'I write C and C++ for ESP32, Arduino and M5Stack boards, or MicroPython when it suits.' },
+  { name: 'Hardware', line: 'I draw schematics and boards in KiCad and solder them at home, SMD parts included.' },
+  { name: 'Software', line: 'I build web apps in Next.js and TypeScript and run small Python servers in Docker.' },
+  { name: 'Infrastructure', line: 'My projects run on my own homelab, built on Unraid, Proxmox and Docker.' },
+  { name: 'Design', line: 'I model enclosures in Onshape, render in Blender, design interfaces in Figma and edit films in DaVinci Resolve.' },
 ];
 
 /** The OCR Reader set piece: one beat per stretch of the pinned scene. */
 export const READER_BEATS = [
-  { title: 'PCB designed in KiCad and manufactured by JLCPCB', text: 'A four-layer board built around an ESP32-S3 and an OV2640 camera, with LoRa, battery charging and LED lights on board.' },
-  { title: 'A case with no screws', text: 'Its case, modelled in Onshape, snaps shut with side clips and holds the board on posts, no tools needed.' },
-  { title: 'DrumNET NN, Runs on Device', text: 'A 693K-parameter network finds the drums, reads each digit three times and votes, all on the ESP32-S3, in about two seconds.' },
+  { title: 'PCB designed in KiCad and manufactured by JLCPCB', text: 'The four-layer board is built around an ESP32-S3 and an OV2640 camera, and it carries LoRa, battery charging and LED lights.' },
+  { title: 'A case with no screws', text: 'I modelled it in Onshape, and it snaps shut with side clips and holds the board on posts without tools.' },
+  { title: 'DrumNET NN, Runs on Device', text: 'A 693K-parameter network finds the drums, reads each digit three times and votes on it, all on the ESP32-S3 in about two seconds.' },
 ];
 
 /* ── Flagship project cards ── */
@@ -43,7 +43,7 @@ export const OCR_CARD: Flagship = {
   badge: 'Flagship project',
   gold: true,
   kind: 'School project, Nanyang Polytechnic',
-  lead: 'A water meter reader I built end to end: my own board, a case with no screws and DrumNet, a neural network that reads the drums on the chip and sends only the number over LoRaWAN.',
+  lead: 'I built this water meter reader end to end, from the board and a case with no screws to DrumNet, a neural network that reads the drums on the chip, so only the number goes out over LoRaWAN.',
   stats: [{ v: '693K', l: 'parameter model' }, { v: '~2 s', l: 'per reading' }, { v: '4-layer', l: 'custom PCB' }, { v: 'LoRaWAN', l: 'low-power link' }],
   tools: [{ src: '/images/esp-icon.webp', alt: 'ESP32-S3' }, { src: '/images/Kicad-icon.webp', alt: 'KiCad' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }, { src: '/images/PlatformIO-icon.webp', alt: 'PlatformIO' }],
   poster: '/images/ocr-reader-flagship.webp',
@@ -57,7 +57,7 @@ export const JUNE_CARD: Flagship = {
   name: 'Project June',
   badge: 'Highlighted hardware build',
   kind: 'Personal project',
-  lead: 'A 5G rover I can drive wherever there is signal. Three phones stream its view to my dashboard while its sensors report what is around it. Concept to first drive took three weeks.',
+  lead: 'A 5G rover whose three phones stream its view to my dashboard while its sensors report what is around it. It took three weeks to go from the first concept to the first drive.',
   stats: [{ v: '3', l: 'live video streams' }, { v: '5G', l: 'cellular link' }, { v: '8+', l: 'onboard sensors' }, { v: '3 weeks', l: 'concept to drive' }],
   tools: [{ src: '/images/esp-icon.webp', alt: 'ESP32-S3' }, { src: '/images/Kicad-icon.webp', alt: 'KiCad' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }, { src: '/images/PlatformIO-icon.webp', alt: 'PlatformIO' }],
   poster: '/images/home/june-banner.webp',
@@ -71,7 +71,7 @@ export const BEAD_CARD: Flagship = {
   name: 'BeadReader',
   badge: 'Highlighted software build',
   kind: 'Personal project',
-  lead: 'A private book reader for a few friends. I publish books in Markdown or as webtoons, they sign in with one access code, and friends on the same book see each other reading live.',
+  lead: 'A book reader where I publish books in Markdown or as webtoons, my friends sign in with one access code, and anyone on the same book can see the others reading live.',
   stats: [{ v: 'Live', l: 'read-together presence' }, { v: 'SQL', l: 'enforced content gate' }, { v: 'Offline', l: 'works without a connection' }, { v: '1 click', l: 'to deploy your own' }],
   tools: [{ src: '/images/nextjs-icon.webp', alt: 'Next.js' }, { src: '/images/supabase-icon.webp', alt: 'Supabase' }, { src: '/images/tailwind-icon.webp', alt: 'Tailwind CSS' }, { src: '/images/cloudflare-icon.webp', alt: 'Cloudflare R2' }],
   poster: '/images/home/bead-banner.webp',
@@ -86,14 +86,14 @@ export type Project = {
   highlight?: boolean; url: string | null; icons: { src: string; alt: string }[];
 };
 export const PROJECTS: Project[] = [
-  { id: 'proj-pip', title: 'Pip', blurb: 'A desk pet on an M5Stack Tab5 with an AI agent harness for a brain. It drives a browser and builds its own apps.', img: '/images/pip-pf-context.webp', type: 'personal', highlight: true, url: '/pip', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32-P4' }, { src: '/images/PlatformIO-icon.webp', alt: 'PlatformIO' }, { src: '/images/docker-icon.webp', alt: 'Docker' }] },
-  { id: 'proj-lora', title: 'LoRA Messenger', blurb: 'Two ESP32 handhelds: text over LoRa, rough two-way voice over ESP-NOW. My first PCB.', img: '/images/borlocator-pf-context.webp', type: 'personal', highlight: true, url: '/brolocator', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32' }, { src: '/images/Kicad-icon.webp', alt: 'KiCad' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }] },
-  { id: 'proj-lumen', title: 'LUMEN', blurb: 'A voice-controlled room on an ESP32: Whisper and DeepSeek turn speech into one JSON command over MQTT.', img: '/images/lumen-pf-context.webp', type: 'school', highlight: true, url: '/lumen', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32' }, { src: '/images/python-icon.webp', alt: 'Python' }, { src: '/images/docker-icon.webp', alt: 'Docker' }] },
-  { id: 'proj-ema', title: 'EMA Smart Home', blurb: 'Four BeagleBone Black nodes report to a SocketIO server with a live 3D dashboard. Graded A.', img: '/images/Ema-pf-context.webp', type: 'school', url: '/csdp', icons: [{ src: '/images/figma-icon.webp', alt: 'Figma' }, { src: '/images/resolve-icon.webp', alt: 'DaVinci Resolve' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }] },
-  { id: 'proj-pandus', title: 'Pandus Dispenser', blurb: 'My first school project: a six-part 3D-printed syrup dispenser run by an Arduino Uno.', img: '/images/pandusarticle.webp', type: 'school', url: '/pandus', icons: [{ src: '/images/onshape-icon.webp', alt: 'Onshape' }, { src: '/images/resolve-icon.webp', alt: 'DaVinci Resolve' }] },
+  { id: 'proj-pip', title: 'Pip', blurb: 'A desk pet on an M5Stack Tab5 with an AI agent harness for a brain, so it can drive a browser and build its own apps.', img: '/images/pip-pf-context.webp', type: 'personal', highlight: true, url: '/pip', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32-P4' }, { src: '/images/PlatformIO-icon.webp', alt: 'PlatformIO' }, { src: '/images/docker-icon.webp', alt: 'Docker' }] },
+  { id: 'proj-lora', title: 'LoRA Messenger', blurb: 'Two ESP32 handhelds that send text over LoRa and rough two-way voice over ESP-NOW, on my first PCB.', img: '/images/borlocator-pf-context.webp', type: 'personal', highlight: true, url: '/brolocator', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32' }, { src: '/images/Kicad-icon.webp', alt: 'KiCad' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }] },
+  { id: 'proj-lumen', title: 'LUMEN', blurb: 'A voice-controlled room on an ESP32, where Whisper and DeepSeek turn speech into one JSON command sent over MQTT.', img: '/images/lumen-pf-context.webp', type: 'school', highlight: true, url: '/lumen', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32' }, { src: '/images/python-icon.webp', alt: 'Python' }, { src: '/images/docker-icon.webp', alt: 'Docker' }] },
+  { id: 'proj-ema', title: 'EMA Smart Home', blurb: 'A team smart home, graded A, where four BeagleBone Black nodes report to a SocketIO server with a live 3D dashboard.', img: '/images/Ema-pf-context.webp', type: 'school', url: '/csdp', icons: [{ src: '/images/figma-icon.webp', alt: 'Figma' }, { src: '/images/resolve-icon.webp', alt: 'DaVinci Resolve' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }] },
+  { id: 'proj-pandus', title: 'Pandus Dispenser', blurb: 'My first school project was a six-part 3D-printed syrup dispenser run by an Arduino Uno.', img: '/images/pandusarticle.webp', type: 'school', url: '/pandus', icons: [{ src: '/images/onshape-icon.webp', alt: 'Onshape' }, { src: '/images/resolve-icon.webp', alt: 'DaVinci Resolve' }] },
   { id: 'proj-elecf', title: 'ELEC-F Concept', blurb: 'A walk-in freezer alarm on M5Stack that counts down when someone is shut inside.', img: '/images/elef2-pf-context.webp', type: 'school', url: '/elecf', icons: [{ src: '/images/figma-icon.webp', alt: 'Figma' }, { src: '/images/ps-pf-icon.webp', alt: 'Photoshop' }] },
   { id: 'proj-kauli', title: 'Kauli Concept', blurb: 'A product concept I pitched for a communication-skills module, rendered in Blender.', img: '/images/kauli3-pf-context.webp', type: 'school', url: null, icons: [{ src: '/images/blender-icon.webp', alt: 'Blender' }] },
-  { id: 'proj-sol', title: 'Series One Light', blurb: 'An ultralight gaming mouse shell, aiming for about 20 g, based on the ZeroMouse.', img: '/images/Series1l-pf-context.webp', type: 'personal', url: null, icons: [{ src: '/images/onshape-icon.webp', alt: 'Onshape' }] },
+  { id: 'proj-sol', title: 'Series One Light', blurb: 'An ultralight gaming mouse shell based on the ZeroMouse, which I am aiming to bring down to about 20 g.', img: '/images/Series1l-pf-context.webp', type: 'personal', url: null, icons: [{ src: '/images/onshape-icon.webp', alt: 'Onshape' }] },
   { id: 'proj-copyboard', title: 'Copy Board', blurb: 'A KiCad recreation of my school’s dev board, made because I couldn’t bring the original home.', img: '/images/CopyBoard-pf-context.webp', type: 'personal', url: null, icons: [{ src: '/images/Kicad-icon.webp', alt: 'KiCad' }] },
   { id: 'proj-mc', title: 'Minecraft Live Map', blurb: 'A Paper server in Docker on my homelab, with a live Dynmap of the world.', img: '/images/mc-pf-context.webp', type: 'personal', url: null, icons: [{ src: '/images/docker-icon.webp', alt: 'Docker' }] },
   { id: 'proj-webdev', title: 'Web Development Prj', blurb: 'My first working website, in HTML and CSS, for my web development class.', img: '/images/tht-cover.webp', type: 'school', url: null, icons: [{ src: '/images/vscode-icon.webp', alt: 'VS Code' }] },
@@ -110,26 +110,26 @@ export const BENCH: Bench[] = [
   {
     name: 'Shebang',
     status: 'My hosting platform',
-    what: 'One account for sign-in, static pages, file hosting, short links and a Postgres database per project, reachable through one REST API or one MCP server, so my coding agents can publish for me. The MCP client is open source and on npm.',
+    what: 'It gives me one account for sign-in, static pages, file hosting, short links and a Postgres database per project, reachable through one REST API or one MCP server, so my coding agents can publish for me. The MCP client is open source and on npm.',
     stack: ['Next.js 16', 'Self-hosted Supabase', 'Postgres', 'MCP', 'Docker'],
     link: { label: 'shebang-mcp on GitHub', url: 'https://github.com/New-Kringster/shebang-mcp' },
   },
   {
     name: 'Pip',
     status: 'In progress',
-    what: 'A desk companion on an M5Stack Tab5 that talks to an AI agent running at home. It switches between several desktops, runs small applets it can build on request, and uses its camera, with tear-free page-flipped animation on the 1280 by 720 screen.',
+    what: 'A desk companion on an M5Stack Tab5 that talks to an AI agent running at home. It switches between several desktops, runs small applets it can build on request, and uses its camera.',
     stack: ['ESP32-P4', 'M5Stack Tab5', 'PlatformIO', 'Lua', 'Python'],
   },
   {
     name: 'NCIR thermometer demos',
     status: 'Firmware',
-    what: 'Live infrared temperature on M5Stack screens for the NCIR and NCIR 2 sensors. The NCIR 2 firmware talks to the sensor’s own I2C register map with no vendor library, and one codebase runs on the CoreS3 and the classic Basic.',
+    what: 'These show live infrared temperature on M5Stack screens for the NCIR and NCIR 2 sensors. The NCIR 2 firmware talks to the sensor’s own I2C register map with no vendor library, and one codebase runs on the CoreS3 and the classic Basic.',
     stack: ['M5Stack CoreS3', 'C++', 'I2C', 'PlatformIO'],
   },
   {
     name: 'Flashdeck',
     status: 'Tooling',
-    what: 'A shelf for my firmware with a browser flasher. Plug in an ESP32 and ESP Web Tools picks the image built for that chip. The server is plain Python with no dependencies.',
+    what: 'A shelf for my firmware with a browser flasher, so when I plug in an ESP32, ESP Web Tools picks the image built for that chip. The server is plain Python with no dependencies.',
     stack: ['Python', 'Web Serial', 'ESP Web Tools'],
   },
 ];
@@ -145,22 +145,22 @@ const SKILL_HARDWARE: InfoItem = {
 };
 const SKILL_FIRMWARE: InfoItem = {
   eyebrow: 'Firmware', title: 'Microcontrollers I build with',
-  blurb: 'Most of my builds run on a microcontroller. I write the firmware in C and C++ with PlatformIO, or MicroPython when it suits.',
+  blurb: 'Most of my builds run on a microcontroller, and I write the firmware in C and C++ with PlatformIO, or in MicroPython when it suits.',
   points: ['ESP32, my default for anything wireless', 'M5Stack boards when I need a screen and buttons in a hurry', 'Arduino Uno and the ATmega328 for simpler builds', 'BeagleBone Black as a Linux brain for a larger system'],
   chips: ['ESP32', 'M5Stack', 'Arduino', 'BeagleBone', 'PlatformIO', 'C / C++', 'MicroPython'],
   links: [{ label: 'Project June', url: '/project-june' }, { label: 'LUMEN', url: '/lumen' }],
 };
 const SKILL_SOFTWARE: InfoItem = {
   eyebrow: 'Software', title: 'Web apps and servers',
-  blurb: 'Web apps in Next.js and TypeScript, and small Python servers in Docker.',
+  blurb: 'I build web apps in Next.js and TypeScript and write small Python servers that run in Docker.',
   points: ['BeadReader, on Next.js, Supabase Postgres and Cloudflare R2', 'LUMEN, a FastAPI server that turns speech into room commands', 'Shebang, my own hosting platform', 'This site, in Next.js on Vercel'],
   chips: ['Next.js', 'TypeScript', 'Supabase', 'Postgres', 'Python', 'FastAPI', 'Docker'],
   links: [{ label: 'BeadReader', url: '/beadreader' }, { label: 'LUMEN', url: '/lumen' }],
 };
 const SKILL_INFRA: InfoItem = {
   eyebrow: 'Infrastructure', title: 'A homelab of my own',
-  blurb: 'A self-hosted homelab on Unraid, Proxmox and Docker, behind Nginx and a segmented UniFi network.',
-  points: ['Self-hosted services behind Nginx Proxy Manager and CrowdSec', 'A WireGuard and Tailscale mesh to reach home from anywhere', 'coturn and MQTT that back real hardware projects'],
+  blurb: 'I run a self-hosted homelab on Unraid, Proxmox and Docker, behind Nginx and a segmented UniFi network.',
+  points: ['Self-hosted services behind Nginx Proxy Manager and CrowdSec', 'A WireGuard and Tailscale mesh to reach home from anywhere', 'coturn and MQTT servers that my hardware projects rely on'],
   chips: ['Unraid', 'Proxmox', 'Docker', 'Nginx', 'Tailscale', 'WireGuard', 'UniFi'],
   link: { label: 'Explore the HomeLab', url: '/homelab' },
 };
@@ -172,7 +172,7 @@ const SKILL_CAD: InfoItem = {
 };
 const SKILL_DESIGN: InfoItem = {
   eyebrow: 'Design', title: 'Interfaces and posters',
-  blurb: 'Interfaces in Figma and Spline, posters in Photoshop.',
+  blurb: 'I design interfaces in Figma and Spline and make posters in Photoshop.',
   points: ['The Project June operator console and the EMA smart-home dashboard', 'The ELEC-F project poster'],
   chips: ['Figma', 'Spline', 'Photoshop'],
   media: '/images/Cdyspstart.webp',
@@ -180,7 +180,7 @@ const SKILL_DESIGN: InfoItem = {
 };
 const SKILL_WIRELESS: InfoItem = {
   eyebrow: 'Wireless', title: 'Radios and live links',
-  blurb: 'LoRa for range, ESP-NOW for quick local links, MQTT for telemetry and WebRTC for live video over cellular.',
+  blurb: 'I use LoRa for range, ESP-NOW for quick local links, MQTT for telemetry and WebRTC for live video over cellular.',
   points: ['Three live WebRTC camera streams over 5G on Project June', 'Long-range text on LoRa and two-way voice on ESP-NOW', 'LoRaWAN uplinks from the OCR Reader'],
   chips: ['LoRa', 'LoRaWAN', 'ESP-NOW', 'MQTT', 'WebRTC', '5G'],
 };
@@ -193,21 +193,21 @@ const SKILL_VIDEO: InfoItem = {
 
 const SKILL_PHOTOS: InfoItem = {
   eyebrow: 'Photography', title: 'Photos',
-  blurb: 'Photography helps me explore more of my creativity: mostly travel, from New Zealand, China and Europe.',
+  blurb: 'Photography helps me explore more of my creativity, and most of my photos are from travels in New Zealand, China and Europe.',
   link: { label: 'See every album', url: '/photography' },
 };
 
 export type Tile = { key: string; word: string; line: string; img?: string; video?: { webm: string; mp4: string; poster: string }; fit?: 'cover' | 'contain'; pos?: string; size: 'xl' | 'tall' | 'wide' | 'sq'; item: InfoItem };
 export const TILES: Tile[] = [
-  { key: 'hw', word: 'Hardware', line: 'Boards I lay out and solder.', img: '/images/CopyBoard-pf-context.webp', size: 'xl', item: SKILL_HARDWARE },
-  { key: 'fw', word: 'Firmware', line: 'C, C++ and MicroPython.', img: '/images/waterslop/cardputer.webp', fit: 'contain', size: 'tall', item: SKILL_FIRMWARE },
-  { key: 'sw', word: 'Software', line: 'Web apps and small servers.', img: '/images/beadreader/contents-dark.webp', pos: '50% 0%', size: 'tall', item: SKILL_SOFTWARE },
-  { key: 'cad', word: '3D and CAD', line: 'Cases that fit first time.', img: '/images/waterslop/enc-final.webp', size: 'sq', item: SKILL_CAD },
-  { key: 'infra', word: 'Infrastructure', line: 'Three servers at home.', img: '/images/hl-newmain.png', fit: 'contain', size: 'sq', item: SKILL_INFRA },
-  { key: 'radio', word: 'Wireless', line: 'LoRa, ESP-NOW, MQTT, 5G.', img: '/images/Brolocator1.webp', pos: '50% 85%', size: 'sq', item: SKILL_WIRELESS },
-  { key: 'video', word: 'Video', line: 'A film for every build.', video: { webm: '/images/Davinci-showcase.webm', mp4: '/images/Davinci-showcase.mp4', poster: '/images/Davinci-showcase-poster.webp' }, size: 'wide', item: SKILL_VIDEO },
-  { key: 'ui', word: 'Design', line: 'Interfaces and posters.', img: '/images/Cdyspstart.webp', size: 'sq', item: SKILL_DESIGN },
-  { key: 'photo', word: 'Photography', line: 'Travel, mostly.', img: '/images/home/gal-12.webp', size: 'wide', item: SKILL_PHOTOS },
+  { key: 'hw', word: 'Hardware', line: 'Boards I lay out and solder', img: '/images/CopyBoard-pf-context.webp', size: 'xl', item: SKILL_HARDWARE },
+  { key: 'fw', word: 'Firmware', line: 'C, C++ and MicroPython', img: '/images/waterslop/cardputer.webp', fit: 'contain', size: 'tall', item: SKILL_FIRMWARE },
+  { key: 'sw', word: 'Software', line: 'Web apps and small servers', img: '/images/beadreader/contents-dark.webp', pos: '50% 0%', size: 'tall', item: SKILL_SOFTWARE },
+  { key: 'cad', word: '3D and CAD', line: 'Cases that fit the first time', img: '/images/waterslop/enc-final.webp', size: 'sq', item: SKILL_CAD },
+  { key: 'infra', word: 'Infrastructure', line: 'Three servers at home', img: '/images/hl-newmain.png', fit: 'contain', size: 'sq', item: SKILL_INFRA },
+  { key: 'radio', word: 'Wireless', line: 'LoRa, ESP-NOW, MQTT and 5G', img: '/images/Brolocator1.webp', pos: '50% 85%', size: 'sq', item: SKILL_WIRELESS },
+  { key: 'video', word: 'Video', line: 'A film for every build', video: { webm: '/images/Davinci-showcase.webm', mp4: '/images/Davinci-showcase.mp4', poster: '/images/Davinci-showcase-poster.webp' }, size: 'wide', item: SKILL_VIDEO },
+  { key: 'ui', word: 'Design', line: 'Interfaces and posters', img: '/images/Cdyspstart.webp', size: 'sq', item: SKILL_DESIGN },
+  { key: 'photo', word: 'Photography', line: 'Mostly travel', img: '/images/home/gal-12.webp', size: 'wide', item: SKILL_PHOTOS },
 ];
 
 /** Highlights from the photo library, captioned by album only. */

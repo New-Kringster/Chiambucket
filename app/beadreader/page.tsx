@@ -12,7 +12,7 @@ const DEPLOY_URL =
 export const metadata: Metadata = {
   title: 'BeadReader | Braven Chiam',
   description:
-    'A private, invite-only book reader: access-code login, per-reader resume and themes, live presence, a content gate enforced in SQL, webtoons and shared reading stats. Built with Next.js, Supabase and Cloudflare R2.',
+    'A private, invite-only book reader I built with Next.js, Supabase and Cloudflare R2, with access-code login, per-reader resume and themes, live presence, a content gate enforced in SQL, webtoons and shared reading stats.',
   alternates: { canonical: 'https://www.chiambucket.com/beadreader' },
   openGraph: {
     title: 'BeadReader | Braven Chiam',
@@ -29,7 +29,7 @@ const jsonLd = {
   '@type': 'Article',
   headline: 'BeadReader',
   description:
-    'A private, invite-only online book reader built with Next.js, Supabase and Cloudflare R2: access-code auth with an HMAC-signed cookie, per-reader resume and themes, live presence, an explicit-content gate enforced in SQL, webtoons and a shared reading-stats dashboard.',
+    'A private, invite-only online book reader built with Next.js, Supabase and Cloudflare R2, with access-code login through an HMAC-signed cookie, per-reader resume and themes, live presence, an explicit-content gate enforced in SQL, webtoons and a shared reading-stats dashboard.',
   image: 'https://www.chiambucket.com/images/beadreader-cover.webp',
   author: { '@type': 'Person', name: 'Braven Chiam', url: 'https://www.chiambucket.com/' },
   publisher: { '@type': 'Person', name: 'Braven Chiam' },
@@ -60,7 +60,7 @@ export default function BeadReaderPage() {
               hidden there (kept for SEO/a11y). On phones the wide promo crops out its own
               wordmark, so the title becomes visible and leads instead. */}
           <h1 className="art-title br-hero-title">Bead<em>Reader</em></h1>
-          <p className="art-lead">A private online book reader for a few friends. The admin publishes books in Markdown or as image webtoons, readers log in with one access code, and the app remembers where each reader stopped. Readers can see who else is reading, send a wave or a short note, and compare progress on a shared stats dashboard.</p>
+          <p className="art-lead">BeadReader is a private online book reader for a few friends, where the admin publishes books in Markdown or as image webtoons and readers log in with one access code. The app remembers where each reader stopped, and readers can see who else is reading, send a wave or a short note, and compare progress on a shared stats dashboard.</p>
           <div className="art-toolrow">
             <span className="hp-key">Built with</span>
             <div className="icon-stack">
@@ -116,80 +116,80 @@ export default function BeadReaderPage() {
 
           <section id="room" className="art-section" data-reveal>
             <h2>Private access</h2>
-            <p>BeadReader is a private library for one admin and a few readers. There are no passwords and no sign-up. One access code is your identity: it decides whether you are the admin or a reader, and whether you can see explicit chapters. Enter it once and a signed cookie keeps you logged in.</p>
-            <p>The admin creates a reader and hands them a code. Revoke the code and they are out on their next request.</p>
+            <p>BeadReader is a private library for one admin and a few readers, and it has no passwords and no sign-up. Instead, a single access code is your identity, which decides whether you are the admin or a reader and whether you can see explicit chapters, and once you enter it, a signed cookie keeps you logged in.</p>
+            <p>The admin creates each reader and hands them a code, and if the admin revokes that code, the reader is logged out on their next request.</p>
             <figure className="art-fig">
               <img src="/images/beadreader/login-light.webp" alt="The BeadReader login screen with one access code field" loading="lazy" />
-              <figcaption>The login screen. One code sets identity, role and content access.</figcaption>
+              <figcaption>The login screen with its one access code field</figcaption>
             </figure>
           </section>
 
           <section id="library" className="art-section" data-reveal>
             <h2>Resume and themes</h2>
-            <p>Opening a book jumps back to the chapter and scroll position you last reached. Position is stored as a fraction of the chapter, not a pixel offset, so it survives a font size change. Stop mid-paragraph on your phone and you land in the same place on a laptop.</p>
-            <p>Background and text colour, font size and a scroll or paginated layout are saved per reader. The contents page marks each chapter you have opened, shows a progress bar on the one in progress, and lets you mark a chapter unread.</p>
+            <p>Opening a book jumps back to the chapter and scroll position you last reached. The position is stored as a fraction of the chapter rather than a pixel offset, so it still holds after a font size change, and if you stop mid-paragraph on your phone, you land in the same place on a laptop.</p>
+            <p>BeadReader saves each reader&apos;s own background and text colour, font size and choice of a scrolling or paginated layout. The contents page marks each chapter you have opened, shows a progress bar on the one in progress and lets you mark a chapter as unread.</p>
             <div className="art-grid">
               <figure className="art-fig">
                 <img src="/images/beadreader/reader-paper.webp" alt="The reading view in the paper theme" loading="lazy" />
-                <figcaption>The reading view, paper theme.</figcaption>
+                <figcaption>The reading view in the paper theme</figcaption>
               </figure>
               <figure className="art-fig">
                 <img src="/images/beadreader/contents-light.webp" alt="A book's contents with per-reader progress" loading="lazy" />
-                <figcaption>Contents with read tracking and a progress bar.</figcaption>
+                <figcaption>The contents page with read tracking and a progress bar</figcaption>
               </figure>
             </div>
           </section>
 
           <section id="together" className="art-section" data-reveal>
             <h2>Reading together</h2>
-            <p>From the library you can see who else is online. Inside a book, the avatars of online readers sit at the top, each with a green dot. If a friend is in the same book, their avatar gets a green ring and their chapter number.</p>
-            <p>Tap the avatars to send a wave or a short note. It shows on the other reader&apos;s screen for a few seconds and is not saved. Everyone can upload a profile photo, cropped and compressed in the browser, and anyone can turn on a privacy toggle to read invisibly.</p>
+            <p>From the library you can see who else is online, and inside a book the avatars of online readers sit at the top, each with a green dot. If a friend is in the same book, their avatar also gets a green ring and their chapter number.</p>
+            <p>Tapping the avatars lets you send a wave or a short note, which shows on the other reader&apos;s screen for a few seconds and is never saved. Everyone can upload a profile photo, which is cropped and compressed in the browser, and anyone can turn on a privacy toggle to read invisibly.</p>
             <ReadingTogether />
             <figure className="art-fig">
               <img src="/images/posters/br-online.webp" alt="The menu for sending a wave or a note" loading="lazy" />
-              <figcaption>The menu for sending a wave or a short note.</figcaption>
+              <figcaption>The menu for sending a wave or a short note</figcaption>
             </figure>
           </section>
 
           <section id="gate" className="art-section" data-reveal>
             <h2>The spicy gate</h2>
-            <p>Some chapters, or passages inside a chapter, are marked explicit. Access is per reader and enforced in the database query. A reader without access never receives the gated text, not even hidden in the response, so it cannot be pulled from the raw API.</p>
-            <p>The same chapter changes with the reader. With access, you get a blurred passage that clears on a tap. Without access, you see a locked preview with a note to request it. In cal mode, every explicit passage is removed, with no markers and no pepper icon.</p>
+            <p>Some chapters, or passages inside a chapter, are marked explicit, and access to them is set for each reader and enforced in the database query. A reader without access never receives the gated text, not even hidden in the response, so it cannot be pulled from the raw API.</p>
+            <p>The same chapter looks different depending on the reader: with access you get a blurred passage that clears when you tap it, without access you see a locked preview with a note to request it, and in cal mode every explicit passage is removed, with no markers and no pepper icon.</p>
             <SpicyGate />
             <figure className="art-fig">
               <img src="/images/beadreader/contents-dark.webp" alt="A contents list with an explicit chapter marked" loading="lazy" />
-              <figcaption>Explicit chapters carry a marker for readers who can see them and are hidden from readers who cannot.</figcaption>
+              <figcaption>A contents list with an explicit chapter marked, as a reader with access sees it</figcaption>
             </figure>
           </section>
 
           <section id="books" className="art-section" data-reveal>
             <h2>Text and webtoons</h2>
-            <p>A book is either text or a webtoon, chosen when it is created. Text books are written in Markdown with a side-by-side preview, and each chapter has its own draft and published state.</p>
-            <p>For a webtoon, the admin picks a numbered image folder, previews its order and uploads straight from the browser to Cloudflare R2 with short-lived signed URLs. Readers get a gapless vertical strip with the same resume, tracking and gating as text.</p>
+            <p>Each book is either text or a webtoon, which the admin chooses when creating it. Text books are written in Markdown with a side-by-side preview, and each chapter has its own draft and published state.</p>
+            <p>For a webtoon, the admin picks a numbered folder of images, previews their order and uploads them straight from the browser to Cloudflare R2 with short-lived signed URLs. Readers then scroll through one gapless vertical strip, with the same resume, tracking and gating as a text book.</p>
             <div className="art-grid">
               <figure className="art-fig">
                 <img src="/images/beadreader/admin-books-light.webp" alt="The admin books list" loading="lazy" />
-                <figcaption>The admin books list: text and webtoon books, draft and published.</figcaption>
+                <figcaption>The admin books list with text and webtoon books, both draft and published</figcaption>
               </figure>
               <figure className="art-fig">
                 <img src="/images/beadreader/webtoon.webp" alt="A webtoon chapter as a gapless vertical strip" loading="lazy" />
-                <figcaption>A webtoon chapter as one vertical strip.</figcaption>
+                <figcaption>A webtoon chapter as one vertical strip</figcaption>
               </figure>
             </div>
           </section>
 
           <section id="stats" className="art-section" data-reveal>
             <h2>Reading stats</h2>
-            <p>Readers who share their activity appear on a common dashboard: total hours, books finished and reading streaks. A histogram shows what time of day people read, day by day, and tapping a reader opens a per-book, per-chapter breakdown of their time.</p>
-            <p>Reading time only counts while you are reading. It pauses when the tab loses focus or you go idle.</p>
+            <p>Readers who share their activity appear on a common dashboard that shows their total hours, books finished and reading streaks. A histogram shows what time of day people read, day by day, and tapping a reader opens a per-book, per-chapter breakdown of their time.</p>
+            <p>Reading time only counts while you are actually reading, so it pauses when the tab loses focus or you go idle.</p>
             <div className="art-grid">
               <figure className="art-fig">
                 <img src="/images/beadreader/stats-overview-light.webp" alt="The reading-stats overview" loading="lazy" />
-                <figcaption>The overview, with streaks.</figcaption>
+                <figcaption>The stats overview with reading streaks</figcaption>
               </figure>
               <figure className="art-fig">
                 <img src="/images/beadreader/stats-detail-light.webp" alt="A per-reader stats breakdown" loading="lazy" />
-                <figcaption>One reader, per book and per chapter.</figcaption>
+                <figcaption>One reader&apos;s time broken down by book and chapter</figcaption>
               </figure>
             </div>
           </section>
@@ -197,23 +197,23 @@ export default function BeadReaderPage() {
           <section id="instant" className="art-section" data-reveal>
             <h2>Offline and updates</h2>
             <p>A service worker caches covers, artwork and static files on the device, never HTML or API responses, and the reader preloads the next chapter, so pages open fast and use less data. The Account page shows what is cached and how much space it uses, with one button to clear it.</p>
-            <p>A public changelog and a once-per-version what&apos;s-new popup explain new features. When a newer build ships, a refresh prompt appears, based on the deploy rather than the database.</p>
+            <p>A public changelog and a what&apos;s-new popup, shown once for each version, explain new features, and a prompt to refresh appears whenever a newer build is deployed.</p>
             <div className="art-grid">
               <figure className="art-fig">
                 <img src="/images/beadreader/account-light.webp" alt="The account and storage panel" loading="lazy" />
-                <figcaption>Account and on-device storage, with a clear-all button.</figcaption>
+                <figcaption>The account page and on-device storage, with a clear-all button</figcaption>
               </figure>
               <figure className="art-fig">
                 <img src="/images/beadreader/changelog-light.webp" alt="The in-app changelog" loading="lazy" />
-                <figcaption>The changelog.</figcaption>
+                <figcaption>The in-app changelog</figcaption>
               </figure>
             </div>
           </section>
 
           <section id="stack" className="art-section" data-reveal>
             <h2>The stack</h2>
-            <p>BeadReader is a Next.js App Router app with Tailwind CSS v4, Supabase for Postgres and storage, and Cloudflare R2 for webtoon images. Auth is custom: a short HMAC-signed cookie, not Supabase Auth.</p>
-            <p>Because auth is custom, all database access runs server-side with the Supabase service role. Every table has row-level security enabled with no policies, so the public key can read nothing, and the explicit-content gate lives in the SQL query. The one-click Vercel deploy provisions Supabase through the integration and runs the migrations during the build.</p>
+            <p>BeadReader is a Next.js App Router app with Tailwind CSS v4, Supabase for Postgres and storage, and Cloudflare R2 for webtoon images, while the login uses my own short HMAC-signed cookie instead of Supabase Auth.</p>
+            <p>Because the login is custom, all database access runs on the server with the Supabase service role, and every table has row-level security turned on with no policies, so the public key can read nothing. The explicit-content gate lives in the SQL query, and the one-click Vercel deploy sets up Supabase through the integration and runs the migrations during the build.</p>
           </section>
 
         </div>

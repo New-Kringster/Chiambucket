@@ -6,7 +6,7 @@ import SafetySequence from './SafetySequence';
 import { IcGitHub } from '../../components/Icons';
 
 const DESCRIPTION =
-  'ELEC-F, a safe freezer storage system built by a team of four: two M5Stack Fire controllers with ToF, PIR and RGB units that sound an alarm when someone is shut inside a walk-in freezer too long.';
+  'ELEC-F is a safe freezer storage system my team of four built, in which two M5Stack Fire controllers with ToF, PIR and RGB units sound an alarm when someone is shut inside a walk-in freezer for too long.';
 
 export const metadata: Metadata = {
   title: 'ELEC-F | Braven Chiam',
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://www.chiambucket.com/elecf' },
   openGraph: {
     title: 'ELEC-F | Braven Chiam',
-    description: 'A freezer safety system on M5Stack: ToF door sensing, PIR presence detection, and an RGB light and buzzer alarm.',
+    description: 'A freezer safety system on M5Stack that watches the door with a ToF sensor and the room with a PIR sensor, and raises the alarm with an RGB light and a buzzer.',
     url: 'https://www.chiambucket.com/elecf',
     type: 'article',
     images: [{ url: '/images/elecf-img.webp' }],
@@ -38,11 +38,11 @@ const BackArrow = () => (
 const Fwd = () => <img src="/images/fwd-arrow.svg" alt="" />;
 
 const COMPONENTS = [
-  { img: '/images/elecf-img.webp', name: 'M5Stack Fire ×2', role: 'Controller', desc: 'Runs the timer, reads the sensors and shows the screen. The buzzer is built in.', dark: true },
-  { img: '/images/elecf-hub-mini.png', name: 'Mini Hub unit', role: 'Expansion', desc: 'Splits the Fire’s single port so every sensor can plug in.' },
-  { img: '/images/elecf-tof.png', name: 'ToF sensor', role: 'Door state', desc: 'Measures distance to tell whether the freezer door is open or closed.' },
-  { img: '/images/elecf-pir.png', name: 'PIR sensor', role: 'Presence', desc: 'Picks up body heat and movement to tell whether someone is still inside.' },
-  { img: '/images/elecf-rgb.png', name: 'RGB unit', role: 'Alarm', desc: 'Flashes with the buzzer when someone is inside past the limit.' },
+  { img: '/images/elecf-img.webp', name: 'M5Stack Fire ×2', role: 'Controller', desc: 'It runs the timer, reads the sensors and drives the screen, and it has the buzzer built in.', dark: true },
+  { img: '/images/elecf-hub-mini.png', name: 'Mini Hub unit', role: 'Expansion', desc: 'It splits the Fire’s single port so every sensor can plug in.' },
+  { img: '/images/elecf-tof.png', name: 'ToF sensor', role: 'Door state', desc: 'It measures distance to tell whether the freezer door is open or closed.' },
+  { img: '/images/elecf-pir.png', name: 'PIR sensor', role: 'Presence', desc: 'It picks up body heat and movement to tell whether someone is still inside.' },
+  { img: '/images/elecf-rgb.png', name: 'RGB unit', role: 'Alarm', desc: 'It flashes along with the buzzer when someone is inside past the limit.' },
 ];
 
 export default function ElecfPage() {
@@ -63,7 +63,7 @@ export default function ElecfPage() {
           </div>
           <span className="hp-key" style={{ display: 'block', marginBottom: '0.4rem', letterSpacing: '0.2em' }}>ELEC-F</span>
           <h1 className="art-title">Safe Freezer <em>Storage</em> System</h1>
-          <p className="art-lead">A safe freezer storage system my team of four built for an engineering course. It watches a walk-in freezer’s door and the room inside, and sounds an alarm if someone is shut in for too long.</p>
+          <p className="art-lead">ELEC-F is a safe freezer storage system my team of four built for an engineering course. It watches a walk-in freezer’s door and the room inside, and sounds an alarm if someone is shut in for too long.</p>
           <div className="art-toolrow">
             <span className="hp-key">Built with</span>
             <div className="icon-stack">
@@ -121,18 +121,18 @@ export default function ElecfPage() {
           {/* The problem */}
           <section id="Problem" className="art-section" data-reveal>
             <h2>The problem</h2>
-            <p>Factories are filling up with automation, and safety has to keep up. One risk that gets overlooked is the walk-in freezer, where a worker can be trapped inside.</p>
+            <p>As factories fill up with automation, safety has to keep up, and one risk that often gets overlooked is the walk-in freezer, where a worker can be trapped inside.</p>
             <h3>How it happens</h3>
             <ul>
-              <li>Faulty doors: worn latches jam, moisture freezes the seals shut, and emergency releases can be broken, missing or frozen over.</li>
-              <li>No one notices: nobody realises a person is still inside, and experienced workers can get careless.</li>
+              <li>The door can fail, because worn latches jam, moisture freezes the seals shut and emergency releases can be broken, missing or frozen over.</li>
+              <li>Nobody may realise a person is still inside, and experienced workers can get careless.</li>
             </ul>
             <h3>Why it is dangerous</h3>
             <ul>
-              <li>Hypothermia: cold exposure causes confusion, then unconsciousness.</li>
-              <li>Asphyxiation: a sealed freezer can run low on oxygen.</li>
-              <li>Injury: panic and escape attempts lead to falls and wounds.</li>
-              <li>Death: without a timely rescue, a long entrapment can be fatal.</li>
+              <li>The cold causes hypothermia, which brings on confusion and then unconsciousness.</li>
+              <li>A sealed freezer can run low on oxygen, which can lead to asphyxiation.</li>
+              <li>Panic and attempts to escape lead to falls and other injuries.</li>
+              <li>Without a timely rescue, being trapped for a long time can be fatal.</li>
             </ul>
             <p>Being trapped also causes panic, especially for people with cleithrophobia, the fear of being unable to escape. ELEC-F is meant to shorten the time someone is stuck and let them know help is coming.</p>
           </section>
@@ -150,16 +150,16 @@ export default function ElecfPage() {
           {/* How it works */}
           <section id="HowItWorks" className="art-section" data-reveal>
             <h2>How it works</h2>
-            <p>While the door is open, you set a time limit on the M5Stack. Closing the door starts the timer. If it runs out while someone is still inside, the alarm goes off.</p>
+            <p>While the door is open, you set a time limit on the M5Stack, and closing the door starts the timer. If the timer runs out while someone is still inside, the alarm goes off.</p>
 
             <SafetySequence />
 
-            <p>Four parts run together:</p>
+            <p>The system has four parts that run together:</p>
             <ul>
-              <li><b>Timer.</b> Set on the M5Stack while the door is open. Closing the door starts it.</li>
-              <li><b>Door sensor.</b> A time-of-flight (ToF) sensor measures distance to tell whether the door is open or closed.</li>
-              <li><b>Presence sensor.</b> A PIR sensor detects body heat and movement to tell whether someone is still in the room.</li>
-              <li><b>Alarm.</b> If the door stays closed past the limit with someone inside, the RGB unit flashes and the buzzer sounds.</li>
+              <li>The <b>timer</b> is set on the M5Stack while the door is open and starts when the door closes.</li>
+              <li>The <b>door sensor</b> is a time-of-flight (ToF) sensor that measures distance to tell whether the door is open or closed.</li>
+              <li>The <b>presence sensor</b> is a PIR sensor that detects body heat and movement to tell whether someone is still in the room.</li>
+              <li>The <b>alarm</b> flashes the RGB unit and sounds the buzzer if the door stays closed past the limit with someone inside.</li>
             </ul>
             <p>We chose ToF and PIR sensors because both keep working below freezing.</p>
           </section>
@@ -193,7 +193,7 @@ export default function ElecfPage() {
           {/* Logic */}
           <section id="Logic" className="art-section" data-reveal>
             <h2>Logic</h2>
-            <p>The full loop the M5Stack runs. The buttons set the time limit while the door is open. Once it closes, the timer runs and the sensors decide what happens next.</p>
+            <p>The flow chart below shows the full loop the M5Stack runs. The buttons set the time limit while the door is open, and once the door closes, the timer runs and the sensors decide what happens next.</p>
             <img className="art-diagram" src="/images/elecf-main.avif" alt="ELEC-F software flow chart, from setting the timer to sounding the alarm" loading="lazy" />
             <figure className="art-fig">
               <img className="art-diagram" src="/images/elecf-blockdiagram.avif" alt="ELEC-F system block diagram" loading="lazy" />
@@ -207,7 +207,7 @@ export default function ElecfPage() {
             <p>We made the freezer and its door out of cardboard to test the sensors and the timing end to end before thinking about a proper enclosure.</p>
             <div className="art-grid">
               <img src="/images/elecf-prototype2.avif" alt="ELEC-F prototype with the sensors mounted" loading="lazy" />
-              <img src="/images/elecf-prototype3.avif" alt="ELEC-F prototype, the door" loading="lazy" />
+              <img src="/images/elecf-prototype3.avif" alt="The door of the ELEC-F prototype" loading="lazy" />
             </div>
             <figure className="art-fig">
               <img src="/images/elecf-poster.avif" alt="The ELEC-F project poster" loading="lazy" />
@@ -216,7 +216,7 @@ export default function ElecfPage() {
             <div className="art-repo">
               <div className="art-repo-text">
                 <strong>ELEC-F on GitHub</strong>
-                <span>The M5Stack code for the door timer, the sensor reads and the alarm.</span>
+                <span>The repository has the M5Stack code for the door timer, the sensor readings and the alarm.</span>
               </div>
               <a className="hp-btn" href="https://github.com/New-Kringster/ELEC-F-Safe-Fridge-Concept" target="_blank" rel="noopener"><IcGitHub /> View the code on GitHub</a>
             </div>
