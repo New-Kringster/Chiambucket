@@ -2105,6 +2105,7 @@ html[data-theme="paper"] {
 .hp-md-tag.personal { background: rgba(239,122,5,0.18); color: #f0a868; border: 1px solid rgba(239,122,5,0.38); }
 .hp-md-tag.school { background: rgba(94,178,196,0.16); color: #93d6e4; border: 1px solid rgba(94,178,196,0.42); }
 .hp-md-tag.highlight { background: rgba(255,170,0,0.16); color: #ffce5a; border: 1px solid rgba(255,170,0,0.4); }
+.hp-md-tag.internship { display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(226,232,236,0.14); color: #e4eaee; border: 1px solid rgba(226,232,236,0.38); }
 .hp-md-tag.flagship { background: linear-gradient(135deg, rgba(255,230,160,0.95), rgba(243,180,68,0.95)); color: #23160a; border: 1px solid rgba(255,226,150,0.9); box-shadow: 0 4px 14px -6px rgba(243,180,68,0.7); }
 .hp-md-title { font-family: 'oswaldbold'; font-size: clamp(1.8rem, 4vw, 2.6rem); color: #f2f2f2; letter-spacing: -0.015em; margin: 8px 0 4px; }
 .hp-md-meta { font-family: 'inter'; font-size: 0.72rem; letter-spacing: 0.04em; color: rgba(232,232,232,0.5); }

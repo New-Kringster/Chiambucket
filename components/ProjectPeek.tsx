@@ -19,13 +19,13 @@ import AiMark from './AiMark';
 
 /* Project order = the homepage gallery order (also the ALL_PROJECTS order). */
 export const PEEK_ORDER: string[] = [
-  'proj-waterslop', 'proj-june', 'proj-pip', 'proj-beadreader', 'proj-lora', 'proj-lumen', 'proj-ema', 'proj-pandus', 'proj-elecf',
+  'proj-waterslop', 'proj-june', 'proj-pip', 'proj-beadreader', 'proj-pantry', 'proj-lora', 'proj-lumen', 'proj-ema', 'proj-pandus', 'proj-elecf',
   'proj-kauli', 'proj-sol', 'proj-copyboard', 'proj-webdev', 'proj-mc',
 ];
 
 const TITLES: Record<string, string> = {
   'proj-june': 'Project June', 'proj-lora': 'LoRA Messenger', 'proj-lumen': 'LUMEN',
-  'proj-beadreader': 'BeadReader', 'proj-waterslop': 'OCR Reader', 'proj-pip': 'Pip',
+  'proj-beadreader': 'BeadReader', 'proj-waterslop': 'OCR Reader', 'proj-pip': 'Pip', 'proj-pantry': 'Pantry Expiry Tracker',
   'proj-ema': 'EMA Smart Home', 'proj-pandus': 'Pandus Dispenser', 'proj-elecf': 'ELEC-F Concept',
   'proj-kauli': 'Kauli Concept', 'proj-sol': 'Series One Light', 'proj-copyboard': 'Copy Board',
   'proj-webdev': 'Web Development', 'proj-mc': 'Minecraft Live Map',
@@ -59,7 +59,7 @@ export function PeekModalContent({ id }: { id: string }) {
     </div>
   );
 
-  const hero = (img: string, alt: string, tags: string[], type: 'highlight' | 'personal' | 'school') => (
+  const hero = (img: string, alt: string, tags: string[], type: 'highlight' | 'personal' | 'school' | 'internship') => (
     <div className="hp-rd-hero">
       <img src={img} alt={alt} />
       <div className="hp-rd-hero-tags">
@@ -96,6 +96,20 @@ export function PeekModalContent({ id }: { id: string }) {
           {chapter('02', 'It uses the screen', <p>Answers come as pages and formatted text, and Pip can click through those pages with its own cursor or ask me multiple choice questions. It also builds small apps that it keeps in a drawer, either web pages served from my server or Lua scripts that run on the tablet itself.</p>)}
           {chapter('03', 'A hub for my agents', <><p>Pip runs inside the same harness as my coding sessions, hands long jobs to helper pips, and tells me when a session finishes or needs an answer.</p><img className="hp-rd-fig" src="/videos/pip/crew.webp" alt="Helper pips at work with a notepad, a laptop, blocks, a book and a flask" loading="lazy" /></>)}
           {cta('See Pip move', 'The article shows its moods, apps and desktops and how it all connects.', 'Read the full article', '/pip')}
+        </div>
+      </>
+    );
+    case 'proj-pantry': return (
+      <>
+        {hero('/images/pantry-pf-context.webp', 'The pantry tracker, a CoreS3 SE stacked on the QRCode module', ['Internship Project'], 'internship')}
+        <div className="hp-rd-body">
+          <h2 className="hp-md-title">Pantry Expiry Tracker</h2>
+          <p className="hp-md-meta">M5Stack CoreS3 SE · Module13.2 QRCode · C++ · Python · Docker · MQTT</p>
+          <p className="hp-rd-lead">An expiry tracker for the fridge door. You scan a product&rsquo;s barcode and pick when it expires, and the screen always shows what to eat first.</p>
+          {chapter('01', 'Scan, then save', <><p>The screen glows red while the scanner looks for a code, then shows the product&rsquo;s name, brand and photo from Open Food Facts or GS1 China, and you set the expiry with the Days, Weeks and Months pickers before saving it.</p><img className="hp-rd-fig" src="/images/pantry/screen-expiry-picker.webp" alt="The expiry picker on the tracker" loading="lazy" /></>)}
+          {chapter('02', 'What to eat first', <><p>The home screen sorts the pantry by expiry and turns the count red within a day and amber within a week, while scanning something already on the list opens it instead of adding it twice.</p><img className="hp-rd-fig" src="/images/pantry/screen-home.webp" alt="The home screen sorted by expiry" loading="lazy" /></>)}
+          {chapter('03', 'A server does the rest', <p>A Docker container on the home network keeps the list, looks up barcodes, serves a web page for managing pantries and publishes each pantry to Home Assistant over MQTT for reminders.</p>)}
+          {cta('Try the tracker', 'The article has a working copy of its screen, the demo video and how to set one up.', 'Read the full article', '/pantry')}
         </div>
       </>
     );
@@ -299,7 +313,7 @@ function PeekItem({ id, first, index }: { id: string; first: boolean; index: num
 /* The cover each project's reader opens with, for the peek of the next one. */
 const COVERS: Record<string, string> = {
   'proj-june': '/images/ProjJuneBanner1.webp', 'proj-lora': '/images/borlocator-pf-context.webp',
-  'proj-waterslop': '/images/ocr-reader-pf-context.webp', 'proj-pip': '/images/pip-pf-context.webp',
+  'proj-waterslop': '/images/ocr-reader-pf-context.webp', 'proj-pip': '/images/pip-pf-context.webp', 'proj-pantry': '/images/pantry-pf-context.webp',
   'proj-lumen': '/images/lumen-pf-context.webp', 'proj-beadreader': '/images/beadreader-pf-context.webp',
   'proj-ema': '/images/Ema-pf-context.webp', 'proj-pandus': '/images/pandusarticle.webp',
   'proj-elecf': '/images/elef2-pf-context.webp', 'proj-kauli': '/images/kauli3-pf-context.webp',
