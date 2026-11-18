@@ -508,13 +508,24 @@ export default function HomeStory() {
         /* ── Contact: the sign-off assembles; the field settles at dusk ── */
         gsap.from('.hs-contact-title .hs-c', { yPercent: 100, opacity: 0, duration: 1.1, ease: 'expo.out', stagger: 0.03,
           scrollTrigger: { trigger: '.hs-contact', start: 'top 70%', toggleActions: 'play none none reverse' } });
-        gsap.fromTo('.hs-dusk img', { yPercent: -3, scale: 1.04 }, { yPercent: 0, scale: 1, ease: 'none',
+        // scale only, from the painting's foot: a shift would uncover a strip of plain sky under the footer
+        // whenever the scroll stops short of the tween's end (it did after a gallery filter shortened the page)
+        gsap.fromTo('.hs-dusk img', { scale: 1.06 }, { scale: 1, ease: 'none',
           scrollTrigger: { trigger: '.hs-contact', start: 'top bottom', end: 'bottom bottom', scrub: SCRUB } });
       }, el);
 
       const refresh = () => ScrollTrigger.refresh();
       window.addEventListener('load', refresh);
       document.fonts?.ready.then(refresh);
+      // the page's height changes after load (a gallery filter, late images): measure every trigger again
+      let lastH = el.offsetHeight, rt: ReturnType<typeof setTimeout> | undefined;
+      const heightRo = new ResizeObserver(() => {
+        if (Math.abs(el.offsetHeight - lastH) < 2) return;
+        lastH = el.offsetHeight;
+        clearTimeout(rt); rt = setTimeout(refresh, 200);
+      });
+      heightRo.observe(el);
+      disposers.push(() => { heightRo.disconnect(); clearTimeout(rt); });
       el.classList.add('hs-motion');
 
       cleanup = () => {
