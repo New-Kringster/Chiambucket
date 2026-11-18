@@ -170,6 +170,7 @@ export default function PantrySim() {
 
   /* ── gestures: swipe a card left for the bin, swipe right anywhere to go back ── */
   const g = useRef<{ x: number; y: number; id: number | null; moved: boolean; base: number } | null>(null);
+  const dragged = useRef(false); // a drag just ended: the click that follows it is not a tap
   const UNIT = () => (root.current?.querySelector('.pt-core-screen') as HTMLElement | null)?.clientWidth ?? 320;
   const onDown = (e: React.PointerEvent, id: number | null) => {
     g.current = { x: e.clientX, y: e.clientY, id, moved: false, base: id !== null && open === id ? -0.19 * UNIT() : 0 };
@@ -184,6 +185,7 @@ export default function PantrySim() {
     const s = g.current; g.current = null; if (!s) return;
     const dx = e.clientX - s.x;
     if (s.moved) {
+      dragged.current = true; setTimeout(() => { dragged.current = false; }, 0);
       if (dx > 40 && screen !== 'home') { go('home', 'back'); setDrag(null); return; }
       if (s.id !== null && screen === 'home') setOpen(s.base + dx < -0.09 * UNIT() ? s.id : null);
       else if (dx > 40) setOpen(null);
@@ -193,12 +195,26 @@ export default function PantrySim() {
     setDrag(null);
   };
   const tapCard = (it: Item) => {
-    if (g.current?.moved) return;
+    if (dragged.current) return;
     if (open !== null) { setOpen(null); return; }
     setCur(it.code); go('detail');
   };
 
   /* ── the demo it plays by itself until touched ── */
+  /* a card just saved scrolls into view inside the list (never the page) */
+  useEffect(() => {
+    if (fresh === null) return;
+    const t = setTimeout(() => {
+      const row = root.current?.querySelector<HTMLElement>('.pxs-row.is-fresh');
+      const list = row?.parentElement;
+      if (!row || !list) return;
+      const pad = list.clientHeight * 0.18;
+      if (row.offsetTop + row.offsetHeight > list.scrollTop + list.clientHeight - pad) list.scrollTo({ top: row.offsetTop + row.offsetHeight - list.clientHeight + pad, behavior: 'smooth' });
+      else if (row.offsetTop < list.scrollTop) list.scrollTo({ top: row.offsetTop, behavior: 'smooth' });
+    }, 320);
+    return () => clearTimeout(t);
+  }, [fresh, screen]);
+
   const viewRef = useRef(inView); viewRef.current = inView;
   const manualRef = useRef(manual); manualRef.current = manual;
   useEffect(() => {
