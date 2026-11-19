@@ -64,8 +64,10 @@ export default function ArchivePage() {
       <header className="ar-hero ar-wrap">
         <h1 className="ar-title">Two years of chiambucket.com</h1>
         <p className="ar-lede">
-          I put the first version of this site online in September 2024, and I have redesigned it seven times since.
-          Every earlier version still runs at its own address, so you can open each one and click around it as it was.
+          It started off as a WordPress page where I shared links to some of my self-hosted services, but it has since turned into my
+          personal blog and portfolio. Three migrations and eight redesigns later, this is the biggest redesign of my website to date.
+          With the help of Claude, I have archived every major design overhaul on this page, and you can visit any of them to see what
+          chiambucket.com looked like in the past.
         </p>
 
         <nav className="ar-strip" aria-label="The eight versions, each as wide as the time it was live">
@@ -135,11 +137,18 @@ export default function ArchivePage() {
         })}
       </ol>
 
-      <section className="ar-end ar-wrap">
-        <p>
-          Each old version runs from its own copy of the site on my homelab, as it was when the next design replaced it.
-          A small pill in the corner of every page shows which version you are on, with a button that takes you back to the current site.
-        </p>
+      <section className="ar-end ar-wrap" aria-labelledby="ar-why">
+        <div className="ar-fact">
+          <p className="ar-fact-kicker">Fun fact</p>
+          <h2 id="ar-why" className="ar-fact-title">Why chiambucket.com?</h2>
+          <p>
+            Chiambucket started as a nickname that one of my close friends gave me. When I was looking for a domain name for my new
+            landing page, chiambucket.com just happened to be the cheapest one available, so I took it and have kept it ever since.
+          </p>
+          <p className="ar-fact-extra">
+            <b>Extra fun fact:</b> I also own <a href="https://bravenchiam.com" target="_blank" rel="noopener">bravenchiam.com</a>, and it redirects to this site!
+          </p>
+        </div>
       </section>
     </main>
   );

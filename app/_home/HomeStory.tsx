@@ -639,7 +639,7 @@ export default function HomeStory() {
                 </span>
                 <span className="hs-anniv-text">
                   <b>Chiambucket turns two</b>
-                  <span>{VERSIONS.length} designs since September 2024</span>
+                  <span>Finally archived! All versions from 2024 to 2026</span>
                   <span className="hs-anniv-go">See every version</span>
                 </span>
               </Link>

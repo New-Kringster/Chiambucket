@@ -111,8 +111,22 @@
 .ar-shot.is-phone { border-radius: 16px; }
 .ar-v-row:not(.is-solo) .ar-shot.is-phone img { height: 100%; object-fit: cover; object-position: top; }
 
+/* the closing fun fact, a smaller panel in the same glass */
 .ar-end { margin-top: clamp(2.5rem, 6vh, 4rem); }
-.ar-end p { max-width: 44rem; font-size: 0.95rem; color: var(--ar-ink-2); }
+.ar-fact {
+  max-width: 46rem; padding: clamp(1.4rem, 3vw, 2.4rem); border-radius: 26px;
+  background: var(--ar-glass); border: 1px solid var(--ar-line);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2) !important; backdrop-filter: blur(16px) saturate(1.2) !important;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 30px 60px -40px rgba(40, 36, 64, 0.55), 0 4px 14px -8px rgba(40, 36, 64, 0.18);
+}
+.ar .ar-fact-kicker { font-weight: 700; font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ar-gold); }
+.ar-fact-title { margin-top: 0.4rem; font-weight: 800; font-size: clamp(1.6rem, 3vw, 2.2rem); line-height: 1.08; letter-spacing: -0.025em; }
+.ar .ar-fact > p:not(.ar-fact-kicker) { margin-top: 0.9rem; }
+.ar .ar-fact-extra { padding-top: 0.9rem; border-top: 1px solid rgba(29, 43, 34, 0.12); font-size: 0.95rem; color: var(--ar-ink-2); }
+.ar-fact-extra b { color: var(--ar-ink); }
+.ar-fact-extra a { color: var(--ar-ink); font-weight: 700; text-decoration-color: rgba(29, 43, 34, 0.35); text-underline-offset: 3px; transition: text-decoration-color 0.2s; }
+.ar-fact-extra a:hover { text-decoration-color: var(--ar-ink); }
+.ar-fact-extra a:active { opacity: 0.75; }
 
 @media (max-width: 900px) {
   .ar-v { grid-template-columns: 1fr; }
