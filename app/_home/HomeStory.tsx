@@ -31,6 +31,7 @@
    set up and story.css shows every state finished.
    ──────────────────────────────────────────────────────────────── */
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import Link from 'next/link';
 import { Figtree, Newsreader } from 'next/font/google';
 import { LAYERS, READER_BEATS, BENCH, SHOW_BENCH, PHOTOS, OCR_CARD, JUNE_CARD, PIP_CARD, BEAD_CARD } from './content';
 import { FlagCard, ProjectGallery, Bento, usePeek, Crown, Star } from './Cards';
@@ -39,6 +40,7 @@ import { createPipStage } from './pipStage';
 import AsciiLab from './AsciiLab';
 import type { Box } from './readerScene';
 import { IcGitHub, IcMail, IcServer, IcPhotos } from '../../components/Icons';
+import { VERSIONS } from '../archive/versions';
 import './story.css';
 
 const sans = Figtree({ subsets: ['latin'], weight: ['400', '500', '600', '800'], variable: '--hs-sans', display: 'swap' });
@@ -330,6 +332,7 @@ export default function HomeStory() {
             onUpdate: (st) => heroF.set(ramp(st.progress, 0.2, 0.84)),
           },
         }).to('.hs-name-wrap', { yPercent: -40, opacity: 0, ease: 'none', duration: 0.3 }, 0)
+          .to('.hs-anniv-wrap', { autoAlpha: 0, y: -24, ease: 'none', duration: 0.12 }, 0)
           .fromTo('.hs-under-inner', { scale: 0.94, opacity: 0.3 }, { scale: 1, opacity: 1, ease: 'none', duration: 0.6 }, 0.3);
         let started = false;
         const kick = () => { if (started) return; started = true; window.removeEventListener('scroll', kick); startDissolve(); };
@@ -627,6 +630,19 @@ export default function HomeStory() {
             {/* a quiet cue to scroll: comes in once the opening has settled, leaves while the page is scrolled */}
             <div className="hs-cue" aria-hidden="true">
               <div className="hs-cue-in"><span>Scroll</span><i className="hs-cue-line"><b /></i></div>
+            </div>
+            {/* two years of the site: a small card on the painting that opens every earlier design (/archive) */}
+            <div className="hs-anniv-wrap">
+              <Link href="/archive" className="hs-anniv">
+                <span className="hs-anniv-stack" aria-hidden="true">
+                  {[1, 4, 7].map((n) => <img key={n} src={`/images/archive/v${n}-thumb.webp`} alt="" width={160} height={100} />)}
+                </span>
+                <span className="hs-anniv-text">
+                  <b>Chiambucket turns two</b>
+                  <span>{VERSIONS.length} designs since September 2024</span>
+                  <span className="hs-anniv-go">See every version</span>
+                </span>
+              </Link>
             </div>
           </div>
         </section>

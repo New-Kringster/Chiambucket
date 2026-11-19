@@ -12,7 +12,7 @@
      /photography  golden   golden hour, low sun on the left
      /contact      noon     clear blue midday, at the beach (sand and sea)
      /homelab      teal     cool, misty teal morning
-     /credits      mist     soft lilac haze (also /comingsoon)
+     /credits      mist     soft lilac haze (also /comingsoon and /archive)
      /ai-use       dusk     just after sunset, violet sky, first stars (dark glass)
      everything else (the articles and the 404 page): night, moon and stars
    ──────────────────────────────────────────────────────────────── */
@@ -26,6 +26,7 @@ export const THEME_MAP: Record<string, string> = {
   '/homelab': 'teal',
   '/credits': 'mist',
   '/comingsoon': 'mist',
+  '/archive': 'mist',
   '/ai-use': 'dusk',
 };
 

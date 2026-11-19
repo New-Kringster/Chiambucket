@@ -30,7 +30,7 @@ export default function ArticleLightbox() {
       const el = e.target as HTMLElement | null;
       if (!el || el.tagName !== 'IMG') return;
       const img = el as HTMLImageElement;
-      if (!img.closest('.art-body') || img.closest('a') || img.closest('[data-no-zoom]')) return; // leave linked / opted-out images alone
+      if (!img.closest('.art-body, [data-zoom]') || img.closest('a') || img.closest('[data-no-zoom]')) return; // leave linked / opted-out images alone
       e.preventDefault();
       window.clearTimeout(closeT.current);
       setZoomed(false);
@@ -77,7 +77,7 @@ export default function ArticleLightbox() {
 
     const over = (e: MouseEvent) => {
       const t = e.target as HTMLElement;
-      if (!t || t.tagName !== 'IMG' || !t.closest('.art-body') || t.closest('a') || t.closest('[data-no-zoom]')) return;
+      if (!t || t.tagName !== 'IMG' || !t.closest('.art-body, [data-zoom]') || t.closest('a') || t.closest('[data-no-zoom]')) return;
       hovered = t;
       place();
       cue.classList.add('show');
