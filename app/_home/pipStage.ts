@@ -94,10 +94,24 @@ export function createPipStage(section: HTMLElement) {
     return { x: cx + (r.x - cx) / s, y: cy + (r.y - cy) / s, w: r.w / s, h: r.h / s };
   };
 
+  const refusals = new Map<HTMLVideoElement, string>();
   const play = (v: HTMLVideoElement | null | undefined, go: boolean) => {
     if (!v) return;
-    if (go) { if (v.paused) v.play().catch(() => {}); } else if (!v.paused) v.pause();
+    if (go) { if (v.paused) v.play().then(() => refusals.delete(v), (e: Error) => refusals.set(v, e?.name || 'refused')); } else if (!v.paused) v.pause();
   };
+
+  /* Temporary: ?pipdebug shows each video's state on the page, to see what an iPhone does with them. */
+  let debugTimer = 0;
+  if (new URLSearchParams(location.search).has('pipdebug')) {
+    const box = document.createElement('pre');
+    box.style.cssText = 'position:fixed;left:8%;top:22%;width:84%;z-index:99999;margin:0;padding:10px 12px;border-radius:12px;background:rgba(0,0,0,0.82);color:#9effa0;font:11px/1.45 ui-monospace,Menlo,monospace;white-space:pre-wrap;pointer-events:none';
+    document.body.appendChild(box);
+    debugTimer = window.setInterval(() => {
+      const name = (v: HTMLVideoElement) => v.src.split('/').pop();
+      const row = (v: HTMLVideoElement) => `${name(v)}  ${v.paused ? 'paused' : 'PLAYING'}  ready ${v.readyState}  net ${v.networkState}  t ${v.currentTime.toFixed(1)}${v.error ? '  error ' + v.error.code : ''}${refusals.has(v) ? '  refused: ' + refusals.get(v) : ''}`;
+      box.textContent = `on ${on}  scene ${!!scene}  progress ${p.toFixed(2)}\n` + [layer, ...clips].filter(Boolean).map((v) => row(v!)).join('\n');
+    }, 400);
+  }
 
   const apply = () => {
     if (!scene || !turned || !facing) return;
@@ -183,6 +197,7 @@ export function createPipStage(section: HTMLElement) {
     set(v: number) { p = v; if (!raf && scene) { apply(); scene.render(); } },
     destroy() {
       alive = false; io.disconnect(); vis.disconnect();
+      if (debugTimer) clearInterval(debugTimer);
       window.removeEventListener('resize', onResize);
       window.removeEventListener('pointermove', onMove);
       document.removeEventListener('visibilitychange', onVis);
