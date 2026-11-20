@@ -40,20 +40,20 @@ export function createPipStage(section: HTMLElement) {
   let clips: HTMLVideoElement[] = [];
   let turned: Rect | null = null, facing: Rect | null = null, card: Rect | null = null;
 
-  /* Safari on iPhone only decodes an autoplaying video that is in the page and on screen, so the
-     videos live in a 2 px, nearly transparent dock inside the pinned stage instead of off the page
-     (where the tablet's screen stayed on its home picture). The dock sits in the middle of the stage,
-     so it is on screen whenever the stage is. */
+  /* Safari on iPhone refuses to autoplay a muted video it counts as hidden (a 2 px, nearly transparent
+     one was refused with NotAllowedError and never loaded), so the videos are an ordinary, opaque
+     160 x 90 block in the middle of the stage, laid before the scene so the scene's opaque black
+     paints over it: on screen as far as Safari is concerned, out of sight for the reader. */
   const dock = document.createElement('div');
   dock.setAttribute('aria-hidden', 'true');
-  dock.style.cssText = 'position:absolute;left:50%;top:50%;width:2px;height:2px;overflow:hidden;opacity:0.01;pointer-events:none;z-index:0';
-  stage.appendChild(dock);
+  dock.style.cssText = 'position:absolute;left:50%;top:50%;width:160px;height:90px;margin:-45px 0 0 -80px;overflow:hidden;pointer-events:none';
+  stage.insertBefore(dock, stage.firstChild);
   const video = (src: string) => {
     const v = document.createElement('video');
     v.muted = true; v.defaultMuted = true; v.loop = true; v.playsInline = true;
     v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
     v.preload = 'auto';
-    v.style.cssText = 'width:2px;height:2px';
+    v.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover';
     v.src = src;
     v.addEventListener('canplay', () => { if (on && scene) apply(); });
     dock.appendChild(v);
@@ -95,10 +95,22 @@ export function createPipStage(section: HTMLElement) {
   };
 
   const refusals = new Map<HTMLVideoElement, string>();
+  const started = new Set<HTMLVideoElement>();
   const play = (v: HTMLVideoElement | null | undefined, go: boolean) => {
     if (!v) return;
-    if (go) { if (v.paused) v.play().then(() => refusals.delete(v), (e: Error) => refusals.set(v, e?.name || 'refused')); } else if (!v.paused) v.pause();
+    if (go) { if (v.paused) v.play().then(() => { refusals.delete(v); started.add(v); }, (e: Error) => refusals.set(v, e?.name || 'refused')); }
+    else if (!v.paused) v.pause();
   };
+  /* If Safari still refuses (Low Power Mode does), the reader's first tap starts every video once,
+     which lets them play from then on; apply() pauses the ones not on screen right after. */
+  const unlock = () => {
+    for (const v of [layer, ...clips]) {
+      if (!v || started.has(v)) continue;
+      v.play().then(() => { started.add(v); refusals.delete(v); apply(); }, () => {});
+    }
+  };
+  const GESTURES = ['touchend', 'click', 'keydown'] as const;
+  for (const ev of GESTURES) document.addEventListener(ev, unlock, { capture: true, passive: true });
 
   /* Temporary: ?pipdebug shows each video's state on the page, to see what an iPhone does with them. */
   let debugTimer = 0;
@@ -198,6 +210,7 @@ export function createPipStage(section: HTMLElement) {
     destroy() {
       alive = false; io.disconnect(); vis.disconnect();
       if (debugTimer) clearInterval(debugTimer);
+      for (const ev of GESTURES) document.removeEventListener(ev, unlock, { capture: true });
       window.removeEventListener('resize', onResize);
       window.removeEventListener('pointermove', onMove);
       document.removeEventListener('visibilitychange', onVis);

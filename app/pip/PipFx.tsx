@@ -187,10 +187,18 @@ export function HeroMeet({ hero, title, lede, slotLabel }: { hero: ReactNode; ti
     const video = document.createElement('video');
     video.muted = true; video.defaultMuted = true; video.loop = true; video.playsInline = true;
     video.setAttribute('muted', ''); video.setAttribute('playsinline', '');
-    // in the page and on screen (2 px, nearly transparent), or Safari on iPhone won't decode it for the tablet's screen
+    /* Safari on iPhone refuses to autoplay a muted video it counts as hidden, so this is an ordinary,
+       opaque 160 x 90 video in the middle of the host, sent behind it (z-index -1) where the tablet's
+       opaque canvas paints over it: on screen as far as Safari is concerned, out of sight for the reader. */
     video.setAttribute('aria-hidden', 'true');
-    video.style.cssText = 'position:absolute;left:50%;top:50%;width:2px;height:2px;opacity:0.01;pointer-events:none';
-    el.appendChild(video);
+    video.style.cssText = 'position:absolute;left:50%;top:50%;width:160px;height:90px;margin:-45px 0 0 -80px;z-index:-1;object-fit:cover;pointer-events:none';
+    el.insertBefore(video, el.firstChild);
+    // if Safari still refuses (Low Power Mode does), the reader's first tap starts it
+    let started = false;
+    const unlock = () => { if (started || reduced) return; video.play().then(() => { started = true; if (!visible || document.hidden) video.pause(); }, () => {}); };
+    const GESTURES = ['touchend', 'click', 'keydown'] as const;
+    for (const ev of GESTURES) document.addEventListener(ev, unlock, { capture: true, passive: true });
+    video.addEventListener('playing', () => { started = true; });
     // the H.264 copy: smaller than the WebM, and decoded in hardware on iPhones
     if (!reduced) { video.src = '/videos/pip/pip-layer.mp4'; video.preload = 'auto'; }
 
@@ -227,6 +235,7 @@ export function HeroMeet({ hero, title, lede, slotLabel }: { hero: ReactNode; ti
           onReady: () => {
             if (!alive) return;
             setReady(true);
+            if (!reduced && visible) video.play().catch(() => {});
             // reduced motion: one still frame, the tablet turned a little, Pip on its home screen
             if (reduced) { scene.current?.setProgress(0.12); scene.current?.render(); }
           },
@@ -253,6 +262,7 @@ export function HeroMeet({ hero, title, lede, slotLabel }: { hero: ReactNode; ti
     document.addEventListener('visibilitychange', onVis);
     return () => {
       alive = false; io.disconnect();
+      for (const ev of GESTURES) document.removeEventListener(ev, unlock, { capture: true });
       window.removeEventListener('resize', onResize); window.removeEventListener('pointermove', onMove);
       document.removeEventListener('visibilitychange', onVis);
       if (raf) cancelAnimationFrame(raf);

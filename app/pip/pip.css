@@ -62,7 +62,9 @@ html.sensory-active main.pp { background: transparent; z-index: 2; }
 
 /* ── Stages: tall sections with a pinned, full-screen child ── */
 .pp-stage { position: relative; height: calc(var(--screens) * 100svh); }
-.pp-sticky { position: sticky; top: 0; height: 100svh; overflow: hidden; }
+.pp-sticky { position: sticky; top: 0; height: 100svh; overflow: hidden; visibility: hidden; pointer-events: none; }
+/* the pinned layer hides itself so Safari on iPhone doesn't colour its bars from it; its children paint (see .sl-scene) */
+:where(.pp-sticky) > * { visibility: visible; pointer-events: auto; }
 .pp-stage.is-still { height: auto; }
 .pp-stage.is-still .pp-sticky { position: relative; height: auto; min-height: 100svh; overflow: visible; }
 

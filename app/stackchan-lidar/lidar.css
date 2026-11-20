@@ -49,7 +49,9 @@ html.lr-end .ls-dots { opacity: 0; pointer-events: none; }
 .ls-pin.is-sweep { height: 420svh; }
 .ls-pin.is-sensors { height: 300svh; }
 .ls-pin.is-colour { height: 320svh; }
-.ls-sticky { position: sticky; top: 0; height: 100svh; overflow: hidden; }
+.ls-sticky { position: sticky; top: 0; height: 100svh; overflow: hidden; visibility: hidden; pointer-events: none; }
+/* the pinned layer hides itself so Safari on iPhone doesn't colour its bars from it; its children paint (see .sl-scene) */
+:where(.ls-sticky) > * { visibility: visible; pointer-events: auto; }
 .ls-still { display: none; }
 
 /* the title, beside the robot; it leaves as the camera swings round */

@@ -167,6 +167,11 @@ html.hs-home .footer { position: relative; z-index: 3; }
 /* ───────────── Start ───────────── */
 .hs-hero { position: relative; height: 250svh; background: var(--hs-paper); }
 .hs-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; }
+/* Safari on iPhone (26) colours its status bar and toolbar from a full-width layer pinned at the screen's
+   edge, so the pinned stages hide themselves (their sections carry the background) and only their children
+   paint and take taps; Safari skips a hidden pinned layer and shows the page under its bars. */
+.hs-stage, .hs-reader-stage, .hs-fl-stage, .hs-bench-pin { visibility: hidden; pointer-events: none; }
+:where(.hs-stage, .hs-reader-stage, .hs-fl-stage, .hs-bench-pin) > * { visibility: visible; pointer-events: auto; }
 .hs-under, .hs-art { position: absolute; inset: 0; }
 /* The painting's own sage until it has decoded, so the opening never shows
    black. It is on the picture, not the layer: when the painting breaks up,
@@ -1030,7 +1035,6 @@ html.hs-home .footer { position: relative; z-index: 3; }
 .hs-contact-in { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; margin: 0 auto; max-width: 88rem; }
 .hs-contact-title { font-size: min(10.5vw, 22vh, 15rem); white-space: nowrap; padding-bottom: 0.22em; margin-bottom: 0.1em; }
 .hs-ct-w { display: inline-block; white-space: nowrap; }
-.hs-contact-line { color: rgba(236, 232, 245, 0.82); font-size: clamp(1rem, 1.4vw, 1.5rem); margin-bottom: 0.6rem; max-width: 62ch; text-wrap: balance; }
 .hs-contact-mail {
   display: inline-block;
   white-space: nowrap;
@@ -1054,7 +1058,6 @@ html.hs-home .footer { position: relative; z-index: 3; }
   .hs-dusk img { object-position: 46% 100%; -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 14%); mask-image: linear-gradient(180deg, transparent 0%, #000 14%); }
   .hs-dusk::after { display: none; }
   .hs-contact-title { font-size: min(18vw, 9rem); padding-bottom: 0.16em; }
-  .hs-contact-line { font-size: 0.95rem; max-width: 30ch; }
   .hs-contact-mail { font-size: min(6.6vw, 2.2rem); margin-bottom: 1rem; }
   .hs-contact-in .hs-btns { flex-wrap: nowrap; gap: 0.5rem; }
   .hs-contact-in .hs-btn { min-height: 42px; padding: 0.55rem 0.95rem; font-size: 0.88rem; white-space: nowrap; }

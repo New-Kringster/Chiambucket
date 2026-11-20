@@ -895,7 +895,6 @@ export default function HomeStory() {
               <span className="hs-ct-w" aria-hidden="true"><Chars text="Say" /></span>{' '}
               <span className="hs-ct-w" aria-hidden="true"><Chars text="hello." /></span>
             </h2>
-            <p className="hs-contact-line">If you have a question about a build or something you want made, send me an email.</p>
             <a className="hs-contact-mail" href="mailto:braven@chiambucket.com">braven@chiambucket.com</a>
             <div className="hs-btns">
               <a className="hs-btn is-primary" href="mailto:braven@chiambucket.com"><IcMail /> Email me</a>
