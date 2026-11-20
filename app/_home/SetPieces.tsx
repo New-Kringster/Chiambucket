@@ -26,6 +26,12 @@ export const PIP_BEATS: Beat[] = [
   { title: 'A desktop for every chat', text: 'Pulling down the pill at the top opens the spotlight bar, and every conversation has its own desktop with its own Pip and colour.' },
 ];
 
+export const LIDAR_BEATS: Beat[] = [
+  { title: 'It sweeps the room', text: 'Stack-chan turns its head across the room row by row and takes a distance reading at every step. This is the real scan, built up in the order the head moved.' },
+  { title: 'Four sensors, one reading', text: 'The four Unit ToF4M on its head all point the same way, so every step keeps the middle of their readings and throws out the odd bad one.' },
+  { title: 'Coloured by its own camera', text: 'Photos from the CoreS3’s camera colour the readings, which turns them into 68,206 coloured points that any browser on the Wi-Fi can show in 3D.' },
+];
+
 export const BEAD_BEATS: Beat[] = [
   { title: 'It remembers your page', text: 'The Who’s reading list shows how far each reader has got, and tapping your own row opens the same chapter at the line you stopped on.' },
   { title: 'Reading together', text: 'Friends on the same book show a green ring and their chapter. You can tap to send a wave or a short note, which fades from their screen in seconds and is never saved.' },
@@ -253,6 +259,19 @@ export function PipTab() {
         </div>
       </div>
       <Captions beats={PIP_BEATS} />
+    </div>
+  );
+}
+
+/* ── Stack-chan LiDAR: the 3D scene is the section's own backdrop (lidarStage.ts);
+   this box only holds the finished scan for the flat fallback ── */
+export function LidarSet() {
+  return (
+    <div className="hs-sp hs-ld">
+      <div className="hs-ld-visual">
+        <img className="hs-ld-cloud" src="/images/stackchan-lidar/cloud.webp" alt="The finished scan in the camera's colours: the walls and ceiling of a room corner" loading="lazy" />
+      </div>
+      <Captions beats={LIDAR_BEATS} />
     </div>
   );
 }

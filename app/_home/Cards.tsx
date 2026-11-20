@@ -51,7 +51,7 @@ export const Star = () => <svg className="hs-tier-ic" viewBox="0 0 24 24" fill="
     width: the badge with the AI-use mark at the right edge, the title beside
     the lead, the facts, and the tools beside the actions. `slot` lets the
     OCR card leave its picture band to the live 3D reader. */
-export function FlagCard({ p, onPeek, variant, slot }: { p: Flagship; onPeek: (id: string) => void; variant: 'ocr' | 'june' | 'pip' | 'bead'; slot?: ReactNode }) {
+export function FlagCard({ p, onPeek, variant, slot }: { p: Flagship; onPeek: (id: string) => void; variant: 'ocr' | 'june' | 'pip' | 'lidar' | 'bead'; slot?: ReactNode }) {
   return (
     <article className={`hs-fc is-${variant}`} aria-label={`${p.name}, ${p.badge}`}>
       <div className="hs-fc-frame" aria-hidden="true" />

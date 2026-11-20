@@ -19,13 +19,13 @@ import AiMark from './AiMark';
 
 /* Project order = the homepage gallery order (also the ALL_PROJECTS order). */
 export const PEEK_ORDER: string[] = [
-  'proj-waterslop', 'proj-june', 'proj-pip', 'proj-beadreader', 'proj-pantry', 'proj-ruler', 'proj-cadmouse', 'proj-lora', 'proj-lumen', 'proj-ema', 'proj-pandus', 'proj-elecf',
+  'proj-waterslop', 'proj-june', 'proj-pip', 'proj-lidar', 'proj-beadreader', 'proj-pantry', 'proj-ruler', 'proj-cadmouse', 'proj-lora', 'proj-lumen', 'proj-ema', 'proj-pandus', 'proj-elecf',
   'proj-kauli', 'proj-sol', 'proj-copyboard', 'proj-webdev', 'proj-mc',
 ];
 
 const TITLES: Record<string, string> = {
   'proj-june': 'Project June', 'proj-lora': 'LoRA Messenger', 'proj-lumen': 'LUMEN',
-  'proj-beadreader': 'BeadReader', 'proj-waterslop': 'OCR Reader', 'proj-pip': 'Pip', 'proj-pantry': 'Pantry Expiry Tracker', 'proj-ruler': 'Scroll Ruler', 'proj-cadmouse': '3D CAD Mouse',
+  'proj-beadreader': 'BeadReader', 'proj-waterslop': 'OCR Reader', 'proj-pip': 'Pip', 'proj-pantry': 'Pantry Expiry Tracker', 'proj-ruler': 'Scroll Ruler', 'proj-cadmouse': '3D CAD Mouse', 'proj-lidar': 'Stack-chan LiDAR',
   'proj-ema': 'EMA Smart Home', 'proj-pandus': 'Pandus Dispenser', 'proj-elecf': 'ELEC-F Concept',
   'proj-kauli': 'Kauli Concept', 'proj-sol': 'Series One Light', 'proj-copyboard': 'Copy Board',
   'proj-webdev': 'Web Development', 'proj-mc': 'Minecraft Live Map',
@@ -127,6 +127,20 @@ export function PeekModalContent({ id }: { id: string }) {
         </div>
       </>
     );
+    case 'proj-lidar': return (
+      <>
+        {hero('/images/stackchan-lidar-pf-context.webp', 'Stack-chan with four Unit ToF4M distance sensors on its head', ['Internship Project'], 'highlight')}
+        <div className="hp-rd-body">
+          <h2 className="hp-md-title">Stack-chan LiDAR</h2>
+          <p className="hp-md-meta">M5Stack Stack-chan · PaHub · four Unit ToF4M · C++ · WebGL</p>
+          <p className="hp-rd-lead">A makeshift LiDAR. Stack-chan sweeps four distance sensors across a room with its two servos, its camera colours the points, and any browser on the same Wi-Fi shows the scan in 3D.</p>
+          {chapter('01', 'The sweep', <><p>The head works through a grid row by row, from level to straight up and up to 256 degrees across, and every pose becomes one sample: a direction from the servos and a distance from the sensors.</p><img className="hp-rd-fig" src="/images/stackchan-lidar/cloud.webp" alt="The finished scan of a room corner in the camera's colours" loading="lazy" /></>)}
+          {chapter('02', 'Four sensors, one reading', <p>The four sensors point the same way, so each sample keeps the median of their readings, which throws out a stray one.</p>)}
+          {chapter('03', 'Colour from the camera', <p>Photos taken before the sweep colour the points, and the browser pushes every pixel out to the measured distance, which made 68,206 coloured points in this scan.</p>)}
+          {cta('Explore the scan', 'The article has the real scan in 3D, the demo film and how to flash one.', 'Read the full article', '/stackchan-lidar')}
+        </div>
+      </>
+    );
     case 'proj-cadmouse': return (
       <>
         {hero('/images/cad-mouse-pf-context.webp', 'The M5Stack Capsule v1.1 that works as the 3D mouse', ['Internship Project'], 'internship')}
@@ -157,7 +171,7 @@ export function PeekModalContent({ id }: { id: string }) {
     );
     case 'proj-lumen': return (
       <>
-        {hero('/images/lumen-pf-context.webp', 'LUMEN voice assistant', ['School Project'], 'highlight')}
+        {hero('/images/lumen-pf-context.webp', 'LUMEN voice assistant', ['School Project'], 'school')}
         <div className="hp-rd-body">
           <h2 className="hp-md-title">LUMEN</h2>
           <p className="hp-md-meta">NYP IoT Programming · ESP32 · MicroPython · Whisper · DeepSeek · MQTT</p>
@@ -341,7 +355,7 @@ function PeekItem({ id, first, index }: { id: string; first: boolean; index: num
 /* The cover each project's reader opens with, for the peek of the next one. */
 const COVERS: Record<string, string> = {
   'proj-june': '/images/ProjJuneBanner1.webp', 'proj-lora': '/images/borlocator-pf-context.webp',
-  'proj-waterslop': '/images/ocr-reader-pf-context.webp', 'proj-pip': '/images/pip-pf-context.webp', 'proj-pantry': '/images/pantry-pf-context.webp', 'proj-ruler': '/images/scroll-ruler-pf-context.webp', 'proj-cadmouse': '/images/cad-mouse-pf-context.webp',
+  'proj-waterslop': '/images/ocr-reader-pf-context.webp', 'proj-pip': '/images/pip-pf-context.webp', 'proj-pantry': '/images/pantry-pf-context.webp', 'proj-ruler': '/images/scroll-ruler-pf-context.webp', 'proj-cadmouse': '/images/cad-mouse-pf-context.webp', 'proj-lidar': '/images/stackchan-lidar-pf-context.webp',
   'proj-lumen': '/images/lumen-pf-context.webp', 'proj-beadreader': '/images/beadreader-pf-context.webp',
   'proj-ema': '/images/Ema-pf-context.webp', 'proj-pandus': '/images/pandusarticle.webp',
   'proj-elecf': '/images/elef2-pf-context.webp', 'proj-kauli': '/images/kauli3-pf-context.webp',

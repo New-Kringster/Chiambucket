@@ -21,6 +21,7 @@ export const AI_LEVEL: Partial<Record<string, AiLevel>> = {
   'proj-pantry': 3,
   'proj-ruler': 4,
   'proj-cadmouse': 3,
+  'proj-lidar': 3,
   'proj-ema': 1,
 };
 

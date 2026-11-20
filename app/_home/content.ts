@@ -79,6 +79,19 @@ export const PIP_CARD: Flagship = {
   read: '/pip',
 };
 
+export const LIDAR_CARD: Flagship = {
+  id: 'proj-lidar',
+  name: 'Stack-chan LiDAR',
+  badge: 'Featured project',
+  kind: 'Internship project, M5Stack',
+  lead: 'A makeshift LiDAR: four distance sensors on Stack-chan’s head, swept across a room by its two servos, with its camera colouring the points and a browser showing the scan in 3D.',
+  stats: [{ v: '68,206', l: 'points in one scan' }, { v: '256°', l: 'widest sweep' }, { v: '4', l: 'ToF sensors' }, { v: '54 s', l: 'for a Quick scan' }],
+  tools: [{ src: '/images/esp-icon.webp', alt: 'ESP32-S3' }, { src: '/images/PlatformIO-icon.webp', alt: 'PlatformIO' }, { src: '/images/blender-icon.webp', alt: 'Blender' }],
+  poster: '/images/stackchan-lidar-pf-context.webp',
+  posterAlt: 'Stack-chan with four Unit ToF4M distance sensors on its head',
+  read: '/stackchan-lidar',
+};
+
 export const BEAD_CARD: Flagship = {
   id: 'proj-beadreader',
   name: 'BeadReader',
@@ -104,12 +117,13 @@ export const PROJECTS: Project[] = [
   { id: 'proj-waterslop', title: 'OCR Reader', blurb: 'A battery-powered camera that reads a water meter, where a neural network on an ESP32-S3 reads the drums and only the number goes out over LoRaWAN.', img: '/images/ocr-reader-pf-context.webp', type: 'personal', flagship: true, url: '/waterslop', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32-S3' }, { src: '/images/Kicad-icon.webp', alt: 'KiCad' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }] },
   { id: 'proj-june', title: 'Project June', blurb: 'A 5G rover whose three phones stream its view to my console, which I drive with an Xbox controller from anywhere with signal.', img: '/images/ProjJuneBanner1.webp', type: 'personal', highlight: true, url: '/project-june', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32-S3' }, { src: '/images/Kicad-icon.webp', alt: 'KiCad' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }] },
   { id: 'proj-pip', title: 'Pip', blurb: 'A desk pet on an M5Stack Tab5 with an AI agent harness for a brain, so it can drive a browser and build its own apps.', img: '/images/pip-pf-context.webp', type: 'internship', highlight: true, url: '/pip', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32-P4' }, { src: '/images/PlatformIO-icon.webp', alt: 'PlatformIO' }, { src: '/images/docker-icon.webp', alt: 'Docker' }] },
+  { id: 'proj-lidar', title: 'Stack-chan LiDAR', blurb: 'Four distance sensors on Stack-chan’s head, swept across a room by its servos and coloured by its camera into a 3D scan.', img: '/images/stackchan-lidar-pf-context.webp', type: 'internship', highlight: true, url: '/stackchan-lidar', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32-S3' }, { src: '/images/PlatformIO-icon.webp', alt: 'PlatformIO' }, { src: '/images/blender-icon.webp', alt: 'Blender' }] },
   { id: 'proj-beadreader', title: 'BeadReader', blurb: 'A private book reader for a few friends, who sign in with one access code and can see each other reading live.', img: '/images/beadreader-pf-context.webp', type: 'personal', highlight: true, url: '/beadreader', icons: [{ src: '/images/nextjs-icon.webp', alt: 'Next.js' }, { src: '/images/supabase-icon.webp', alt: 'Supabase' }, { src: '/images/cloudflare-icon.webp', alt: 'Cloudflare R2' }] },
   { id: 'proj-pantry', title: 'Pantry Expiry Tracker', blurb: 'An expiry tracker for the fridge door, where you scan a barcode, pick when it expires and the screen shows what to eat first.', img: '/images/pantry-pf-context.webp', type: 'internship', url: '/pantry', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32-S3' }, { src: '/images/PlatformIO-icon.webp', alt: 'PlatformIO' }, { src: '/images/python-icon.webp', alt: 'Python' }, { src: '/images/docker-icon.webp', alt: 'Docker' }] },
   { id: 'proj-ruler', title: 'Scroll Ruler', blurb: 'A digital ruler from an AtomS3R and a Unit Scroll that measures whatever you roll its wheel along.', img: '/images/scroll-ruler-pf-context.webp', type: 'internship', url: '/scroll-ruler', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32-S3' }, { src: '/images/PlatformIO-icon.webp', alt: 'PlatformIO' }] },
   { id: 'proj-cadmouse', title: '3D CAD Mouse', blurb: 'An M5Stack Capsule that works as a wireless 3D mouse for Onshape, so the model turns as you turn it in your hand.', img: '/images/cad-mouse-pf-context.webp', type: 'internship', url: '/cad-mouse', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32-S3' }, { src: '/images/PlatformIO-icon.webp', alt: 'PlatformIO' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }] },
   { id: 'proj-lora', title: 'LoRA Messenger', blurb: 'Two ESP32 handhelds that send text over LoRa and rough two-way voice over ESP-NOW, on my first PCB.', img: '/images/borlocator-pf-context.webp', type: 'personal', url: '/brolocator', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32' }, { src: '/images/Kicad-icon.webp', alt: 'KiCad' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }] },
-  { id: 'proj-lumen', title: 'LUMEN', blurb: 'A voice-controlled room on an ESP32, where Whisper and DeepSeek turn speech into one JSON command sent over MQTT.', img: '/images/lumen-pf-context.webp', type: 'school', highlight: true, url: '/lumen', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32' }, { src: '/images/python-icon.webp', alt: 'Python' }, { src: '/images/docker-icon.webp', alt: 'Docker' }] },
+  { id: 'proj-lumen', title: 'LUMEN', blurb: 'A voice-controlled room on an ESP32, where Whisper and DeepSeek turn speech into one JSON command sent over MQTT.', img: '/images/lumen-pf-context.webp', type: 'school', url: '/lumen', icons: [{ src: '/images/esp-icon.webp', alt: 'ESP32' }, { src: '/images/python-icon.webp', alt: 'Python' }, { src: '/images/docker-icon.webp', alt: 'Docker' }] },
   { id: 'proj-ema', title: 'EMA Smart Home', blurb: 'A team smart home, graded A, where four BeagleBone Black nodes report to a SocketIO server with a live 3D dashboard.', img: '/images/Ema-pf-context.webp', type: 'school', url: '/csdp', icons: [{ src: '/images/figma-icon.webp', alt: 'Figma' }, { src: '/images/resolve-icon.webp', alt: 'DaVinci Resolve' }, { src: '/images/onshape-icon.webp', alt: 'Onshape' }] },
   { id: 'proj-pandus', title: 'Pandus Dispenser', blurb: 'My first school project was a six-part 3D-printed syrup dispenser run by an Arduino Uno.', img: '/images/pandusarticle.webp', type: 'school', url: '/pandus', icons: [{ src: '/images/onshape-icon.webp', alt: 'Onshape' }, { src: '/images/resolve-icon.webp', alt: 'DaVinci Resolve' }] },
   { id: 'proj-elecf', title: 'ELEC-F Concept', blurb: 'A walk-in freezer alarm on M5Stack that counts down when someone is shut inside.', img: '/images/elef2-pf-context.webp', type: 'school', url: '/elecf', icons: [{ src: '/images/figma-icon.webp', alt: 'Figma' }, { src: '/images/ps-pf-icon.webp', alt: 'Photoshop' }] },

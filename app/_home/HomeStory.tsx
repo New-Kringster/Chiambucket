@@ -30,13 +30,14 @@
    opacity and filter animate. With prefers-reduced-motion none of this is
    set up and story.css shows every state finished.
    ──────────────────────────────────────────────────────────────── */
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { Fragment, useEffect, useRef, useState, type CSSProperties } from 'react';
 import Link from 'next/link';
 import { Figtree, Newsreader } from 'next/font/google';
-import { LAYERS, READER_BEATS, BENCH, SHOW_BENCH, PHOTOS, OCR_CARD, JUNE_CARD, PIP_CARD, BEAD_CARD } from './content';
+import { LAYERS, READER_BEATS, BENCH, SHOW_BENCH, PHOTOS, OCR_CARD, JUNE_CARD, PIP_CARD, LIDAR_CARD, BEAD_CARD } from './content';
 import { FlagCard, ProjectGallery, Bento, usePeek, Crown, Star } from './Cards';
-import { JuneHud, PipTab, BeadBook } from './SetPieces';
+import { JuneHud, PipTab, LidarSet, BeadBook } from './SetPieces';
 import { createPipStage } from './pipStage';
+import { createLidarStage } from './lidarStage';
 import AsciiLab from './AsciiLab';
 import type { Box } from './readerScene';
 import { IcGitHub, IcMail, IcServer, IcPhotos } from '../../components/Icons';
@@ -82,11 +83,18 @@ function Words({ text }: { text: string }) {
   return <>{text.split(' ').map((w, i, a) => <span key={i} className="hs-w">{w}{i < a.length - 1 ? ' ' : ''}</span>)}</>;
 }
 
-/** Letters wrapped for character reveals; screen readers get the plain text. */
+/** Letters wrapped for character reveals, grouped by word so a title never breaks mid-word; screen readers get the plain text. */
 function Chars({ text }: { text: string }) {
   return (
     <span className="hs-chars" aria-label={text}>
-      {Array.from(text).map((c, i) => <span key={i} className="hs-c" aria-hidden="true">{c === ' ' ? ' ' : c}</span>)}
+      {text.split(' ').map((w, wi) => (
+        <Fragment key={wi}>
+          {wi > 0 && ' '}
+          <span className="hs-cw" aria-hidden="true">
+            {Array.from(w).map((c, i) => <span key={i} className="hs-c">{c}</span>)}
+          </span>
+        </Fragment>
+      ))}
     </span>
   );
 }
@@ -427,6 +435,8 @@ export default function HomeStory() {
           const bead = fl.classList.contains('is-bead');
           const pipStage = fl.classList.contains('is-pip') ? createPipStage(fl) : null;
           if (pipStage) disposers.push(() => pipStage.destroy());
+          const lidarStage = fl.classList.contains('is-lidar') ? createLidarStage(fl) : null;
+          if (lidarStage) disposers.push(() => lidarStage.destroy());
           const apply = (p: number) => {
             set('--t', ease(ramp(p, 0.08, 0.16)));             // the title leaves
             if (bead) {
@@ -449,6 +459,7 @@ export default function HomeStory() {
               return;
             }
             pipStage?.set(p);                                  // Pip: the 3D tablet turns, then plays the beats on its screen
+            lidarStage?.set(p);                                // LiDAR: the sweep, the sensors, the colours
             set('--f', ease(ramp(p, 0.1, 0.26)));              // beat 1 builds
             set('--g', ease(ramp(p, 0.38, 0.52)));             // beat 2 builds
             set('--fp', ramp(p, 0.16, 0.38));                  // beat 1 plays out (the pages turn)
@@ -742,6 +753,26 @@ export default function HomeStory() {
               <PipTab />
               <div className="hs-fl-card hs-stagecard">
                 <FlagCard p={PIP_CARD} onPeek={peek.show} variant="pip" slot={<img className="hs-fc-slot hs-pt-cardstill" src={PIP_CARD.poster} alt={PIP_CARD.posterAlt} loading="lazy" />} />
+              </div>
+            </div>
+          </section>
+
+          {/* ── Stack-chan LiDAR ── */}
+          <section className="hs-fl is-lidar" id="lidar" data-tone="dark">
+            <div className="hs-fl-stage">
+              <div className="hs-fl-scene" aria-hidden="true">
+                {/* the 3D Stack-chan and its real scan (lidarStage.ts); the photo stands in until it loads, and without WebGL */}
+                <img className="hs-ld-still" src="/images/stackchan-lidar/cover.webp" alt="" loading="lazy" />
+                <div className="hs-ld-gl" />
+              </div>
+              <div className="hs-fl-head">
+                <p className="hs-tag"><Star />Featured project</p>
+                <h2 className="hs-fl-title"><Chars text="Stack-chan LiDAR" /></h2>
+                <Sub>A makeshift LiDAR on M5Stack&rsquo;s little robot, built during my internship.</Sub>
+              </div>
+              <LidarSet />
+              <div className="hs-fl-card hs-stagecard">
+                <FlagCard p={LIDAR_CARD} onPeek={peek.show} variant="lidar" />
               </div>
             </div>
           </section>
