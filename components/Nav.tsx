@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { isEmbed } from '../lib/embed';
 import { splitLang, localize } from '../lib/i18n';
 import { SHELL } from '../lib/shell';
-import LangGlobe from './LangGlobe';
+import LangGlobe, { LangSheet } from './LangGlobe';
 import { blobPath, type Capsule } from './navBlob';
 import './nav.css';
 
@@ -477,6 +477,7 @@ export default function Nav() {
           {link(WORK, ' pnav-sheet-work')}
           {LINKS.map((l) => link(l))}
         </nav>
+        <LangSheet lang={lang} base={base} menuOpen={open} />
       </div>
     </header>
   );
