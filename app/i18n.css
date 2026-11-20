@@ -15,11 +15,11 @@ html:is(:lang(zh), :lang(ja)) { line-break: strict; }
 /* ideographs read better a touch looser in running text */
 html:is(:lang(zh), :lang(ja)) :is(p, li) { line-height: 1.8; }
 
-/* Long German, Dutch and Russian compounds: let them break instead of overflowing narrow boxes */
-html:is(:lang(de), :lang(nl), :lang(ru)) :is(h1, h2, h3, h4, p, li, button, a) {
-  overflow-wrap: break-word;
-  hyphens: auto;
-}
+/* Long German, Dutch and Russian compounds: a word longer than its box breaks instead of
+   overflowing; headings may hyphenate. Body text wraps at spaces as the English does (automatic
+   hyphenation there split product names such as KiCad); the translators' soft hyphens still apply. */
+html:is(:lang(de), :lang(nl), :lang(ru)) :is(h1, h2, h3, h4, p, li, button, a) { overflow-wrap: break-word; }
+html:is(:lang(de), :lang(nl), :lang(ru)) :is(h1, h2, h3, h4) { hyphens: auto; }
 
 /* Text boxes measured in ch (the width of a Latin "0") hold only half as many
    ideographs, which broke short Chinese and Japanese lines mid-word; these

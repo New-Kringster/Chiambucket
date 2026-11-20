@@ -33,6 +33,8 @@ Opens at `http://localhost:3000`. Use `npx tsc --noEmit` to type-check without d
 | `app/layout.tsx` | Root layout — stylesheet links, loader, Nav/Footer, Analytics, sets per-page theme |
 | `app/page.tsx` → `app/_home/HomeStory.tsx` | Homepage — a scroll story in chapters: opening, Hello, the OCR Reader in 3D, Project June and BeadReader as full-screen cards, the project gallery, On the bench, What I do, HomeLab in ASCII, Photos, Contact at dusk |
 | `app/<route>/page.tsx` | File-based routes (`/photography`, `/contact`, `/credits`, `/ai-use`, `/homelab`, article pages) |
+| `app/[lang]/…` | The same pages in the other languages (`/ja`, `/ja/contact`, …) |
+| `proxy.ts` | Sends a first visit to the visitor's language |
 | `components/` | Shared `Nav`, `Footer`, `ClientEffects`, `SceneShell`/`SunlitScene` (the painted background), `ArticleRecommendations`, `ArticleScrollSpy` |
 | `lib/theme.ts` | Per-page accent theme map (`data-theme` on `<html>`) |
 | `public/mainstyle.css` | Single global stylesheet (~6300 lines) |
@@ -43,6 +45,10 @@ Opens at `http://localhost:3000`. Use `npx tsc --noEmit` to type-check without d
 Article pages: `/project-june`, `/lumen`, `/beadreader`, `/waterslop`, `/pip`, `/brolocator`, `/csdp`, `/pandus`, `/elecf`.
 
 `/pip` is a scroll-driven product page for Pip, a desk pet on an M5Stack Tab5 run by the DeepSeek Harness: a three.js Tab5 hero (built on M5Stack's MIT-licensed Tab5 structure model), chapter openers per desktop colour, Pip's moods rendered by its firmware's own drawing code, and real screen recordings from the tablet and the browser Pip drives.
+
+## Languages
+
+The home, contact, photography, homelab, archive, credits and AI use pages are also in Simplified Chinese, Japanese, Dutch, German, Russian, French and Spanish, at `/zh`, `/ja`, `/nl`, `/de`, `/ru`, `/fr` and `/es` (for example `/ja/contact`); the articles are English only. A first visit is sent to the browser's language (`proxy.ts`), and the globe at the right end of the nav switches language and remembers the choice. Each page's words live in a `_copy` file per language beside it (`lib/i18n.ts` has the helpers, `lib/shell.ts` the nav and footer words); see the Languages section of `CLAUDE.md` before changing copy.
 
 ## Theming
 
