@@ -25,8 +25,8 @@
     sensors  side view of the head, a beam from each of the four sensors
     colour   depth fades to the photos' colours as the view pulls back
     rest     the finished room turning slowly, behind the rest of the page
-  setStory(q) runs meet, sweep, sensors and colour from one number (the
-  homepage chapter). The loop runs only while setActive(true).
+  setStory(q) runs meet, sweep and colour from one number (the homepage
+  chapter); the sensors shot is no longer used on either page. The loop runs only while setActive(true).
 */
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -289,8 +289,8 @@ export function createLidarScene(host: HTMLElement, layout: 'article' | 'home' =
       } else if (shot === 'colour') {
         // the camera pulls out and swings round behind the robot until the whole room is in view, while the
         // depth colours fade into the photos'
-        // the article goes straight from the sweep (which ends on the room); the homepage comes from its sensors beat
-        arc(layout === 'home' ? sideNear : POSE.room, orbitPose(ORBIT_START), seg(t, 0, 0.85), target, 0.35, 1);
+        // straight from the sweep, which ends on the room
+        arc(POSE.room, orbitPose(ORBIT_START), seg(t, 0, 0.85), target, 0.35, 1);
         target.reveal = 1; target.mix = seg(t, 0.3, 0.8);
         target.yaw = 0; target.pitch = -0.1;
         offsetFor(layout === 'home' ? 0.5 : 0.3);
@@ -303,8 +303,7 @@ export function createLidarScene(host: HTMLElement, layout: 'article' | 'home' =
     },
     setStory(q) {
       if (q < 0.1) api.setShot('meet', q / 0.1);
-      else if (q < 0.52) api.setShot('sweep', (q - 0.1) / 0.42);
-      else if (q < 0.75) api.setShot('sensors', (q - 0.52) / 0.23);
+      else if (q < 0.75) api.setShot('sweep', (q - 0.1) / 0.65);
       else api.setShot('colour', (q - 0.75) / 0.25);
     },
     setActive(on) { active = on; if (on) kick(); },

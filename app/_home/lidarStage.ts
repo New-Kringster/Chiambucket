@@ -4,8 +4,8 @@
   real scan) in the chapter's .hs-ld-gl. HomeStory hands it the section's
   scroll progress with set(p), and the chapter's caption windows (c1 0.14-0.4,
   c2 0.4-0.62, c3 0.62-0.82) are mapped onto the scene's own story: the sweep
-  builds the cloud, the camera closes in on the four sensors, then the cloud
-  takes the camera's colours as the view pulls back. As the card comes up the
+  builds the cloud under the first two captions, then the cloud takes the
+  camera's colours as the view pulls back. As the card comes up the
   canvas fades (CSS, --k). The scene loads only once the section comes near
   and renders only while it is on screen; without WebGL the section gets
   .hs-ld-flat and CSS shows still pictures instead.
@@ -14,7 +14,7 @@ import { createLidarScene, hasWebGL, type LidarScene } from '../stackchan-lidar/
 
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 /* p (the section) to q (the scene's story), piece by piece */
-const MAP: [number, number][] = [[0, 0], [0.08, 0], [0.14, 0.1], [0.4, 0.52], [0.62, 0.75], [0.82, 1], [1, 1]];
+const MAP: [number, number][] = [[0, 0], [0.08, 0], [0.14, 0.1], [0.62, 0.75], [0.82, 1], [1, 1]];   // the sweep runs under the first two captions
 const toQ = (p: number) => {
   for (let i = 0; i < MAP.length - 1; i++) {
     const [a, qa] = MAP[i], [b, qb] = MAP[i + 1];
