@@ -1,0 +1,111 @@
+/* ───────────── 3D CAD Mouse (/cad-mouse) ─────────────
+   Shares pantry.css for the demo player, feature rows and steps (main carries
+   .pt and .cm). Here: the demo sized to this video's frame, the greyed
+   M5Burner pill, and the working copy of the Capsule's controls (.cmx-*,
+   CadSim.tsx): an Onshape-like viewport with the part drawn in CSS 3D, and the
+   Capsule photo whose top is its button. LED colours are the firmware's. */
+.cm {
+  --cm-part: #f08a1c; --cm-part-hi: #ffad4d; --cm-part-lo: #b75f06; --cm-glass: #6fb59a; --cm-cap: #b9d3e4;
+  --cm-vp: #eceef1; --cm-vp-grid: rgba(40, 52, 70, 0.07); --cm-ink: #2a3442;
+  --cm-ready: #3fd06a; --cm-rotate: #36d6ff; --cm-pan: #ffb224; --cm-fit: #ffffff;
+}
+
+/* the demo was filmed at 1080 x 1324, not 9:16 */
+.cm .pt-demo { grid-template-columns: minmax(0, 400px) minmax(0, 1fr); }
+.cm .pt-demo-video { aspect-ratio: 720 / 882; }
+.cm .pt-demo-moments img { aspect-ratio: 720 / 882; }
+
+/* M5Burner, not published yet: the pill is there but greyed out */
+.cm-burner { cursor: not-allowed; opacity: 0.55; filter: grayscale(1); user-select: none; }
+.cm-burner img { width: 18px; height: 18px; border-radius: 50%; flex: none; }
+.cm-burner small { font-size: 0.72rem; font-weight: 600; padding: 2px 8px; margin-left: 2px; border-radius: 999px; background: rgba(255, 255, 255, 0.12); letter-spacing: 0.01em; }
+.cm-burner:hover { transform: none; }
+
+/* ── Try it ── */
+.cmx { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 250px); gap: clamp(16px, 2.6vw, 28px); align-items: center; margin-top: 18px; }
+.cmx-vp {
+  position: relative; aspect-ratio: 4 / 3; border-radius: 16px; overflow: hidden; container-type: inline-size;
+  background:
+    linear-gradient(var(--cm-vp-grid) 1px, transparent 1px) 0 0 / 6cqw 6cqw,
+    linear-gradient(90deg, var(--cm-vp-grid) 1px, transparent 1px) 0 0 / 6cqw 6cqw,
+    radial-gradient(120% 90% at 50% 40%, #fbfcfd 0%, var(--cm-vp) 70%, #dfe3e8 100%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 34px 60px -36px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(0, 0, 0, 0.4);
+  cursor: grab; outline: none; touch-action: none;
+}
+.cmx-vp:focus-visible { box-shadow: 0 0 0 3px rgba(var(--sa-accent), 0.85), 0 34px 60px -36px rgba(0, 0, 0, 0.9); }
+.cmx-vp-bar { position: absolute; inset: 0 0 auto; height: 7.4cqw; max-height: 34px; display: flex; align-items: center; gap: 1.2cqw; padding: 0 2.4cqw; background: #fff; border-bottom: 1px solid rgba(40, 52, 70, 0.12); z-index: 2; }
+.cmx-vp-bar span:not(.cmx-vp-name) { width: 1.6cqw; height: 1.6cqw; max-width: 9px; max-height: 9px; border-radius: 50%; background: #cfd5dc; }
+.cmx-vp-name { margin-left: 1.6cqw; font: 600 clamp(10px, 2.2cqw, 13px) / 1 'dmsans', system-ui, sans-serif; color: var(--cm-ink); }
+
+.cmx-stage { position: absolute; inset: 7.4cqw 0 0; display: grid; place-items: center; perspective: 160cqw; }
+.cmx-part { --w: 13cqw; --h: 46cqw; --d: 8cqw; position: relative; width: var(--w); height: var(--h); transform-style: preserve-3d; will-change: transform; }
+.is-fitting .cmx-part, .is-fitting .cmx-triad-in { transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+.cmx-f { position: absolute; left: 50%; top: 50%; display: block; backface-visibility: hidden; }
+.cmx-front, .cmx-back { width: var(--w); height: var(--h); margin: calc(var(--h) / -2) 0 0 calc(var(--w) / -2); border-radius: 1.4cqw; }
+.cmx-front { transform: translateZ(calc(var(--d) / 2)); background: linear-gradient(100deg, var(--cm-part-hi) 0%, var(--cm-part) 30%, var(--cm-part) 72%, #e07a10 100%); box-shadow: inset 0 0 0 0.35cqw rgba(255, 255, 255, 0.18); }
+.cmx-back { transform: rotateY(180deg) translateZ(calc(var(--d) / 2)); background: linear-gradient(90deg, #c96c0b, var(--cm-part-lo)); }
+.cmx-left, .cmx-right { width: var(--d); height: var(--h); margin: calc(var(--h) / -2) 0 0 calc(var(--d) / -2); background: linear-gradient(180deg, var(--cm-cap) 0 8%, #d9761a 8%, var(--cm-part-lo) 100%); }
+.cmx-left { transform: rotateY(-90deg) translateZ(calc(var(--w) / 2)); filter: brightness(0.82); }
+.cmx-right { transform: rotateY(90deg) translateZ(calc(var(--w) / 2)); filter: brightness(1.04); }
+.cmx-top, .cmx-bottom { width: var(--w); height: var(--d); margin: calc(var(--d) / -2) 0 0 calc(var(--w) / -2); }
+.cmx-top { transform: rotateX(90deg) translateZ(calc(var(--h) / 2)); background: var(--cm-cap); filter: brightness(1.08); border-radius: 0.8cqw; }
+.cmx-bottom { transform: rotateX(-90deg) translateZ(calc(var(--h) / 2)); background: #9fb5c4; }
+/* the front's openings, like the enclosure in the demo */
+.cmx-front em { position: absolute; display: block; }
+.cmx-win { left: 17%; width: 66%; background: linear-gradient(160deg, #8fd0b6, var(--cm-glass)); border-radius: 0.5cqw; box-shadow: inset 0 0.3cqw 0.5cqw rgba(0, 0, 0, 0.25), 0 0 0 0.3cqw rgba(120, 50, 0, 0.25); }
+.cmx-win.w1 { top: 6%; height: 12%; }
+.cmx-win.w2 { top: 23%; height: 12%; }
+.cmx-win.w3 { left: 33%; width: 34%; top: 40%; height: 9%; }
+.cmx-knob { top: 55%; width: 26%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #f2f2f2, #a9adb2 60%, #7d8288); box-shadow: 0 0 0 0.3cqw rgba(120, 50, 0, 0.3); }
+.cmx-knob.k1 { left: 17%; }
+.cmx-knob.k2 { left: 57%; }
+.cmx-dot { left: 24%; top: 65%; width: 10%; aspect-ratio: 1; border-radius: 50%; background: #c9670a; box-shadow: inset 0 0.2cqw 0.3cqw rgba(0, 0, 0, 0.35); }
+.cmx-slot { left: 57%; top: 63.5%; width: 24%; height: 9%; border-radius: 0.6cqw; background: linear-gradient(160deg, #8fd0b6, var(--cm-glass)); box-shadow: inset 0 0.3cqw 0.5cqw rgba(0, 0, 0, 0.25); }
+
+.cmx-triad { position: absolute; left: 4cqw; bottom: 4cqw; width: 10cqw; height: 10cqw; perspective: 60cqw; z-index: 2; pointer-events: none; }
+.cmx-triad-in { position: absolute; left: 50%; top: 50%; transform-style: preserve-3d; }
+.cmx-triad .ax { position: absolute; left: 0; top: 0; width: 4.6cqw; height: 0.45cqw; transform-origin: 0 50%; border-radius: 1px; }
+.cmx-triad .ax.x { background: #e5484d; }
+.cmx-triad .ax.y { background: #30a46c; transform: rotateZ(-90deg); }
+.cmx-triad .ax.z { background: #3e63dd; transform: rotateY(-90deg); }
+
+/* the Capsule: its top is the button */
+.cmx-dev { display: grid; gap: 12px; justify-items: center; text-align: center; }
+.cmx-cap { position: relative; width: min(100%, 170px); filter: drop-shadow(0 18px 22px rgba(0, 0, 0, 0.55)); }
+.cmx-cap img { display: block; width: 100%; height: auto; user-select: none; -webkit-user-drag: none; pointer-events: none; }
+.cmx-btn { position: absolute; left: 6%; top: 0; width: 88%; height: 41%; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 14px; touch-action: none; -webkit-tap-highlight-color: transparent; }
+.cmx-btn-ring { position: absolute; inset: 0; border-radius: inherit; border: 2px solid rgba(var(--sa-accent), 0); transition: border-color 0.2s ease, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1); }
+.cmx-btn:hover .cmx-btn-ring { border-color: rgba(var(--sa-accent), 0.55); }
+.cmx-btn:focus-visible { outline: none; }
+.cmx-btn:focus-visible .cmx-btn-ring { border-color: rgba(var(--sa-accent), 0.95); }
+.cmx-btn.is-down .cmx-btn-ring { border-color: rgba(var(--sa-accent), 0.9); transform: scale(0.96); }
+
+.cmx-led { display: inline-flex; align-items: center; gap: 8px; margin: 0 !important; font: 600 0.86rem / 1.3 'dmsans', system-ui, sans-serif; color: rgba(240, 240, 240, 0.86) !important; }
+.cmx-led i { width: 10px; height: 10px; border-radius: 50%; flex: none; background: var(--c); box-shadow: 0 0 10px 2px color-mix(in srgb, var(--c) 60%, transparent); }
+.cmx-led.is-ready { --c: var(--cm-ready); }
+.cmx-led.is-ready i { animation: cmx-blink 3s steps(1, end) infinite; }
+.cmx-led.is-rotate { --c: var(--cm-rotate); }
+.cmx-led.is-pan { --c: var(--cm-pan); }
+.cmx-led.is-fit { --c: var(--cm-fit); }
+@keyframes cmx-blink { 0%, 88% { opacity: 0.25; } 89%, 100% { opacity: 1; } }
+.cmx-status { margin: 0 !important; min-height: 4.4em; font-size: 0.92rem !important; line-height: 1.5 !important; color: rgba(232, 232, 232, 0.66) !important; max-width: 250px; }
+.cmx-reset { font: 600 0.86rem / 1 'dmsans', system-ui, sans-serif; color: #f0f0f0; padding: 9px 16px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.22); background: rgba(255, 255, 255, 0.06); cursor: pointer; transition: background-color 0.2s ease, transform 0.2s ease; }
+.cmx-reset:hover { background: rgba(255, 255, 255, 0.12); transform: translateY(-1px); }
+.cmx-reset:active { transform: translateY(0) scale(0.98); }
+.cmx-reset:focus-visible { outline: 2px solid rgba(var(--sa-accent), 0.9); outline-offset: 2px; }
+
+.cm-hold { margin: 0; }
+.cm-hold img { width: 100%; border-radius: 16px; display: block; }
+
+@media (max-width: 760px) {
+  .cm .pt-demo { grid-template-columns: minmax(0, 1fr); }
+  .cmx { grid-template-columns: minmax(0, 1fr); }
+  .cmx-dev { grid-template-columns: 110px minmax(0, 1fr); justify-items: start; text-align: left; align-items: center; column-gap: 16px; }
+  .cmx-cap { grid-row: span 3; width: 110px; }
+  .cmx-status { min-height: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .is-fitting .cmx-part, .is-fitting .cmx-triad-in, .cmx-btn-ring, .cmx-reset { transition: none; }
+  .cmx-led.is-ready i { animation: none; opacity: 1; }
+}

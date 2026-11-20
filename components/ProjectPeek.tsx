@@ -19,13 +19,13 @@ import AiMark from './AiMark';
 
 /* Project order = the homepage gallery order (also the ALL_PROJECTS order). */
 export const PEEK_ORDER: string[] = [
-  'proj-waterslop', 'proj-june', 'proj-pip', 'proj-beadreader', 'proj-pantry', 'proj-ruler', 'proj-lora', 'proj-lumen', 'proj-ema', 'proj-pandus', 'proj-elecf',
+  'proj-waterslop', 'proj-june', 'proj-pip', 'proj-beadreader', 'proj-pantry', 'proj-ruler', 'proj-cadmouse', 'proj-lora', 'proj-lumen', 'proj-ema', 'proj-pandus', 'proj-elecf',
   'proj-kauli', 'proj-sol', 'proj-copyboard', 'proj-webdev', 'proj-mc',
 ];
 
 const TITLES: Record<string, string> = {
   'proj-june': 'Project June', 'proj-lora': 'LoRA Messenger', 'proj-lumen': 'LUMEN',
-  'proj-beadreader': 'BeadReader', 'proj-waterslop': 'OCR Reader', 'proj-pip': 'Pip', 'proj-pantry': 'Pantry Expiry Tracker', 'proj-ruler': 'Scroll Ruler',
+  'proj-beadreader': 'BeadReader', 'proj-waterslop': 'OCR Reader', 'proj-pip': 'Pip', 'proj-pantry': 'Pantry Expiry Tracker', 'proj-ruler': 'Scroll Ruler', 'proj-cadmouse': '3D CAD Mouse',
   'proj-ema': 'EMA Smart Home', 'proj-pandus': 'Pandus Dispenser', 'proj-elecf': 'ELEC-F Concept',
   'proj-kauli': 'Kauli Concept', 'proj-sol': 'Series One Light', 'proj-copyboard': 'Copy Board',
   'proj-webdev': 'Web Development', 'proj-mc': 'Minecraft Live Map',
@@ -124,6 +124,20 @@ export function PeekModalContent({ id }: { id: string }) {
           {chapter('02', 'Roll to measure', <p>The distance counts only while the wheel is pressed down, with the LED glowing green, so you can lift it off and set it down without losing the reading. Tapping the screen zeroes it, and holding the screen starts a new calibration.</p>)}
           {chapter('03', 'Tested off the device', <p>The calibration and distance maths sit in one file with no hardware code, so eleven unit tests check them on a computer before the firmware goes onto the AtomS3R.</p>)}
           {cta('Roll it yourself', 'The article has a working copy of the ruler, the demo video and how to flash one.', 'Read the full article', '/scroll-ruler')}
+        </div>
+      </>
+    );
+    case 'proj-cadmouse': return (
+      <>
+        {hero('/images/cad-mouse-pf-context.webp', 'The M5Stack Capsule v1.1 that works as the 3D mouse', ['Internship Project'], 'internship')}
+        <div className="hp-rd-body">
+          <h2 className="hp-md-title">3D CAD Mouse</h2>
+          <p className="hp-md-meta">M5Stack Capsule v1.1 · Bluetooth LE · C++</p>
+          <p className="hp-rd-lead">A wireless 3D mouse for Onshape. You click the Capsule&rsquo;s button and turn it in your hand, and the model on the screen turns with it.</p>
+          {chapter('01', 'Passing as a SpaceMouse', <p>Onshape only listens to a 3D mouse through 3Dconnexion&rsquo;s driver, so the Capsule introduces itself over Bluetooth as their SpaceMouse Wireless and the driver does the rest.</p>)}
+          {chapter('02', 'Following your hand', <><p>It sends how fast your hand is turning, from its gyroscope, so the model turns through the same angle your hand did. Holding the button pans instead, and twisting zooms.</p><img className="hp-rd-fig" src="/images/cad-mouse/hold.webp" alt="Turning an enclosure in Onshape with the Capsule" loading="lazy" /></>)}
+          {chapter('03', 'Tested off the device', <p>The motion maths and the button gestures sit in one library with no hardware code, so 19 unit tests check them on a computer before each flash.</p>)}
+          {cta('Turn it yourself', 'The article has a working copy of its controls, the demo video and how to set one up.', 'Read the full article', '/cad-mouse')}
         </div>
       </>
     );
@@ -327,7 +341,7 @@ function PeekItem({ id, first, index }: { id: string; first: boolean; index: num
 /* The cover each project's reader opens with, for the peek of the next one. */
 const COVERS: Record<string, string> = {
   'proj-june': '/images/ProjJuneBanner1.webp', 'proj-lora': '/images/borlocator-pf-context.webp',
-  'proj-waterslop': '/images/ocr-reader-pf-context.webp', 'proj-pip': '/images/pip-pf-context.webp', 'proj-pantry': '/images/pantry-pf-context.webp', 'proj-ruler': '/images/scroll-ruler-pf-context.webp',
+  'proj-waterslop': '/images/ocr-reader-pf-context.webp', 'proj-pip': '/images/pip-pf-context.webp', 'proj-pantry': '/images/pantry-pf-context.webp', 'proj-ruler': '/images/scroll-ruler-pf-context.webp', 'proj-cadmouse': '/images/cad-mouse-pf-context.webp',
   'proj-lumen': '/images/lumen-pf-context.webp', 'proj-beadreader': '/images/beadreader-pf-context.webp',
   'proj-ema': '/images/Ema-pf-context.webp', 'proj-pandus': '/images/pandusarticle.webp',
   'proj-elecf': '/images/elef2-pf-context.webp', 'proj-kauli': '/images/kauli3-pf-context.webp',
