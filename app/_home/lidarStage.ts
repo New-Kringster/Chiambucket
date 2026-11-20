@@ -34,6 +34,7 @@ export function createLidarStage(section: HTMLElement) {
   }
 
   const draw = () => { if (ready && inView && scene) scene.setStory(toQ(p)); };
+  const live = () => scene?.setActive(ready && inView && !document.hidden);
   const start = () => {
     if (scene) return;
     try { scene = createLidarScene(host, 'home'); } catch { section.classList.add('hs-ld-flat'); return; }
@@ -42,12 +43,13 @@ export function createLidarStage(section: HTMLElement) {
       scene.resize();
       ready = true;
       section.classList.add('hs-ld-ready');
-      draw();
+      draw(); scene.settle(); live();
     }).catch(() => section.classList.add('hs-ld-flat'));
   };
   const near = new IntersectionObserver(([e]) => { if (e.isIntersecting) { start(); near.disconnect(); } }, { rootMargin: '150% 0px' });
   near.observe(section);
-  const vis = new IntersectionObserver(([e]) => { inView = e.isIntersecting; draw(); });
+  const vis = new IntersectionObserver(([e]) => { inView = e.isIntersecting; live(); draw(); });
+  document.addEventListener('visibilitychange', live);
   vis.observe(section);
   const onResize = () => { scene?.resize(); draw(); };
   window.addEventListener('resize', onResize);
@@ -57,6 +59,7 @@ export function createLidarStage(section: HTMLElement) {
     destroy() {
       alive = false; near.disconnect(); vis.disconnect();
       window.removeEventListener('resize', onResize);
+      document.removeEventListener('visibilitychange', live);
       scene?.destroy(); scene = null;
     },
   };

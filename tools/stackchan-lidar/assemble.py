@@ -25,10 +25,10 @@ def srgb(h):
     h = h.lstrip('#'); c = [int(h[i:i+2], 16) / 255 for i in (0, 2, 4)]
     return tuple(x / 12.92 if x <= 0.04045 else ((x + 0.055) / 1.055) ** 2.4 for x in c)
 
-M_BODY = mat('body', srgb('#d8d8d4'), 0.5)
+M_BODY = mat('body', srgb('#8D8A7F'), 0.55)
 M_BASE = mat('base', srgb('#36383b'), 0.62)
 M_FACE = mat('glass', srgb('#050506'), 0.32)
-M_TOF = mat('tof', srgb('#ece5d6'), 0.55)
+M_TOF = mat('tof', srgb('#A9A391'), 0.55)
 M_RED = mat('grove', srgb('#9b1b2a'), 0.45)
 M_SENS = mat('sensor', srgb('#0a0a0a'), 0.2)
 M_LENS = mat('lens', srgb('#c8a64a'), 0.3, 0.6)
@@ -88,27 +88,47 @@ BODY_TOP = bbox(body)[1].z
 # ── head (pitch): the shell, the CoreS3 inside it, the face ──
 shell = load('StackChan-MainBody'); setmat(shell, M_BODY)
 mn, mx = bbox(shell)
-move([shell], Vector((-(mn.x + mx.x) / 2, -(mn.y + mx.y) / 2 - 3, BODY_TOP + 1.0 - mn.z)))
+move([shell], Vector((-(mn.x + mx.x) / 2, -(mn.y + mx.y) / 2 - 3, BASE_TOP + 9.0 - mn.z)))
 smn, smx = bbox(shell)
 HC = (smn + smx) / 2
 core = load('CoreS3', keep=lambda b: abs((b[0].x + b[1].x) / 2) < 15 and (b[1].x - b[0].x) > 50)
 setmat(core, M_BODY)
 mn, mx = bbox(core)
-move([core], Vector((-(mn.x + mx.x) / 2, smn.y + 0.6 - mn.y, HC.z - (mn.z + mx.z) / 2)))
+move([core], Vector((-(mn.x + mx.x) / 2, smn.y + 2.8 - mn.y, HC.z - (mn.z + mx.z) / 2)))
 FRONT = smn.y
 # the CoreS3's glass front, its screen showing Stack-chan's face, and the camera
-face = box('face', (53.2, 1.2, 53.2), (0, FRONT - 0.2, HC.z), M_FACE, bevel=2.5)
+import bmesh
+def rounded_slab(name, w, h, depth, rad, y_front, zc, m, seg=10):
+    bm = bmesh.new()
+    pts = []
+    for cx, cz, a0 in [(w/2 - rad, h/2 - rad, 0), (-w/2 + rad, h/2 - rad, 90), (-w/2 + rad, -h/2 + rad, 180), (w/2 - rad, -h/2 + rad, 270)]:
+        for k in range(seg + 1):
+            a = math.radians(a0 + 90 * k / seg)
+            pts.append((cx + rad * math.cos(a), cz + rad * math.sin(a)))
+    vf = [bm.verts.new((x, y_front, zc + z)) for x, z in pts]
+    vb = [bm.verts.new((x, y_front + depth, zc + z)) for x, z in pts]
+    bm.faces.new(vf[::-1]); bm.faces.new(vb)
+    n = len(pts)
+    for i in range(n):
+        j = (i + 1) % n
+        bm.faces.new((vf[i], vf[j], vb[j], vb[i]))
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    me = bpy.data.meshes.new(name); bm.to_mesh(me); bm.free()
+    ob = bpy.data.objects.new(name, me); sc.collection.objects.link(ob); setmat(ob, m)
+    return ob
+FACE_Y = FRONT + 0.45
+face = rounded_slab('face', 51.2, 51.2, 1.8, 5.5, FACE_Y, HC.z, M_FACE)
 img = bpy.data.images.load(L + '/face.png')
 mscr = bpy.data.materials.new('screen'); mscr.use_nodes = True
 nt = mscr.node_tree; bs = nt.nodes['Principled BSDF']; tx = nt.nodes.new('ShaderNodeTexImage'); tx.image = img
 nt.links.new(tx.outputs['Color'], bs.inputs['Base Color']); nt.links.new(tx.outputs['Color'], bs.inputs['Emission Color'])
 bs.inputs['Emission Strength'].default_value = 1.6; bs.inputs['Roughness'].default_value = 0.15
-bpy.ops.mesh.primitive_plane_add(size=1, location=(0, FRONT - 0.85, HC.z + 3.2), rotation=(math.pi / 2, 0, 0))
+bpy.ops.mesh.primitive_plane_add(size=1, location=(0, FACE_Y - 0.05, HC.z + 4.0), rotation=(math.pi / 2, 0, 0))
 scr = bpy.context.active_object; scr.name = 'screen'; scr.scale = (40.8, 30.6, 1); bpy.ops.object.transform_apply(scale=True)
 setmat(scr, mscr)
-bpy.ops.mesh.primitive_cylinder_add(radius=2.2, depth=0.6, location=(0, FRONT - 0.9, HC.z - 19.5), rotation=(math.pi / 2, 0, 0))
+bpy.ops.mesh.primitive_cylinder_add(radius=2.2, depth=0.6, location=(0, FACE_Y - 0.1, HC.z - 19.0), rotation=(math.pi / 2, 0, 0))
 cam = bpy.context.active_object; cam.name = 'camring'; setmat(cam, M_RED)
-bpy.ops.mesh.primitive_cylinder_add(radius=1.5, depth=0.8, location=(0, FRONT - 1.0, HC.z - 19.5), rotation=(math.pi / 2, 0, 0))
+bpy.ops.mesh.primitive_cylinder_add(radius=1.5, depth=0.8, location=(0, FACE_Y - 0.2, HC.z - 19.0), rotation=(math.pi / 2, 0, 0))
 lens = bpy.context.active_object; lens.name = 'camlens'; setmat(lens, M_SENS)
 
 # ── the array: four Unit ToF4M on a bracket on top of the head, facing forward ──
@@ -142,12 +162,15 @@ brk = box('bracket', (2 * TW + 4, 6, 2 * TH + 4), (0, ARR_Y + TD / 2 + 3, ARR_MI
 foot = box('bracketfoot', (24, 18, 3.2), (0, ARR_Y + 8, HEAD_TOP + 1.4), M_BRK, bevel=0.8)
 # red Grove sockets on the outer sides, and the sensor windows
 sockets = []
+WINS = []
 for u in units:
     side_x = 1 if u.location.x > 0 else -1
     s = box('grove', (3.2, 7.2, 8.2), (u.location.x + side_x * (TW / 2 - 0.4), ARR_Y - 1.0, u.location.z), M_RED, bevel=0.4)
     sockets.append(s)
-    w = box('window', (3.4, 0.6, 4.6), (u.location.x - side_x * 1.0, ARR_Y - TD / 2 - 0.05, u.location.z + 3.2), M_SENS, bevel=0.3)
+    ua, ub = bbox(u); uc = (ua + ub) / 2
+    w = box('chip', (4.9, 0.8, 2.6), (uc.x - side_x * 7.4, ARR_Y - TD / 2 + 1.2, uc.z), M_SENS, bevel=0.25)
     sockets.append(w)
+    WINS.append(Vector((uc.x - side_x * 7.4, ARR_Y - TD / 2 - 0.2, uc.z)))
 
 # ── Grove cables: four strands each, from every socket down round the head's sides to the back ──
 def cable(pts, name):
@@ -175,7 +198,7 @@ for c in cables:
 cables = [o for o in sc.objects if o.name.startswith('cable')]
 
 # ── hierarchy and pivots ──
-PITCH_PIVOT = Vector((0, HC.y, BODY_TOP + 6.0))
+PITCH_PIVOT = Vector((0, HC.y, smn.z + 8.0))   # the neck
 yaw = bpy.data.objects.new('yaw', None); sc.collection.objects.link(yaw); yaw.location = (0, 0, 0)
 pitch = bpy.data.objects.new('pitch', None); sc.collection.objects.link(pitch); pitch.location = PITCH_PIVOT
 pitch.parent = yaw
@@ -185,6 +208,8 @@ def parent(o, p):
     o.parent = p; o.matrix_parent_inverse = p.matrix_world.inverted()
 for o in (body, cov, side): parent(o, yaw)
 for o in [shell, core, face, scr, cam, lens, brk, foot] + units + sockets + cables: parent(o, pitch)
+for k, wpos in enumerate(WINS):
+    e = bpy.data.objects.new(f'win{k}', None); sc.collection.objects.link(e); e.location = wpos; parent(e, pitch)
 anchor = bpy.data.objects.new('sensor', None); sc.collection.objects.link(anchor)
 anchor.location = (0, ARR_Y - TD / 2 - 0.5, ARR_MID_Z); parent(anchor, pitch)
 print('PIVOT', tuple(round(v, 2) for v in PITCH_PIVOT), 'SENSOR', tuple(round(v, 2) for v in anchor.location + pitch.location), 'TOP', round(bbox(units[0])[1].z, 1))

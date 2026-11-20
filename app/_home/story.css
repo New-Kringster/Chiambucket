@@ -1124,7 +1124,7 @@ html.hs-home .footer { position: relative; z-index: 3; }
    real scan) into .hs-ld-gl across the whole stage; the view is shifted clear
    of the captions. The photo of the real robot stands in until it is ready and
    for the flat fallback, where the finished scan fills the visual box. */
-.hs-fl.is-lidar .hs-fl-scene { background: radial-gradient(60% 60% at 66% 44%, rgba(47, 181, 146, 0.16), rgba(47, 181, 146, 0) 70%), #000; }
+.hs-fl.is-lidar .hs-fl-scene { background: radial-gradient(60% 60% at 66% 44%, rgba(255, 106, 61, 0.14), rgba(255, 106, 61, 0) 70%), #0e0a09; }
 .hs-fl.is-lidar .hs-fl-scene::after { background: linear-gradient(90deg, rgba(0, 0, 0, calc(0.72 * var(--f))) 0%, rgba(0, 0, 0, 0) 42%), linear-gradient(0deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 38%); }
 .hs-ld-gl { position: absolute; inset: 0; opacity: calc(1 - var(--k)); }
 .hs-ld-gl canvas { display: block; width: 100% !important; height: 100% !important; opacity: 0; transition: opacity 0.9s ease; }
@@ -1134,7 +1134,7 @@ html.hs-home .footer { position: relative; z-index: 3; }
 .hs-ld-visual { pointer-events: none; }
 .hs-ld-cloud { display: none; }
 .hs-fl.hs-ld-flat .hs-ld-cloud { display: block; width: 100%; max-height: 100%; object-fit: contain; border-radius: clamp(10px, 1.2vw, 18px); opacity: var(--f); box-shadow: 0 0 0 1px rgba(241, 239, 232, 0.14), 0 30px 60px -30px rgba(0, 0, 0, 0.9); }
-.hs-fc.is-lidar .hs-fc-badge { color: #c9f7e2; border-color: rgba(120, 230, 190, 0.35); background: rgba(120, 230, 190, 0.08); }
+.hs-fc.is-lidar .hs-fc-badge { color: #ffd9b0; border-color: rgba(255, 177, 92, 0.42); background: rgba(255, 177, 92, 0.1); }
 .hs-fc.is-lidar .hs-fc-kind { color: rgba(241, 239, 232, 0.62); }
 @media (max-width: 760px) {
   .hs-ld-still { right: 50%; transform: translateX(50%); height: 44svh; }

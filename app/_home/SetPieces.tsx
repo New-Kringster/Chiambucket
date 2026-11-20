@@ -27,7 +27,7 @@ export const PIP_BEATS: Beat[] = [
 ];
 
 export const LIDAR_BEATS: Beat[] = [
-  { title: 'It sweeps the room', text: 'Stack-chan turns its head across the room row by row and takes a distance reading at every step. This is the real scan, built up in the order the head moved.' },
+  { title: 'It sweeps the room', text: 'Stack-chan turns its head across the room in small steps and takes a distance reading at every one. This is the real scan, filling in as the head pans across.' },
   { title: 'Four sensors, one reading', text: 'The four Unit ToF4M on its head all point the same way, so every step keeps the middle of their readings and throws out the odd bad one.' },
   { title: 'Coloured by its own camera', text: 'Photos from the CoreS3’s camera colour the readings, which turns them into 68,206 coloured points that any browser on the Wi-Fi can show in 3D.' },
 ];
