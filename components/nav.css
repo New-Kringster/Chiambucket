@@ -245,7 +245,116 @@ html.is-day .pnav-work > .pnav-item:not(.is-active) { text-shadow: 0 0 6px rgba(
 .pnav-menu.is-open span:last-child { transform: translateY(-3px) rotate(-45deg); }
 .pnav-menu:active { transform: scale(0.95); }
 
-.pnav-logo:focus-visible, .pnav-item:focus-visible, .pnav-circle:focus-visible {
+/* ── The language globe (components/LangGlobe.tsx) ──
+   Last on the right, outside the merging pieces, with glass of its own (the
+   merge strips .pnav-circle's). It shrinks away once the page scrolls into
+   its content. Its menu is the phone dropdown's glass; the English-only note
+   hangs under it on the articles. */
+.pnav-lang { position: relative; display: inline-flex; }
+.pnav-globe {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--nv-glass);
+  -webkit-backdrop-filter: var(--nv-blur) !important; backdrop-filter: var(--nv-blur) !important;
+  border: 1px solid var(--nv-border);
+  box-shadow: var(--nv-rim), var(--nv-shadow);
+  color: var(--nv-text-hi);
+  cursor: pointer;
+  transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.2s ease, visibility 0s linear 0s;
+}
+.pnav-globe svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.35)); }
+.pnav-globe:hover { background-color: var(--nv-hover); }
+.pnav-globe:active { transform: scale(0.94); }
+.pnav-lang.is-open .pnav-globe { background: var(--nv-active); color: var(--nv-active-text); }
+.pnav-lang.is-open .pnav-globe svg { filter: none; }
+.pnav-lang.is-gone .pnav-globe {
+  opacity: 0;
+  transform: scale(0.6);
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.3s ease, visibility 0s linear 0.3s;
+}
+.pnav-langs {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 11.5rem;
+  display: grid;
+  gap: 2px;
+  padding: 6px;
+  border-radius: 20px;
+  background: var(--nv-sheet);
+  -webkit-backdrop-filter: blur(24px) saturate(170%) !important; backdrop-filter: blur(24px) saturate(170%) !important;
+  border: 1px solid var(--nv-border);
+  box-shadow: var(--nv-rim), var(--nv-shadow), 0 24px 48px -24px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-6px) scale(0.97);
+  transform-origin: top right;
+  transition: opacity 0.16s ease, transform 0.2s ease, visibility 0s linear 0.2s;
+}
+.pnav-lang.is-open .pnav-langs {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: none;
+  transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s;
+}
+.pnav-lang-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  height: 40px;
+  padding: 0 12px 0 14px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--nv-text);
+  font-family: 'dmsans', system-ui, sans-serif;
+  font-size: 0.93rem;
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+  text-shadow: var(--nv-halo);
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+/* a global `* { font-family }` rule would otherwise land on the label itself */
+.pnav-lang-item > span { font: inherit; }
+.pnav-lang-item svg { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+.pnav-lang-item:hover { background: var(--nv-hover); color: var(--nv-text-hi); }
+.pnav-lang-item:active { transform: scale(0.97); }
+.pnav-lang-item.is-on { color: var(--nv-text-hi); }
+.pnav-lang-item.is-on svg { opacity: 1; }
+.pnav-langnote {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: max-content;
+  max-width: min(17rem, calc(100vw - 28px));
+  margin: 0;
+  padding: 9px 13px;
+  border-radius: 14px;
+  background: var(--nv-sheet);
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important; backdrop-filter: blur(20px) saturate(160%) !important;
+  border: 1px solid var(--nv-border);
+  box-shadow: var(--nv-rim), var(--nv-shadow);
+  color: var(--nv-text-hi);
+  font-family: 'dmsans', system-ui, sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.3s ease;
+}
+.pnav-lang.is-open .pnav-langnote, .pnav-lang.is-gone .pnav-langnote { opacity: 0; transform: translateY(-4px); }
+
+.pnav-logo:focus-visible, .pnav-item:focus-visible, .pnav-circle:focus-visible, .pnav-globe:focus-visible, .pnav-lang-item:focus-visible {
   outline: 2px solid var(--nv-focus);
   outline-offset: 2px;
 }
@@ -410,13 +519,13 @@ html.is-day .pnav-work > .pnav-item:not(.is-active) { text-shadow: 0 0 6px rgba(
 @media (prefers-reduced-motion: reduce) {
   .pnav-sheet, .pnav-sheet::before, .pnav-sheet .pnav-item:not(.pnav-sheet-work), .pnav-sheet.is-open .pnav-item:not(.pnav-sheet-work),
   .pnav-sheet-work, .pnav-sheet-work::before,
-  .pnav-menu span, .pnav-item, .pnav-mark.is-live { transition: none; }
+  .pnav-menu span, .pnav-item, .pnav-mark.is-live, .pnav-globe, .pnav-langs, .pnav-lang.is-open .pnav-langs, .pnav-langnote { transition: none; }
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .pnav-pill, .pnav-circle, .pnav.is-scrolled .pnav-logo, .pnav-sheet::before {
+  .pnav-pill, .pnav-circle, .pnav.is-scrolled .pnav-logo, .pnav-sheet::before, .pnav-globe, .pnav-langs, .pnav-langnote {
     -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
     background: rgba(26, 21, 15, 0.97);
   }
-  html.is-day :is(.pnav-pill, .pnav-circle, .pnav.is-scrolled .pnav-logo), html.is-day .pnav-sheet::before { background: rgba(248, 249, 243, 0.97); }
+  html.is-day :is(.pnav-pill, .pnav-circle, .pnav.is-scrolled .pnav-logo, .pnav-globe, .pnav-langs, .pnav-langnote), html.is-day .pnav-sheet::before { background: rgba(248, 249, 243, 0.97); }
 }

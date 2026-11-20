@@ -1,40 +1,31 @@
 'use client';
 import { useEffect, useState, type CSSProperties } from 'react';
+import type { HomelabCopy } from './_copy/en';
+import { useHomelabCopy } from './_copy/context';
 
-/* ── Topology model (viewBox 0 0 1120 640) ── */
+/* ── Topology model (viewBox 0 0 1120 640). Labels, subtitles and details are in the copy
+   (map.nodes), keyed by node id. ── */
 type Vlan = 'unraid' | 'server' | 'default' | 'iot' | 'core';
+type NodeId = keyof HomelabCopy['map']['nodes'];
 interface Node {
-  id: string; x: number; y: number; w: number; h: number;
-  label: string; sub: string; vlan: Vlan; detail: string;
+  id: NodeId; x: number; y: number; w: number; h: number; vlan: Vlan;
 }
-const N: Record<string, Node> = {
-  internet: { id: 'internet', x: 500, y: 22, w: 120, h: 46, label: 'Internet', sub: 'Public edge', vlan: 'core',
-    detail: 'Inbound traffic reaches one public address and goes straight to the gateway, so nothing behind it can be reached directly.' },
-  udm: { id: 'udm', x: 466, y: 112, w: 188, h: 60, label: 'UDM Pro', sub: 'Gateway, firewall, RADIUS', vlan: 'core',
-    detail: 'The UniFi Dream Machine Pro is the gateway, firewall, network controller and RADIUS server. It decides which VLAN can reach which, and authenticates the WPA3-Enterprise Wi-Fi.' },
-  sw1: { id: 'sw1', x: 142, y: 246, w: 196, h: 56, label: 'USW Pro Max 24', sub: 'Server rack', vlan: 'core',
-    detail: 'This 24-port switch sits in the server rack, and each server connects to it with a redundant pair of links.' },
-  sw2: { id: 'sw2', x: 476, y: 246, w: 168, h: 56, label: 'USW Flex 2.5G', sub: 'General', vlan: 'core',
-    detail: 'This 2.5 Gb switch connects the faster everyday devices in the apartment.' },
-  sw3: { id: 'sw3', x: 842, y: 246, w: 176, h: 56, label: 'USW Lite 8 PoE', sub: 'Powers the APs', vlan: 'core',
-    detail: 'This 8-port PoE switch connects and powers the five access points, with one cable each.' },
-  newmain: { id: 'newmain', x: 28, y: 410, w: 124, h: 64, label: 'NewMain', sub: 'Unraid', vlan: 'unraid',
-    detail: 'The Unraid server has a VLAN to itself, which trusted VLANs can reach for storage and apps while the IoT VLAN cannot.' },
-  caca: { id: 'caca', x: 178, y: 410, w: 124, h: 64, label: 'CaCa', sub: 'Always on', vlan: 'server',
-    detail: 'CaCa is the Proxmox node that stays on, and it shares the server VLAN with Adell.' },
-  adell: { id: 'adell', x: 328, y: 410, w: 124, h: 64, label: 'Adell', sub: 'On demand', vlan: 'server',
-    detail: 'Adell is the Proxmox node I wake when I need it, and it shares the server VLAN with CaCa for live migration and PXE boot.' },
-  clients: { id: 'clients', x: 476, y: 412, w: 168, h: 60, label: 'Workstations', sub: 'Laptops, desktops', vlan: 'default',
-    detail: 'Everyday devices sit on the default VLAN, where they can reach the servers but the IoT VLAN cannot reach them.' },
-  aps: { id: 'aps', x: 842, y: 410, w: 176, h: 62, label: '5 UniFi APs', sub: 'Wi-Fi', vlan: 'core',
-    detail: 'Five access points broadcast two separate Wi-Fi networks across the apartment, powered over PoE from the Lite 8.' },
-  wmain: { id: 'wmain', x: 772, y: 548, w: 150, h: 56, label: 'Main WLAN', sub: 'WPA3-Enterprise', vlan: 'default',
-    detail: 'The main Wi-Fi uses WPA3-Enterprise with RADIUS on the UDM Pro, so every device has its own credentials.' },
-  wiot: { id: 'wiot', x: 938, y: 548, w: 146, h: 56, label: 'IoT WLAN', sub: 'Isolated', vlan: 'iot',
-    detail: 'Smart devices get internet access and nothing else, because firewall rules block them from every other VLAN.' },
+const N: Record<NodeId, Node> = {
+  internet: { id: 'internet', x: 500, y: 22, w: 120, h: 46, vlan: 'core' },
+  udm: { id: 'udm', x: 466, y: 112, w: 188, h: 60, vlan: 'core' },
+  sw1: { id: 'sw1', x: 142, y: 246, w: 196, h: 56, vlan: 'core' },
+  sw2: { id: 'sw2', x: 476, y: 246, w: 168, h: 56, vlan: 'core' },
+  sw3: { id: 'sw3', x: 842, y: 246, w: 176, h: 56, vlan: 'core' },
+  newmain: { id: 'newmain', x: 28, y: 410, w: 124, h: 64, vlan: 'unraid' },
+  caca: { id: 'caca', x: 178, y: 410, w: 124, h: 64, vlan: 'server' },
+  adell: { id: 'adell', x: 328, y: 410, w: 124, h: 64, vlan: 'server' },
+  clients: { id: 'clients', x: 476, y: 412, w: 168, h: 60, vlan: 'default' },
+  aps: { id: 'aps', x: 842, y: 410, w: 176, h: 62, vlan: 'core' },
+  wmain: { id: 'wmain', x: 772, y: 548, w: 150, h: 56, vlan: 'default' },
+  wiot: { id: 'wiot', x: 938, y: 548, w: 146, h: 56, vlan: 'iot' },
 };
 
-interface Edge { from: string; to: string; redundant?: boolean }
+interface Edge { from: NodeId; to: NodeId; redundant?: boolean }
 const EDGES: Edge[] = [
   { from: 'internet', to: 'udm' },
   { from: 'udm', to: 'sw1' }, { from: 'udm', to: 'sw2' }, { from: 'udm', to: 'sw3' },
@@ -48,20 +39,8 @@ const VLAN_COLOR: Record<Vlan, string> = {
   unraid: '#38a8e8', server: '#7b6fe0', default: '#6f9fd8', iot: '#e0a84e', core: '#8a9bb0',
 };
 
-const LEGEND: { v: Vlan; label: string }[] = [
-  { v: 'unraid', label: 'Unraid VLAN' },
-  { v: 'server', label: 'Server VLAN' },
-  { v: 'default', label: 'Default VLAN' },
-  { v: 'iot', label: 'IoT VLAN, isolated' },
-];
-
-const VLAN_INFO: Record<Vlan, { label: string; blurb: string }> = {
-  unraid: { label: 'Unraid VLAN', blurb: 'NewMain sits on this VLAN by itself, and trusted VLANs can reach it for storage and apps while the IoT VLAN cannot.' },
-  server: { label: 'Server VLAN', blurb: 'CaCa and Adell, the Proxmox cluster, share this segment so they can live-migrate VMs and PXE boot.' },
-  default: { label: 'Default VLAN', blurb: 'Workstations and the main WPA3-Enterprise Wi-Fi sit here, and they can reach the servers while the IoT VLAN cannot reach them.' },
-  iot: { label: 'IoT VLAN', blurb: 'Smart devices get internet access and nothing else, because firewall rules block this segment from every other VLAN.' },
-  core: { label: 'Core network', blurb: 'The gateway and switches that route between the VLANs.' },
-};
+/* the four VLANs in the legend (their names are in the copy, map.legend) */
+const LEGEND = ['unraid', 'server', 'default', 'iot'] as const;
 
 const cx = (n: Node) => n.x + n.w / 2;
 const cy = (n: Node) => n.y + n.h / 2;
@@ -73,12 +52,12 @@ const cy = (n: Node) => n.y + n.h / 2;
    with elbow links down the left. Selection and VLAN highlighting work
    the same. */
 const TALL_W = 400;
-const TALL_ROWS: [id: string, depth: number, gapBefore?: number][] = [
+const TALL_ROWS: [id: NodeId, depth: number, gapBefore?: number][] = [
   ['internet', 0], ['udm', 1], ['sw1', 2],
   ['newmain', 3, 26], ['caca', 3, 30], ['adell', 3],
   ['sw2', 2, 14], ['clients', 3], ['sw3', 2], ['aps', 3], ['wmain', 4], ['wiot', 4],
 ];
-const TALL: Record<string, Node> = {};
+const TALL = {} as Record<NodeId, Node>;
 let tallH = 14;
 for (const [id, depth, gap = 0] of TALL_ROWS) {
   tallH += gap;
@@ -87,7 +66,7 @@ for (const [id, depth, gap = 0] of TALL_ROWS) {
   tallH += 48;
 }
 tallH += 6;
-const zoneAround = (ids: string[], pad = 6) => {
+const zoneAround = (ids: NodeId[], pad = 6) => {
   const ns = ids.map((id) => TALL[id]);
   const x = ns[0].x - pad, y = ns[0].y - 22, b = ns[ns.length - 1];
   return { x, y, w: TALL_W - 6 - x, h: b.y + b.h + pad - y };
@@ -106,12 +85,13 @@ function useTall() {
 }
 
 export default function SystemMap() {
-  const [selected, setSelected] = useState<string>('udm');
+  const c = useHomelabCopy().map;
+  const [selected, setSelected] = useState<NodeId | ''>('udm');
   const [pinned, setPinned] = useState<Vlan | null>(null);
   const [hovered, setHovered] = useState<Vlan | null>(null);
   const active = hovered ?? pinned; // hover previews a segment, click pins it
 
-  const isCore = (id: string) => N[id].vlan === 'core';
+  const isCore = (id: NodeId) => N[id].vlan === 'core';
   const nodeDim = (n: Node) => !!active && n.vlan !== active && n.vlan !== 'core';
   const nodeSpot = (n: Node) => !!active && n.vlan === active;
   const edgeHot = (e: Edge) => !!active && (N[e.from].vlan === active || N[e.to].vlan === active);
@@ -124,7 +104,7 @@ export default function SystemMap() {
   };
 
   const pickVlan = (v: Vlan) => { setPinned((p) => (p === v ? null : v)); setSelected(''); };
-  const pickNode = (id: string) => { setSelected(id); setPinned(null); setHovered(null); };
+  const pickNode = (id: NodeId) => { setSelected(id); setPinned(null); setHovered(null); };
 
   const sel = selected ? N[selected] : null;
   const tall = useTall();
@@ -135,38 +115,38 @@ export default function SystemMap() {
     <div className="hl2-map-wrap">
       <div className="hl2-map-controls">
         <div className="hl2-legend">
-          {LEGEND.map((l) => (
+          {LEGEND.map((v) => (
             <button
-              key={l.v}
+              key={v}
               type="button"
-              className={`hl2-legend-item${pinned === l.v ? ' on' : ''}`}
-              style={{ '--lc': VLAN_COLOR[l.v] } as CSSProperties}
-              onClick={() => pickVlan(l.v)}
-              onMouseEnter={() => setHovered(l.v)}
+              className={`hl2-legend-item${pinned === v ? ' on' : ''}`}
+              style={{ '--lc': VLAN_COLOR[v] } as CSSProperties}
+              onClick={() => pickVlan(v)}
+              onMouseEnter={() => setHovered(v)}
               onMouseLeave={() => setHovered(null)}
-              aria-pressed={pinned === l.v}
+              aria-pressed={pinned === v}
             >
-              <i style={{ background: VLAN_COLOR[l.v] }} />{l.label}
+              <i style={{ background: VLAN_COLOR[v] }} />{c.legend[v]}
             </button>
           ))}
         </div>
         <div className="hl2-map-buttons">
           {pinned
-            ? <button type="button" className="hl2-btn small ghost" onClick={() => setPinned(null)}>Clear highlight</button>
-            : <span className="hl2-map-tip">Select a VLAN to highlight its devices</span>}
+            ? <button type="button" className="hl2-btn small ghost" onClick={() => setPinned(null)}>{c.clear}</button>
+            : <span className="hl2-map-tip">{c.tip}</span>}
         </div>
       </div>
 
       <div className="hl2-map-scroll">
-        <svg className={`hl2-map-svg${tall ? ' is-tall' : ''}`} viewBox={tall ? `0 0 ${TALL_W} ${tallH}` : '0 0 1120 640'} role="img" aria-label="Network map. Select a device for details.">
+        <svg className={`hl2-map-svg${tall ? ' is-tall' : ''}`} viewBox={tall ? `0 0 ${TALL_W} ${tallH}` : '0 0 1120 640'} role="img" aria-label={c.svgLabel}>
           {/* VLAN zones (only the two adjacent server-rack groups get a backing) */}
           <g className="hl2-zones">
             {tall ? <>
-              <Zone {...zU} color={VLAN_COLOR.unraid} label="Unraid VLAN" active={active === 'unraid'} />
-              <Zone {...zS} color={VLAN_COLOR.server} label="Server VLAN" dashed active={active === 'server'} />
+              <Zone {...zU} color={VLAN_COLOR.unraid} label={c.vlans.unraid.label} active={active === 'unraid'} />
+              <Zone {...zS} color={VLAN_COLOR.server} label={c.vlans.server.label} dashed active={active === 'server'} />
             </> : <>
-              <Zone x={19} y={384} w={142} h={98} color={VLAN_COLOR.unraid} label="Unraid VLAN" active={active === 'unraid'} />
-              <Zone x={169} y={384} w={292} h={98} color={VLAN_COLOR.server} label="Server VLAN" dashed active={active === 'server'} />
+              <Zone x={19} y={384} w={142} h={98} color={VLAN_COLOR.unraid} label={c.vlans.unraid.label} active={active === 'unraid'} />
+              <Zone x={169} y={384} w={292} h={98} color={VLAN_COLOR.server} label={c.vlans.server.label} dashed active={active === 'server'} />
             </>}
           </g>
 
@@ -198,23 +178,24 @@ export default function SystemMap() {
 
           {/* nodes */}
           {Object.values(L).map((n) => {
+            const t = c.nodes[n.id];
             const color = VLAN_COLOR[n.vlan];
             const isSel = !active && selected === n.id;
             return (
               <g key={n.id} className="hl2-node" transform={`translate(${n.x},${n.y})`}
                 opacity={nodeDim(n) ? 0.26 : 1} style={{ transition: 'opacity .35s' }}
                 onClick={() => pickNode(n.id)} tabIndex={0}
-                onKeyDown={(e) => { if (e.key === 'Enter') pickNode(n.id); }} role="button" aria-label={n.label}>
+                onKeyDown={(e) => { if (e.key === 'Enter') pickNode(n.id); }} role="button" aria-label={t.label}>
                 <rect width={n.w} height={n.h} rx={tall ? 11 : 13}
                   className={`hl2-node-box${isSel ? ' sel' : ''}${nodeSpot(n) ? ' spot' : ''}${n.vlan === 'iot' ? ' iot' : ''}`}
                   style={{ '--nc': color } as CSSProperties} />
                 {tall ? <>
-                  <text x={28} y={n.h / 2 + 5} className="hl2-node-label">{n.label}</text>
-                  <text x={n.w - 12} y={n.h / 2 + 4} className="hl2-node-sub">{n.sub}</text>
+                  <text x={28} y={n.h / 2 + 5} className="hl2-node-label">{t.label}</text>
+                  <text x={n.w - 12} y={n.h / 2 + 4} className="hl2-node-sub">{t.sub}</text>
                   <circle cx={15} cy={n.h / 2} r={4} fill={color} className="hl2-node-led" />
                 </> : <>
-                  <text x={n.w / 2} y={n.h / 2 - 3} className="hl2-node-label">{n.label}</text>
-                  <text x={n.w / 2} y={n.h / 2 + 15} className="hl2-node-sub">{n.sub}</text>
+                  <text x={n.w / 2} y={n.h / 2 - 3} className="hl2-node-label">{t.label}</text>
+                  <text x={n.w / 2} y={n.h / 2 + 15} className="hl2-node-sub">{t.sub}</text>
                   <circle cx={14} cy={14} r={4} fill={color} className="hl2-node-led" />
                 </>}
               </g>
@@ -228,22 +209,22 @@ export default function SystemMap() {
         {active ? (
           <div className="hl2-detail">
             <div className="hl2-detail-head">
-              <span className="hl2-detail-vlan" style={{ '--nc': VLAN_COLOR[active] } as CSSProperties}>{active === 'core' ? 'Core network' : 'Segment'}</span>
-              <h4>{VLAN_INFO[active].label}</h4>
+              <span className="hl2-detail-vlan" style={{ '--nc': VLAN_COLOR[active] } as CSSProperties}>{active === 'core' ? c.core : c.segment}</span>
+              <h4>{c.vlans[active].label}</h4>
             </div>
-            <p>{VLAN_INFO[active].blurb}</p>
+            <p>{c.vlans[active].blurb}</p>
           </div>
         ) : sel ? (
           <div className="hl2-detail">
             <div className="hl2-detail-head">
-              <span className="hl2-detail-vlan" style={{ '--nc': VLAN_COLOR[sel.vlan] } as CSSProperties}>{sel.vlan === 'core' ? 'Core network' : VLAN_INFO[sel.vlan].label}</span>
-              <h4>{sel.label}</h4>
-              <span className="hl2-detail-sub">{sel.sub}</span>
+              <span className="hl2-detail-vlan" style={{ '--nc': VLAN_COLOR[sel.vlan] } as CSSProperties}>{sel.vlan === 'core' ? c.core : c.vlans[sel.vlan].label}</span>
+              <h4>{c.nodes[sel.id].label}</h4>
+              <span className="hl2-detail-sub">{c.nodes[sel.id].sub}</span>
             </div>
-            <p>{sel.detail}</p>
+            <p>{c.nodes[sel.id].detail}</p>
           </div>
         ) : (
-          <p className="hl2-detail-hint">Select a device to see what it does.</p>
+          <p className="hl2-detail-hint">{c.hint}</p>
         )}
       </div>
     </div>

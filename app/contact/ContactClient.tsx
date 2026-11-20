@@ -1,14 +1,17 @@
 'use client';
 import { useState } from 'react';
+import { useLang } from '@/lib/useLang';
+import { CONTACT } from './_copy';
 
 export default function ContactClient() {
-  const [copyLabel, setCopyLabel] = useState('Copy address');
+  const c = CONTACT[useLang()];
+  const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
     const email = 'braven@chiambucket.com';
     const done = () => {
-      setCopyLabel('Copied');
-      setTimeout(() => setCopyLabel('Copy address'), 1600);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1600);
     };
     if (navigator.clipboard?.writeText) {
       navigator.clipboard.writeText(email).then(done).catch(done);
@@ -29,15 +32,13 @@ export default function ContactClient() {
         <div className="ct-aura"></div>
         <div className="cx-monolith" aria-hidden="true"></div>
 
-        <span className="ct-kicker">Contact</span>
-        <h1 className="ct-title cx-title">Let&apos;s <em>talk</em></h1>
-        <p className="ct-sub">
-          Email is the fastest way to reach me, and I&apos;m also on the sites below.
-        </p>
+        <span className="ct-kicker">{c.kicker}</span>
+        <h1 className="ct-title cx-title">{c.title}</h1>
+        <p className="ct-sub">{c.sub}</p>
 
         <div className="ct-email-card cx-card">
           <div className="ct-email-text">
-            <span className="ct-email-label">Email</span>
+            <span className="ct-email-label">{c.emailLabel}</span>
             <span className="ct-email-addr" id="ct-email">braven@chiambucket.com</span>
           </div>
           <div className="ct-email-actions">
@@ -46,14 +47,14 @@ export default function ContactClient() {
                 <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.8" />
                 <path d="M4 7l8 6 8-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
               </svg>
-              Write an email
+              {c.write}
             </a>
             <button className="ct-copy" type="button" onClick={handleCopy}>
               <svg viewBox="0 0 24 24" fill="none" width="15" height="15" aria-hidden="true">
                 <rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" strokeWidth="1.8" />
                 <path d="M5 15V5a2 2 0 0 1 2-2h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
               </svg>
-              <span className="ct-copy-label" aria-live="polite">{copyLabel}</span>
+              <span className="ct-copy-label" aria-live="polite">{copied ? c.copied : c.copy}</span>
             </button>
           </div>
         </div>

@@ -1,17 +1,21 @@
 'use client';
 import { usePathname } from 'next/navigation';
 import { isEmbed } from '../lib/embed';
+import { splitLang, localize } from '../lib/i18n';
+import { SHELL } from '../lib/shell';
 
 export default function Footer() {
   const pathname = usePathname();
+  const { lang } = splitLang(pathname);
+  const t = SHELL[lang];
   const openExt = (url: string) => window.open(url, '_blank', 'noopener');
 
   if (isEmbed(pathname)) return null;
   return (
     <div className="footer">
-      <button onClick={() => { window.location.href = '/'; }} className="footer-left">
+      <button onClick={() => { window.location.href = localize('/', lang); }} className="footer-left">
         <img src="/images/logo.webp" alt="Chiambucket logo" className="footer-left-img" />
-        <span className="footer-left-text">Chiambucket Home</span>
+        <span className="footer-left-text">{t.footerHome}</span>
       </button>
 
       <div className="footer-center">
@@ -48,8 +52,8 @@ export default function Footer() {
       <div className="footer-right">
         <span className="footer-right-text">
           &copy; Chiambucket 2025<br />
-          Credits for the content are{' '}
-          <button onClick={() => { window.location.href = '/credits'; }}>here</button>
+          {t.creditsBefore}{' '}
+          <button onClick={() => { window.location.href = localize('/credits', lang); }}>{t.creditsLink}</button>
         </span>
       </div>
     </div>

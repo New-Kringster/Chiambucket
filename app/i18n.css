@@ -1,0 +1,22 @@
+/* ═══════════════════════════════════════════════════════════════
+   Type adjustments for the other languages (lib/i18n.ts). <html lang> is
+   set before paint (app/layout.tsx) and on every navigation (ClientEffects).
+   The display faces are Latin-only, so Chinese, Japanese and Cyrillic fall
+   back to the system's own faces glyph by glyph; these rules keep those
+   readable inside a layout tuned for tight Latin headings.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Chinese and Japanese: the tight negative tracking of the Latin headings
+   crowds ideographs, and the wide tracking of small labels breaks words apart. */
+html:is(:lang(zh), :lang(ja)) :is(h1, h2, h3, h4, h5, h6, [class*='title'], [class*='kicker'], [class*='eyebrow'], [class*='tag']) {
+  letter-spacing: 0 !important;
+}
+html:is(:lang(zh), :lang(ja)) { line-break: strict; }
+/* ideographs read better a touch looser in running text */
+html:is(:lang(zh), :lang(ja)) :is(p, li) { line-height: 1.8; }
+
+/* Long German, Dutch and Russian compounds: let them break instead of overflowing narrow boxes */
+html:is(:lang(de), :lang(nl), :lang(ru)) :is(h1, h2, h3, h4, p, li, button, a) {
+  overflow-wrap: break-word;
+  hyphens: auto;
+}

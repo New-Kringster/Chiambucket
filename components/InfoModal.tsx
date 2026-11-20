@@ -2,6 +2,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { iconForUrl } from './Icons';
+import { useLang } from '../lib/useLang';
+import { SHELL } from '../lib/shell';
 
 export type InfoItem = {
   icon?: string;
@@ -21,6 +23,7 @@ export type InfoItem = {
    and the photography tool cards. Accent colours follow the page's data-theme
    via the --hp-* tokens. CSS-only enter/exit (no framer dependency on these pages). */
 export default function InfoModal({ item, onClose }: { item: InfoItem | null; onClose: () => void }) {
+  const closeLabel = SHELL[useLang()].close;
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [data, setData] = useState<InfoItem | null>(null);
@@ -55,7 +58,7 @@ export default function InfoModal({ item, onClose }: { item: InfoItem | null; on
   return createPortal(
     <div className={`im-scrim${open ? ' is-open' : ''}`} role="dialog" aria-modal="true" aria-label={data.title} onClick={onClose}>
       <div className="im-panel" onClick={(e) => e.stopPropagation()}>
-        <button className="im-x" onClick={onClose} aria-label="Close">
+        <button className="im-x" onClick={onClose} aria-label={closeLabel}>
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
         </button>
         {data.icon && <span className={`im-icon${data.iconRound ? ' round' : ''}`}><img src={data.icon} alt="" /></span>}

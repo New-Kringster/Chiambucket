@@ -2,6 +2,7 @@
 import { useEffect, useRef } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { themeForPath } from '../lib/theme';
+import { splitLang } from '../lib/i18n';
 
 /* Page transitions: the bright dissolve (components/dissolve.ts) from one
    page straight into the next.
@@ -153,7 +154,8 @@ export default function PageTransition() {
       e.preventDefault();
       e.stopPropagation();
       st.cv = cv; st.fx = fx; st.phase = 'cover'; st.from = location.pathname;
-      fx.setColor(hex(PAGE_VEIL[url.pathname] ?? VEIL[themeForPath(url.pathname)] ?? VEIL.night));
+      const to = splitLang(url.pathname).base;
+      fx.setColor(hex(PAGE_VEIL[to] ?? VEIL[themeForPath(to)] ?? VEIL.night));
       router.prefetch(url.pathname);
       run(560, (k, t) => fx.draw({ inP: easeIn(k), outP: 0, time: t, focus }), () => {
         st.phase = 'wait';

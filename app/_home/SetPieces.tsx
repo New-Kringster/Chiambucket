@@ -11,31 +11,13 @@
    (CommandLink.tsx, ReadingTogether.tsx, SpicyGate.tsx).
    ──────────────────────────────────────────────────────────────── */
 import type { CSSProperties, ReactNode } from 'react';
+import { fill } from '@/lib/fill';
+import { useHomeCopy } from './copyContext';
 
 export type Beat = { title: string; text: string };
 
-export const JUNE_BEATS: Beat[] = [
-  { title: 'Three live feeds from three phones', text: 'Phone 1 is the main 5G hotspot and the front camera, phone 2 is the second hotspot and the left camera, and phone 3 is the right camera. Each one streams its view to my console over WebRTC.' },
-  { title: 'Telemetry from the night run', text: 'The ESP32-S3 joins the phone hotspot and sends its GPS, temperature, humidity and light readings back over MQTT, about ten times a second.' },
-  { title: 'From a controller to the road', text: 'I drive it with an Xbox controller through my web console. The commands go over MQTT through my server and the video comes back through my TURN server, with about a second of delay from over 8 km away.' },
-];
-
-export const PIP_BEATS: Beat[] = [
-  { title: 'It points things out', text: 'Ask Pip to show you something and it takes a screenshot of the page, finds the part in the picture and draws a circle, an arrow and a note over it.' },
-  { title: 'It builds its own apps', text: 'Pip writes apps when I ask and keeps them in a drawer, either Lua scripts that run on the tablet or web apps it serves from my server.' },
-  { title: 'A desktop for every chat', text: 'Pulling down the pill at the top opens the spotlight bar, and every conversation has its own desktop with its own Pip and colour.' },
-];
-
-export const LIDAR_BEATS: Beat[] = [
-  { title: 'It sweeps the room', text: 'Stack-chan turns its head across the room in small steps and takes a distance reading at every one. This is the real scan, filling in as the head pans across.' },
-  { title: 'Quick, Normal or Fine', text: 'Before a scan I pick Quick, Normal or Fine. Quick is done in under a minute, and Fine takes longer but picks up much more detail.' },
-  { title: 'Coloured by its own camera', text: 'Photos from the CoreS3’s camera colour the readings, which turns them into 68,206 coloured points that any browser on the Wi-Fi can show in 3D.' },
-];
-
-export const BEAD_BEATS: Beat[] = [
-  { title: 'It remembers your page', text: 'The Who’s reading list shows how far each reader has got, and tapping your own row opens the same chapter at the line you stopped on.' },
-  { title: 'Reading together', text: 'Friends on the same book show a green ring and their chapter. You can tap to send a wave or a short note, which fades from their screen in seconds and is never saved.' },
-];
+/* Every word here is the homepage copy's (useHomeCopy): the beats are its
+   flagships[id].beats, the set pieces' own labels its june, pip, lidar and bead. */
 
 function Captions({ beats }: { beats: Beat[] }) {
   return (
@@ -52,60 +34,52 @@ function Captions({ beats }: { beats: Beat[] }) {
 }
 
 /* ── Project June: mission control ── */
-const FEEDS = [
-  { key: 'left', label: 'Left', phone: 'Phone 2' },
-  { key: 'center', label: 'Front', phone: 'Phone 1' },
-  { key: 'right', label: 'Right', phone: 'Phone 3' },
-];
+const FEEDS = ['left', 'center', 'right'] as const;
 // The night run's readings, as shown in the article's console (CommandLink.tsx).
+// Their labels are the copy's june.tele, in this order.
 const TELE = [
-  { label: 'Latitude', to: 1.4602, dp: 4, unit: '°N' },
-  { label: 'Longitude', to: 103.8359, dp: 4, unit: '°E' },
-  { label: 'Satellites', to: 26, dp: 0, unit: '' },
-  { label: 'Temperature', to: 29.2, dp: 1, unit: '°C' },
-  { label: 'Humidity', to: 67, dp: 0, unit: '%' },
-  { label: 'Speed', to: 3, dp: 1, unit: 'km/h' },
-];
-const LINK = [
-  { label: 'Xbox controller', sub: 'Bluetooth to the console' },
-  { label: 'My server', sub: 'MQTT, signalling, TURN' },
-  { label: 'Three phones', sub: '5G hotspot and cameras' },
-  { label: 'ESP32-S3', sub: 'Motors and sensors' },
+  { to: 1.4602, dp: 4, unit: '°N' },
+  { to: 103.8359, dp: 4, unit: '°E' },
+  { to: 26, dp: 0, unit: '' },
+  { to: 29.2, dp: 1, unit: '°C' },
+  { to: 67, dp: 0, unit: '%' },
+  { to: 3, dp: 1, unit: 'km/h' },
 ];
 
 export function JuneHud() {
+  const { june: c, flagships } = useHomeCopy();
   return (
     <div className="hs-sp hs-jh">
       <div className="hs-jh-visual" aria-hidden="true">
         <div className="hs-jh-feeds">
-          {FEEDS.map((f, i) => (
-            <figure key={f.key} className="hs-jh-feed" style={{ '--i': i } as CSSProperties}>
-              <video muted loop playsInline preload="none" poster={`/images/home/feed-${f.key}.webp`} data-src={`/videos/rover-${f.key}-night.mp4`} />
-              <figcaption><b>{f.label}</b><span>{f.phone}</span></figcaption>
-              <i className="hs-jh-live">Live</i>
+          {FEEDS.map((key, i) => (
+            <figure key={key} className="hs-jh-feed" style={{ '--i': i } as CSSProperties}>
+              <video muted loop playsInline preload="none" poster={`/images/home/feed-${key}.webp`} data-src={`/videos/rover-${key}-night.mp4`} />
+              <figcaption><b>{c.feeds[key].label}</b><span>{c.feeds[key].phone}</span></figcaption>
+              <i className="hs-jh-live">{c.live}</i>
             </figure>
           ))}
         </div>
         <div className="hs-jh-strip">
           <dl className="hs-jh-tele">
             {TELE.map((t, i) => (
-              <div key={t.label} style={{ '--i': i } as CSSProperties}>
-                <dt>{t.label}</dt>
+              <div key={i} style={{ '--i': i } as CSSProperties}>
+                <dt>{c.tele[i]}</dt>
                 <dd><b data-to={t.to} data-dp={t.dp}>{t.to.toFixed(t.dp)}</b>{t.unit && <span>{t.unit}</span>}</dd>
               </div>
             ))}
-            <div className="hs-jh-place" style={{ '--i': TELE.length } as CSSProperties}><dt>Place</dt><dd><b>Sembawang Park</b></dd></div>
+            <div className="hs-jh-place" style={{ '--i': TELE.length } as CSSProperties}><dt>{c.place}</dt><dd><b>{c.placeName}</b></dd></div>
           </dl>
           <ol className="hs-jh-link">
             {/* one track from the first stop's centre to the last; it lights from the left */}
             <span className="hs-jh-wire"><i /></span>
-            {LINK.map((n, i) => (
-              <li key={n.label} style={{ '--i': i } as CSSProperties}><span className="hs-jh-node" /><b>{n.label}</b><span>{n.sub}</span></li>
+            {c.link.map((n, i) => (
+              <li key={i} style={{ '--i': i } as CSSProperties}><span className="hs-jh-node" /><b>{n.label}</b><span>{n.sub}</span></li>
             ))}
           </ol>
         </div>
       </div>
-      <Captions beats={JUNE_BEATS} />
+      <Captions beats={flagships['proj-june'].beats} />
     </div>
   );
 }
@@ -146,6 +120,7 @@ function Status() {
 /** The reader on chapter 12: the screenshot's top bar stays put while the page
     under it scrolls (--scr) to the saved line, which is marked (--mark). */
 function Reader() {
+  const c = useHomeCopy().bead;
   return (
     <div className="hs-bb-app is-reader">
       <Status />
@@ -154,28 +129,33 @@ function Reader() {
         <div className="hs-bb-rpage">
           <img src="/images/beadreader/reader-paper.webp" alt="" loading="lazy" />
           <i className="hs-bb-here" />
-          <b className="hs-bb-herechip"><svg viewBox="0 0 12 16" aria-hidden="true"><path d="M1 1h10v14l-5-4-5 4z" /></svg>You were here</b>
+          <b className="hs-bb-herechip"><svg viewBox="0 0 12 16" aria-hidden="true"><path d="M1 1h10v14l-5-4-5 4z" /></svg>{c.here}</b>
         </div>
       </div>
     </div>
   );
 }
 
+/** An avatar's letter: the first letter of the name. */
+const initial = (name: string) => Array.from(name)[0] ?? '';
+
 /** Mara's row of "Who's reading", as the book page draws it. */
 function ReadingRow({ cls }: { cls: string }) {
+  const c = useHomeCopy().bead;
   return (
     <div className={`hs-bb-row ${cls}`}>
-      <span className="hs-bb-row-av">M</span>
-      <span className="hs-bb-row-name">Mara</span>
-      <span className="hs-bb-row-chip">reading now</span>
+      <span className="hs-bb-row-av">{initial(c.mara)}</span>
+      <span className="hs-bb-row-name">{c.mara}</span>
+      <span className="hs-bb-row-chip">{c.readingNow}</span>
       <span className="hs-bb-row-bar"><i /></span>
-      <span className="hs-bb-row-pct">75%</span>
-      <span className="hs-bb-row-sub">On chapter 12 of 16 · read 2h 15m</span>
+      <span className="hs-bb-row-pct">{fill(c.pct, { n: 75 })}</span>
+      <span className="hs-bb-row-sub">{fill(c.rowSub, { ch: 12, of: 16, time: fill(c.readTime, { h: 2, m: 15 }) })}</span>
     </div>
   );
 }
 
 export function BeadBook() {
+  const { bead: c, flagships } = useHomeCopy();
   return (
     <div className="hs-sp hs-bb">
       <div className="hs-bb-visual" aria-hidden="true">
@@ -198,42 +178,42 @@ export function BeadBook() {
             </div>
             <Reader />
           </Phone>
-          <figcaption>Mara’s phone</figcaption>
+          <figcaption>{c.maraPhone}</figcaption>
         </figure>
         {/* beat 2: reading together */}
         <div className="hs-bb-together">
           <figure className="hs-bb-col is-mara">
             <Phone cls="is-mara">
               <Reader />
-              <p className="hs-bb-toast is-wave"><span>👋</span>Braven waved at you</p>
-              <p className="hs-bb-toast is-note"><b>Braven</b>loved that twist!</p>
+              <p className="hs-bb-toast is-wave"><span>👋</span>{c.waved}</p>
+              <p className="hs-bb-toast is-note"><b>{c.noteFrom}</b>{c.note}</p>
             </Phone>
-            <figcaption>Mara’s screen</figcaption>
+            <figcaption>{c.maraScreen}</figcaption>
           </figure>
           <div className="hs-bb-online">
-            <p className="hs-bb-online-h">Online now</p>
+            <p className="hs-bb-online-h">{c.onlineNow}</p>
             <ul>
               <li className="is-mara">
-                <span className="hs-bb-av">M<em>12</em></span>
-                <span className="hs-bb-who"><b>Mara</b><small>Reading here · ch 12</small></span>
+                <span className="hs-bb-av">{initial(c.mara)}<em>12</em></span>
+                <span className="hs-bb-who"><b>{c.mara}</b><small>{fill(c.readingHere, { ch: 12 })}</small></span>
                 <span className="hs-bb-acts"><i className="is-wave">👋</i><i className="is-note">💬</i></span>
               </li>
-              <li className="hs-bb-notebox"><span>loved that twist!</span><i>➤</i></li>
+              <li className="hs-bb-notebox"><span>{c.note}</span><i>➤</i></li>
               <li>
-                <span className="hs-bb-av">J</span>
-                <span className="hs-bb-who"><b>Jae</b><small>The Hobbit · ch 3</small></span>
+                <span className="hs-bb-av">{initial(c.jae)}</span>
+                <span className="hs-bb-who"><b>{c.jae}</b><small>{fill(c.elsewhere, { book: c.otherBook, ch: 3 })}</small></span>
                 <span className="hs-bb-acts"><i>👋</i><i>💬</i></span>
               </li>
               <li className="is-sam">
-                <span className="hs-bb-av">S<em>1</em></span>
-                <span className="hs-bb-who"><b>Sam</b><small className="is-a">Browsing</small><small className="is-b">Reading here · ch 1</small></span>
+                <span className="hs-bb-av">{initial(c.sam)}<em>1</em></span>
+                <span className="hs-bb-who"><b>{c.sam}</b><small className="is-a">{c.browsing}</small><small className="is-b">{fill(c.readingHere, { ch: 1 })}</small></span>
                 <span className="hs-bb-acts"><i>👋</i><i>💬</i></span>
               </li>
             </ul>
           </div>
         </div>
       </div>
-      <Captions beats={BEAD_BEATS} />
+      <Captions beats={flagships['proj-beadreader'].beats} />
     </div>
   );
 }
@@ -242,23 +222,21 @@ export function BeadBook() {
    The visual box is where the tablet settles, facing us, for the beats; its
    own screen plays the recordings. Without WebGL or with reduced motion the
    box shows the recordings' stills instead. */
-const PIP_SHOTS = [
-  { key: 'point', alt: 'Pip circling the mitochondria on a cell diagram on the Tab5' },
-  { key: 'drawer', alt: 'The app drawer on the Tab5 with the NCIR Thermometer app' },
-  { key: 'switch', alt: 'The spotlight bar on the Tab5, switching between desktops' },
-];
+// Their alt text is the copy's pip.shots, in this order.
+const PIP_SHOTS = ['point', 'drawer', 'switch'];
 
 export function PipTab() {
+  const { pip: c, flagships } = useHomeCopy();
   return (
     <div className="hs-sp hs-pt">
       <div className="hs-pt-visual">
         <div className="hs-pt-shots">
-          {PIP_SHOTS.map((c, i) => (
-            <img key={c.key} className={`is-${i + 1}`} src={`/videos/pip/${c.key}.webp`} alt={c.alt} loading="lazy" />
+          {PIP_SHOTS.map((key, i) => (
+            <img key={key} className={`is-${i + 1}`} src={`/videos/pip/${key}.webp`} alt={c.shots[i]} loading="lazy" />
           ))}
         </div>
       </div>
-      <Captions beats={PIP_BEATS} />
+      <Captions beats={flagships['proj-pip'].beats} />
     </div>
   );
 }
@@ -266,12 +244,13 @@ export function PipTab() {
 /* ── Stack-chan LiDAR: the 3D scene is the section's own backdrop (lidarStage.ts);
    this box only holds the finished scan for the flat fallback ── */
 export function LidarSet() {
+  const { lidar: c, flagships } = useHomeCopy();
   return (
     <div className="hs-sp hs-ld">
       <div className="hs-ld-visual">
-        <img className="hs-ld-cloud" src="/images/stackchan-lidar/cloud.webp" alt="The finished scan in the camera's colours: the walls and ceiling of a room corner" loading="lazy" />
+        <img className="hs-ld-cloud" src="/images/stackchan-lidar/cloud.webp" alt={c.cloudAlt} loading="lazy" />
       </div>
-      <Captions beats={LIDAR_BEATS} />
+      <Captions beats={flagships['proj-lidar'].beats} />
     </div>
   );
 }

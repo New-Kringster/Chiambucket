@@ -5,10 +5,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 /* Reusable, accessible detail modal. Keyed on `item` so the exit animation
    keeps the last content; portaled to <body> so nothing clips it. */
-export default function HlModal<T>({ item, onClose, label, children }: {
+export default function HlModal<T>({ item, onClose, label, closeLabel, children }: {
   item: T | null;
   onClose: () => void;
   label: (item: T) => string;
+  closeLabel: string;
   children: (item: T) => React.ReactNode;
 }) {
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -53,7 +54,7 @@ export default function HlModal<T>({ item, onClose, label, children }: {
             exit={{ opacity: 0, y: 18, scale: 0.98 }}
             transition={{ type: 'spring', stiffness: 250, damping: 26 }}
           >
-            <button ref={closeRef} className="hl2-modal-x" onClick={onClose} aria-label="Close">
+            <button ref={closeRef} className="hl2-modal-x" onClick={onClose} aria-label={closeLabel}>
               <svg viewBox="0 0 24 24" width="20" height="20" fill="none"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" d="M6 6l12 12M18 6L6 18" /></svg>
             </button>
             {children(item)}

@@ -3,6 +3,7 @@ import { usePathname } from 'next/navigation';
 import SunlitScene from './SunlitScene';
 import { themeForPath } from '../lib/theme';
 import { isEmbed } from '../lib/embed';
+import { splitLang } from '../lib/i18n';
 
 /*
   SceneShell — mounts the painted scene for the current route (mounted once in
@@ -12,6 +13,7 @@ import { isEmbed } from '../lib/embed';
 export default function SceneShell() {
   const pathname = usePathname();
   // The homepage draws its own chapters (app/_home/HomeStory.tsx), so no scene there.
-  if (pathname === '/' || isEmbed(pathname)) return null;
-  return <SunlitScene key={pathname} theme={themeForPath(pathname)} home={pathname === '/'} />;
+  const { base } = splitLang(pathname);
+  if (base === '/' || isEmbed(pathname)) return null;
+  return <SunlitScene key={pathname} theme={themeForPath(base)} home={false} />;
 }

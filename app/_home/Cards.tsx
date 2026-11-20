@@ -7,10 +7,16 @@ import InfoModal, { type InfoItem } from '../../components/InfoModal';
 import LazyVideo from '../../components/LazyVideo';
 import { PeekFeed } from '../../components/ProjectPeek';
 import { IcRead, IcPeek, IcPlay, IcGitHub, IcOut } from '../../components/Icons';
-import { PROJECTS, TILES, TYPE_LABEL, type Flagship, type Project, type ProjectType } from './content';
+import { fill } from '@/lib/fill';
+import { localize } from '@/lib/i18n';
+import { useLang } from '@/lib/useLang';
+import { PROJECTS, TILES, type Flagship, type Project, type ProjectType, type Tile } from './content';
+import { useHomeCopy } from './copyContext';
+import type { HomeCopy } from './_copy';
 
 /* ── The peek reader, shared by every card on the page ── */
 export function usePeek() {
+  const c = useHomeCopy().peek;
   const [open, setOpen] = useState(false);
   const [anim, setAnim] = useState(false);
   const [id, setId] = useState<string | null>(null);
@@ -29,8 +35,8 @@ export function usePeek() {
   const modal = (
     <div className={`hp-modal${anim ? ' is-open' : ''}`} hidden={!open}>
       <div className="hp-modal-backdrop" onClick={close} />
-      <div className="hp-modal-panel" role="dialog" aria-modal aria-label="Project summary">
-        <button className="hp-modal-close" onClick={close} aria-label="Close the summary">&times;</button>
+      <div className="hp-modal-panel" role="dialog" aria-modal aria-label={c.label}>
+        <button className="hp-modal-close" onClick={close} aria-label={c.close}>&times;</button>
         <div className="hp-modal-content">{id && <PeekFeed key={id} startId={id} />}</div>
       </div>
     </div>
@@ -52,34 +58,39 @@ export const Star = () => <svg className="hs-tier-ic" viewBox="0 0 24 24" fill="
     the lead, the facts, and the tools beside the actions. `slot` lets the
     OCR card leave its picture band to the live 3D reader. */
 export function FlagCard({ p, onPeek, variant, slot }: { p: Flagship; onPeek: (id: string) => void; variant: 'ocr' | 'june' | 'pip' | 'lidar' | 'bead'; slot?: ReactNode }) {
+  const c = useHomeCopy();
+  const lang = useLang();
+  // the card's words: its title from the gallery copy, the rest from its flagship copy
+  const name = c.projects[p.id].title;
+  const f: HomeCopy['flagships'][keyof HomeCopy['flagships']] & { extra?: string } = c.flagships[p.id];
   return (
-    <article className={`hs-fc is-${variant}`} aria-label={`${p.name}, ${p.badge}`}>
+    <article className={`hs-fc is-${variant}`} aria-label={fill(c.card.label, { name, badge: f.badge })}>
       <div className="hs-fc-frame" aria-hidden="true" />
       <div className="hs-fc-media">
-        {slot ?? <img src={p.poster} alt={p.posterAlt} loading="lazy" />}
+        {slot ?? <img src={p.poster} alt={f.posterAlt} loading="lazy" />}
       </div>
       <div className="hs-fc-body">
         <div className="hs-fc-top">
-          <AiMark project={p.id} className="hs-fc-ai" />
-          <span className={`hs-fc-badge${p.gold ? ' is-gold' : ''}`}>{p.gold ? <Crown /> : <Star />}{p.badge}</span>
+          <AiMark project={p.id} className="hs-fc-ai" lang={lang} />
+          <span className={`hs-fc-badge${p.gold ? ' is-gold' : ''}`}>{p.gold ? <Crown /> : <Star />}{f.badge}</span>
         </div>
         <div className="hs-fc-head">
-          <h3 className="hs-fc-title">{p.name}</h3>
-          <p className="hs-fc-kind">{p.kind}</p>
+          <h3 className="hs-fc-title">{name}</h3>
+          <p className="hs-fc-kind">{f.kind}</p>
         </div>
-        <p className="hs-fc-lead">{p.lead}</p>
+        <p className="hs-fc-lead">{f.lead}</p>
         <dl className="hs-fc-stats">
-          {p.stats.map((s) => <div key={s.l}><dt>{s.v}</dt><dd>{s.l}</dd></div>)}
+          {f.stats.map((s) => <div key={s.l}><dt>{s.v}</dt><dd>{s.l}</dd></div>)}
         </dl>
         <div className="hs-fc-foot">
-          <div className="hs-fc-tools" aria-label="Tools">
+          <div className="hs-fc-tools" aria-label={c.card.tools}>
             {p.tools.map((t) => <img key={t.src} src={t.src} alt={t.alt} title={t.alt} loading="lazy" />)}
-            {slot && <img className="hs-fc-poster" src={p.poster} alt={p.posterAlt} loading="lazy" />}
+            {slot && <img className="hs-fc-poster" src={p.poster} alt={f.posterAlt} loading="lazy" />}
           </div>
           <div className="hs-btns">
-            <a className="hs-btn is-primary" href={p.read}><IcRead /> Read the article</a>
-            <button type="button" className="hs-btn" onClick={() => onPeek(p.id)}><IcPeek /> Peek summary</button>
-            {p.extra && <a className="hs-btn" href={p.extra.url} target="_blank" rel="noopener">{extraIcon[p.extra.kind]} {p.extra.label}</a>}
+            <a className="hs-btn is-primary" href={p.read}><IcRead /> {c.card.read}</a>
+            <button type="button" className="hs-btn" onClick={() => onPeek(p.id)}><IcPeek /> {c.card.peek}</button>
+            {p.extra && <a className="hs-btn" href={p.extra.url} target="_blank" rel="noopener">{extraIcon[p.extra.kind]} {f.extra}</a>}
           </div>
         </div>
       </div>
@@ -107,6 +118,8 @@ function bySize(list: Project[]): { p: Project; size: Size; pair?: boolean }[] {
 }
 
 export function ProjectGallery({ onPeek }: { onPeek: (id: string) => void }) {
+  const { gallery: g, projects: words } = useHomeCopy();
+  const lang = useLang();
   const [filter, setFilter] = useState<'all' | ProjectType>('all');
   const shown = bySize(PROJECTS.filter((p) => filter === 'all' || p.type === filter));
   /* Each card rises in once, the first time it comes into view. The observer
@@ -136,11 +149,11 @@ export function ProjectGallery({ onPeek }: { onPeek: (id: string) => void }) {
   }, [filter]);
   return (
     <>
-      <div className="hs-pg-filters" role="group" aria-label="Show projects">
+      <div className="hs-pg-filters" role="group" aria-label={g.filters}>
         {(['all', 'personal', 'school', 'internship'] as const).map((f) => (
           <button key={f} type="button" className={filter === f ? 'is-on' : ''} aria-pressed={filter === f} onClick={() => setFilter(f)}>
-            {f === 'all' ? 'All' : TYPE_LABEL[f]}
-            {f === 'internship' && <i className="hs-m5" role="img" aria-label="at M5Stack" />}
+            {f === 'all' ? g.all : g.types[f]}
+            {f === 'internship' && <i className="hs-m5" role="img" aria-label={g.atM5} />}
           </button>
         ))}
       </div>
@@ -150,22 +163,22 @@ export function ProjectGallery({ onPeek }: { onPeek: (id: string) => void }) {
             <div className="hs-pc-thumb">
               <img src={p.img} alt="" loading="lazy" />
               <div className="hs-pc-tags">
-                <AiMark project={p.id} />
-                <span className="hs-pc-type">{TYPE_LABEL[p.type]}{p.type === 'internship' && <i className="hs-m5" role="img" aria-label="at M5Stack" />}</span>
-                {p.flagship ? <span className="hs-pc-hl is-gold"><Crown />Flagship</span> : p.highlight && <span className="hs-pc-hl"><Star />Highlight</span>}
+                <AiMark project={p.id} lang={lang} />
+                <span className="hs-pc-type">{g.types[p.type]}{p.type === 'internship' && <i className="hs-m5" role="img" aria-label={g.atM5} />}</span>
+                {p.flagship ? <span className="hs-pc-hl is-gold"><Crown />{g.flagship}</span> : p.highlight && <span className="hs-pc-hl"><Star />{g.highlight}</span>}
               </div>
             </div>
             <div className="hs-pc-info">
-              <h3>{p.title}</h3>
-              <p>{p.blurb}</p>
+              <h3>{words[p.id].title}</h3>
+              <p>{words[p.id].blurb}</p>
               <div className="hs-pc-foot">
                 <div className="hs-pc-icons">{p.icons.map((ic) => <img key={ic.src} src={ic.src} alt={ic.alt} title={ic.alt} loading="lazy" />)}</div>
                 {p.url ? (
                   <div className="hs-pc-act">
-                    <button type="button" className="hs-pc-peek" onClick={() => onPeek(p.id)} aria-label={`Peek at a summary of ${p.title}`}><IcPeek /></button>
-                    <a className="hs-pc-read" href={p.url}><IcRead /> Read</a>
+                    <button type="button" className="hs-pc-peek" onClick={() => onPeek(p.id)} aria-label={fill(g.peek, { title: words[p.id].title })}><IcPeek /></button>
+                    <a className="hs-pc-read" href={p.url}><IcRead /> {g.read}</a>
                   </div>
-                ) : <span className="hs-pc-soon">Write-up coming soon</span>}
+                ) : <span className="hs-pc-soon">{g.soon}</span>}
               </div>
             </div>
           </li>
@@ -176,24 +189,38 @@ export function ProjectGallery({ onPeek }: { onPeek: (id: string) => void }) {
 }
 
 /* ── What I do: a bento of pictures; each opens its details ── */
+type TileWords = HomeCopy['skills']['tiles'][keyof HomeCopy['skills']['tiles']] & { points?: string[]; chips?: string[]; links?: string[]; link?: string };
+/** A tile's pop-up: its words from the copy, its picture and URLs from content.ts (links to localized pages keep the language). */
+function tileItem(t: Tile, w: TileWords, lang: ReturnType<typeof useLang>): InfoItem {
+  const item: InfoItem = { eyebrow: w.word, title: w.title, blurb: w.blurb };
+  if (w.points) item.points = w.points;
+  if (w.chips) item.chips = w.chips;
+  if (t.media) item.media = t.media;
+  if (w.link && t.link) item.link = { label: w.link, url: localize(t.link, lang) };
+  if (w.links && t.links) item.links = w.links.map((label, i) => ({ label, url: localize(t.links![i], lang) }));
+  return item;
+}
+
 export function Bento() {
+  const { skills: c } = useHomeCopy();
+  const lang = useLang();
   const [item, setItem] = useState<InfoItem | null>(null);
   return (
     <>
       <ul className="hs-bento">
-        {TILES.map((t) => (
+        {TILES.map((t) => { const w: TileWords = c.tiles[t.key]; return (
           <li key={t.key} className={`hs-tile is-${t.size}`}>
-            <button type="button" onClick={() => setItem(t.item)} aria-label={`${t.word}: ${t.line}. Open the details`}>
+            <button type="button" onClick={() => setItem(tileItem(t, w, lang))} aria-label={fill(c.open, { word: w.word, line: w.line })}>
               <span className="hs-tile-media">
                 {t.video
                   ? <LazyVideo webm={t.video.webm} mp4={t.video.mp4} poster={t.video.poster} />
                   : <img src={t.img} alt="" loading="lazy" style={{ objectFit: t.fit ?? 'cover', objectPosition: t.pos ?? '50% 50%' }} className={t.fit === 'contain' ? 'is-contain' : ''} />}
               </span>
-              <span className="hs-tile-text"><b>{t.word}</b><span>{t.line}</span></span>
+              <span className="hs-tile-text"><b>{w.word}</b><span>{w.line}</span></span>
               <span className="hs-tile-plus" aria-hidden="true">+</span>
             </button>
           </li>
-        ))}
+        ); })}
       </ul>
       <InfoModal item={item} onClose={() => setItem(null)} />
     </>

@@ -2,13 +2,16 @@
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { themeForPath, applyTheme } from '../lib/theme';
+import { splitLang, HTML_LANG } from '../lib/i18n';
 
 export default function ClientEffects() {
   const pathname = usePathname();
 
   // Keep the per-page theme (and .is-day / .is-night) in sync across client-side navigation
   useEffect(() => {
-    applyTheme(themeForPath(pathname));
+    const { lang, base } = splitLang(pathname);
+    applyTheme(themeForPath(base));
+    document.documentElement.lang = HTML_LANG[lang];
   }, [pathname]);
 
   // One-time effect: once the page scrolls, the nav logo gets its own chip

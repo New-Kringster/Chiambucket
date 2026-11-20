@@ -2,11 +2,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import './homelab.css';
-import { SERVERS, SERVICES, CATEGORIES, WEIGHT_META, ACCESS_METHODS, type Weight, type Server, type Service } from './data';
+import { SERVERS, SERVICES, CATEGORIES, WEIGHT_LEVEL, ACCESS_METHODS, type Weight, type Server, type Service, type Category } from './data';
 import SystemMap from './SystemMap';
 import MachineModal from './MachineModal';
 import ServiceModal from './ServiceModal';
 import { IcGrid, IcMail, IcMap } from '../../components/Icons';
+import type { HomelabCopy } from './_copy/en';
+import { HomelabCopyProvider, useHomelabCopy } from './_copy/context';
+import { fillNode } from './_copy/fillNode';
+import { fill } from '@/lib/fill';
+import { localize } from '@/lib/i18n';
+import { useLang } from '@/lib/useLang';
 
 /* ── live status hook (graceful: unknown until the ping returns) ── */
 type StatusMap = Record<string, 'up' | 'down'>;
@@ -54,9 +60,11 @@ function Reveal({ children, className, delay = 0, onClick, role, tabIndex, onKey
 }
 
 function WeightMeter({ weight }: { weight: Weight }) {
-  const { label, level } = WEIGHT_META[weight];
+  const c = useHomelabCopy();
+  const label = c.stack.weights[weight];
+  const level = WEIGHT_LEVEL[weight];
   return (
-    <span className="hl2-meter" title={label} aria-label={`Load: ${label}`}>
+    <span className="hl2-meter" title={label} aria-label={fill(c.stack.loadLabel, { label })}>
       {[1, 2, 3, 4, 5].map((i) => (
         <span key={i} className={`hl2-meter-bar${i <= level ? ' on' : ''}${weight === 'dev' ? ' dev' : ''}`} />
       ))}
@@ -65,9 +73,19 @@ function WeightMeter({ weight }: { weight: Weight }) {
   );
 }
 
-export default function HomelabClient() {
+/* The page's words come from the server page (./_copy) for its language. */
+export default function HomelabClient({ copy }: { copy: HomelabCopy }) {
+  return (
+    <HomelabCopyProvider value={copy}>
+      <HomelabBody c={copy} />
+    </HomelabCopyProvider>
+  );
+}
+
+function HomelabBody({ c }: { c: HomelabCopy }) {
+  const lang = useLang();
   const { status, synced } = useStatus();
-  const [filter, setFilter] = useState<string>('All');
+  const [filter, setFilter] = useState<Category | 'all'>('all');
   const [stackOpen, setStackOpen] = useState(false);
   const [openServer, setOpenServer] = useState<Server | null>(null);
   const [openService, setOpenService] = useState<Service | null>(null);
@@ -76,7 +94,7 @@ export default function HomelabClient() {
   const onlineCount = publicKeys.filter((k) => status[k] === 'up').length;
   const checked = publicKeys.some((k) => status[k]);
 
-  const shown = filter === 'All' ? SERVICES : SERVICES.filter((s) => s.category === filter);
+  const shown = filter === 'all' ? SERVICES : SERVICES.filter((s) => s.category === filter);
   const STACK_VISIBLE = 6;
   const collapsible = shown.length > STACK_VISIBLE;
   const collapsed = collapsible && !stackOpen;
@@ -97,65 +115,52 @@ export default function HomelabClient() {
           >
             <span className="hl2-live" aria-live="polite">
               <i className={`hl2-dot${checked && onlineCount > 0 ? ' on' : ''}`} />
-              {checked ? <><b>{onlineCount} of {publicKeys.length}</b>public services online</> : 'Checking public services'}
+              {checked
+                ? <>{fillNode(c.hero.online, { count: <b>{fill(c.hero.onlineCount, { n: onlineCount, total: publicKeys.length })}</b> })}</>
+                : c.hero.checking}
             </span>
             <span className="hl2-sep" />
-            <span className="hl2-tele">NewMain runs Unraid 7.1.2</span>
+            <span className="hl2-tele">{c.hero.tele}</span>
           </motion.div>
 
           <motion.span className="hl2-eyebrow" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }}>
-            Homelab
+            {c.hero.eyebrow}
           </motion.span>
           <motion.h1 className="hl2-title"
             initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}>
-            Three servers <em>in my room</em>
+            {c.hero.title}
           </motion.h1>
           <motion.p className="hl2-lead"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
-            They run my photo library, my files, and the MQTT and TURN servers that Project June and
-            LUMEN use, and they are also where I learn networking, storage and Docker and host what I build.
+            {c.hero.lead}
           </motion.p>
 
           <motion.div className="hl2-hero-stats"
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
-            {[
-              { v: '3', k: 'servers' },
-              { v: '38', k: 'self-hosted services' },
-              { v: '24 TB', k: 'usable storage' },
-              { v: '4', k: 'VLANs' },
-            ].map((s) => (
+            {c.hero.stats.map((s) => (
               <div key={s.k} className="hl2-stat"><b>{s.v}</b><span>{s.k}</span></div>
             ))}
           </motion.div>
 
           <motion.div className="hl2-hero-cta"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.62 }}>
-            <a className="hl2-btn" href="#map"><IcMap /> See the network map</a>
-            <a className="hl2-btn ghost" href="#stack"><IcGrid /> See the services</a>
+            <a className="hl2-btn" href="#map"><IcMap /> {c.hero.mapCta}</a>
+            <a className="hl2-btn ghost" href="#stack"><IcGrid /> {c.hero.stackCta}</a>
           </motion.div>
         </div>
-        <a className="hl2-scrollcue" href="#mission" aria-label="Scroll down"><span /></a>
+        <a className="hl2-scrollcue" href="#mission" aria-label={c.hero.scrollCue}><span /></a>
       </header>
 
       {/* ════════════ MISSION ════════════ */}
       <section className="hl2-band" id="mission">
         <div className="hl2-wrap">
-          <Reveal><SectionHead n="01" eyebrow="Why I run it" title="What it is for" /></Reveal>
+          <Reveal><SectionHead n="01" eyebrow={c.mission.eyebrow} title={c.mission.title} /></Reveal>
           <Reveal delay={0.05}>
-            <p className="hl2-mission-lead">
-              My hardware projects need servers to talk to, so Project June streams its cameras through my
-              TURN server and uses my MQTT broker for telemetry and control, while LUMEN&apos;s speech relay
-              runs in Docker here. Running these myself is how I learned networking, storage and deployment.
-            </p>
+            <p className="hl2-mission-lead">{c.mission.lead}</p>
           </Reveal>
           <div className="hl2-pillars">
-            {[
-              { k: 'Servers and storage', d: 'Docker containers run the services I use every day behind a reverse proxy, with two storage tiers and backups.', icon: 'cloud' },
-              { k: 'Networking', d: 'The network has four VLANs, RADIUS and WPA3-Enterprise Wi-Fi, running on UniFi switches and access points.', icon: 'net' },
-              { k: 'Deploying my apps', d: 'Apps I build are deployed to a VM in the Proxmox cluster, and next I want agents to run parts of the lab themselves.', icon: 'code' },
-              { k: 'For my projects', d: 'coturn lets Project June stream video over 5G, while Mosquitto carries messages for my ESP32 school projects.', icon: 'link' },
-            ].map((p, i) => (
-              <Reveal key={p.k} delay={i * 0.06} className="hl2-pillar">
+            {(['cloud', 'net', 'code', 'link'] as const).map((icon) => ({ icon, ...c.mission.pillars[icon] })).map((p, i) => (
+              <Reveal key={p.icon} delay={i * 0.06} className="hl2-pillar">
                 <PillarIcon name={p.icon} />
                 <h3>{p.k}</h3>
                 <p>{p.d}</p>
@@ -168,43 +173,43 @@ export default function HomelabClient() {
       {/* ════════════ MACHINES ════════════ */}
       <section className="hl2-band hl2-band-alt" id="machines">
         <div className="hl2-wrap">
-          <Reveal><SectionHead n="02" eyebrow="Hardware" title="Servers" /></Reveal>
+          <Reveal><SectionHead n="02" eyebrow={c.machines.eyebrow} title={c.machines.title} /></Reveal>
           <div className="hl2-machines">
-            {SERVERS.map((s, i) => (
+            {SERVERS.map((s, i) => { const t = c.servers[s.id]; return (
               <Reveal key={s.id} delay={i * 0.08} className={`hl2-machine ${s.status}`}
                 onClick={() => setOpenServer(s)} role="button" tabIndex={0}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenServer(s); } }}
-                ariaLabel={`${s.name} details`}>
+                ariaLabel={fill(c.details, { name: s.name })}>
                 <div className="hl2-machine-photo">
-                  <img src={s.photo} alt={`${s.name} server`} />
-                  <span className={`hl2-machine-state ${s.status}`}><i className="hl2-dot" />{s.statusLabel}</span>
+                  <img src={s.photo} alt={fill(c.machines.photoAlt, { name: s.name })} />
+                  <span className={`hl2-machine-state ${s.status}`}><i className="hl2-dot" />{c.statusLabels[s.status]}</span>
                 </div>
                 <div className="hl2-machine-body">
                   <div className="hl2-machine-head">
                     <h3>{s.name}</h3>
-                    <span className="hl2-machine-tag">{s.tag}</span>
+                    <span className="hl2-machine-tag">{t.tag}</span>
                   </div>
-                  <p className="hl2-machine-role">{s.role}</p>
-                  <p className="hl2-machine-blurb">{s.blurb}</p>
+                  <p className="hl2-machine-role">{t.role}</p>
+                  <p className="hl2-machine-blurb">{t.blurb}</p>
                   <dl className="hl2-spec">
                     {s.specs.map((sp) => (
-                      <div key={sp.k}><dt>{sp.k}</dt><dd>{sp.v}</dd></div>
+                      <div key={sp.k}><dt>{c.specLabels[sp.k]}</dt><dd>{sp.v ?? t.specs[sp.k]}</dd></div>
                     ))}
                   </dl>
-                  <span className="hl2-machine-more">Specs and details <Arrow /></span>
+                  <span className="hl2-machine-more">{c.machines.more} <Arrow /></span>
                 </div>
               </Reveal>
-            ))}
+            ); })}
           </div>
 
           <Reveal className="hl2-rackreal">
             <figure className="hl2-rackreal-photo">
-              <img src="/images/hl-rack-real.jpg" alt="The homelab rack in my room: the patch panel with blue cables at the top, the servers behind a mesh door" loading="lazy" />
+              <img src="/images/hl-rack-real.jpg" alt={c.machines.rack.alt} loading="lazy" />
             </figure>
             <div className="hl2-rackreal-text">
-              <span className="hl2-eyebrow">The rack</span>
-              <h3>All three servers in one cabinet</h3>
-              <p>The rack sits in a corner of my room, with the patch panel at the top and the servers behind the mesh door. Two of them run all the time, while Adell stays off until I need it.</p>
+              <span className="hl2-eyebrow">{c.machines.rack.eyebrow}</span>
+              <h3>{c.machines.rack.title}</h3>
+              <p>{c.machines.rack.body}</p>
             </div>
           </Reveal>
         </div>
@@ -213,12 +218,9 @@ export default function HomelabClient() {
       {/* ════════════ SYSTEM MAP ════════════ */}
       <section className="hl2-band" id="map">
         <div className="hl2-wrap">
-          <Reveal><SectionHead n="03" eyebrow="Network" title="Network map" /></Reveal>
+          <Reveal><SectionHead n="03" eyebrow={c.map.eyebrow} title={c.map.title} /></Reveal>
           <Reveal delay={0.05}>
-            <p className="hl2-map-lead">
-              My home runs on one UniFi network split into four VLANs, and you can select a device to see
-              what it does or a VLAN to highlight the devices on it.
-            </p>
+            <p className="hl2-map-lead">{c.map.lead}</p>
           </Reveal>
           <Reveal delay={0.08}><SystemMap /></Reveal>
         </div>
@@ -227,39 +229,37 @@ export default function HomelabClient() {
       {/* ════════════ STORAGE + PXE ════════════ */}
       <section className="hl2-band hl2-band-alt" id="storage">
         <div className="hl2-wrap">
-          <Reveal><SectionHead n="04" eyebrow="Storage and VMs" title="Storage and virtual machines" /></Reveal>
+          <Reveal><SectionHead n="04" eyebrow={c.storage.eyebrow} title={c.storage.title} /></Reveal>
           <div className="hl2-storage">
             <Reveal className="hl2-storage-col">
-              <h3 className="hl2-sub">Storage on NewMain</h3>
+              <h3 className="hl2-sub">{c.storage.poolsTitle}</h3>
               <div className="hl2-tier">
-                <div className="hl2-tier-head"><b>Array</b><span>Unraid, parity protected</span></div>
+                <div className="hl2-tier-head"><b>{c.storage.array.name}</b><span>{c.storage.array.sub}</span></div>
                 <div className="hl2-disks">
-                  <span className="hl2-disk parity">P</span><span className="hl2-disk parity">P</span>
-                  <span className="hl2-disk">D</span><span className="hl2-disk">D</span><span className="hl2-disk">D</span>
+                  <span className="hl2-disk parity">{c.storage.disks.parity}</span><span className="hl2-disk parity">{c.storage.disks.parity}</span>
+                  <span className="hl2-disk">{c.storage.disks.data}</span><span className="hl2-disk">{c.storage.disks.data}</span><span className="hl2-disk">{c.storage.disks.data}</span>
                 </div>
-                <p>It has two parity drives and three data drives, so it survives two drives failing at once, and it holds PXE backups, archives and media.</p>
+                <p>{c.storage.array.body}</p>
               </div>
               <div className="hl2-tier">
-                <div className="hl2-tier-head"><b>Fast pool</b><span>ZFS NVMe mirror</span></div>
+                <div className="hl2-tier-head"><b>{c.storage.fast.name}</b><span>{c.storage.fast.sub}</span></div>
                 <div className="hl2-disks">
-                  <span className="hl2-disk nvme">NVMe</span><span className="hl2-disk nvme">NVMe</span>
+                  <span className="hl2-disk nvme">{c.storage.disks.nvme}</span><span className="hl2-disk nvme">{c.storage.disks.nvme}</span>
                 </div>
-                <p>Two 2 TB NVMe drives form a ZFS mirror, which Docker app data, VM disks and the PXE ISO library run from.</p>
+                <p>{c.storage.fast.body}</p>
               </div>
               <div className="hl2-proto">
-                <span className="hl2-sub small">Shared over</span>
+                <span className="hl2-sub small">{c.storage.sharedOver}</span>
                 <div className="hl2-proto-row">
-                  <span>SFTP</span><span>SMB on the local network</span><span>NFS to Linux and macOS</span>
+                  {c.storage.protocols.map((p) => <span key={p}>{p}</span>)}
                 </div>
               </div>
             </Reveal>
             <Reveal delay={0.08} className="hl2-storage-col">
-              <h3 className="hl2-sub">The Proxmox cluster</h3>
-              <p className="hl2-pxe-lead">CaCa and Adell form one Proxmox cluster. CaCa boots from its own 1 TB SSD and stays on, while Adell boots over the network with no local OS drive and I wake it when I need its cores.</p>
+              <h3 className="hl2-sub">{c.storage.clusterTitle}</h3>
+              <p className="hl2-pxe-lead">{c.storage.clusterLead}</p>
               <ul className="hl2-pxe-list">
-                <li><b>claudeplayground</b><span>It is an Ubuntu VM where I deploy the apps I build, and Claude has SSH access to ship them.</span></li>
-                <li><b>CasaOS and Debian</b><span>These VMs used to run on bare metal.</span></li>
-                <li><b>Wake-on-LAN</b><span>UpSnap turns Adell on when a job needs it, so it only draws power while working.</span></li>
+                {c.storage.vms.map((v) => <li key={v.k}><b>{v.k}</b><span>{v.d}</span></li>)}
               </ul>
             </Reveal>
           </div>
@@ -269,18 +269,18 @@ export default function HomelabClient() {
       {/* ════════════ THE STACK ════════════ */}
       <section className="hl2-band" id="stack">
         <div className="hl2-wrap">
-          <Reveal><SectionHead n="05" eyebrow="Software" title="Services" /></Reveal>
+          <Reveal><SectionHead n="05" eyebrow={c.stack.eyebrow} title={c.stack.title} /></Reveal>
           <Reveal delay={0.03}>
-            <p className="hl2-map-lead">These are the main services out of 38, and the public ones show a live status that is checked once a minute.</p>
+            <p className="hl2-map-lead">{c.stack.lead}</p>
           </Reveal>
           <Reveal delay={0.04} className="hl2-stack-toolbar">
-            <div className="hl2-filters" role="group" aria-label="Filter services">
-              {['All', ...CATEGORIES].map((c) => (
-                <button key={c} className={`hl2-filter${filter === c ? ' on' : ''}`} onClick={() => { setFilter(c); setStackOpen(false); }}>{c}</button>
+            <div className="hl2-filters" role="group" aria-label={c.stack.filterLabel}>
+              {(['all', ...CATEGORIES] as const).map((cat) => (
+                <button key={cat} className={`hl2-filter${filter === cat ? ' on' : ''}`} onClick={() => { setFilter(cat); setStackOpen(false); }}>{c.stack.categories[cat]}</button>
               ))}
             </div>
             <span className="hl2-synced">
-              {synced ? `Checked at ${new Date(synced).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'Checking status'}
+              {synced ? fill(c.stack.checkedAt, { time: new Date(synced).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }) : c.stack.checking}
             </span>
           </Reveal>
           <div className={`hl2-services-wrap${collapsed ? ' is-collapsed' : ''}`}>
@@ -289,7 +289,7 @@ export default function HomelabClient() {
               const live = s.statusKey ? status[s.statusKey] : undefined;
               return (
                 <motion.article
-                  key={s.name}
+                  key={s.id}
                   className={`hl2-svc${s.featured ? ' featured' : ''}`}
                   layout
                   initial={{ opacity: 0, scale: 0.96 }}
@@ -299,20 +299,20 @@ export default function HomelabClient() {
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenService(s); } }}
-                  aria-label={`${s.name} details`}
+                  aria-label={fill(c.details, { name: s.name })}
                 >
                   <div className="hl2-svc-top">
                     <span className="hl2-svc-ico"><img src={s.icon} alt="" style={s.iconRound ? { borderRadius: '22%' } : undefined} /></span>
                     <span className={`hl2-svc-status ${s.statusKey ? (live === 'up' ? 'up' : live === 'down' ? 'down' : 'wait') : s.featured ? 'build' : 'self'}`}>
                       <i className="hl2-dot" />
-                      {s.statusKey ? (live === 'up' ? 'online' : live === 'down' ? 'offline' : 'checking') : s.featured ? 'building now' : 'private'}
+                      {c.stack.status[s.statusKey ? (live === 'up' ? 'up' : live === 'down' ? 'down' : 'wait') : s.featured ? 'build' : 'self']}
                     </span>
                     <span className="hl2-svc-expand" aria-hidden="true">
                       <svg viewBox="0 0 24 24" width="13" height="13" fill="none"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" /></svg>
                     </span>
                   </div>
                   <h3 className="hl2-svc-name">{s.name}</h3>
-                  <p className="hl2-svc-blurb">{s.blurb}</p>
+                  <p className="hl2-svc-blurb">{c.services[s.id].blurb}</p>
                   <div className="hl2-svc-foot">
                     <WeightMeter weight={s.weight} />
                     <span className="hl2-svc-hosts">{s.hosts.join(', ')}</span>
@@ -334,7 +334,7 @@ export default function HomelabClient() {
                 setStackOpen(next);
                 if (!next) document.getElementById('stack')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }} aria-expanded={stackOpen}>
-                {stackOpen ? 'Show fewer' : `Show all ${shown.length} services`}
+                {stackOpen ? c.stack.showFewer : fill(c.stack.showAll, { n: shown.length })}
                 <svg className={`hl2-chev${stackOpen ? ' up' : ''}`} viewBox="0 0 24 24" width="15" height="15" fill="none" aria-hidden="true">
                   <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="m6 9 6 6 6-6" />
                 </svg>
@@ -347,22 +347,22 @@ export default function HomelabClient() {
       {/* ════════════ ACCESS ════════════ */}
       <section className="hl2-band hl2-band-alt" id="access">
         <div className="hl2-wrap">
-          <Reveal><SectionHead n="06" eyebrow="Remote access" title="Six ways in" /></Reveal>
+          <Reveal><SectionHead n="06" eyebrow={c.access.eyebrow} title={c.access.title} /></Reveal>
           <Reveal delay={0.04}>
-            <p className="hl2-map-lead">I keep six separate ways in from outside, so one of them breaking does not lock me out.</p>
+            <p className="hl2-map-lead">{c.access.lead}</p>
           </Reveal>
           <div className="hl2-roads">
             {ACCESS_METHODS.map((m, i) => (
-              <Reveal key={m.name} delay={i * 0.05} className={`hl2-road${m.primary ? ' primary' : ''}`}>
+              <Reveal key={m.id} delay={i * 0.05} className={`hl2-road${m.primary ? ' primary' : ''}`}>
                 <span className="hl2-road-node"><i /></span>
                 <div className="hl2-road-name">
                   <b>{m.name}</b>
                   <div className="hl2-road-tags">
-                    <span className="hl2-road-type">{m.type}</span>
-                    {m.primary && <span className="hl2-road-badge">Primary</span>}
+                    <span className="hl2-road-type">{c.access.methods[m.id].type}</span>
+                    {m.primary && <span className="hl2-road-badge">{c.access.primary}</span>}
                   </div>
                 </div>
-                <p className="hl2-road-note">{m.note}</p>
+                <p className="hl2-road-note">{c.access.methods[m.id].note}</p>
               </Reveal>
             ))}
             <Reveal delay={ACCESS_METHODS.length * 0.05} className="hl2-road hl2-road-home">
@@ -370,10 +370,10 @@ export default function HomelabClient() {
               <div className="hl2-road-name">
                 <b>NewMain</b>
                 <div className="hl2-road-tags">
-                  <span className="hl2-road-type">The rack</span>
+                  <span className="hl2-road-type">{c.access.home.type}</span>
                 </div>
               </div>
-              <p className="hl2-road-note">Every path above ends here.</p>
+              <p className="hl2-road-note">{c.access.home.note}</p>
             </Reveal>
           </div>
         </div>
@@ -383,11 +383,11 @@ export default function HomelabClient() {
       <section className="hl2-band hl2-cta">
         <div className="hl2-wrap">
           <Reveal>
-            <h2 className="hl2-cta-title">What I am building now</h2>
-            <p className="hl2-cta-sub">I am building OpenClaw, a runner that lets AI agents do real tasks on the lab, such as starting a container, checking a service, deploying a small app and reporting back, but it is not finished yet.</p>
+            <h2 className="hl2-cta-title">{c.cta.title}</h2>
+            <p className="hl2-cta-sub">{c.cta.sub}</p>
             <div className="hl2-hero-cta">
-              <a className="hl2-btn" href="/#projects"><IcGrid /> See my projects</a>
-              <a className="hl2-btn ghost" href="/contact"><IcMail /> Contact me</a>
+              <a className="hl2-btn" href={localize('/#projects', lang)}><IcGrid /> {c.cta.projects}</a>
+              <a className="hl2-btn ghost" href={localize('/contact', lang)}><IcMail /> {c.cta.contact}</a>
             </div>
           </Reveal>
         </div>

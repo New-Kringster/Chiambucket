@@ -2,18 +2,22 @@
 import { motion } from 'framer-motion';
 import HlModal from './HlModal';
 import { SERVICES, type Server } from './data';
+import { useHomelabCopy } from './_copy/context';
+import { fillNode } from './_copy/fillNode';
+import { fill } from '@/lib/fill';
 
 /* ── per-machine animated explainer ── */
 function MachineVisual({ kind }: { kind: 'runs' | 'pxe' | 'wake' }) {
+  const c = useHomelabCopy().visuals;
   if (kind === 'runs') {
     const icons = SERVICES.filter((s) => s.hosts.includes('NewMain'));
     return (
       <div className="hl2-mv">
-        <span className="hl2-mv-label">What runs here</span>
+        <span className="hl2-mv-label">{c.runsLabel}</span>
         <div className="hl2-mv-runs">
           {icons.map((s, i) => (
             <motion.span
-              key={s.name}
+              key={s.id}
               className="hl2-mv-chip"
               title={s.name}
               initial={{ opacity: 0, scale: 0.5 }}
@@ -24,20 +28,16 @@ function MachineVisual({ kind }: { kind: 'runs' | 'pxe' | 'wake' }) {
             </motion.span>
           ))}
         </div>
-        <span className="hl2-mv-foot"><b>{icons.length}</b> of the {SERVICES.length} services on this page run on NewMain</span>
+        <span className="hl2-mv-foot">{fillNode(c.runsFoot, { n: <b>{icons.length}</b>, total: SERVICES.length })}</span>
       </div>
     );
   }
 
   if (kind === 'pxe') {
-    const steps = [
-      { t: 'Local SSD', s: 'A 1 TB NVMe SSD inside the machine' },
-      { t: 'Proxmox', s: 'Proxmox boots from that disk' },
-      { t: 'VMs', s: 'CasaOS and Debian run from the same SSD' },
-    ];
+    const steps = c.bootSteps;
     return (
       <div className="hl2-mv">
-        <span className="hl2-mv-label">How it boots</span>
+        <span className="hl2-mv-label">{c.bootLabel}</span>
         <div className="hl2-mv-flow">
           {steps.map((st, i) => (
             <motion.div
@@ -60,7 +60,7 @@ function MachineVisual({ kind }: { kind: 'runs' | 'pxe' | 'wake' }) {
   // wake
   return (
     <div className="hl2-mv">
-      <span className="hl2-mv-label">How it wakes</span>
+      <span className="hl2-mv-label">{c.wakeLabel}</span>
       <div className="hl2-mv-wake">
         <span className="hl2-mv-packet" aria-hidden="true" />
         <div className="hl2-mv-cores">
@@ -75,42 +75,43 @@ function MachineVisual({ kind }: { kind: 'runs' | 'pxe' | 'wake' }) {
           ))}
         </div>
       </div>
-      <span className="hl2-mv-foot">One Wake-on-LAN packet from UpSnap starts all <b>20 cores</b></span>
+      <span className="hl2-mv-foot">{c.wakeFoot}</span>
     </div>
   );
 }
 
 export default function MachineModal({ server, onClose }: { server: Server | null; onClose: () => void }) {
+  const c = useHomelabCopy();
   return (
-    <HlModal item={server} onClose={onClose} label={(s) => `${s.name} details`}>
-      {(s) => (
+    <HlModal item={server} onClose={onClose} label={(s) => fill(c.details, { name: s.name })} closeLabel={c.close}>
+      {(s) => { const t = c.servers[s.id]; return (
         <div className="hl2-modal-grid">
           <div className="hl2-modal-media">
-            <span className={`hl2-machine-state ${s.status}`}><i className="hl2-dot" />{s.statusLabel}</span>
-            <img src={s.photo} alt={`${s.name} server`} />
+            <span className={`hl2-machine-state ${s.status}`}><i className="hl2-dot" />{c.statusLabels[s.status]}</span>
+            <img src={s.photo} alt={fill(c.machines.photoAlt, { name: s.name })} />
             <dl className="hl2-spec hl2-modal-spec">
               {s.specs.map((sp) => (
-                <div key={sp.k}><dt>{sp.k}</dt><dd>{sp.v}</dd></div>
+                <div key={sp.k}><dt>{c.specLabels[sp.k]}</dt><dd>{sp.v ?? t.specs[sp.k]}</dd></div>
               ))}
             </dl>
           </div>
 
           <div className="hl2-modal-body">
             <div className="hl2-modal-head">
-              <span className="hl2-machine-tag">{s.tag}</span>
+              <span className="hl2-machine-tag">{t.tag}</span>
               <h3>{s.name}</h3>
-              <p className="hl2-modal-tagline">{s.detail.tagline}</p>
+              <p className="hl2-modal-tagline">{t.detail.tagline}</p>
             </div>
-            {s.detail.story.map((para, i) => <p key={i} className="hl2-modal-p">{para}</p>)}
+            {t.detail.story.map((para, i) => <p key={i} className="hl2-modal-p">{para}</p>)}
             <ul className="hl2-modal-highlights">
-              {s.detail.highlights.map((h) => (
+              {t.detail.highlights.map((h) => (
                 <li key={h}><CheckIcon />{h}</li>
               ))}
             </ul>
-            <MachineVisual kind={s.detail.visual} />
+            <MachineVisual kind={s.visual} />
           </div>
         </div>
-      )}
+      ); }}
     </HlModal>
   );
 }

@@ -3,6 +3,9 @@ import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { isEmbed } from '../lib/embed';
+import { splitLang, localize } from '../lib/i18n';
+import { SHELL } from '../lib/shell';
+import LangGlobe from './LangGlobe';
 import { blobPath, type Capsule } from './navBlob';
 import './nav.css';
 
@@ -12,13 +15,14 @@ const PORTFOLIO_ID = 'portfolio-items-holder';
 const PROJECTS_ID = 'projects';
 
 type Key = 'home' | 'work' | 'photography' | 'homelab' | 'contact';
-const LINKS: { key: Key; href: string; label: string }[] = [
-  { key: 'home', href: '/', label: 'Home' },
-  { key: 'photography', href: '/photography', label: 'Photography' },
-  { key: 'homelab', href: '/homelab', label: 'HomeLab' },
-  { key: 'contact', href: '/contact', label: 'Contact' },
+// paths are the English ones; each render localizes them (lib/i18n.ts) and labels them (lib/shell.ts)
+const LINKS: { key: Key; href: string }[] = [
+  { key: 'home', href: '/' },
+  { key: 'photography', href: '/photography' },
+  { key: 'homelab', href: '/homelab' },
+  { key: 'contact', href: '/contact' },
 ];
-const WORK = { key: 'work' as const, href: `/#${PROJECTS_ID}`, label: 'My work' };
+const WORK = { key: 'work' as const, href: `/#${PROJECTS_ID}` };
 
 /*
   The nav is a row of separate small pieces rather than one long bar: the logo
@@ -58,6 +62,9 @@ const DROP_MS = 380;
 export default function Nav() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  // the language comes from the path (/ja/...); `base` is the page's English path
+  const { lang, base } = splitLang(pathname);
+  const t = SHELL[lang];
   const menuRef = useRef<HTMLButtonElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLElement>(null);
@@ -71,8 +78,8 @@ export default function Nav() {
   // On the homepage: is the projects section in the middle of the screen?
   const [atWork, setAtWork] = useState(false);
 
-  const active: Key | null = pathname === '/' ? (atWork ? 'work' : 'home')
-    : LINKS.find((l) => l.key !== 'home' && pathname.startsWith(l.href))?.key ?? null;
+  const active: Key | null = base === '/' ? (atWork ? 'work' : 'home')
+    : LINKS.find((l) => l.key !== 'home' && base.startsWith(l.href))?.key ?? null;
   const activeRef = useRef(active);
   activeRef.current = active;
   // the mark's placer, so the merge can keep the mark on My work while it moves
@@ -88,30 +95,30 @@ export default function Nav() {
      no change. Elsewhere they are ordinary links to the homepage. */
   const scrollTo = (e: React.MouseEvent, key: 'home' | 'work') => {
     close();
-    if (pathname !== '/') return;
+    if (base !== '/') return;
     e.preventDefault();
     const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
     setAtWork(key === 'work');
     if (key === 'home') {
       window.scrollTo({ top: 0, behavior });
-      window.history.replaceState(null, '', '/');
+      window.history.replaceState(null, '', localize('/', lang));
       return;
     }
     document.getElementById(PROJECTS_ID)?.scrollIntoView({ behavior, block: 'start' });
-    window.history.replaceState(null, '', `/#${PROJECTS_ID}`);
+    window.history.replaceState(null, '', localize(`/#${PROJECTS_ID}`, lang));
   };
 
   // Watch the projects section on the homepage: My work lights up while it
   // crosses the middle of the screen.
   useEffect(() => {
     setAtWork(false);
-    if (pathname !== '/') return;
+    if (base !== '/') return;
     const section = document.getElementById(PORTFOLIO_ID);
     if (!section) return;
     const io = new IntersectionObserver(([e]) => setAtWork(e.isIntersecting), { rootMargin: '-50% 0px -50% 0px' });
     io.observe(section);
     return () => io.disconnect();
-  }, [pathname]);
+  }, [base]);
 
   /* The mark: one dark pill living in the page pill, cut to the current item
      with clip-path. It is far wider than the pill, so it can also reach My
@@ -385,16 +392,16 @@ export default function Nav() {
     };
   }, [pathname]);
 
-  const link = (l: { key: Key; href: string; label: string }, extra = '') => (
+  const link = (l: { key: Key; href: string }, extra = '') => (
       <Link
         key={l.key}
-        href={l.href}
+        href={localize(l.href, lang)}
         data-key={l.key}
         className={`pnav-item${extra}${active === l.key ? ' is-active' : ''}`}
         aria-current={active === l.key ? (l.key === 'work' ? 'location' : 'page') : undefined}
         onClick={l.key === 'home' || l.key === 'work' ? (e) => scrollTo(e, l.key as 'home' | 'work') : close}
       >
-        {l.label}
+        {t[l.key]}
       </Link>
   );
 
@@ -439,8 +446,8 @@ export default function Nav() {
         </svg>
       </div>
 
-      <Link href="/" className="pnav-logo" onClick={(e) => scrollTo(e, 'home')} ref={logoRef}>
-        <img src="/images/logo.webp" alt="Chiambucket home" />
+      <Link href={localize('/', lang)} className="pnav-logo" onClick={(e) => scrollTo(e, 'home')} ref={logoRef}>
+        <img src="/images/logo.webp" alt={t.logoAlt} />
       </Link>
 
       <nav className="pnav-pill pnav-links" aria-label="Main" ref={linksRef}>
@@ -456,12 +463,13 @@ export default function Nav() {
           className={`pnav-circle pnav-menu${open ? ' is-open' : ''}`}
           aria-expanded={open}
           aria-controls="pnav-sheet"
-          aria-label={open ? 'Close menu' : 'Open menu'}
+          aria-label={open ? t.closeMenu : t.openMenu}
           onClick={() => setOpen((v) => !v)}
         >
           <span aria-hidden="true" />
           <span aria-hidden="true" />
         </button>
+        <LangGlobe lang={lang} base={base} />
       </div>
 
       <div ref={sheetRef} id="pnav-sheet" className={`pnav-sheet${open ? ' is-open' : ''}`}>

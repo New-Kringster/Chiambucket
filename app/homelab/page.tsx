@@ -1,38 +1,22 @@
 import type { Metadata } from 'next';
-import HomelabClient from './HomelabClient';
-import { SERVICES } from './data';
+import HomelabPage from './HomelabPage';
+import en from './_copy/en';
+import { langAlternates } from '@/lib/i18n';
 
-const description =
-  'I run three servers at home for my photo library, file sharing, and the MQTT and TURN servers that Project June and LUMEN use. This page covers their hardware, network map, storage, services and live status.';
+const { title, description } = en.meta;
 
 export const metadata: Metadata = {
-  title: 'Homelab | Braven Chiam',
+  title,
   description,
-  alternates: { canonical: '/homelab' },
+  alternates: { canonical: '/homelab', languages: langAlternates('/homelab') },
   openGraph: {
-    title: 'Homelab | Braven Chiam',
+    title,
     description,
     url: '/homelab',
     type: 'website',
   },
 };
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'TechArticle',
-  headline: 'Homelab',
-  description,
-  author: { '@type': 'Person', name: 'Braven Chiam' },
-  about: ['Self-hosting', 'Home networking', 'Docker', 'Unraid', 'Proxmox', 'UniFi'],
-  keywords: SERVICES.map((s) => s.name).join(', '),
-  mainEntityOfPage: 'https://www.chiambucket.com/homelab',
-};
-
-export default function HomelabPage() {
-  return (
-    <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <HomelabClient />
-    </>
-  );
+export default function Page() {
+  return <HomelabPage lang="en" />;
 }

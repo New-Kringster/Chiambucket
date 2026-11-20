@@ -6,9 +6,11 @@
   a project that is not in it (Pandus, ELEC-F, the unwritten ones) shows no
   mark. Works in server and client components alike.
 */
-export type AiLevel = 1 | 2 | 3 | 4;
+import { localize, type Lang } from '../lib/i18n';
+import { SHELL } from '../lib/shell';
+import { fill } from '../lib/fill';
 
-const SHORT: Record<AiLevel, string> = { 1: 'little use', 2: 'average use', 3: 'heavy use', 4: 'entirely AI' };
+export type AiLevel = 1 | 2 | 3 | 4;
 
 /** Each project's level on the scale, by project id. */
 export const AI_LEVEL: Partial<Record<string, AiLevel>> = {
@@ -25,12 +27,15 @@ export const AI_LEVEL: Partial<Record<string, AiLevel>> = {
   'proj-ema': 1,
 };
 
-export default function AiMark({ project, className }: { project: string; className?: string }) {
+/* `lang` (default English) picks the label's words and the /ai-use link's language; client callers
+   pass useLang(), server pages their own language. The mark image itself is the same in every language. */
+export default function AiMark({ project, className, lang = 'en' }: { project: string; className?: string; lang?: Lang }) {
   const level = AI_LEVEL[project];
   if (!level) return null;
-  const label = `AI use: L${level}, ${SHORT[level]}. Open the Scale of AI use`;
+  const t = SHELL[lang];
+  const label = fill(t.aiUse, { n: level, short: t.aiShort[level - 1] });
   return (
-    <a className={`ai-mark${className ? ` ${className}` : ''}`} href={`/ai-use#l${level}`} aria-label={label} title={label}>
+    <a className={`ai-mark${className ? ` ${className}` : ''}`} href={localize(`/ai-use#l${level}`, lang)} aria-label={label} title={label}>
       <img src={`/images/ai-use/L${level}-label.svg`} alt="" width={84} height={94} />
     </a>
   );

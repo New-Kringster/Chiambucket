@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
-import { IcGrid, IcHome } from '../components/Icons';
+import NotFoundBody from './_404/NotFoundBody';
+import { NOT_FOUND } from './_404/_copy';
 
+/* The global 404 gets no URL params, so its <title> stays English. */
 export const metadata: Metadata = {
-  title: 'Page not found | Braven Chiam',
+  title: NOT_FOUND.en!.meta.title,
   robots: { index: false },
 };
 
@@ -14,15 +15,8 @@ export default function NotFound() {
         <div className="ct-aura"></div>
         <div className="nf-bloom" aria-hidden="true"></div>
 
-        <span className="ct-kicker nf-kick">Page not found</span>
-        <h1 className="nf-code">404</h1>
-        <p className="ct-sub nf-sub">
-          There is nothing at this address, so the page may have moved or the link may be wrong.
-        </p>
-        <div className="nf-btns">
-          <Link href="/" className="hp-btn"><IcHome /> Go to the homepage</Link>
-          <Link href="/#projects" className="hp-btn hp-btn-ghost"><IcGrid /> See all projects</Link>
-        </div>
+        {/* the words follow the language of the missing address, so they render on the client */}
+        <NotFoundBody />
       </section>
 
       <style>{`

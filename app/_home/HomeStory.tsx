@@ -33,7 +33,7 @@
 import { Fragment, useEffect, useRef, useState, type CSSProperties } from 'react';
 import Link from 'next/link';
 import { Figtree, Newsreader } from 'next/font/google';
-import { LAYERS, READER_BEATS, BENCH, SHOW_BENCH, PHOTOS, OCR_CARD, JUNE_CARD, PIP_CARD, LIDAR_CARD, BEAD_CARD } from './content';
+import { BENCH, SHOW_BENCH, PHOTOS, OCR_CARD, JUNE_CARD, PIP_CARD, LIDAR_CARD, BEAD_CARD } from './content';
 import { FlagCard, ProjectGallery, Bento, usePeek, Crown, Star } from './Cards';
 import { JuneHud, PipTab, LidarSet, BeadBook } from './SetPieces';
 import { createPipStage } from './pipStage';
@@ -42,6 +42,11 @@ import AsciiLab from './AsciiLab';
 import type { Box } from './readerScene';
 import { IcGitHub, IcMail, IcServer, IcPhotos } from '../../components/Icons';
 import { VERSIONS } from '../archive/versions';
+import { fill } from '@/lib/fill';
+import { localize } from '@/lib/i18n';
+import { useLang } from '@/lib/useLang';
+import { HomeCopyProvider, useHomeCopy } from './copyContext';
+import type { HomeCopy } from './_copy';
 import './story.css';
 
 const sans = Figtree({ subsets: ['latin'], weight: ['400', '500', '600', '800'], variable: '--hs-sans', display: 'swap' });
@@ -198,7 +203,15 @@ function deal<T extends { w: number; h: number }>(items: T[], n: number) {
   return cols;
 }
 
-export default function HomeStory() {
+/* The server page loads the copy for its language and passes it in; the story,
+   its cards and its set pieces read it with useHomeCopy(). */
+export default function HomeStory({ copy }: { copy: HomeCopy }) {
+  return <HomeCopyProvider copy={copy}><Story /></HomeCopyProvider>;
+}
+
+function Story() {
+  const c = useHomeCopy();
+  const lang = useLang();
   const root = useRef<HTMLDivElement>(null);
   const peek = usePeek();
   const cols = useCols();
@@ -615,14 +628,14 @@ export default function HomeStory() {
           <div className="hs-stage">
             <div className="hs-under">
               <div className="hs-under-inner">
-                <p className="hs-under-kicker">Hello.</p>
-                <p className="hs-under-line">I’m Braven. Most projects need hardware, software and design, and I like doing all three myself.</p>
+                <p className="hs-under-kicker">{c.hero.kicker}</p>
+                <p className="hs-under-line">{c.hero.line}</p>
               </div>
             </div>
             <div className="hs-art">
               <picture>
                 <source media="(orientation: portrait)" srcSet="/images/home/morning-tall.webp" />
-                <img className="hs-art-img" src="/images/home/morning-wide.webp" alt="A painted morning: a stone pine on a grassy hill under a sage sky, the sun low on the right" fetchPriority="high" />
+                <img className="hs-art-img" src="/images/home/morning-wide.webp" alt={c.hero.artAlt} fetchPriority="high" />
               </picture>
               {/* the same painting, soft and bright: it fades as the eye adjusts */}
               <picture className="hs-art-soft" aria-hidden="true">
@@ -633,25 +646,24 @@ export default function HomeStory() {
               <canvas className="hs-dissolve" aria-hidden="true" />
             </div>
             <div className="hs-name-wrap">
-              <h1 className="hs-name" aria-label="Braven Chiam">
-                <GlassWord>Braven</GlassWord>{' '}
-                <GlassWord>Chiam</GlassWord>
+              <h1 className="hs-name" aria-label={c.hero.name.join(' ')}>
+                {c.hero.name.map((w, i) => <Fragment key={i}>{i > 0 && ' '}<GlassWord>{w}</GlassWord></Fragment>)}
               </h1>
             </div>
             {/* a quiet cue to scroll: comes in once the opening has settled, leaves while the page is scrolled */}
             <div className="hs-cue" aria-hidden="true">
-              <div className="hs-cue-in"><span>Scroll</span><i className="hs-cue-line"><b /></i></div>
+              <div className="hs-cue-in"><span>{c.hero.scroll}</span><i className="hs-cue-line"><b /></i></div>
             </div>
             {/* two years of the site: a small card on the painting that opens every earlier design (/archive) */}
             <div className="hs-anniv-wrap">
-              <Link href="/archive" className="hs-anniv">
+              <Link href={localize('/archive', lang)} className="hs-anniv">
                 <span className="hs-anniv-stack" aria-hidden="true">
                   {[1, 4, 7].map((n) => <img key={n} src={`/images/archive/v${n}-thumb.webp`} alt="" width={160} height={100} />)}
                 </span>
                 <span className="hs-anniv-text">
-                  <b>Chiambucket turns two</b>
-                  <span>Finally archived! All versions from 2024 to 2026</span>
-                  <span className="hs-anniv-go">See every version</span>
+                  <b>{c.hero.annivTitle}</b>
+                  <span>{c.hero.annivLine}</span>
+                  <span className="hs-anniv-go">{c.hero.annivGo}</span>
                 </span>
               </Link>
             </div>
@@ -662,15 +674,15 @@ export default function HomeStory() {
         <section className="hs-paper hs-hello" id="hello" data-tone="paper">
           <div className="hs-wrap">
             <p className="hs-said">
-              <Words text="I’m a third-year Electronic and Computer Engineering student at Nanyang Polytechnic. I started by taking apart a broken radio to see how it worked, and now I design circuit boards, write firmware, build web apps and run the homelab they live on." />
+              <Words text={c.hello.said} />
             </p>
             <div className="hs-layers">
-              <h2 className="hs-layers-h">From the chip to the cloud</h2>
+              <h2 className="hs-layers-h">{c.hello.layersTitle}</h2>
               <div className="hs-layers-row">
                 <span className="hs-layers-trace" aria-hidden="true" />
                 <span className="hs-layers-trace-v" aria-hidden="true" />
-                {LAYERS.map((l) => (
-                  <div className="hs-layer" key={l.name}>
+                {c.hello.layers.map((l, i) => (
+                  <div className="hs-layer" key={i}>
                     <span className="hs-layer-pad" aria-hidden="true" />
                     <h3>{l.name}</h3>
                     <p>{l.line}</p>
@@ -678,7 +690,7 @@ export default function HomeStory() {
                 ))}
                 <div className="hs-layer is-end">
                   <span className="hs-layer-pad" aria-hidden="true" />
-                  <h3>Complete</h3>
+                  <h3>{c.hello.complete}</h3>
                 </div>
               </div>
             </div>
@@ -699,12 +711,12 @@ export default function HomeStory() {
                 </div>
               </div>
               <div className="hs-reader-intro">
-                <p className="hs-tag"><Crown />Flagship project</p>
-                <h2 id="hs-reader-h" className="hs-reader-title">OCR Reader</h2>
-                <Sub>A battery-powered camera that reads a water meter, entirely on the chip.</Sub>
+                <p className="hs-tag"><Crown />{c.flagships['proj-waterslop'].badge}</p>
+                <h2 id="hs-reader-h" className="hs-reader-title">{c.projects['proj-waterslop'].title}</h2>
+                <Sub>{c.flagships['proj-waterslop'].sub}</Sub>
               </div>
               <ol className="hs-beats">
-                {READER_BEATS.map((b, i) => (
+                {c.flagships['proj-waterslop'].beats.map((b, i) => (
                   <li className="hs-beat" key={b.title}>
                     <span className="hs-beat-n">{String(i + 1).padStart(2, '0')}</span>
                     <h3>{b.title}</h3>
@@ -726,9 +738,9 @@ export default function HomeStory() {
                 <img className="hs-fl-photo" src="/images/home/june-night.webp" alt="" loading="lazy" />
               </div>
               <div className="hs-fl-head">
-                <p className="hs-tag"><Star />Highlighted hardware build</p>
-                <h2 className="hs-fl-title"><Chars text="Project June" /></h2>
-                <Sub>A 5G rover I can drive anywhere there is signal.</Sub>
+                <p className="hs-tag"><Star />{c.flagships['proj-june'].badge}</p>
+                <h2 className="hs-fl-title"><Chars text={c.projects['proj-june'].title} /></h2>
+                <Sub>{c.flagships['proj-june'].sub}</Sub>
               </div>
               <JuneHud />
               <div className="hs-fl-card hs-stagecard">
@@ -746,13 +758,13 @@ export default function HomeStory() {
                 <div className="hs-pt-gl" />
               </div>
               <div className="hs-fl-head">
-                <p className="hs-tag"><Star />Highlighted software build</p>
-                <h2 className="hs-fl-title"><Chars text="Pip" /></h2>
-                <Sub>A desk pet with an AI agent for a brain, built during my internship at M5Stack.</Sub>
+                <p className="hs-tag"><Star />{c.flagships['proj-pip'].badge}</p>
+                <h2 className="hs-fl-title"><Chars text={c.projects['proj-pip'].title} /></h2>
+                <Sub>{c.flagships['proj-pip'].sub}</Sub>
               </div>
               <PipTab />
               <div className="hs-fl-card hs-stagecard">
-                <FlagCard p={PIP_CARD} onPeek={peek.show} variant="pip" slot={<img className="hs-fc-slot hs-pt-cardstill" src={PIP_CARD.poster} alt={PIP_CARD.posterAlt} loading="lazy" />} />
+                <FlagCard p={PIP_CARD} onPeek={peek.show} variant="pip" slot={<img className="hs-fc-slot hs-pt-cardstill" src={PIP_CARD.poster} alt={c.flagships['proj-pip'].posterAlt} loading="lazy" />} />
               </div>
             </div>
           </section>
@@ -766,9 +778,9 @@ export default function HomeStory() {
                 <div className="hs-ld-gl" />
               </div>
               <div className="hs-fl-head">
-                <p className="hs-tag"><Star />Featured project</p>
-                <h2 className="hs-fl-title"><Chars text="Stack-chan LiDAR" /></h2>
-                <Sub>A makeshift LiDAR on M5Stack&rsquo;s little robot, built during my internship.</Sub>
+                <p className="hs-tag"><Star />{c.flagships['proj-lidar'].badge}</p>
+                <h2 className="hs-fl-title"><Chars text={c.projects['proj-lidar'].title} /></h2>
+                <Sub>{c.flagships['proj-lidar'].sub}</Sub>
               </div>
               <LidarSet />
               <div className="hs-fl-card hs-stagecard">
@@ -784,9 +796,9 @@ export default function HomeStory() {
                 <img className="hs-fl-photo" src="/images/home/beadreader-phones.webp" alt="" loading="lazy" />
               </div>
               <div className="hs-fl-head">
-                <p className="hs-tag"><Star />Highlighted project</p>
-                <h2 className="hs-fl-title"><Chars text="BeadReader" /></h2>
-                <Sub>A private book reader for a few friends.</Sub>
+                <p className="hs-tag"><Star />{c.flagships['proj-beadreader'].badge}</p>
+                <h2 className="hs-fl-title"><Chars text={c.projects['proj-beadreader'].title} /></h2>
+                <Sub>{c.flagships['proj-beadreader'].sub}</Sub>
               </div>
               <BeadBook />
               <div className="hs-fl-card hs-stagecard">
@@ -800,8 +812,8 @@ export default function HomeStory() {
             <Tear at="top" seed={9} />
             <div className="hs-wrap">
               <div className="hs-chead hs-rise">
-                <h2 className="hs-ctitle">All projects</h2>
-                <Sub>Everything I have built, at school, on my own and on internship.</Sub>
+                <h2 className="hs-ctitle">{c.gallery.title}</h2>
+                <Sub>{c.gallery.sub}</Sub>
               </div>
               <ProjectGallery onPeek={peek.show} />
             </div>
@@ -811,19 +823,19 @@ export default function HomeStory() {
           {SHOW_BENCH && (
           <section className="hs-paper hs-bench" id="bench" data-tone="paper">
             <div className="hs-bench-pin">
-              <h2 className="hs-bench-title">On the bench</h2>
-              <Sub>What I have been building since the last write-up.</Sub>
+              <h2 className="hs-bench-title">{c.bench.title}</h2>
+              <Sub>{c.bench.sub}</Sub>
             </div>
             <div className="hs-cards">
-              {BENCH.map((b) => (
-                <article className="hs-card" key={b.name}>
-                  <p className="hs-card-status">{b.status}</p>
-                  <h3>{b.name}</h3>
-                  <p>{b.what}</p>
-                  <ul className="hs-chips">{b.stack.map((s) => <li key={s}>{s}</li>)}</ul>
-                  {b.link && <a className="hs-btn" href={b.link.url} target="_blank" rel="noopener"><IcGitHub /> {b.link.label}</a>}
+              {BENCH.map((b) => { const w: HomeCopy['bench']['items'][typeof b.key] & { link?: string } = c.bench.items[b.key]; return (
+                <article className="hs-card" key={b.key}>
+                  <p className="hs-card-status">{w.status}</p>
+                  <h3>{w.name}</h3>
+                  <p>{w.what}</p>
+                  <ul className="hs-chips">{w.stack.map((s) => <li key={s}>{s}</li>)}</ul>
+                  {b.link && <a className="hs-btn" href={b.link} target="_blank" rel="noopener"><IcGitHub /> {w.link}</a>}
                 </article>
-              ))}
+              ); })}
             </div>
             <Tear at="bottom" seed={21} />
           </section>
@@ -834,7 +846,7 @@ export default function HomeStory() {
         <section className="hs-skills" id="skills" data-tone="dark">
           <div className="hs-wrap">
             <div className="hs-chead hs-rise">
-              <h2 className="hs-ctitle">My skills</h2>
+              <h2 className="hs-ctitle">{c.skills.title}</h2>
             </div>
             <Bento />
           </div>
@@ -845,16 +857,14 @@ export default function HomeStory() {
           <AsciiLab />
           <div className="hs-wrap">
             <div className="hs-lab-text">
-              <p className="hs-tag">Infrastructure</p>
-              <h2 className="hs-ctitle">HomeLab</h2>
-              <Sub>Three servers at home that my projects run on.</Sub>
-              <p className="hs-lead hs-rise">They hold my photo library and my files and run the MQTT and TURN servers that Project June and LUMEN use, and solar export credits pay for their power. This site itself is hosted on Vercel.</p>
+              <p className="hs-tag">{c.lab.tag}</p>
+              <h2 className="hs-ctitle">{c.lab.title}</h2>
+              <Sub>{c.lab.sub}</Sub>
+              <p className="hs-lead hs-rise">{c.lab.lead}</p>
               <dl className="hs-facts hs-rise">
-                <div><dt>3</dt><dd>servers</dd></div>
-                <div><dt>24 TB</dt><dd>usable storage</dd></div>
-                <div><dt>38</dt><dd>self-hosted apps</dd></div>
+                {c.lab.facts.map((f, i) => <div key={i}><dt>{f.v}</dt><dd>{f.l}</dd></div>)}
               </dl>
-              <div className="hs-btns hs-lab-cta hs-rise"><a className="hs-btn is-primary" href="/homelab"><IcServer /> Explore the HomeLab</a></div>
+              <div className="hs-btns hs-lab-cta hs-rise"><a className="hs-btn is-primary" href={localize('/homelab', lang)}><IcServer /> {c.lab.cta}</a></div>
             </div>
           </div>
         </section>
@@ -863,8 +873,8 @@ export default function HomeStory() {
         <section className="hs-photos" id="photos" data-tone="dark" aria-labelledby="hs-photos-h">
           <div className="hs-wrap">
             <div className="hs-chead hs-rise">
-              <h2 id="hs-photos-h" className="hs-ctitle">Photography</h2>
-              <Sub>Photos from New Zealand, China and Europe.</Sub>
+              <h2 id="hs-photos-h" className="hs-ctitle">{c.photos.title}</h2>
+              <Sub>{c.photos.sub}</Sub>
             </div>
           </div>
           <div className="hs-masonry" style={{ '--cols': cols } as CSSProperties}>
@@ -872,14 +882,14 @@ export default function HomeStory() {
               <div className="hs-mcol" key={ci}>
                 {col.map((p) => (
                   <figure className="hs-mph" key={p.src}>
-                    <img src={p.src} alt={`A photo from the ${p.album} album`} loading="lazy" width={p.w} height={p.h} />
-                    <figcaption>{p.album}</figcaption>
+                    <img src={p.src} alt={fill(c.photos.alt, { album: c.photos.albums[p.album] })} loading="lazy" width={p.w} height={p.h} />
+                    <figcaption>{c.photos.albums[p.album]}</figcaption>
                   </figure>
                 ))}
               </div>
             ))}
           </div>
-          <div className="hs-photos-more"><a className="hs-btn is-primary" href="/photography"><IcPhotos /> See every album</a></div>
+          <div className="hs-photos-more"><a className="hs-btn is-primary" href={localize('/photography', lang)}><IcPhotos /> {c.photos.more}</a></div>
         </section>
 
         {/* ── Contact, at dusk ── */}
@@ -891,14 +901,15 @@ export default function HomeStory() {
             </picture>
           </div>
           <div className="hs-contact-in">
-            <h2 className="hs-contact-title" aria-label="Say hello.">
-              <span className="hs-ct-w" aria-hidden="true"><Chars text="Say" /></span>{' '}
-              <span className="hs-ct-w" aria-hidden="true"><Chars text="hello." /></span>
+            <h2 className="hs-contact-title" aria-label={c.contact.title}>
+              {c.contact.title.split(' ').map((w, i) => (
+                <Fragment key={i}>{i > 0 && ' '}<span className="hs-ct-w" aria-hidden="true"><Chars text={w} /></span></Fragment>
+              ))}
             </h2>
             <a className="hs-contact-mail" href="mailto:braven@chiambucket.com">braven@chiambucket.com</a>
             <div className="hs-btns">
-              <a className="hs-btn is-primary" href="mailto:braven@chiambucket.com"><IcMail /> Email me</a>
-              <a className="hs-btn" href="/contact">All the ways to reach me</a>
+              <a className="hs-btn is-primary" href="mailto:braven@chiambucket.com"><IcMail /> {c.contact.email}</a>
+              <a className="hs-btn" href={localize('/contact', lang)}>{c.contact.all}</a>
             </div>
           </div>
         </section>

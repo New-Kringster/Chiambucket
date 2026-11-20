@@ -1,25 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://www.chiambucket.com/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/"/>
     <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://www.chiambucket.com/photography</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/photography"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/photography"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/photography"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/photography"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/photography"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/photography"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/photography"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/photography"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/photography"/>
     <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.chiambucket.com/homelab</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/homelab"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/homelab"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/homelab"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/homelab"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/homelab"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/homelab"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/homelab"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/homelab"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/homelab"/>
     <lastmod>2026-09-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.chiambucket.com/contact</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/contact"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/contact"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/contact"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/contact"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/contact"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/contact"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/contact"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/contact"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/contact"/>
     <lastmod>2026-09-27</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
@@ -104,20 +140,782 @@
   </url>
   <url>
     <loc>https://www.chiambucket.com/credits</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/credits"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/credits"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/credits"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/credits"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/credits"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/credits"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/credits"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/credits"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/credits"/>
     <lastmod>2026-09-27</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://www.chiambucket.com/archive</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/archive"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/archive"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/archive"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/archive"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/archive"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/archive"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/archive"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/archive"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/archive"/>
     <lastmod>2026-11-19</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://www.chiambucket.com/ai-use</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/ai-use"/>
     <lastmod>2026-10-29</lastmod>
     <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/zh</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/ja</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/nl</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/de</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/ru</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/fr</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/es</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/zh/photography</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/photography"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/photography"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/photography"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/photography"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/photography"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/photography"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/photography"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/photography"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/photography"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/ja/photography</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/photography"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/photography"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/photography"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/photography"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/photography"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/photography"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/photography"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/photography"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/photography"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/nl/photography</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/photography"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/photography"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/photography"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/photography"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/photography"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/photography"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/photography"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/photography"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/photography"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/de/photography</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/photography"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/photography"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/photography"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/photography"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/photography"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/photography"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/photography"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/photography"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/photography"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/ru/photography</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/photography"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/photography"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/photography"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/photography"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/photography"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/photography"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/photography"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/photography"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/photography"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/fr/photography</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/photography"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/photography"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/photography"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/photography"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/photography"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/photography"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/photography"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/photography"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/photography"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/es/photography</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/photography"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/photography"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/photography"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/photography"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/photography"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/photography"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/photography"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/photography"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/photography"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/zh/homelab</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/homelab"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/homelab"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/homelab"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/homelab"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/homelab"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/homelab"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/homelab"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/homelab"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/homelab"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/ja/homelab</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/homelab"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/homelab"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/homelab"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/homelab"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/homelab"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/homelab"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/homelab"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/homelab"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/homelab"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/nl/homelab</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/homelab"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/homelab"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/homelab"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/homelab"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/homelab"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/homelab"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/homelab"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/homelab"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/homelab"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/de/homelab</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/homelab"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/homelab"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/homelab"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/homelab"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/homelab"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/homelab"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/homelab"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/homelab"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/homelab"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/ru/homelab</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/homelab"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/homelab"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/homelab"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/homelab"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/homelab"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/homelab"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/homelab"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/homelab"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/homelab"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/fr/homelab</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/homelab"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/homelab"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/homelab"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/homelab"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/homelab"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/homelab"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/homelab"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/homelab"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/homelab"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/es/homelab</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/homelab"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/homelab"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/homelab"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/homelab"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/homelab"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/homelab"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/homelab"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/homelab"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/homelab"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/zh/contact</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/contact"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/contact"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/contact"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/contact"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/contact"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/contact"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/contact"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/contact"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/contact"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/ja/contact</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/contact"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/contact"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/contact"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/contact"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/contact"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/contact"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/contact"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/contact"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/contact"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/nl/contact</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/contact"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/contact"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/contact"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/contact"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/contact"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/contact"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/contact"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/contact"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/contact"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/de/contact</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/contact"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/contact"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/contact"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/contact"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/contact"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/contact"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/contact"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/contact"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/contact"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/ru/contact</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/contact"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/contact"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/contact"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/contact"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/contact"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/contact"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/contact"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/contact"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/contact"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/fr/contact</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/contact"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/contact"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/contact"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/contact"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/contact"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/contact"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/contact"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/contact"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/contact"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/es/contact</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/contact"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/contact"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/contact"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/contact"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/contact"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/contact"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/contact"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/contact"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/contact"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/zh/credits</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/credits"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/credits"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/credits"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/credits"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/credits"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/credits"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/credits"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/credits"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/credits"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/ja/credits</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/credits"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/credits"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/credits"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/credits"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/credits"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/credits"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/credits"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/credits"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/credits"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/nl/credits</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/credits"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/credits"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/credits"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/credits"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/credits"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/credits"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/credits"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/credits"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/credits"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/de/credits</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/credits"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/credits"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/credits"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/credits"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/credits"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/credits"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/credits"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/credits"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/credits"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/ru/credits</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/credits"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/credits"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/credits"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/credits"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/credits"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/credits"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/credits"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/credits"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/credits"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/fr/credits</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/credits"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/credits"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/credits"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/credits"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/credits"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/credits"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/credits"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/credits"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/credits"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/es/credits</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/credits"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/credits"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/credits"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/credits"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/credits"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/credits"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/credits"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/credits"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/credits"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/zh/archive</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/archive"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/archive"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/archive"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/archive"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/archive"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/archive"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/archive"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/archive"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/archive"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/ja/archive</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/archive"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/archive"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/archive"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/archive"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/archive"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/archive"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/archive"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/archive"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/archive"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/nl/archive</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/archive"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/archive"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/archive"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/archive"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/archive"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/archive"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/archive"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/archive"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/archive"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/de/archive</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/archive"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/archive"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/archive"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/archive"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/archive"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/archive"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/archive"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/archive"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/archive"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/ru/archive</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/archive"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/archive"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/archive"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/archive"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/archive"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/archive"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/archive"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/archive"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/archive"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/fr/archive</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/archive"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/archive"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/archive"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/archive"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/archive"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/archive"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/archive"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/archive"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/archive"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/es/archive</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/archive"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/archive"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/archive"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/archive"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/archive"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/archive"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/archive"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/archive"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/archive"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/zh/ai-use</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/ai-use"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/ja/ai-use</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/ai-use"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/nl/ai-use</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/ai-use"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/de/ai-use</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/ai-use"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/ru/ai-use</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/ai-use"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/fr/ai-use</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/ai-use"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://www.chiambucket.com/es/ai-use</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.chiambucket.com/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="zh-Hans" href="https://www.chiambucket.com/zh/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://www.chiambucket.com/ja/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.chiambucket.com/nl/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://www.chiambucket.com/de/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.chiambucket.com/ru/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.chiambucket.com/fr/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.chiambucket.com/es/ai-use"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.chiambucket.com/ai-use"/>
+    <lastmod>2026-11-20</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 </urlset>

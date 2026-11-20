@@ -3,69 +3,31 @@ import { useEffect, useState } from 'react';
 import InfoModal, { type InfoItem } from '../../components/InfoModal';
 import LazyVideo from '../../components/LazyVideo';
 import { IcPhotos, IcPlay } from '../../components/Icons';
+import { fill } from '@/lib/fill';
+import type { PhotographyCopy } from './_copy';
 
-const tools = [
-  {
-    img: '/images/pr-icon.webp',
-    name: 'Premiere Pro',
-    maker: 'Adobe',
-    desc: 'I learned video editing on Premiere Pro, but it crashed too often, so I moved to DaVinci Resolve.',
-    add: 'I learned it alongside Photoshop and no longer use it.',
-    chips: ['Video editing', 'Timelines', 'Where I started'],
-  },
-  {
-    img: '/images/il-icon.webp',
-    name: 'Illustrator',
-    maker: 'Adobe',
-    desc: 'I use Illustrator for logos and anything that has to scale cleanly as an SVG, though less often than Photoshop.',
-    add: 'I also draw icons and other vector artwork in it.',
-    chips: ['Logos', 'Vector / SVG', 'Icons'],
-  },
-  {
-    img: '/images/fm-icon.webp',
-    name: 'Figma',
-    maker: 'Figma',
-    desc: 'I use Figma for designs built from shapes rather than photos, so most of my interfaces and posters start there as frames.',
-    add: 'I prototype interfaces and lay out posters here before building them in code or sending them to print.',
-    chips: ['UI design', 'Prototyping', 'Layout'],
-  },
-  {
-    img: '/images/ps-logo.webp',
-    name: 'Photoshop',
-    maker: 'Adobe',
-    desc: 'My main tool since 2019. I had formal training through my school media club, and I use it for retouching photos and laying out posters.',
-    add: 'Besides retouching and posters, I also use it for compositing.',
-    chips: ['Photo editing', 'Posters', 'Compositing'],
-  },
-  {
-    img: '/images/resolve-logo.webp',
-    name: 'DaVinci Resolve',
-    maker: 'Blackmagic Design',
-    desc: 'I edit my videos in Resolve because cutting, colour and export all happen in one program. I rarely post them, but more are planned.',
-    add: 'It replaced Premiere Pro for me, which kept crashing.',
-    chips: ['Video editing', 'Colour grading', 'Project films'],
-  },
-  {
-    img: '/images/lrc-logo.webp',
-    name: 'Lightroom',
-    maker: 'Adobe',
-    desc: 'Most of my photos are finished in Lightroom, where I recover highlights, shadows and detail from RAW files that would otherwise be unusable.',
-    add: 'It is usually the last program a photo in the albums below goes through.',
-    chips: ['Photo editing', 'Colour', 'RAW workflow'],
-  },
+/* Icons, album ids and URLs live here; every word comes from the copy (./_copy), keyed by these ids. */
+const tools: { id: keyof PhotographyCopy['tools']['items']; img: string }[] = [
+  { id: 'premiere',    img: '/images/pr-icon.webp' },
+  { id: 'illustrator', img: '/images/il-icon.webp' },
+  { id: 'figma',       img: '/images/fm-icon.webp' },
+  { id: 'photoshop',   img: '/images/ps-logo.webp' },
+  { id: 'resolve',     img: '/images/resolve-logo.webp' },
+  { id: 'lightroom',   img: '/images/lrc-logo.webp' },
 ];
 
-const galleries = [
-  { id: 'highlight', title: 'Highlights',   albumId: 'pxAS20i7_kWFVTC_Ke_HlDUk', galleryUrl: 'https://photos.chiambucket.com/gallery/pxAS20i7_kWFVTC_Ke_HlDUk' },
-  { id: 'europe',    title: 'Europe',        albumId: 'LhvwBoxDDt6VdG3HvKrDMi1Z', galleryUrl: 'https://photos.chiambucket.com/gallery/LhvwBoxDDt6VdG3HvKrDMi1Z' },
-  { id: '21by9',     title: '21:9',          albumId: 'cZ6uVEzxH72ygIJLPbnxZAiN', galleryUrl: 'https://photos.chiambucket.com/gallery/cZ6uVEzxH72ygIJLPbnxZAiN' },
-  { id: 'china',     title: 'China',         albumId: 'LscJWL46nCkW76KiKEY4csiI', galleryUrl: 'https://photos.chiambucket.com/gallery/LscJWL46nCkW76KiKEY4csiI' },
-  { id: 'zealand',   title: 'New Zealand',   albumId: 'RgKkSumOaHmpoMKbNxPU-o-0', galleryUrl: 'https://photos.chiambucket.com/gallery/RgKkSumOaHmpoMKbNxPU-o-0' },
-  { id: 'hongkong',  title: 'Hong Kong',     albumId: '9cDZmd5tSazcQToprQAzbKKu', galleryUrl: 'https://photos.chiambucket.com/gallery/9cDZmd5tSazcQToprQAzbKKu' },
-  { id: 'general',   title: 'General',       albumId: 'X1sod6pbc0khZPykFISHCjzg', galleryUrl: 'https://photos.chiambucket.com/gallery/X1sod6pbc0khZPykFISHCjzg' },
+const galleries: { id: keyof PhotographyCopy['galleries']['albums']; albumId: string; galleryUrl: string }[] = [
+  { id: 'highlight', albumId: 'pxAS20i7_kWFVTC_Ke_HlDUk', galleryUrl: 'https://photos.chiambucket.com/gallery/pxAS20i7_kWFVTC_Ke_HlDUk' },
+  { id: 'europe',    albumId: 'LhvwBoxDDt6VdG3HvKrDMi1Z', galleryUrl: 'https://photos.chiambucket.com/gallery/LhvwBoxDDt6VdG3HvKrDMi1Z' },
+  { id: '21by9',     albumId: 'cZ6uVEzxH72ygIJLPbnxZAiN', galleryUrl: 'https://photos.chiambucket.com/gallery/cZ6uVEzxH72ygIJLPbnxZAiN' },
+  { id: 'china',     albumId: 'LscJWL46nCkW76KiKEY4csiI', galleryUrl: 'https://photos.chiambucket.com/gallery/LscJWL46nCkW76KiKEY4csiI' },
+  { id: 'zealand',   albumId: 'RgKkSumOaHmpoMKbNxPU-o-0', galleryUrl: 'https://photos.chiambucket.com/gallery/RgKkSumOaHmpoMKbNxPU-o-0' },
+  { id: 'hongkong',  albumId: '9cDZmd5tSazcQToprQAzbKKu', galleryUrl: 'https://photos.chiambucket.com/gallery/9cDZmd5tSazcQToprQAzbKKu' },
+  { id: 'general',   albumId: 'X1sod6pbc0khZPykFISHCjzg', galleryUrl: 'https://photos.chiambucket.com/gallery/X1sod6pbc0khZPykFISHCjzg' },
 ];
 
-export default function PhotographyClient() {
+/* The server page loads the copy for its language and passes it in. */
+export default function PhotographyClient({ copy: c }: { copy: PhotographyCopy }) {
   const [openTool, setOpenTool] = useState<InfoItem | null>(null);
 
   const expandPhoto = (albumId: string) => {
@@ -120,13 +82,9 @@ export default function PhotographyClient() {
         </div>
         <div className="ph-hero-scrim" aria-hidden="true"></div>
         <div className="ct-aura"></div>
-        <span className="ct-kicker">Photography</span>
-        <h1 className="ct-title">
-          Photography <em>and design</em>
-        </h1>
-        <p className="ct-sub">
-          These are my albums from Europe, China, New Zealand and Hong Kong, plus a set of ultrawide 21:9 frames, and they are served from a Lychee gallery I host on my homelab. The programs I edit with come first, and the albums follow.
-        </p>
+        <span className="ct-kicker">{c.hero.kicker}</span>
+        <h1 className="ct-title">{c.hero.title}</h1>
+        <p className="ct-sub">{c.hero.sub}</p>
         <div className="ph-hero-btns">
           <a
             className="hp-btn"
@@ -134,7 +92,7 @@ export default function PhotographyClient() {
             target="_blank"
             rel="noopener"
           >
-            <IcPhotos /> All photos
+            <IcPhotos /> {c.hero.allPhotos}
           </a>
           <a
             className="hp-btn hp-btn-ghost"
@@ -142,7 +100,7 @@ export default function PhotographyClient() {
             target="_blank"
             rel="noopener"
           >
-            <IcPlay /> Videos on YouTube
+            <IcPlay /> {c.hero.youtube}
           </a>
         </div>
       </section>
@@ -152,24 +110,25 @@ export default function PhotographyClient() {
         <div className="hp-section">
           <div className="section-editorial-header" data-reveal>
             <div className="seh-content">
-              <span className="seh-eyebrow">Software</span>
-              <span className="seh-title">What I edit with</span>
+              <span className="seh-eyebrow">{c.tools.eyebrow}</span>
+              <span className="seh-title">{c.tools.title}</span>
             </div>
           </div>
           <div className="hp-cap-grid ph-tools-grid" data-reveal>
             {tools.map((t) => {
-              const item: InfoItem = { icon: t.img, eyebrow: t.maker, title: t.name, blurb: t.desc, add: t.add, chips: t.chips };
+              const tc = c.tools.items[t.id];
+              const item: InfoItem = { icon: t.img, eyebrow: tc.maker, title: tc.name, blurb: tc.desc, add: tc.add, chips: tc.chips };
               return (
-                <div key={t.name} className="cr-card ph-tool-card" role="button" tabIndex={0}
-                  aria-label={`${t.name} details`}
+                <div key={t.id} className="cr-card ph-tool-card" role="button" tabIndex={0}
+                  aria-label={fill(c.tools.cardLabel, { name: tc.name })}
                   onClick={() => setOpenTool(item)}
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpenTool(item); } }}>
                   <span className="ph-tool-plus" aria-hidden="true">+</span>
                   <div className="ph-tool-card-inner">
-                    <img src={t.img} alt={`${t.name} icon`} className="ph-tool-icon" />
+                    <img src={t.img} alt={fill(c.tools.iconAlt, { name: tc.name })} className="ph-tool-icon" />
                     <div>
-                      <h3 className="ph-tool-name">{t.name}</h3>
-                      <p className="ph-tool-desc">{t.desc}</p>
+                      <h3 className="ph-tool-name">{tc.name}</h3>
+                      <p className="ph-tool-desc">{tc.desc}</p>
                     </div>
                   </div>
                 </div>
@@ -180,9 +139,9 @@ export default function PhotographyClient() {
           {/* Live Figma board: a working file, embedded */}
           <div className="ph-figma" data-reveal>
             <div className="ph-figma-head">
-              <span className="ph-figma-label">Figma board</span>
-              <a className="ph-gallery-open" href="https://www.figma.com/design/yRQ5bjI3xm7b5Ovg1svmxt/Random-board" target="_blank" rel="noopener" aria-label="Open the board in Figma">
-                Open in Figma
+              <span className="ph-figma-label">{c.figma.label}</span>
+              <a className="ph-gallery-open" href="https://www.figma.com/design/yRQ5bjI3xm7b5Ovg1svmxt/Random-board" target="_blank" rel="noopener" aria-label={c.figma.openLabel}>
+                {c.figma.open}
                 <svg viewBox="0 0 24 24" fill="none" width="15" height="15" aria-hidden="true">
                   <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M17 7H9M17 7V15" />
                 </svg>
@@ -190,13 +149,13 @@ export default function PhotographyClient() {
             </div>
             <div className="ph-figma-frame">
               <iframe
-                title="Figma board: Random board"
+                title={c.figma.frameTitle}
                 src="https://embed.figma.com/design/yRQ5bjI3xm7b5Ovg1svmxt/Random-board?node-id=0-1&embed-host=share"
                 loading="lazy"
                 allowFullScreen
               ></iframe>
             </div>
-            <p className="ph-figma-cap">A working Figma file where I lay out interfaces and posters before building or printing them.</p>
+            <p className="ph-figma-cap">{c.figma.caption}</p>
           </div>
         </div>
       </section>
@@ -206,49 +165,52 @@ export default function PhotographyClient() {
         <div className="hp-section">
           <div className="section-editorial-header" data-reveal>
             <div className="seh-content">
-              <span className="seh-eyebrow">Galleries</span>
-              <span className="seh-title">Albums</span>
+              <span className="seh-eyebrow">{c.galleries.eyebrow}</span>
+              <span className="seh-title">{c.galleries.title}</span>
             </div>
           </div>
         </div>
 
         <div className="photography-box-wrapper">
-          {galleries.map(({ id, title, albumId, galleryUrl }, i) => (
-            <div key={id} className="photography-box ph-gallery" data-reveal>
-              <div className="ph-gallery-head">
-                <div className="ph-gallery-head-l">
-                  <span className="ph-gallery-num">{String(i + 1).padStart(2, '0')}</span>
-                  <h2 className="ph-gallery-title">{title}</h2>
+          {galleries.map(({ id, albumId, galleryUrl }, i) => {
+            const title = c.galleries.albums[id];
+            return (
+              <div key={id} className="photography-box ph-gallery" data-reveal>
+                <div className="ph-gallery-head">
+                  <div className="ph-gallery-head-l">
+                    <span className="ph-gallery-num">{String(i + 1).padStart(2, '0')}</span>
+                    <h2 className="ph-gallery-title">{title}</h2>
+                  </div>
+                  <a className="ph-gallery-open" href={galleryUrl} target="_blank" rel="noopener" aria-label={fill(c.galleries.openLabel, { title })}>
+                    {c.galleries.open}
+                    <svg viewBox="0 0 24 24" fill="none" width="15" height="15" aria-hidden="true">
+                      <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M17 7H9M17 7V15" />
+                    </svg>
+                  </a>
                 </div>
-                <a className="ph-gallery-open" href={galleryUrl} target="_blank" rel="noopener" aria-label={`Open ${title} gallery`}>
-                  Open album
-                  <svg viewBox="0 0 24 24" fill="none" width="15" height="15" aria-hidden="true">
-                    <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M17 7H9M17 7V15" />
-                  </svg>
-                </a>
-              </div>
-              <div className="ph-gallery-frame">
-                <div
-                  id={`photography-${id}`}
-                  className="photography-restrict"
-                  data-lychee-embed=""
-                  data-api-url="https://photos.chiambucket.com"
-                  data-mode="album"
-                  data-album-id={albumId}
-                  data-layout="masonry"
-                  data-spacing="8"
-                  data-target-row-height="150"
-                  data-target-column-width="150"
-                  data-max-photos="none"
-                  data-sort-order="desc"
-                  data-header-placement="none"
-                ></div>
-                <div className="expand-photography" id={`expand-${id}`}>
-                  <button onClick={() => expandPhoto(id)}>Show all photos</button>
+                <div className="ph-gallery-frame">
+                  <div
+                    id={`photography-${id}`}
+                    className="photography-restrict"
+                    data-lychee-embed=""
+                    data-api-url="https://photos.chiambucket.com"
+                    data-mode="album"
+                    data-album-id={albumId}
+                    data-layout="masonry"
+                    data-spacing="8"
+                    data-target-row-height="150"
+                    data-target-column-width="150"
+                    data-max-photos="none"
+                    data-sort-order="desc"
+                    data-header-placement="none"
+                  ></div>
+                  <div className="expand-photography" id={`expand-${id}`}>
+                    <button onClick={() => expandPhoto(id)}>{c.galleries.showAll}</button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 

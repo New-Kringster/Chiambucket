@@ -1,47 +1,37 @@
 import type { Metadata } from 'next';
 import PhotographyClient from './PhotographyClient';
+import { loadPhotographyCopy } from './_copy';
+import en from './_copy/en';
+import { photographyJsonLd } from './jsonLd';
+import { langAlternates } from '@/lib/i18n';
 
-const description =
-  'Photo albums by Braven Chiam from Europe, China, New Zealand and Hong Kong, plus ultrawide 21:9 frames, and the software he edits with.';
+const { meta } = en;
 
 export const metadata: Metadata = {
-  title: 'Photography | Braven Chiam',
-  description,
-  alternates: { canonical: 'https://www.chiambucket.com/photography' },
+  title: meta.title,
+  description: meta.description,
+  alternates: { canonical: 'https://www.chiambucket.com/photography', languages: langAlternates('/photography') },
   openGraph: {
-    title: 'Photography | Braven Chiam',
-    description,
+    title: meta.title,
+    description: meta.description,
     url: 'https://www.chiambucket.com/photography',
     type: 'website',
   },
   twitter: {
-    title: 'Photography | Braven Chiam',
-    description: 'Photo albums by Braven Chiam from Europe, China, New Zealand, Hong Kong and more.',
+    title: meta.title,
+    description: meta.twitterDescription,
   },
 };
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'ImageGallery',
-  name: 'Photography by Braven Chiam',
-  description:
-    'Photo albums by Braven Chiam from Europe, China, New Zealand and Hong Kong, plus ultrawide 21:9 frames.',
-  url: 'https://www.chiambucket.com/photography',
-  author: {
-    '@type': 'Person',
-    name: 'Braven Chiam',
-    url: 'https://www.chiambucket.com/',
-  },
-};
-
-export default function PhotographyPage() {
+export default async function PhotographyPage() {
+  const copy = await loadPhotographyCopy('en');
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(photographyJsonLd(copy.meta, 'en')) }}
       />
-      <PhotographyClient />
+      <PhotographyClient copy={copy} />
     </>
   );
 }
