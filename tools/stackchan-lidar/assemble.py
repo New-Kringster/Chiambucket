@@ -94,7 +94,9 @@ HC = (smn + smx) / 2
 core = load('CoreS3', keep=lambda b: abs((b[0].x + b[1].x) / 2) < 15 and (b[1].x - b[0].x) > 50)
 setmat(core, M_BODY)
 mn, mx = bbox(core)
-move([core], Vector((-(mn.x + mx.x) / 2, smn.y + 2.8 - mn.y, HC.z - (mn.z + mx.z) / 2)))
+# the CoreS3 stands POP mm proud of the shell's front, as on the real Stack-chan, rather than sunk behind its lip
+POP = 5.0
+move([core], Vector((-(mn.x + mx.x) / 2, smn.y + 2.8 - POP - mn.y, HC.z - (mn.z + mx.z) / 2)))
 FRONT = smn.y
 # the CoreS3's glass front, its screen showing Stack-chan's face, and the camera
 import bmesh
@@ -116,7 +118,7 @@ def rounded_slab(name, w, h, depth, rad, y_front, zc, m, seg=10):
     me = bpy.data.meshes.new(name); bm.to_mesh(me); bm.free()
     ob = bpy.data.objects.new(name, me); sc.collection.objects.link(ob); setmat(ob, m)
     return ob
-FACE_Y = FRONT + 0.45
+FACE_Y = FRONT - POP + 0.45
 face = rounded_slab('face', 51.2, 51.2, 1.8, 5.5, FACE_Y, HC.z, M_FACE)
 img = bpy.data.images.load(L + '/face.png')
 mscr = bpy.data.materials.new('screen'); mscr.use_nodes = True

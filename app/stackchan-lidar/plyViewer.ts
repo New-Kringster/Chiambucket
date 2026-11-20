@@ -1,5 +1,5 @@
 /*
-  The .ply playground: a point cloud you can turn, zoom, recolour and slice.
+  The .ply playground: a point cloud you can turn, move, zoom and recolour.
 
   It opens on Braven's scan (public/stackchan-lidar/scan.bin, the same points
   as stackchan-scan-9-dense.ply, already in three.js axes) with Stack-chan
@@ -11,8 +11,12 @@
   bounds and the view fitted to it.
 
   Colour modes: 0 photo (the file's colours, or depth when it has none),
-  1 depth (distance from the scanner), 2 height. The slice hides points
-  above a fraction of the cloud's height, to see in under a ceiling.
+  1 depth (distance from the scanner), 2 height.
+
+  Controls, like the viewer Stack-chan serves itself: drag turns, right-drag
+  or two fingers move, the wheel or a pinch zooms towards the pointer, and a
+  double click flies to the point under it. view('eye') puts the camera in
+  Stack-chan's head looking out, view('home') goes back; both glide.
 */
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -27,10 +31,7 @@ export type PlyViewer = {
   open(file: File, upY: boolean): Promise<PlyInfo>;
   bundled(): Promise<PlyInfo>;
   setMode(m: 0 | 1 | 2): void;
-  setSize(s: number): void;
-  setSlice(f: number): void;
-  setSpin(on: boolean): void;
-  reset(): void;
+  view(v: 'home' | 'eye'): void;
   resize(): void;
   setActive(on: boolean): void;
   destroy(): void;
@@ -38,7 +39,7 @@ export type PlyViewer = {
 
 const VERT = /* glsl */ `
   attribute vec3 aPhoto;
-  uniform float uMode, uSize, uScale, uCut, uHasColour, uYmin, uYmax;
+  uniform float uMode, uSize, uScale, uHasColour, uYmin, uYmax;
   uniform vec3 uOrigin;
   varying vec3 vCol;
   ${DEPTH_GLSL}
@@ -47,7 +48,6 @@ const VERT = /* glsl */ `
   }
   void main() {
     float h = (position.y - uYmin) / max(0.0001, uYmax - uYmin);
-    if (h > uCut) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); gl_PointSize = 0.0; return; }
     vec3 depth = depthRamp(length(position - uOrigin));
     vCol = uMode < 0.5 ? (uHasColour > 0.5 ? aPhoto : depth) : uMode < 1.5 ? depth : heightRamp(clamp(h, 0.0, 1.0));
     vec4 mv = modelViewMatrix * vec4(position, 1.0);
@@ -146,10 +146,11 @@ export function createPlyViewer(host: HTMLElement): PlyViewer {
   const key = new THREE.DirectionalLight(0xfff1e2, 1.6); key.position.set(-0.6, 1.2, 1.0); scene.add(key);
   const camera = new THREE.PerspectiveCamera(42, 1, 0.005, 200);
   const controls = new OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true; controls.dampingFactor = 0.08; controls.autoRotateSpeed = 0.6;
+  controls.enableDamping = true; controls.dampingFactor = 0.08;
+  controls.zoomToCursor = true; controls.screenSpacePanning = true; controls.zoomSpeed = 1.2;
 
   const uniforms = {
-    uMode: { value: 0 }, uSize: { value: 1.6 }, uScale: { value: 1 }, uCut: { value: 1.01 }, uHasColour: { value: 1 },
+    uMode: { value: 0 }, uSize: { value: 1.6 }, uScale: { value: 1 }, uHasColour: { value: 1 },
     uYmin: { value: 0 }, uYmax: { value: 1 }, uOrigin: { value: new THREE.Vector3() },
   };
   const geom = new THREE.BufferGeometry();
@@ -157,9 +158,32 @@ export function createPlyViewer(host: HTMLElement): PlyViewer {
   points.frustumCulled = false;
   scene.add(points);
 
-  let robot: THREE.Object3D | null = null;
+  let robot: THREE.Object3D | null = null, showRobot = false;
   let home = { pos: new THREE.Vector3(1.6, 1.8, -2.4), at: new THREE.Vector3(0, 0.6, 0.45) };
+  let eye: typeof home | null = null;
   let active = false, raf = 0;
+
+  /* a glide from where the camera is to a new position and aim, eased in and out */
+  let glide: { p0: THREE.Vector3; a0: THREE.Vector3; p1: THREE.Vector3; a1: THREE.Vector3; t0: number; dur: number } | null = null;
+  const flyTo = (pos: THREE.Vector3, at: THREE.Vector3, dur = 0.9) => {
+    glide = { p0: camera.position.clone(), a0: controls.target.clone(), p1: pos.clone(), a1: at.clone(), t0: performance.now(), dur: dur * 1000 };
+    kick();
+  };
+  controls.addEventListener('start', () => { glide = null; });
+
+  /* a double click flies to the point under the pointer, keeping the same distance ratio */
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  const onDbl = (e: MouseEvent) => {
+    const r = renderer.domElement.getBoundingClientRect();
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.params.Points = { threshold: camera.position.distanceTo(controls.target) * 0.01 };
+    ray.setFromCamera(ndc, camera);
+    const hit = ray.intersectObject(points)[0];
+    if (!hit) return;
+    const to = hit.point, off = camera.position.clone().sub(controls.target).multiplyScalar(0.45);
+    flyTo(to.clone().add(off), to);
+  };
+  renderer.domElement.addEventListener('dblclick', onDbl);
 
   const loader = new GLTFLoader(); loader.setMeshoptDecoder(MeshoptDecoder);
   const robotP = loader.loadAsync(BASE + 'stackchan.glb').then((g) => { robot = g.scene; robot.visible = false; scene.add(robot); return robot; });
@@ -179,9 +203,11 @@ export function createPlyViewer(host: HTMLElement): PlyViewer {
   const fit = (bb: THREE.Box3) => {
     const c = bb.getCenter(new THREE.Vector3()), s = bb.getSize(new THREE.Vector3()).length();
     home = { pos: c.clone().add(new THREE.Vector3(0.45, 0.55, -0.7).normalize().multiplyScalar(s * 0.95)), at: c };
-    controls.minDistance = s * 0.02; controls.maxDistance = s * 4;
-    api.reset();
+    controls.minDistance = s * 0.005; controls.maxDistance = s * 4;
+    eye = null;
+    jump();
   };
+  const jump = () => { glide = null; camera.position.copy(home.pos); controls.target.copy(home.at); controls.update(); kick(); };
 
   const api: PlyViewer = {
     ready: Promise.resolve(null as unknown as PlyInfo),
@@ -189,8 +215,11 @@ export function createPlyViewer(host: HTMLElement): PlyViewer {
       const [buf, bot] = await Promise.all([fetch(BASE + 'scan.bin').then((r) => r.arrayBuffer()), robotP]);
       const n = new Uint32Array(buf, 0, 1)[0];
       const q = new Int16Array(buf, 4, n * 3), rgb = new Uint8Array(buf, 4 + n * 6, n * 3);
-      bot.visible = true; bot.updateMatrixWorld(true);
+      showRobot = true; bot.visible = true; bot.updateMatrixWorld(true);
       const pivot = new THREE.Vector3(); bot.getObjectByName('pitch')?.getWorldPosition(pivot);
+      // Stack-chan's own view: from between its sensors, looking out where it looked at the middle of the scan
+      const s0 = new THREE.Vector3(); bot.getObjectByName('sensor')?.getWorldPosition(s0);
+      eye = { pos: s0.clone().add(new THREE.Vector3(0, 0, -0.02)), at: s0.clone().add(new THREE.Vector3(0, 0.12, 0.6)) };
       const P = new Float32Array(n * 3), C = new Float32Array(n * 3);
       const lin = (v: number) => { const s = v / 255; return s <= 0.04045 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4); };
       for (let i = 0; i < n; i++) {
@@ -199,24 +228,21 @@ export function createPlyViewer(host: HTMLElement): PlyViewer {
       }
       const { size } = setCloud(P, C, n, true, pivot);
       home = { pos: new THREE.Vector3(1.5, 1.9, -2.5), at: new THREE.Vector3(0, 0.62, 0.45) };
-      controls.minDistance = 0.15; controls.maxDistance = 7;
-      api.reset();
+      controls.minDistance = 0.02; controls.maxDistance = 7;
+      jump();
       return { name: 'stackchan-scan-9-dense.ply', points: n, size: [size.x, size.y, size.z], hasColour: true, robot: true };
     },
     async open(file, upY) {
       const buf = await file.arrayBuffer();
       const { P, C, n, hasColour } = parsePly(buf, upY);
-      if (robot) robot.visible = false;
+      showRobot = false; if (robot) robot.visible = false;
       // the scanner sat at the file's origin; the view is fitted to the points' own bounds
       const { size, bb } = setCloud(P, C, n, hasColour, new THREE.Vector3());
       fit(bb);
       return { name: file.name, points: n, size: [size.x, size.y, size.z], hasColour, robot: false };
     },
     setMode(m) { uniforms.uMode.value = m; kick(); },
-    setSize(s) { uniforms.uSize.value = s; kick(); },
-    setSlice(f) { uniforms.uCut.value = f >= 0.999 ? 1.01 : f; kick(); },
-    setSpin(on) { controls.autoRotate = on; kick(); },
-    reset() { camera.position.copy(home.pos); controls.target.copy(home.at); controls.update(); kick(); },
+    view(v) { const to = v === 'eye' && eye ? eye : home; flyTo(to.pos, to.at, 1.1); },
     resize() {
       const w = host.clientWidth || 1, h = host.clientHeight || 1;
       renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
@@ -225,14 +251,25 @@ export function createPlyViewer(host: HTMLElement): PlyViewer {
     },
     setActive(on) { active = on; kick(); },
     destroy() {
-      active = false; cancelAnimationFrame(raf); controls.dispose();
+      active = false; cancelAnimationFrame(raf); controls.dispose(); renderer.domElement.removeEventListener('dblclick', onDbl);
       renderer.dispose(); pmrem.dispose(); env.dispose(); geom.dispose(); (points.material as THREE.Material).dispose();
       robot?.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh) { m.geometry.dispose(); (Array.isArray(m.material) ? m.material : [m.material]).forEach((mm) => mm.dispose()); } });
       renderer.domElement.remove();
     },
   };
   /* render while active: the controls ease after a drag and may spin */
-  const loop = () => { raf = 0; if (!active) return; controls.update(); renderer.render(scene, camera); raf = requestAnimationFrame(loop); };
+  const loop = () => {
+    raf = 0; if (!active) return;
+    if (glide) {
+      const k = Math.min(1, (performance.now() - glide.t0) / glide.dur), e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+      camera.position.lerpVectors(glide.p0, glide.p1, e); controls.target.lerpVectors(glide.a0, glide.a1, e);
+      if (k >= 1) glide = null;
+    }
+    controls.update();
+    // inside its head the robot would block the view, so it hides while the camera is there
+    if (robot && showRobot) robot.visible = !eye || camera.position.distanceTo(eye.pos) > 0.09;
+    renderer.render(scene, camera); raf = requestAnimationFrame(loop);
+  };
   function kick() { if (active && !raf) raf = requestAnimationFrame(loop); else if (!active) { controls.update(); renderer.render(scene, camera); } }
   return api;
 }

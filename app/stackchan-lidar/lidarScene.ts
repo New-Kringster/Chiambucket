@@ -47,8 +47,8 @@ export type LidarScene = {
 
 export const BASE = '/stackchan-lidar/';
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
-const smooth = (t: number) => t * t * (3 - 2 * t);
-const seg = (p: number, a: number, b: number) => smooth(clamp01((p - a) / (b - a)));
+const smoother = (t: number) => t * t * t * (t * (t * 6 - 15) + 10);
+const seg = (p: number, a: number, b: number) => smoother(clamp01((p - a) / (b - a)));
 const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
 const lerpV = (a: THREE.Vector3, b: THREE.Vector3, t: number) => a.clone().lerp(b, t);
 const UP = new THREE.Vector3(0, 1, 0);
@@ -112,14 +112,45 @@ function beam(halfAngleDeg: number, fade: number, color: number) {
 }
 
 /* Fixed camera poses, in metres around the robot (it faces +Z, the cloud's origin is its tilt servo). */
-const POSE = {
+type Pose = { pos: THREE.Vector3; at: THREE.Vector3 };
+const POSE: Record<string, Pose> = {
   front: { pos: V(0.2, 0.14, 0.36), at: V(0, 0.085, 0) },
   shoulder: { pos: V(0.15, 0.21, -0.3), at: V(-0.1, 0.13, 0.6) },
   room: { pos: V(0.5, 0.75, -1.5), at: V(0, 0.3, 0.6) },
-  side: { pos: V(0.5, 0.2, -0.2), at: V(0, 0.11, 0.25) },
-  sideTall: { pos: V(0.42, 0.16, -0.16), at: V(0, 0.08, 0.035) },
+  // the head in profile from its right, so the beams run off to the left of the screen, behind the caption
+  side: { pos: V(0.42, 0.16, 0.02), at: V(0, 0.115, 0.075) },
+  sideTall: { pos: V(0.5, 0.24, 0.04), at: V(0, 0.15, 0.015) },
   outside: { pos: V(-1.2, 1.9, -2.5), at: V(0, 0.62, 0.45) },
 };
+
+/* Camera moves swing round the robot's head instead of cutting straight through: the position is
+   interpolated in spherical coordinates about HEAD (distance on a log scale, so a pull-out starts slowly),
+   with `lift` raising it in the middle of the move like a crane. `dir` forces the way round (+1 or -1). */
+const HEAD = V(0, 0.09, 0);
+function arc(a: Pose, b: Pose, s: number, out: Pose, lift = 0, dir = 0) {
+  const ra = a.pos.clone().sub(HEAD), rb = b.pos.clone().sub(HEAD);
+  const la = ra.length(), lb = rb.length();
+  const aza = Math.atan2(ra.x, ra.z), azb = Math.atan2(rb.x, rb.z);
+  let d = azb - aza;
+  while (d > Math.PI) d -= Math.PI * 2;
+  while (d < -Math.PI) d += Math.PI * 2;
+  if (dir > 0 && d < 0) d += Math.PI * 2;
+  if (dir < 0 && d > 0) d -= Math.PI * 2;
+  const ela = Math.asin(ra.y / la), elb = Math.asin(rb.y / lb);
+  const r = la * Math.pow(lb / la, s), az = aza + d * s, el = ela + (elb - ela) * s + lift * Math.sin(Math.PI * s);
+  out.pos.set(Math.sin(az) * Math.cos(el) * r, Math.sin(el) * r, Math.cos(az) * Math.cos(el) * r).add(HEAD);
+  // mid-swing the aim leans toward the head, so the robot stays in shot while the camera moves round it
+  out.at.lerpVectors(a.at, b.at, s).lerp(HEAD, 0.6 * Math.sin(Math.PI * s));
+  return out;
+}
+/* a pose turned round the head by `da` radians (camera and aim together) and brought `k` times as close */
+const turn = (p: Pose, da: number, k: number): Pose => ({
+  pos: p.pos.clone().sub(HEAD).applyAxisAngle(UP, da).multiplyScalar(k).add(HEAD),
+  at: p.at.clone().sub(HEAD).applyAxisAngle(UP, da).add(HEAD),
+});
+/* the slow orbit round the finished room behind the rest of the page */
+const ORBIT_R = 3.1, ORBIT_START = -2.6;
+const orbitPose = (a: number): Pose => ({ pos: V(Math.sin(a) * ORBIT_R, 1.9, Math.cos(a) * ORBIT_R * 0.85 + 0.3), at: POSE.outside.at.clone() });
 
 export function createLidarScene(host: HTMLElement, layout: 'article' | 'home' = 'article'): LidarScene {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
@@ -160,7 +191,8 @@ export function createLidarScene(host: HTMLElement, layout: 'article' | 'home' =
   /* what the loop eases toward (target) and where things are now (cur) */
   const target = { pos: POSE.front.pos.clone(), at: POSE.front.at.clone(), yaw: 0, pitch: -0.12, reveal: 0, mix: 0, cone: 0, beams: 0, ox: 0, oy: 0, len: 1.2, orbit: false };
   const cur = { pos: POSE.front.pos.clone(), at: POSE.front.at.clone(), yaw: 0, pitch: -0.12, reveal: 0, mix: 0, cone: 0, beams: 0, ox: 0, oy: 0, len: 1.2 };
-  let W = 1, H = 1, active = false, raf = 0, last = 0, orbitAngle = 0;
+  const vel = { pos: new THREE.Vector3(), at: new THREE.Vector3() };   // the camera's spring velocities
+  let W = 1, H = 1, active = false, raf = 0, last = 0, orbitAngle = 0, clock = 0;
 
   /* where the robot sits beside the copy: right of centre on wide screens, above it on tall ones */
   const offsetFor = (amount: number) => {
@@ -203,7 +235,7 @@ export function createLidarScene(host: HTMLElement, layout: 'article' | 'home' =
   });
 
   /* over the robot's shoulder, turned with its head */
-  const chase = (az: number) => ({ pos: V(0.26, 0.21, -0.6).applyAxisAngle(UP, az), at: V(-0.16, 0.12, 0.7).applyAxisAngle(UP, az) });
+  const chase = (az: number): Pose => ({ pos: V(0.26, 0.21, -0.6).applyAxisAngle(UP, az), at: V(-0.16, 0.12, 0.7).applyAxisAngle(UP, az) });
 
   /* the newest point's direction and distance, for the head and the cone during the sweep */
   const newest = (reveal: number) => {
@@ -216,16 +248,19 @@ export function createLidarScene(host: HTMLElement, layout: 'article' | 'home' =
   const api: LidarScene = {
     ready,
     setShot(shot, t) {
+      if (shot === 'rest' && !target.orbit) orbitAngle = 0;   // the orbit starts where the colour chapter ends
       target.orbit = false;
       target.cone = 0; target.beams = 0;
+      const tall = W / H < 0.9;
+      const side = tall ? POSE.sideTall : POSE.side;
+      const sideNear = turn(side, -0.42, 0.84);   // the sensors chapter drifts round towards the front
       if (shot === 'meet') {
-        // the robot looks about, then the camera swings round behind its shoulder
-        // the robot looks about, then turns to where the sweep starts while the camera settles over its shoulder
-        const s = seg(t, 0.45, 1);
+        // a slow push in on the robot while it looks about, then the camera swings up and round behind its
+        // shoulder as the head turns to where the sweep starts
+        const s = seg(t, 0.4, 1);
         const a0 = newest(0).az;
-        const c = chase(a0);
-        target.pos.copy(lerpV(POSE.front.pos, c.pos, s));
-        target.at.copy(lerpV(POSE.front.at, c.at, s));
+        const near = turn(POSE.front, 0, 1.14 - 0.14 * seg(t, 0, 0.45));
+        arc(near, chase(a0), s, target, 0.45);
         target.yaw = 0.45 * Math.sin(t * Math.PI * 1.5) * (1 - s) + a0 * s;
         target.pitch = -0.12 - 0.06 * s;
         target.reveal = 0; target.mix = 0;
@@ -235,29 +270,26 @@ export function createLidarScene(host: HTMLElement, layout: 'article' | 'home' =
         target.reveal = s;
         const n = newest(s);
         target.yaw = n.az;
-        // over the shoulder, turned with the head (so the new points are always ahead), then the room
-        const back = seg(t, 0.84, 1);
-        const c = chase(n.az);
-        target.pos.copy(lerpV(c.pos, POSE.room.pos, back));
-        target.at.copy(lerpV(c.at, POSE.room.at, back));
+        // over the shoulder, turned with the head (so the new points are always ahead), then a crane up
+        // and back to see the whole room
+        arc(chase(n.az), POSE.room, seg(t, 0.84, 1), target, 0.3);
         target.pitch = -(0.18 + 0.5 * (0.5 - 0.5 * Math.cos(s * Math.PI * 2 * 4)));   // a slow nod up and down as it pans
         target.len = n.r;
         target.cone = t > 0.02 && t < 0.86 ? 1 : 0;
         target.mix = 0;
         offsetFor(layout === 'home' ? 0.35 : 0.55);
       } else if (shot === 'sensors') {
-        const s = seg(t, 0, 0.3);
-        const side = W / H < 0.9 ? POSE.sideTall : POSE.side;   // phones: the robot centred, the beams above the caption
-        target.pos.copy(lerpV(POSE.room.pos, side.pos, s));
-        target.at.copy(lerpV(POSE.room.at, side.at, s));
+        // a dive from the room down to the side of the head, then a slow drift round and in
+        if (t < 0.32) arc(POSE.room, side, seg(t, 0, 0.32), target, 0.25);
+        else arc(side, sideNear, seg(t, 0.32, 1), target);
         target.reveal = 1; target.mix = 0;
         target.yaw = 0; target.pitch = -0.1;
         target.beams = seg(t, 0.2, 0.4) * (1 - seg(t, 0.85, 1));
         offsetFor(layout === 'home' ? 0.25 : 0.3);
       } else if (shot === 'colour') {
-        const s = seg(t, 0, 0.7);
-        target.pos.copy(lerpV(POSE.side.pos, POSE.outside.pos, s));
-        target.at.copy(lerpV(POSE.side.at, POSE.outside.at, s));
+        // the camera pulls out and swings round behind the robot until the whole room is in view, while the
+        // depth colours fade into the photos'
+        arc(sideNear, orbitPose(ORBIT_START), seg(t, 0, 0.85), target, 0.35, 1);
         target.reveal = 1; target.mix = seg(t, 0.3, 0.8);
         target.yaw = 0; target.pitch = -0.1;
         offsetFor(layout === 'home' ? 0.5 : 0.3);
@@ -276,7 +308,7 @@ export function createLidarScene(host: HTMLElement, layout: 'article' | 'home' =
     },
     setActive(on) { active = on; if (on) kick(); },
     settle() {
-      cur.pos.copy(target.pos); cur.at.copy(target.at);
+      cur.pos.copy(target.pos); cur.at.copy(target.at); vel.pos.set(0, 0, 0); vel.at.set(0, 0, 0);
       cur.yaw = target.yaw; cur.pitch = target.pitch; cur.reveal = target.reveal; cur.mix = target.mix;
       cur.cone = target.cone; cur.beams = target.beams; cur.ox = target.ox; cur.oy = target.oy; cur.len = target.len;
       draw();
@@ -311,6 +343,10 @@ export function createLidarScene(host: HTMLElement, layout: 'article' | 'home' =
     // tall screens see less across, so the camera stands further back
     camera.position.copy(cur.pos);
     if (W / H < 0.9) camera.position.sub(cur.at).multiplyScalar(1.35).add(cur.at);
+    // a little handheld drift, so the shot never sits dead still
+    const d = camera.position.distanceTo(cur.at) * 0.012;
+    camera.position.x += Math.sin(clock * 0.47) * d;
+    camera.position.y += Math.sin(clock * 0.31 + 1.3) * d * 0.6;
     camera.lookAt(cur.at);
     if (Math.abs(cur.ox) + Math.abs(cur.oy) < 0.0005) camera.clearViewOffset();
     else camera.setViewOffset(W, H, cur.ox * W, cur.oy * H, W, H);
@@ -345,25 +381,28 @@ export function createLidarScene(host: HTMLElement, layout: 'article' | 'home' =
     if (!active) return;
     const dt = Math.min(0.05, last ? (now - last) / 1000 : 0.016);
     last = now;
+    clock += dt;
     if (target.orbit) {
       orbitAngle += dt * 0.06;
-      const r = 3.1, a = orbitAngle - 2.6;
-      target.pos.set(Math.sin(a) * r, 1.9, Math.cos(a) * r * 0.85 + 0.3);
-      target.at.copy(POSE.outside.at);
+      const o = orbitPose(ORBIT_START + orbitAngle);
+      target.pos.copy(o.pos); target.at.copy(o.at);
+    }
+    // the camera rides a critically damped spring: it picks up speed into a move and settles out of it
+    const w = 5.5;
+    for (const k of ['pos', 'at'] as const) {
+      tmpV.subVectors(target[k], cur[k]).multiplyScalar(w * w * dt).addScaledVector(vel[k], -2 * w * dt);
+      vel[k].add(tmpV);
+      cur[k].addScaledVector(vel[k], dt);
     }
     const kc = 1 - Math.exp(-dt * 3.2), kh = 1 - Math.exp(-dt * 4.5), kr = 1 - Math.exp(-dt * 5);
-    cur.pos.lerp(target.pos, kc); cur.at.lerp(target.at, kc);
     cur.yaw += (target.yaw - cur.yaw) * kh; cur.pitch += (target.pitch - cur.pitch) * kh;
     cur.reveal += (target.reveal - cur.reveal) * kr; cur.mix += (target.mix - cur.mix) * kr;
     cur.cone += (target.cone - cur.cone) * kr; cur.beams += (target.beams - cur.beams) * kr;
     cur.ox += (target.ox - cur.ox) * kc; cur.oy += (target.oy - cur.oy) * kc;
     cur.len += (target.len - cur.len) * kh;
     draw();
-    const moving = target.orbit || cur.pos.distanceToSquared(target.pos) > 1e-8 || cur.at.distanceToSquared(target.at) > 1e-8
-      || Math.abs(target.yaw - cur.yaw) + Math.abs(target.pitch - cur.pitch) + Math.abs(target.reveal - cur.reveal)
-       + Math.abs(target.mix - cur.mix) + Math.abs(target.cone - cur.cone) + Math.abs(target.beams - cur.beams)
-       + Math.abs(target.ox - cur.ox) + Math.abs(target.oy - cur.oy) > 1e-4;
-    if (moving) raf = requestAnimationFrame(step); else last = 0;
+    // keeps running while it shows: the camera always drifts a little
+    raf = requestAnimationFrame(step);
   }
   function kick() { if (active && !raf) { last = 0; raf = requestAnimationFrame(step); } }
 

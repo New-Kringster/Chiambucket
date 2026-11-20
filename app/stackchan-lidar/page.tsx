@@ -13,7 +13,7 @@ const sans = Figtree({ subsets: ['latin'], weight: ['400', '500', '600', '700', 
 
 const URL = 'https://www.chiambucket.com/stackchan-lidar';
 const DESCRIPTION =
-  'A makeshift LiDAR built on M5Stack’s Stack-chan: four Unit ToF4M distance sensors on its head, swept across a room by its two servos, with its camera colouring every point and a browser showing the scan in 3D.';
+  'A LiDAR made from M5Stack’s Stack-chan, which sweeps four Unit ToF4M distance sensors across a room with its servos, colours the points with its camera and shows the scan in 3D in any browser.';
 
 export const metadata: Metadata = {
   title: 'Stack-chan LiDAR | Braven Chiam',
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   alternates: { canonical: URL },
   openGraph: {
     title: 'Stack-chan LiDAR | Braven Chiam',
-    description: 'Four distance sensors on Stack-chan’s head, swept across a room, turned into a coloured 3D scan you can explore.',
+    description: 'Stack-chan sweeps four distance sensors across a room and turns the readings into a coloured 3D scan you can explore.',
     url: URL,
     type: 'article',
     images: [{ url: '/images/stackchan-lidar-pf-context.webp' }],
@@ -50,7 +50,6 @@ const CHAPTERS: Chapter[] = [
   { id: 'colour', name: 'Colour' },
   { id: 'demo', name: 'Demo' },
   { id: 'play', name: 'Try the scan' },
-  { id: 'notes', name: 'Build notes' },
   { id: 'setup', name: 'Make one' },
 ];
 
@@ -83,7 +82,7 @@ export default function StackchanLidarPage() {
               <AiMark project="proj-lidar" />
             </div>
             <h1 className="ls-title">Stack-chan LiDAR</h1>
-            <p className="ls-lead">I put four distance sensors on Stack-chan&rsquo;s head and let its servos sweep them across a room. Its camera colours the points, and any browser on the same Wi-Fi shows the scan in 3D.</p>
+            <p className="ls-lead">I turned Stack-chan into a LiDAR by putting four distance sensors on its head and letting its servos sweep them across a room. Its camera colours the points, and any browser on the same Wi-Fi shows the scan in 3D as it builds.</p>
             <div className="ls-toolrow">
               <span>Built with</span>
               <div className="icon-stack">
@@ -103,11 +102,11 @@ export default function StackchanLidarPage() {
       <section className="ls-pin is-sweep" data-shot="sweep" id="sweep">
         <div className="ls-sticky">
           <img className="ls-still" src={I + 'shot-sweep.webp'} alt="Over Stack-chan's shoulder, its sensor cone reaching the wall while the scan fills in around the room" />
-          <Cap a={0.04} b={0.5} n="01" title="It sweeps the room">
-            <p>Stack-chan turns its head across the room in small steps and stops at every one to take a distance reading: a direction from the two servos and a distance from the sensors. This is the real scan from the demo, filling in as the head pans across.</p>
+          <Cap a={0.04} b={0.5} n="01" title="Sweeping the room">
+            <p>Stack-chan turns its head across the room a few degrees at a time and stops at every step to measure how far away the wall is. The servos give the direction and the sensors give the distance, so every step adds a point in 3D. This is the real scan from the demo, filling in as the head pans across.</p>
           </Cap>
-          <Cap a={0.5} b={1.05} title="Wide and slow, or quick">
-            <p>You choose the area, up to 256 degrees across and from level to straight up, and the detail. Quick steps the head 5 degrees at a time, Normal 3 and Fine 2, and a Quick scan of a 90 by 45 degree area takes under a minute.</p>
+          <Cap a={0.5} b={1.05} title="Choosing the area and detail">
+            <p>Before a scan I pick how much of the room to cover, up to 256 degrees across and from level to straight up, and how fine the steps are. Quick moves the head 5 degrees at a time, Normal 3 and Fine 2, and a Quick scan of a 90 by 45 degree area takes under a minute.</p>
           </Cap>
         </div>
       </section>
@@ -116,11 +115,11 @@ export default function StackchanLidarPage() {
       <section className="ls-pin is-sensors" data-shot="sensors" id="sensors">
         <div className="ls-sticky">
           <img className="ls-still" src={I + 'shot-sensors.webp'} alt="The four Unit ToF4M on Stack-chan's head from the side, a beam from each one" />
-          <Cap a={0.08} b={0.55} n="02" title="Four sensors, one reading">
-            <p>The four Unit ToF4M share one Grove port through a PaHub and all point the same way, so they are four opinions about the same spot rather than four rays. Each step keeps the median of their first readings after the head stops moving, which throws out a stray one.</p>
+          <Cap a={0.08} b={0.55} n="02" title="Four sensors on one port">
+            <p>The four Unit ToF4M plug into one Grove port through a PaHub and all point the same way, so every step gets four readings of the same spot. Stack-chan keeps the middle one once the head has stopped moving, which throws away the odd bad reading.</p>
           </Cap>
-          <Cap a={0.55} b={1.05} title="A narrower cone">
-            <p>Each sensor sees a cone, not a thin beam. At its widest the cone is about 27 degrees and it smeared every edge, so I narrowed it to about 20, which turns the edge of a box into a sharp step. The sensors reach about 3 metres, enough for the shape of a room.</p>
+          <Cap a={0.55} b={1.05} title="A narrower view">
+            <p>Each sensor sees a cone rather than a thin beam, and at its widest setting of about 27 degrees it blurred every edge. I narrowed it to about 20 degrees, so the edge of a box now shows as a clean step, and the sensors still reach about 3 metres, which is enough for a whole room.</p>
           </Cap>
         </div>
       </section>
@@ -129,11 +128,11 @@ export default function StackchanLidarPage() {
       <section className="ls-pin is-colour" data-shot="colour" id="colour">
         <div className="ls-sticky">
           <img className="ls-still" src={I + 'shot-colour.webp'} alt="The finished scan from outside the room in the camera's colours" />
-          <Cap a={0.06} b={0.55} n="03" title="Coloured by its own camera">
-            <p>Before it sweeps, Stack-chan photographs the area with the CoreS3&rsquo;s camera. The browser pushes every pixel of those photos out to the distance the sensors measured in that direction, which turns a grid of readings into 68,206 coloured points.</p>
+          <Cap a={0.06} b={0.55} n="03" title="Colour from its camera">
+            <p>Before it sweeps, Stack-chan takes photos of the area with the CoreS3&rsquo;s camera. The browser then places every pixel of those photos at the distance the sensors measured in that direction, which turns a grid of readings into 68,206 coloured points.</p>
           </Cap>
           <Cap a={0.55} b={1.05} title="Lining up the photos">
-            <p>The camera sits below the sensors, so the two never see from the same place. Fitting edges in the depth to edges in the photos put the sensors 9.4 cm above the tilt servo and the camera 2 degrees to one side. The colours land closer now, though not perfectly.</p>
+            <p>The camera sits below the sensors, so the photos and the distances are taken from slightly different places. I lined them up by matching the edges in the depth to the edges in the photos, and the colours now land in the right place on most of the room, though not everywhere.</p>
           </Cap>
         </div>
       </section>
@@ -142,54 +141,40 @@ export default function StackchanLidarPage() {
       <div className="ls-flow" data-shot="rest">
         <section id="demo" className="ls-block is-wide">
           <h2>Demo</h2>
-          <p>I set Stack-chan on a table in the corner of an empty room and started a scan from my laptop. The film shows the head sweeping while the cloud grows in the browser, then the finished scan from every side, first as depth and then in the camera&rsquo;s colours.</p>
+          <p>I put Stack-chan on a table in the corner of an empty room and started a scan from my laptop. The video shows the head sweeping while the points build up in the browser, and then the finished scan from every side, first coloured by distance and then by the camera.</p>
           <LidarVideo base="/videos/stackchan-lidar/" label="Stack-chan sweeping a room corner with the point cloud growing in the browser, then the finished scan in depth and photo colour" moments={[
-            { t: 4, label: 'The sweep', note: 'The head works across the corner while the cloud fills in' },
-            { t: 24, label: 'The finished cloud', note: 'The walls and ceiling around the corner, from outside' },
-            { t: 34, label: 'Depth', note: 'Coloured by distance, showing the rings each row draws' },
-            { t: 52, label: 'Photo colour', note: 'The same points coloured from Stack-chan’s own photos' },
+            { t: 4, label: 'The sweep', note: 'The head works across the corner while the points fill in' },
+            { t: 24, label: 'The finished scan', note: 'The walls and ceiling of the corner, seen from outside' },
+            { t: 34, label: 'Depth', note: 'Each point coloured by how far away it is' },
+            { t: 52, label: 'Photo colour', note: 'The same points coloured by Stack-chan’s photos' },
           ]} />
         </section>
 
         <section id="play" className="ls-block is-wide">
           <h2>Try the scan</h2>
-          <p>Here is the scan itself, with Stack-chan where it stood. Turn it round, colour it by the photos, by distance or by height, slice off the ceiling to look inside, or open a .ply of your own.</p>
+          <p>This is the same scan, with Stack-chan standing where it was. You can drag to turn it, scroll or pinch to zoom, right-drag or use two fingers to move around and double-click any spot to fly to it. The eye button puts you in Stack-chan&rsquo;s head to see the room the way it did, and you can open a .ply file of your own as well.</p>
           <PlyPlayground still={I + 'cloud.webp'} stillAlt="The finished scan from above: the walls and ceiling of a room corner, with a blue box on the table" />
-        </section>
-
-        <section id="notes" className="ls-block">
-          <h2>Build notes</h2>
-          <h3>From a handheld idea</h3>
-          <p>I first wanted a scanner I could wave around a room like the LiDAR on an iPhone, with an IMU tracking where it pointed. An IMU only knows which way it faces, though, not where it is, and the iPhone works out its position from its camera. So I mounted the sensors on Stack-chan instead, whose two servos know exactly which way the head points, and let it do the sweeping.</p>
-          <h3>A viewer in the robot</h3>
-          <p>Stack-chan serves its own viewer, a small WebGL page compressed into the firmware, to any browser on the same Wi-Fi. It starts scans, shows the cloud growing as they run, switches between photo colour, samples and depth, and saves the result as a .ply file. Tapping Stack-chan&rsquo;s face shows its network and the address to open, and if it can&rsquo;t join the Wi-Fi it starts its own.</p>
-          <h3>What broke</h3>
-          <ul className="ls-fixes">
-            <li><b>The array flew off.</b> The servo library swings the head to each new angle as hard as it can, about 7 g at the sensors on a 90 degree swing, and once that knocked the whole array off. Every move now speeds up and slows down gently, capped at 90 degrees a second, which keeps it to about a quarter of a g. A Quick scan takes 54 seconds instead of 37.</li>
-            <li><b>The page stopped responding.</b> During a scan only 13 KB of the chip&rsquo;s internal memory was free, and Wi-Fi and the web server need it. Moving the camera&rsquo;s frame copy and the scan buffers into the 8 MB of PSRAM left about 122 KB free mid-scan, and the viewer then answered every request under load.</li>
-            <li><b>A scan vanished.</b> Scans only lived in memory, so a restart wiped one. The last scan is now saved to flash with its photos and comes back after a restart.</li>
-          </ul>
         </section>
 
         <section id="setup" className="ls-block">
           <h2>Make one</h2>
           <div className="ls-hw">
             <ul className="ls-parts">
-              <li><a href="https://docs.m5stack.com/en/StackChan" target="_blank" rel="noopener">Stack-chan</a>, M5Stack&rsquo;s little robot: a CoreS3 for a head on two servos. Its ESP32-S3 runs the scanner, the web server and the camera.</li>
-              <li>Four <a href="https://docs.m5stack.com/en/unit/Unit-ToF4M" target="_blank" rel="noopener">Unit ToF4M</a>, each a VL53L1X time-of-flight sensor, mounted in a square on top of the head.</li>
-              <li>A <a href="https://docs.m5stack.com/en/unit/pahub2" target="_blank" rel="noopener">PaHub</a>, so the four sensors, which share one I2C address, can hang off one Grove port.</li>
+              <li><a href="https://docs.m5stack.com/en/StackChan" target="_blank" rel="noopener">Stack-chan</a>, M5Stack&rsquo;s little robot, which has a CoreS3 for a head on two servos. Its ESP32-S3 runs the scan, the web server and the camera.</li>
+              <li>Four <a href="https://docs.m5stack.com/en/unit/Unit-ToF4M" target="_blank" rel="noopener">Unit ToF4M</a>, which are VL53L1X time-of-flight distance sensors, mounted in a square on top of the head.</li>
+              <li>A <a href="https://docs.m5stack.com/en/unit/pahub2" target="_blank" rel="noopener">PaHub</a>, which lets the four sensors share one Grove port even though they all have the same I2C address.</li>
             </ul>
             <figure className="ls-photo">
               <img src={I + 'cover.webp'} alt="The real Stack-chan with the four sensors on its head and their Grove cables looping down to the back" loading="lazy" />
-              <figcaption>The real one</figcaption>
+              <figcaption>The real Stack-chan with its sensors</figcaption>
             </figure>
           </div>
           <ol className="ls-steps">
-            <li>Plug a PaHub into Stack-chan&rsquo;s Port A and the four Unit ToF4M into its channels 0 to 3, then mount them facing forward on top of the head.</li>
+            <li>Plug a PaHub into Stack-chan&rsquo;s Port A and the four Unit ToF4M into its channels 0 to 3, then mount the sensors on top of the head facing forward.</li>
             <li>Open <a href={FLASHDECK} target="_blank" rel="noopener">Flashdeck</a> in Chrome or Edge, choose <b>Stack-chan LiDAR</b>, plug Stack-chan in over USB-C and press Install.</li>
-            <li>Join the <b>StackChan-LiDAR</b> Wi-Fi it starts, open <b>http://192.168.4.1/</b>, pick an area and a level of detail, and start a scan.</li>
+            <li>Join the <b>StackChan-LiDAR</b> Wi-Fi network it starts and open <b>http://192.168.4.1/</b>, which Stack-chan also shows when you tap its face. Then pick an area and a level of detail and start a scan.</li>
           </ol>
-          <p className="ls-note">The firmware on Flashdeck always starts its own Wi-Fi, because a public image can&rsquo;t carry a network password. Stack-chan only looks from level upwards, so set it on a table to scan a room. The Stack-chan on this page is drawn from M5Stack&rsquo;s own 3D models (M5_Hardware, MIT licence), which I put together in Blender with the four sensors on top.</p>
+          <p className="ls-note">The firmware on Flashdeck always starts its own Wi-Fi network, because a public download can&rsquo;t carry your network&rsquo;s password. Stack-chan only looks from level upwards, so put it on a table to scan a room. The Stack-chan on this page is built from M5Stack&rsquo;s own 3D models (M5_Hardware, MIT licence), which I put together in Blender with the four sensors on top.</p>
         </section>
       </div>
 

@@ -37,6 +37,8 @@ export default function LidarStory({ chapters }: { chapters: Chapter[] }) {
     if (flat) html.classList.add('lr-flat');
     else {
       try { scene = createLidarScene(host.current!); } catch { html.classList.add('lr-flat'); }
+      // development only: lets screenshot scripts snap the camera to its target (window.__lidar.settle())
+      if (process.env.NODE_ENV !== 'production' && scene) (window as unknown as { __lidar?: LidarScene }).__lidar = scene;
     }
 
     const shots = Array.from(document.querySelectorAll<HTMLElement>('[data-shot]'));
