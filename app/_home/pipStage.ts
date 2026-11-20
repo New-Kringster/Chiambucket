@@ -106,7 +106,7 @@ export function createPipStage(section: HTMLElement) {
   const unlock = () => {
     for (const v of [layer, ...clips]) {
       if (!v || started.has(v)) continue;
-      v.play().then(() => { started.add(v); refusals.delete(v); apply(); }, () => {});
+      v.play().then(() => { started.add(v); refusals.delete(v); apply(); }, (e: Error) => refusals.set(v, 'tap: ' + (e?.name || 'refused')));
     }
   };
   const GESTURES = ['touchend', 'click', 'keydown'] as const;
@@ -118,10 +118,14 @@ export function createPipStage(section: HTMLElement) {
     const box = document.createElement('pre');
     box.style.cssText = 'position:fixed;left:8%;top:22%;width:84%;z-index:99999;margin:0;padding:10px 12px;border-radius:12px;background:rgba(0,0,0,0.82);color:#9effa0;font:11px/1.45 ui-monospace,Menlo,monospace;white-space:pre-wrap;pointer-events:none';
     document.body.appendChild(box);
+    // Safari in Low Power Mode caps animation at 30 frames a second, so the frame rate tells
+    let frames = 0, fps = 0, since = performance.now();
+    const tick = () => { frames++; const now = performance.now(); if (now - since >= 1000) { fps = Math.round((frames * 1000) / (now - since)); frames = 0; since = now; } if (alive) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
     debugTimer = window.setInterval(() => {
       const name = (v: HTMLVideoElement) => v.src.split('/').pop();
       const row = (v: HTMLVideoElement) => `${name(v)}  ${v.paused ? 'paused' : 'PLAYING'}  ready ${v.readyState}  net ${v.networkState}  t ${v.currentTime.toFixed(1)}${v.error ? '  error ' + v.error.code : ''}${refusals.has(v) ? '  refused: ' + refusals.get(v) : ''}`;
-      box.textContent = `on ${on}  scene ${!!scene}  progress ${p.toFixed(2)}\n` + [layer, ...clips].filter(Boolean).map((v) => row(v!)).join('\n');
+      box.textContent = `on ${on}  scene ${!!scene}  progress ${p.toFixed(2)}  ${fps} fps\n` + [layer, ...clips].filter(Boolean).map((v) => row(v!)).join('\n');
     }, 400);
   }
 

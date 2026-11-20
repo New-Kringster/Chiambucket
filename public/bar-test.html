@@ -7,13 +7,18 @@
 <title>Safari bar test</title>
 <!-- A temporary test page: which colour does Safari on iPhone put in its status bar and toolbar?
      No pinned elements, the page's own colour is grey, and the bands are red / black / white / blue.
-     ?mixed splits the top band into red and blue halves. -->
+     ?mixed splits the top band into red and blue halves.
+     ?sage copies the homepage: a sage top band, the page's colour sage at first and dark once you
+     scroll past the top band. ?sage&dark keeps the page's colour dark from the start. -->
 <style>
   html { background: #555; }
   body { margin: 0; font: 600 18px/1.4 -apple-system, system-ui, sans-serif; color: #fff; }
   .band { height: 120vh; display: grid; place-items: center; text-align: center; }
   .top { height: 60vh; background: #e01b24; }
   html.mixed .top { background: linear-gradient(90deg, #e01b24 50%, #1c5bd8 50%); }
+  html.sage { background: #9ab396; }
+  html.sage.night, html.sage.dark { background: #0b1012; }
+  html.sage .top { background: #9ab396; color: #1f2b1c; }
   .black { background: #000; }
   .white { background: #fff; color: #000; }
   .blue { background: #1c5bd8; }
@@ -21,7 +26,12 @@
   .card button { font: inherit; margin-top: 8px; padding: 10px 14px; border-radius: 10px; border: 0; background: #fff; color: #000; }
   .wrap { position: relative; }
 </style>
-<script>if (location.search.indexOf('mixed') >= 0) document.documentElement.classList.add('mixed');</script>
+<script>
+  var q = location.search, d = document.documentElement;
+  if (q.indexOf('mixed') >= 0) d.classList.add('mixed');
+  if (q.indexOf('sage') >= 0) d.classList.add('sage');
+  if (q.indexOf('dark') >= 0) d.classList.add('dark');
+</script>
 </head>
 <body>
   <div class="band top"><p>Top band, <span id="kind"></span></p></div>
@@ -31,7 +41,12 @@
   <div class="band white">White band</div>
   <div class="band blue">Blue band</div>
   <script>
-    document.getElementById('kind').textContent = document.documentElement.classList.contains('mixed') ? 'red and blue halves' : 'all red';
+    var c = document.documentElement.classList;
+    document.getElementById('kind').textContent = c.contains('sage') ? (c.contains('dark') ? 'sage, page colour dark from the start' : 'sage, page colour sage until you scroll past') : c.contains('mixed') ? 'red and blue halves' : 'all red';
+    if (c.contains('sage') && !c.contains('dark')) {
+      var band = document.querySelector('.top');
+      addEventListener('scroll', function () { c.toggle('night', scrollY > band.offsetHeight * 0.9); }, { passive: true });
+    }
     var b = document.getElementById('b'), pink = false;
     b.onclick = function () { pink = !pink; document.documentElement.style.background = pink ? '#ff2fa8' : ''; b.textContent = pink ? 'Make the page’s colour grey' : 'Make the page’s colour pink'; };
   </script>
