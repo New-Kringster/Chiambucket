@@ -1,4 +1,11 @@
 import type { Lang } from '@/lib/i18n';
+import es from './_copy.es';
+import fr from './_copy.fr';
+import ru from './_copy.ru';
+import de from './_copy.de';
+import nl from './_copy.nl';
+import ja from './_copy.ja';
+import zh from './_copy.zh';
 
 /* The credits page's words (small enough to ship every language together). */
 const en = {
@@ -41,5 +48,5 @@ const en = {
 };
 export type CreditsCopy = typeof en;
 
-export const CREDITS: Partial<Record<Lang, CreditsCopy>> = { en };
+export const CREDITS: Partial<Record<Lang, CreditsCopy>> = { en, es, fr, ru, de, nl, ja, zh };
 export const creditsCopy = (lang: Lang): CreditsCopy => CREDITS[lang] ?? en;

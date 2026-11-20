@@ -29,6 +29,7 @@ House rules (all languages):
   names (Next.js, Docker, Proxmox, Unraid, KiCad, Onshape, Blender, ...), hostnames, URLs, emails, version
   labels (V1, L3, ...). Nanyang Polytechnic may be written as it is usually written in your language
   (e.g. 南洋理工学院), otherwise keep it.
+- In buttons and labels, write hyphenated short words (e-mail, E-Mail, 3D-Drucker) with a non-breaking hyphen (\u2011) so a wrapping button never breaks at the hyphen.
 - Dates and numbers in your language's normal form (e.g. 2024年9月, 9 septembre 2024, September 2024 → setembro...).
 - UI LABELS MUST NOT GET LONGER. Buttons, pills, tags, nav items, stat labels, short headings and anything
   with `white-space: nowrap` or a fixed width: keep them as short as the English or shorter, choosing the

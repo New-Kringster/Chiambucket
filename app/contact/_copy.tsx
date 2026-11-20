@@ -99,7 +99,7 @@ export const CONTACT: Record<Lang, ContactCopy> = {
     title: <>On <em>discute</em>&nbsp;?</>,
     sub: 'Le plus rapide pour me joindre, c’est par e-mail, et tu me trouveras aussi sur les sites ci-dessous.',
     emailLabel: 'E-mail',
-    write: 'Écrire un e-mail',
+    write: 'Écrire un e\u2011mail',  // a non-breaking hyphen: the button wraps on phones, never at e-mail
     copy: 'Copier l’adresse',
     copied: 'Copié',
   },

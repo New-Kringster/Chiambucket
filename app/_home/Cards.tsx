@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 
 import AiMark from '../../components/AiMark';
 import InfoModal, { type InfoItem } from '../../components/InfoModal';
 import LazyVideo from '../../components/LazyVideo';
-import { PeekFeed } from '../../components/ProjectPeek';
+import { PeekFeed, preloadPeeks } from '../../components/ProjectPeek';
 import { IcRead, IcPeek, IcPlay, IcGitHub, IcOut } from '../../components/Icons';
 import { fill } from '@/lib/fill';
 import { localize } from '@/lib/i18n';
@@ -17,6 +17,7 @@ import type { HomeCopy } from './_copy';
 /* ── The peek reader, shared by every card on the page ── */
 export function usePeek() {
   const c = useHomeCopy().peek;
+  const lang = useLang();
   const [open, setOpen] = useState(false);
   const [anim, setAnim] = useState(false);
   const [id, setId] = useState<string | null>(null);
@@ -27,6 +28,13 @@ export function usePeek() {
     setTimeout(() => { setOpen(false); setId(null); }, 320);
   };
   useEffect(() => { if (open) requestAnimationFrame(() => setAnim(true)); }, [open]);
+  // fetch this language's peeks once the page has settled, so the first open isn't empty
+  useEffect(() => {
+    const go = () => preloadPeeks(lang);
+    const ric = (window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
+    const t = ric ? ric(go, { timeout: 4000 }) : window.setTimeout(go, 2500);
+    return () => { if (!ric) window.clearTimeout(t); };
+  }, [lang]);
   useEffect(() => {
     const h = (e: KeyboardEvent) => { if (e.key === 'Escape' && open) close(); };
     document.addEventListener('keydown', h);

@@ -275,10 +275,26 @@ type FeedProps = { startId: string; exclude?: string };
 const bind = (copy: PeekLang) => function LangFeed(props: FeedProps) { return <Feed {...props} copy={copy} />; };
 
 /* One line per language: only the visitor's language is downloaded. Add a
-   translation as e.g. `zh: dynamic(() => import('./peeks/zh').then(bind), { ssr: false }),`. */
-const FEEDS: Partial<Record<Lang, ComponentType<FeedProps>>> = {
-  en: dynamic(() => import('./peeks/en').then(bind), { ssr: false }),
+   translation as e.g. `zh: () => import('./peeks/zh'),`. */
+const IMPORTS: Partial<Record<Lang, () => Promise<PeekLang>>> = {
+  en: () => import('./peeks/en'),
+  es: () => import('./peeks/es'),
+  fr: () => import('./peeks/fr'),
+  ru: () => import('./peeks/ru'),
+  de: () => import('./peeks/de'),
+  nl: () => import('./peeks/nl'),
+  ja: () => import('./peeks/ja'),
+  zh: () => import('./peeks/zh'),
 };
+const FEEDS: Partial<Record<Lang, ComponentType<FeedProps>>> = Object.fromEntries(
+  Object.entries(IMPORTS).map(([l, load]) => [l, dynamic(() => load!().then(bind), { ssr: false })]),
+);
+
+/* Fetches a language's peeks ahead of the first open (the homepage calls it once it has settled),
+   so the reader isn't empty for a moment while its words download. */
+export function preloadPeeks(lang: Lang) {
+  (IMPORTS[lang] ?? IMPORTS.en!)().catch(() => {});
+}
 
 /* The feed in the page's language, falling back to English. */
 export function PeekFeed(props: FeedProps) {

@@ -1,0 +1,333 @@
+import type { HomeCopy } from './en';
+
+/* The homepage's German words, in the shape of en.tsx. */
+const de: HomeCopy = {
+  meta: {
+    title: 'Braven Chiam | Hardware, Software und Design',
+    description: 'Projekte von Braven Chiam, der an der Nanyang Polytechnic Elektronik und Technische Informatik studiert und von der Platine bis in die Cloud alles selbst baut, darunter ein Wasserzählerleser, der seine Ziffern auf einem ESP32-S3 liest, ein 5G-Rover, eine private Lese-App für Bücher und seine eigene Hosting-Plattform.',
+    keywords: 'Braven Chiam, Chiambucket, OCR Reader, DrumNet, Project June, 5G-Rover, BeadReader, Shebang, M5Stack, LoRA Messenger, ESP32, Platinendesign, KiCad, Onshape, Next.js, Homelab, Fotografie, Singapur',
+    ogDescription: 'Ich baue Dinge von der Platine bis in die Cloud, darunter einen Wasserzählerleser, der direkt auf dem Chip liest, einen 5G-Rover und eine private Lese-App für Bücher.',
+    twitterTitle: 'Braven Chiam',
+    twitterDescription: 'Zu meinen Projekten gehören ein Wasserzählerleser, der direkt auf dem Chip liest, ein 5G-Rover und eine private Lese-App für Bücher.',
+  },
+  ld: {
+    jobTitle: 'Student der Elektronik und Technischen Informatik',
+    knowsAbout: [
+      'Elektrotechnik', 'Platinendesign', 'Eingebettete Systeme', 'ESP32',
+      'Mikrocontroller', '3D-CAD', 'UI-Design', 'Fotografie', 'Self-Hosting',
+    ],
+    juneHeadline: 'Project June, ein 5G-Rover',
+    juneAbout: 'Ein 5G-Rover mit drei Live-Kamerabildern über WebRTC, MQTT-Telemetrie, einer Sensoreinheit mit ESP32-S3, einem MOSFET-Motortreiber und einem 2S3P-Akkupack, gebaut in drei Wochen.',
+    juneKeywords: '5G-Rover, WebRTC, ESP32, MQTT, eigene Platine, KiCAD, Onshape, Telemetrie',
+    beadAbout: 'Eine private Online-Lese-App nur auf Einladung, mit Anmeldung per Zugangscode, Live-Anzeige, wer gerade mitliest, einer per SQL durchgesetzten Sperre für explizite Inhalte, Text- und Webtoon-Büchern, Lesestatistiken und Offline-Modus. Gebaut mit Next.js, Supabase und Cloudflare R2.',
+    beadKeywords: 'private Lese-App, nur auf Einladung, Next.js, Supabase, Cloudflare R2, gemeinsam lesen, Offline-PWA',
+  },
+
+  hero: {
+    kicker: 'Hallo.',
+    line: 'Ich bin Braven. Die meisten Projekte brauchen Hardware, Software und Design, und ich mache gern alles drei selbst.',
+    artAlt: 'Ein gemalter Morgen: eine Schirmkiefer auf einem grasbewachsenen Hügel unter salbeigrünem Himmel, die Sonne steht tief rechts',
+    name: ['Braven', 'Chiam'],
+    scroll: 'Weiter',
+    annivTitle: 'Chiambucket wird zwei',
+    annivLine: 'Endlich archiviert! Alle Versionen von 2024 bis 2026',
+    annivGo: 'Alle Versionen',
+  },
+
+  hello: {
+    said: 'Ich studiere im dritten Jahr Elektronik und Technische Informatik an der Nanyang Polytechnic. Angefangen hat alles mit einem kaputten Radio, das ich auseinandergenommen habe, um zu sehen, wie es funktioniert, und heute entwerfe ich Platinen, schreibe Firmware, baue Web-Apps und betreibe das Homelab, auf dem sie laufen.',
+    layersTitle: 'Vom Chip bis in die Cloud',
+    layers: [
+      { name: 'Firmware', line: 'Ich schreibe C und C++ für ESP32-, Arduino- und M5Stack-Boards, oder MicroPython, wenn es passt.' },
+      { name: 'Hardware', line: 'Ich zeichne Schaltpläne und Platinen in KiCad und löte sie zu Hause, SMD-Bauteile inklusive.' },
+      { name: 'Software', line: 'Ich baue Web-Apps mit Next.js und TypeScript und betreibe kleine Python-Server in Docker.' },
+      { name: 'Infrastruktur', line: 'Meine Projekte laufen auf meinem eigenen Homelab, aufgebaut mit Unraid, Proxmox und Docker.' },
+      { name: 'Design', line: 'Ich modelliere Gehäuse in Onshape, rendere in Blender, gestalte Oberflächen in Figma und schneide Filme in DaVinci Resolve.' },
+    ],
+    complete: 'Fertig',
+  },
+
+  flagships: {
+    'proj-waterslop': {
+      badge: 'Vorzeigeprojekt',
+      sub: 'Eine akkubetriebene Kamera, die einen Wasserzähler abliest, komplett auf dem Chip.',
+      beats: [
+        { title: 'Platine in KiCad entworfen, gefertigt von JLCPCB', text: 'Die vierlagige Platine ist um einen ESP32-S3 und eine OV2640-Kamera herum gebaut und bringt LoRa, Akkuladung und LED-Beleuchtung mit.' },
+        { title: 'Ein Gehäuse ohne Schrauben', text: 'Ich habe es in Onshape modelliert. Es rastet mit seitlichen Clips zu und hält die Platine ohne Werkzeug auf Stiften.' },
+        { title: 'DrumNET NN, läuft auf dem Gerät', text: 'Ein Netz mit 693K Parametern findet die Zählrollen, liest jede Ziffer dreimal und stimmt darüber ab, alles auf dem ESP32-S3 in etwa zwei Sekunden.' },
+      ],
+      kind: 'Eigenes Projekt',
+      lead: 'Diesen Wasserzählerleser habe ich komplett selbst gebaut, von der Platine und einem Gehäuse ohne Schrauben bis zu DrumNet, einem neuronalen Netz, das die Zählrollen direkt auf dem Chip liest, sodass nur die Zahl über LoRaWAN rausgeht.',
+      stats: [{ v: '693K', l: 'Parameter' }, { v: '~2 s', l: 'pro Messung' }, { v: '4 Lagen', l: 'eigenes PCB' }, { v: 'LoRaWAN', l: 'sparsamer Funk' }],
+      posterAlt: 'Das OCR-Reader-Poster: DrumNet, eine komplett vertikal integrierte OCR-Lösung für Wasserzähler, und die Platine',
+      extra: 'Bericht öffnen',
+    },
+    'proj-june': {
+      badge: 'Hardware-Highlight',
+      sub: 'Ein 5G-Rover, den ich überall fahren kann, wo es Empfang gibt.',
+      beats: [
+        { title: 'Drei Live-Bilder von drei Handys', text: 'Handy 1 ist der Haupt-Hotspot für 5G und die Frontkamera, Handy 2 der zweite Hotspot und die linke Kamera, und Handy 3 die rechte Kamera. Jedes streamt sein Bild per WebRTC an meine Konsole.' },
+        { title: 'Telemetrie von der Nachtfahrt', text: 'Der ESP32-S3 verbindet sich mit dem Hotspot des Handys und schickt GPS, Temperatur, Luftfeuchtigkeit und Helligkeit per MQTT zurück, etwa zehnmal pro Sekunde.' },
+        { title: 'Vom Controller auf die Straße', text: 'Ich fahre ihn mit einem Xbox-Controller über meine Web-Konsole. Die Befehle laufen per MQTT über meinen Server, und das Video kommt über meinen TURN-Server zurück, mit etwa einer Sekunde Verzögerung aus über 8 km Entfernung.' },
+      ],
+      kind: 'Eigenes Projekt',
+      lead: 'Ein 5G-Rover, dessen drei Handys sein Bild auf mein Dashboard streamen, während seine Sensoren melden, was um ihn herum los ist. Vom ersten Konzept bis zur ersten Fahrt hat es drei Wochen gedauert.',
+      stats: [{ v: '3', l: 'Live-Videostreams' }, { v: '5G', l: 'Mobilfunk' }, { v: '8+', l: 'Sensoren an Bord' }, { v: '3 Wochen', l: 'bis zur Fahrt' }],
+      posterAlt: 'Project June: der Rover wirbelt Erde auf, daneben seine Fahrkonsole und ein Xbox-Controller',
+      extra: 'Video ansehen',
+    },
+    'proj-pip': {
+      badge: 'Software-Highlight',
+      sub: 'Ein Schreibtisch-Haustier mit einem KI-Agenten als Gehirn, gebaut in meinem Praktikum bei M5Stack.',
+      beats: [
+        { title: 'Es zeigt dir Dinge', text: 'Bitte Pip, dir etwas zu zeigen, und es macht einen Screenshot der Seite, findet die Stelle im Bild und zeichnet einen Kreis, einen Pfeil und eine Notiz darüber.' },
+        { title: 'Es baut eigene Apps', text: 'Pip schreibt Apps, wenn ich darum bitte, und legt sie in einer Schublade ab, entweder Lua-Skripte, die auf dem Tablet laufen, oder Web-Apps, die es von meinem Server ausliefert.' },
+        { title: 'Ein Desktop pro Chat', text: 'Ziehst du die Pille oben herunter, öffnet sich die Spotlight-Leiste, und jede Unterhaltung hat ihren eigenen Desktop mit eigenem Pip und eigener Farbe.' },
+      ],
+      kind: 'Praktikumsprojekt, M5Stack',
+      lead: 'Ein Schreibtisch-Haustier auf einem M5Stack Tab5, dessen Gehirn der DeepSeek Harness auf meinem Server ist. So kann es einen Browser steuern, eigene Apps bauen und meine anderen Agenten im Blick behalten.',
+      stats: [{ v: '106 s', l: 'für eine Timer-App' }, { v: 'Lua', l: 'native Applets' }, { v: 'Docker', l: 'Web-Applets' }, { v: '1 Desktop', l: 'pro Chat' }],
+      posterAlt: 'Pip, ein cyanfarbenes Schreibtisch-Haustier mit einer Glühbirne, auf dem M5Stack Tab5',
+    },
+    'proj-lidar': {
+      badge: 'Projekt im Fokus',
+      sub: 'Ein improvisiertes LiDAR auf dem kleinen Roboter von M5Stack, gebaut in meinem Praktikum.',
+      beats: [
+        { title: 'Es tastet den Raum ab', text: 'Stack-chan dreht seinen Kopf in kleinen Schritten durch den Raum und misst bei jedem Schritt einen Abstand. Das hier ist der echte Scan, der sich füllt, während der Kopf schwenkt.' },
+        { title: 'Quick, Normal oder Fine', text: 'Vor einem Scan wähle ich Quick, Normal oder Fine. Quick ist in unter einer Minute fertig, und Fine dauert länger, erfasst aber viel mehr Details.' },
+        { title: 'Gefärbt von der eigenen Kamera', text: 'Fotos von der Kamera des CoreS3 färben die Messwerte ein, und daraus werden 68.206 farbige Punkte, die jeder Browser im WLAN in 3D anzeigen kann.' },
+      ],
+      kind: 'Praktikumsprojekt, M5Stack',
+      lead: 'Ein improvisiertes LiDAR: vier Abstandssensoren auf Stack-chans Kopf, die seine zwei Servos durch den Raum schwenken, während seine Kamera die Punkte einfärbt und ein Browser den Scan in 3D zeigt.',
+      stats: [{ v: '68.206', l: 'Punkte pro Scan' }, { v: '256°', l: 'max. Schwenk' }, { v: '4', l: 'ToF-Sensoren' }, { v: '54 s', l: 'pro Quick-Scan' }],
+      posterAlt: 'Stack-chan mit vier Unit-ToF4M-Abstandssensoren auf dem Kopf',
+    },
+    'proj-beadreader': {
+      badge: 'Highlight-Projekt',
+      sub: 'Eine private Lese-App für ein paar Freunde.',
+      beats: [
+        { title: 'Merkt sich deine Seite', text: 'Die Liste „Who’s reading“ zeigt, wie weit jeder gekommen ist, und wenn du auf deine eigene Zeile tippst, öffnet sich dasselbe Kapitel an der Zeile, bei der du aufgehört hast.' },
+        { title: 'Gemeinsam lesen', text: 'Freunde im selben Buch zeigen einen grünen Ring und ihr Kapitel. Mit einem Tipp schickst du ihnen ein Winken oder eine kurze Notiz, die nach ein paar Sekunden von ihrem Bildschirm verschwindet und nie gespeichert wird.' },
+      ],
+      kind: 'Eigenes Projekt',
+      lead: 'Eine Lese-App, in der ich Bücher in Markdown oder als Webtoons veröffentliche, meine Freunde sich mit einem einzigen Zugangscode anmelden und alle im selben Buch einander live lesen sehen.',
+      stats: [{ v: 'Live', l: 'gemeinsam lesen' }, { v: 'SQL', l: 'Inhaltssperre' }, { v: 'Offline', l: 'auch ohne Netz' }, { v: '1 Klick', l: 'selbst deployen' }],
+      posterAlt: 'BeadReader auf drei Handys: der Anmeldebildschirm, ein Kapitel und die Bibliothek',
+      extra: 'GitHub',
+    },
+  },
+  card: {
+    label: '{name}, {badge}',
+    tools: 'Tools',
+    read: 'Artikel lesen',
+    peek: 'Kurz ansehen',
+  },
+  peek: {
+    label: 'Projektübersicht',
+    close: 'Übersicht schließen',
+  },
+
+  june: {
+    feeds: {
+      left: { label: 'Links', phone: 'Handy 2' },
+      center: { label: 'Vorne', phone: 'Handy 1' },
+      right: { label: 'Rechts', phone: 'Handy 3' },
+    },
+    live: 'Live',
+    tele: ['Breite', 'Länge', 'Satelliten', 'Temperatur', 'Feuchte', 'Tempo'],
+    place: 'Ort',
+    placeName: 'Sembawang Park',
+    link: [
+      { label: 'Xbox-Controller', sub: 'Bluetooth zur Konsole' },
+      { label: 'Mein Server', sub: 'MQTT, Signaling, TURN' },
+      { label: 'Drei Handys', sub: '5G-Hotspot und Kameras' },
+      { label: 'ESP32-S3', sub: 'Motoren und Sensoren' },
+    ],
+  },
+  pip: {
+    shots: [
+      'Pip kreist auf dem Tab5 die Mitochondrien in einem Zelldiagramm ein',
+      'Die App-Schublade auf dem Tab5 mit der App NCIR Thermometer',
+      'Die Spotlight-Leiste auf dem Tab5 beim Wechsel zwischen Desktops',
+    ],
+  },
+  lidar: {
+    cloudAlt: 'Der fertige Scan in den Farben der Kamera: Wände und Decke einer Zimmerecke',
+  },
+  bead: {
+    mara: 'Mara',
+    jae: 'Jae',
+    sam: 'Sam',
+    here: 'Hier warst du',
+    readingNow: 'liest gerade',
+    pct: '{n} %',
+    rowSub: 'Kapitel {ch} von {of} · {time} gelesen',
+    readTime: '{h} h {m} min',
+    maraPhone: 'Maras Handy',
+    maraScreen: 'Maras Bildschirm',
+    waved: 'Braven hat dir gewinkt',
+    noteFrom: 'Braven',
+    note: 'starke Wendung!',
+    onlineNow: 'Jetzt online',
+    readingHere: 'Liest hier · Kap. {ch}',
+    elsewhere: '{book} · Kap. {ch}',
+    otherBook: 'Der Hobbit',
+    browsing: 'Stöbert',
+  },
+
+  gallery: {
+    title: 'Alle Projekte',
+    sub: 'Alles, was ich gebaut habe, in der Schule, für mich selbst und im Praktikum.',
+    filters: 'Projekte zeigen',
+    all: 'Alle',
+    types: { personal: 'Eigene', school: 'Schule', internship: 'Praktikum' },
+    atM5: 'bei M5Stack',
+    flagship: 'Flaggschiff',
+    highlight: 'Highlight',
+    peek: '{title} kurz ansehen',
+    read: 'Lesen',
+    soon: 'Artikel folgt bald',
+  },
+  projects: {
+    'proj-waterslop': { title: 'OCR Reader', blurb: 'Eine akkubetriebene Kamera, die einen Wasserzähler abliest: Ein neuronales Netz auf einem ESP32-S3 liest die Zählrollen, und nur die Zahl geht über LoRaWAN raus.' },
+    'proj-june': { title: 'Project June', blurb: 'Ein 5G-Rover, dessen drei Handys sein Bild an meine Konsole streamen. Ich fahre ihn mit einem Xbox-Controller von überall, wo es Empfang gibt.' },
+    'proj-pip': { title: 'Pip', blurb: 'Ein Schreibtisch-Haustier auf einem M5Stack Tab5 mit einem KI-Agenten-Harness als Gehirn, sodass es einen Browser steuern und eigene Apps bauen kann.' },
+    'proj-lidar': { title: 'Stack-chan LiDAR', blurb: 'Vier Abstandssensoren auf Stack-chans Kopf, die seine Servos durch den Raum schwenken und seine Kamera zu einem 3D-Scan einfärbt.' },
+    'proj-beadreader': { title: 'BeadReader', blurb: 'Eine private Lese-App für ein paar Freunde, die sich mit einem einzigen Zugangscode anmelden und einander live lesen sehen.' },
+    'proj-pantry': { title: 'Haltbarkeits-Tracker', blurb: 'Ein Tracker fürs Ablaufdatum an der Kühlschranktür: Du scannst einen Barcode, wählst, wann es abläuft, und der Bildschirm zeigt, was du zuerst essen solltest.' },
+    'proj-ruler': { title: 'Scroll-Lineal', blurb: 'Ein digitales Lineal aus einem AtomS3R und einer Unit Scroll, das alles misst, woran du sein Rad entlangrollst.' },
+    'proj-cadmouse': { title: '3D-CAD-Maus', blurb: 'Eine M5Stack Capsule als kabellose 3D-Maus für Onshape, sodass sich das Modell dreht, wenn du sie in der Hand drehst.' },
+    'proj-lora': { title: 'LoRA Messenger', blurb: 'Zwei ESP32-Handgeräte, die Text über LoRa und holprige Zwei-Wege-Sprache über ESP-NOW schicken, auf meiner ersten Platine.' },
+    'proj-lumen': { title: 'LUMEN', blurb: 'Ein sprachgesteuerter Raum auf einem ESP32, in dem Whisper und DeepSeek Sprache in einen JSON-Befehl verwandeln, der über MQTT rausgeht.' },
+    'proj-ema': { title: 'EMA Smart Home', blurb: 'Ein Smart Home im Team, mit A bewertet, bei dem vier BeagleBone-Black-Knoten an einen SocketIO-Server mit Live-3D-Dashboard melden.' },
+    'proj-pandus': { title: 'Pandus-Dispenser', blurb: 'Mein erstes Schulprojekt war ein sechsteiliger, 3D-gedruckter Sirupspender, gesteuert von einem Arduino Uno.' },
+    'proj-elecf': { title: 'ELEC-F-Konzept', blurb: 'Ein Alarm für begehbare Tiefkühlräume auf M5Stack, der herunterzählt, wenn jemand darin eingeschlossen ist.' },
+    'proj-kauli': { title: 'Kauli-Konzept', blurb: 'Ein Produktkonzept, das ich für ein Modul zu Kommunikationsfähigkeiten gepitcht habe, gerendert in Blender.' },
+    'proj-sol': { title: 'Series One Light', blurb: 'Ein ultraleichtes Gehäuse für eine Gaming-Maus auf Basis der ZeroMouse, das ich auf etwa 20 g bringen will.' },
+    'proj-copyboard': { title: 'Copy Board', blurb: 'Ein Nachbau des Dev-Boards meiner Schule in KiCad, weil ich das Original nicht mit nach Hause nehmen konnte.' },
+    'proj-mc': { title: 'Minecraft-Livekarte', blurb: 'Ein Paper-Server in Docker auf meinem Homelab, mit einer Live-Dynmap der Welt.' },
+    'proj-webdev': { title: 'Webentwicklung', blurb: 'Meine erste funktionierende Website, in HTML und CSS, für meinen Kurs in Webentwicklung.' },
+  },
+
+  bench: {
+    title: 'In Arbeit',
+    sub: 'Woran ich seit dem letzten Artikel baue.',
+    items: {
+      shebang: {
+        name: 'Shebang',
+        status: 'Meine Hosting-Plattform',
+        what: 'Damit habe ich ein Konto für Anmeldung, statische Seiten, Datei-Hosting, Kurzlinks und eine Postgres-Datenbank pro Projekt, erreichbar über eine REST-API oder einen MCP-Server, sodass meine Coding-Agenten für mich veröffentlichen können. Der MCP-Client ist Open Source und auf npm.',
+        stack: ['Next.js 16', 'Supabase, selbst gehostet', 'Postgres', 'MCP', 'Docker'],
+        link: 'shebang-mcp auf GitHub',
+      },
+      pip: {
+        name: 'Pip',
+        status: 'In Arbeit',
+        what: 'Ein Schreibtisch-Begleiter auf einem M5Stack Tab5, der mit einem KI-Agenten bei mir zu Hause spricht. Er wechselt zwischen mehreren Desktops, führt kleine Applets aus, die er auf Wunsch baut, und nutzt seine Kamera.',
+        stack: ['ESP32-P4', 'M5Stack Tab5', 'PlatformIO', 'Lua', 'Python'],
+      },
+      ncir: {
+        name: 'NCIR-Thermometer-Demos',
+        status: 'Firmware',
+        what: 'Sie zeigen die Infrarot-Temperatur live auf M5Stack-Bildschirmen, für die Sensoren NCIR und NCIR 2. Die NCIR-2-Firmware spricht direkt mit der I2C-Registertabelle des Sensors, ganz ohne Herstellerbibliothek, und eine Codebasis läuft auf dem CoreS3 und dem klassischen Basic.',
+        stack: ['M5Stack CoreS3', 'C++', 'I2C', 'PlatformIO'],
+      },
+      flashdeck: {
+        name: 'Flashdeck',
+        status: 'Werkzeug',
+        what: 'Ein Regal für meine Firmware mit einem Flasher im Browser: Wenn ich einen ESP32 anstecke, wählt ESP Web Tools das Image, das für diesen Chip gebaut ist. Der Server ist schlichtes Python ohne Abhängigkeiten.',
+        stack: ['Python', 'Web Serial', 'ESP Web Tools'],
+      },
+    },
+  },
+
+  skills: {
+    title: 'Fähigkeiten',
+    open: '{word}: {line}. Details öffnen',
+    tiles: {
+      hw: {
+        word: 'Hardware', line: 'Platinen entwerfen und löten', title: 'Platinen',
+        blurb: 'Ich zeichne den Schaltplan und lege die Platine in KiCad an, dann löte ich die Bauteile selbst, SMD-Teile per Reflow zu Hause inklusive.',
+        points: ['Die vierlagige Platine des OCR Reader, gefertigt von JLCPCB', 'Die Platine des LoRA Messenger, meine allererste', 'Ein Nachbau des ATmega328-Dev-Boards meiner Schule, von Grund auf'],
+        chips: ['KiCad', 'EAGLE', 'SMD-Reflow', 'Schaltpläne'],
+        links: ['OCR Reader', 'LoRA Messenger'],
+      },
+      fw: {
+        word: 'Firmware', line: 'C, C++ und MicroPython', title: 'Meine Mikrocontroller',
+        blurb: 'Die meisten meiner Projekte laufen auf einem Mikrocontroller, und die Firmware schreibe ich in C und C++ mit PlatformIO, oder in MicroPython, wenn es passt.',
+        points: ['ESP32, meine erste Wahl für alles mit Funk', 'M5Stack-Boards, wenn ich schnell einen Bildschirm und Tasten brauche', 'Arduino Uno und der ATmega328 für einfachere Projekte', 'BeagleBone Black als Linux-Gehirn für ein größeres System'],
+        chips: ['ESP32', 'M5Stack', 'Arduino', 'BeagleBone', 'PlatformIO', 'C / C++', 'MicroPython'],
+        links: ['Project June', 'LUMEN'],
+      },
+      sw: {
+        word: 'Software', line: 'Web-Apps und kleine Server', title: 'Web-Apps und Server',
+        blurb: 'Ich baue Web-Apps mit Next.js und TypeScript und schreibe kleine Python-Server, die in Docker laufen.',
+        points: ['BeadReader, mit Next.js, Supabase Postgres und Cloudflare R2', 'LUMEN, ein FastAPI-Server, der Sprache in Raumbefehle verwandelt', 'Shebang, meine eigene Hosting-Plattform', 'Diese Website, mit Next.js auf Vercel'],
+        chips: ['Next.js', 'TypeScript', 'Supabase', 'Postgres', 'Python', 'FastAPI', 'Docker'],
+        links: ['BeadReader', 'LUMEN'],
+      },
+      cad: {
+        word: '3D und CAD', line: 'Gehäuse, die auf Anhieb passen', title: 'Gehäuse, die passen',
+        blurb: 'Ich modelliere Gehäuse und Teile in Onshape, rendere in Blender und drucke in 3D, bis die Passform stimmt.',
+        points: ['Das werkzeuglose Gehäuse des OCR Reader', 'Das Handgehäuse des LoRA Messenger', 'Der sechsteilige Korpus des Pandus-Dispensers, der beim ersten Druck passte'],
+        chips: ['Onshape', 'Blender', '3D-Druck'],
+      },
+      infra: {
+        word: 'Infrastruktur', line: 'Drei Server zu Hause', title: 'Ein eigenes Homelab',
+        blurb: 'Ich betreibe ein selbst gehostetes Homelab mit Unraid, Proxmox und Docker, hinter Nginx und einem segmentierten UniFi-Netzwerk.',
+        points: ['Selbst gehostete Dienste hinter Nginx Proxy Manager und CrowdSec', 'Ein Mesh aus WireGuard und Tailscale, um von überall nach Hause zu kommen', 'coturn- und MQTT-Server, auf die meine Hardwareprojekte angewiesen sind'],
+        chips: ['Unraid', 'Proxmox', 'Docker', 'Nginx', 'Tailscale', 'WireGuard', 'UniFi'],
+        link: 'HomeLab entdecken',
+      },
+      radio: {
+        word: 'Funk', line: 'LoRa, ESP-NOW, MQTT und 5G', title: 'Funk und Live-Links',
+        blurb: 'Ich nutze LoRa für Reichweite, ESP-NOW für schnelle lokale Verbindungen, MQTT für Telemetrie und WebRTC für Live-Video über Mobilfunk.',
+        points: ['Drei Live-Kamerastreams per WebRTC über 5G bei Project June', 'Text über große Distanz per LoRa und Zwei-Wege-Sprache per ESP-NOW', 'LoRaWAN-Uplinks vom OCR Reader'],
+        chips: ['LoRa', 'LoRaWAN', 'ESP-NOW', 'MQTT', 'WebRTC', '5G'],
+      },
+      video: {
+        word: 'Video', line: 'Ein Film pro Projekt', title: 'Ein Film pro Projekt',
+        blurb: 'Zu meinen Projekten schneide ich in DaVinci Resolve einen kurzen Film und mache das Color Grading.',
+        chips: ['DaVinci Resolve', 'Premiere Pro'],
+        links: ['Video zu Project June'],
+      },
+      ui: {
+        word: 'Design', line: 'Oberflächen und Poster', title: 'Oberflächen und Poster',
+        blurb: 'Ich gestalte Oberflächen in Figma und Spline und mache Poster in Photoshop.',
+        points: ['Die Bedienkonsole von Project June und das Dashboard des EMA Smart Home', 'Das Poster zum ELEC-F-Projekt'],
+        chips: ['Figma', 'Spline', 'Photoshop'],
+        links: ['EMA-Smart-Home-UI'],
+      },
+      photo: {
+        word: 'Fotografie', line: 'Meist auf Reisen', title: 'Fotos',
+        blurb: 'Beim Fotografieren lebe ich meine Kreativität noch mehr aus, und die meisten meiner Fotos stammen von Reisen durch Neuseeland, China und Europa.',
+        link: 'Alle Alben',
+      },
+    },
+  },
+
+  lab: {
+    tag: 'Infrastruktur',
+    title: 'HomeLab',
+    sub: 'Drei Server zu Hause, auf denen meine Projekte laufen.',
+    lead: 'Auf ihnen liegen meine Fotobibliothek und meine Dateien, und sie betreiben die MQTT- und TURN-Server, die Project June und LUMEN nutzen. Ihren Strom bezahlen Gutschriften für eingespeisten Solarstrom. Diese Website selbst läuft auf Vercel.',
+    facts: [{ v: '3', l: 'Server' }, { v: '24 TB', l: 'nutzbar' }, { v: '38', l: 'gehostete Apps' }],
+    cta: 'HomeLab entdecken',
+  },
+
+  photos: {
+    title: 'Fotografie',
+    sub: 'Fotos aus Neuseeland, China und Europa.',
+    alt: 'Ein Foto aus dem Album {album}',
+    albums: { nz: 'Neuseeland', china: 'China', europe: 'Europa', highlights: 'Highlights' },
+    more: 'Alle Alben',
+  },
+
+  contact: {
+    title: 'Sag hallo.',
+    email: 'Mail mir',
+    all: 'Alle Wege zu mir',
+  },
+};
+
+export default de;
