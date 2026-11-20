@@ -172,6 +172,10 @@ html.hs-home .footer { position: relative; z-index: 3; }
    paint and take taps; Safari skips a hidden pinned layer and shows the page under its bars. */
 .hs-stage, .hs-reader-stage, .hs-fl-stage, .hs-bench-pin { visibility: hidden; pointer-events: none; }
 :where(.hs-stage, .hs-reader-stage, .hs-fl-stage, .hs-bench-pin) > * { visibility: visible; pointer-events: auto; }
+/* Safari finds that pinned layer by what a tap at the screen's top edge lands on, so the full-bleed
+   pictures and canvases in the stages, which take no input, let taps through to the section below */
+.hs-art, .hs-reader-scene, .hs-fl-scene, .hs-under { pointer-events: none; }
+.hs-under-inner { pointer-events: auto; }
 .hs-under, .hs-art { position: absolute; inset: 0; }
 /* The painting's own sage until it has decoded, so the opening never shows
    black. It is on the picture, not the layer: when the painting breaks up,

@@ -117,6 +117,8 @@ Pages are recoloured by a single `data-theme` attribute on `<html>` so each rout
 - Pair a display face (oswald/gcreg) with a body face (dmsans/inter). Tight tracking on big headings, generous line-height on body.
 - Colors: pure black `#000`, off-white text `#e8e8e8`/`#d8d8d8`, accent blue `#0a7ec7`/`#006bb3`, indigo `#5e79db`, sky `#7fa8ff`. Glassmorphism via `var(--hp-glass)` + `backdrop-filter`.
 - Responsive: mobile nav is a hamburger; layouts collapse to single column. Always verify mobile (390px).
+- **iPhone Safari's bars (iOS 26).** Pages use `viewport-fit=cover` with no theme colour, so Safari shows the page through its status bar and toolbar. Safari instead paints a solid colour when a tap at the screen's top or bottom edge would land inside a `position: fixed`/`sticky` full-width layer. So pinned decorative layers (`.sl-scene`, `.sl-grass`, `.pnav-blob`, `.ls-bg`) and the pinned stages (`.hs-stage`, `.hs-reader-stage`, `.hs-fl-stage`, `.hs-bench-pin`, `.ls-sticky`, `.pp-sticky`) are `visibility: hidden` with visible children, and the full-bleed pictures/canvases inside the stages (`.hs-art`, `.hs-under`, `.hs-reader-scene`, `.hs-fl-scene`) are `pointer-events: none`. Keep new pinned layers the same way, and check with `document.elementFromPoint(innerWidth / 2, 3)`: no fixed or sticky ancestor. Fixed bars narrower than 80% of the width are ignored.
+- **Videos that only feed WebGL** (Pip's tablet screen) must be real, opaque elements on the page (160 × 90, laid under an opaque layer). Safari refuses to autoplay a muted video it counts as hidden. Chrome on iOS plays them anyway, so test in Safari.
 
 ## Assets (`public/`)
 

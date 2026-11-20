@@ -94,11 +94,10 @@ export function createPipStage(section: HTMLElement) {
     return { x: cx + (r.x - cx) / s, y: cy + (r.y - cy) / s, w: r.w / s, h: r.h / s };
   };
 
-  const refusals = new Map<HTMLVideoElement, string>();
   const started = new Set<HTMLVideoElement>();
   const play = (v: HTMLVideoElement | null | undefined, go: boolean) => {
     if (!v) return;
-    if (go) { if (v.paused) v.play().then(() => { refusals.delete(v); started.add(v); }, (e: Error) => refusals.set(v, e?.name || 'refused')); }
+    if (go) { if (v.paused) v.play().then(() => started.add(v), () => {}); }
     else if (!v.paused) v.pause();
   };
   /* If Safari still refuses (Low Power Mode does), the reader's first tap starts every video once,
@@ -106,28 +105,11 @@ export function createPipStage(section: HTMLElement) {
   const unlock = () => {
     for (const v of [layer, ...clips]) {
       if (!v || started.has(v)) continue;
-      v.play().then(() => { started.add(v); refusals.delete(v); apply(); }, (e: Error) => refusals.set(v, 'tap: ' + (e?.name || 'refused')));
+      v.play().then(() => { started.add(v); apply(); }, () => {});
     }
   };
   const GESTURES = ['touchend', 'click', 'keydown'] as const;
   for (const ev of GESTURES) document.addEventListener(ev, unlock, { capture: true, passive: true });
-
-  /* Temporary: ?pipdebug shows each video's state on the page, to see what an iPhone does with them. */
-  let debugTimer = 0;
-  if (new URLSearchParams(location.search).has('pipdebug')) {
-    const box = document.createElement('pre');
-    box.style.cssText = 'position:fixed;left:8%;top:22%;width:84%;z-index:99999;margin:0;padding:10px 12px;border-radius:12px;background:rgba(0,0,0,0.82);color:#9effa0;font:11px/1.45 ui-monospace,Menlo,monospace;white-space:pre-wrap;pointer-events:none';
-    document.body.appendChild(box);
-    // Safari in Low Power Mode caps animation at 30 frames a second, so the frame rate tells
-    let frames = 0, fps = 0, since = performance.now();
-    const tick = () => { frames++; const now = performance.now(); if (now - since >= 1000) { fps = Math.round((frames * 1000) / (now - since)); frames = 0; since = now; } if (alive) requestAnimationFrame(tick); };
-    requestAnimationFrame(tick);
-    debugTimer = window.setInterval(() => {
-      const name = (v: HTMLVideoElement) => v.src.split('/').pop();
-      const row = (v: HTMLVideoElement) => `${name(v)}  ${v.paused ? 'paused' : 'PLAYING'}  ready ${v.readyState}  net ${v.networkState}  t ${v.currentTime.toFixed(1)}${v.error ? '  error ' + v.error.code : ''}${refusals.has(v) ? '  refused: ' + refusals.get(v) : ''}`;
-      box.textContent = `on ${on}  scene ${!!scene}  progress ${p.toFixed(2)}  ${fps} fps\n` + [layer, ...clips].filter(Boolean).map((v) => row(v!)).join('\n');
-    }, 400);
-  }
 
   const apply = () => {
     if (!scene || !turned || !facing) return;
@@ -213,7 +195,6 @@ export function createPipStage(section: HTMLElement) {
     set(v: number) { p = v; if (!raf && scene) { apply(); scene.render(); } },
     destroy() {
       alive = false; io.disconnect(); vis.disconnect();
-      if (debugTimer) clearInterval(debugTimer);
       for (const ev of GESTURES) document.removeEventListener(ev, unlock, { capture: true });
       window.removeEventListener('resize', onResize);
       window.removeEventListener('pointermove', onMove);
