@@ -40,12 +40,21 @@ export function createPipStage(section: HTMLElement) {
   let clips: HTMLVideoElement[] = [];
   let turned: Rect | null = null, facing: Rect | null = null, card: Rect | null = null;
 
+  /* Safari on iPhone only decodes an autoplaying video that is in the page and on screen, so the
+     videos live in a 2 px, nearly transparent dock inside the pinned stage instead of off the page
+     (where the tablet's screen stayed on its home picture). */
+  const dock = document.createElement('div');
+  dock.setAttribute('aria-hidden', 'true');
+  dock.style.cssText = 'position:absolute;left:0;bottom:0;width:2px;height:2px;overflow:hidden;opacity:0.01;pointer-events:none;z-index:0';
+  stage.appendChild(dock);
   const video = (src: string) => {
     const v = document.createElement('video');
-    v.muted = true; v.loop = true; v.playsInline = true;
-    v.setAttribute('playsinline', '');
+    v.muted = true; v.defaultMuted = true; v.loop = true; v.playsInline = true;
+    v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
     v.preload = 'auto';
+    v.style.cssText = 'width:2px;height:2px';
     v.src = src;
+    dock.appendChild(v);
     return v;
   };
 
@@ -177,6 +186,7 @@ export function createPipStage(section: HTMLElement) {
       document.removeEventListener('visibilitychange', onVis);
       if (raf) cancelAnimationFrame(raf);
       for (const v of [layer, ...clips]) { if (!v) continue; v.pause(); v.removeAttribute('src'); v.load(); }
+      dock.remove();
       scene?.destroy(); scene = null;
     },
   };

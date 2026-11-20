@@ -13,8 +13,10 @@ import { THEME_MAP, DEFAULT_THEME } from '../lib/theme';
 import './sunlit.css';
 import './scenes.css';
 
+/* viewport-fit=cover lets every page draw under the phone's status bar and Safari's toolbars, so they
+   show the page through them instead of a solid band; fixed edges add the safe-area insets. */
 export const viewport: Viewport = {
-  themeColor: '#000000',
+  viewportFit: 'cover',
 };
 
 export const metadata: Metadata = {

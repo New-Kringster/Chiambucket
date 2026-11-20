@@ -134,6 +134,144 @@ html.lr-end .ls-dots { opacity: 0; pointer-events: none; }
 /* the fallback when the browser has no element full screen: the view fixed over the whole window */
 html.pg-lock, html.pg-lock body { overflow: hidden; }
 html.pg-lock main.ls { z-index: 2147483000; }   /* main is the stacking context the view lives in */
+/* ───────────── Stack-chan LiDAR (/stackchan-lidar) ─────────────
+   A scroll story, scoped to .ls. One fixed 3D scene sits behind the whole
+   page (.ls-bg, LidarStory.tsx); the pinned chapters (.ls-pin, each a tall
+   section with a sticky child) drive it, and the rest (.ls-flow) scrolls over
+   the finished room. The palette is infrared: a warm black, bone text, amber
+   and a laser orange, the same ramp the depth view uses. Figtree throughout,
+   like the homepage story. */
+html.lr-route body { background: #0e0a09; }
+html.lr-route:not(.lr-end) .sl-scene { visibility: hidden; }
+html.sensory-active main.ls { background: transparent; }
+
+.ls {
+  --ink: #0e0a09; --bone: #f4ece2; --mute: rgba(244, 236, 226, 0.68); --dim: rgba(244, 236, 226, 0.46);
+  --amber: #ffb15c; --laser: #ff6a3d; --plum: #6b1f3a;
+  --glass: rgba(24, 15, 12, 0.74); --line: rgba(255, 177, 92, 0.2);
+  --gut: clamp(16px, 5vw, 88px); --wrap: min(100% - 2 * var(--gut), 1240px);
+  --ease: cubic-bezier(0.2, 0.9, 0.25, 1);
+  position: relative; z-index: 2; color: var(--bone); overflow-x: clip;
+  font-family: var(--ls-sans), system-ui, sans-serif;
+}
+.ls > :not(.arec-section), .ls > :not(.arec-section) * { font-family: inherit; }
+.ls a { color: inherit; }
+
+/* the backdrop: the 3D scene, fixed behind everything until the recommendations */
+.ls-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(70% 60% at 62% 42%, rgba(255, 106, 61, 0.1), rgba(255, 106, 61, 0) 70%), var(--ink);
+  transition: opacity 0.8s ease; }
+html.lr-end .ls-bg { opacity: 0; }
+.ls-gl { position: absolute; inset: 0; }
+.ls-gl canvas { display: block; width: 100% !important; height: 100% !important; opacity: 0; transition: opacity 1.2s ease; }
+html.lr-ready .ls-gl canvas { opacity: 1; }
+
+/* chapter dots, right edge */
+.ls-dots { position: fixed; z-index: 5; right: clamp(10px, 1.6vw, 24px); top: 50%; transform: translateY(-50%); display: grid; gap: 12px; transition: opacity 0.4s ease; }
+html.lr-end .ls-dots { opacity: 0; pointer-events: none; }
+.ls-dots a { display: flex; align-items: center; justify-content: flex-end; gap: 10px; text-decoration: none; color: var(--mute); font-size: 0.8rem; font-weight: 600; }
+.ls-dots i { width: 7px; height: 7px; border-radius: 50%; background: rgba(244, 236, 226, 0.3); transition: transform 0.3s var(--ease), background-color 0.3s ease; order: 2; }
+.ls-dots span { opacity: 0; transform: translateX(6px); transition: opacity 0.25s ease, transform 0.3s var(--ease); white-space: nowrap; }
+.ls-dots a:hover span, .ls-dots a:focus-visible span, .ls-dots a.is-on span { opacity: 1; transform: none; }
+.ls-dots a.is-on i { background: var(--amber); transform: scale(1.5); }
+.ls-dots a:hover i { background: var(--bone); }
+.ls-dots a:focus-visible { outline: 2px solid var(--amber); outline-offset: 4px; border-radius: 6px; }
+.ls-dots a:active i { transform: scale(1.2); }
+
+/* ── pinned chapters ── */
+.ls-pin { --t: 0; position: relative; }
+.ls-pin.is-meet { height: 260svh; }
+.ls-pin.is-sweep { height: 420svh; }
+.ls-pin.is-sensors { height: 300svh; }
+.ls-pin.is-colour { height: 320svh; }
+.ls-sticky { position: sticky; top: 0; height: 100svh; overflow: hidden; }
+.ls-still { display: none; }
+
+/* the title, beside the robot; it leaves as the camera swings round */
+.ls-intro { position: absolute; left: var(--gut); bottom: clamp(2.4rem, 9vh, 5.5rem); width: min(600px, 46vw);
+  opacity: calc(1 - min(1, max(0, (var(--t) - 0.18) * 4))); transform: translate3d(0, calc(min(1, max(0, (var(--t) - 0.18) * 4)) * -2rem), 0); }
+.ls-back { display: inline-flex; align-items: center; gap: 0.5em; font-size: 0.9rem; font-weight: 600; color: var(--mute) !important; text-decoration: none; margin-bottom: 1.2rem; transition: color 0.2s ease, gap 0.25s var(--ease); }
+.ls-back::before { content: '\2190'; color: var(--amber); }
+.ls-back:hover { color: var(--bone) !important; gap: 0.75em; }
+.ls-back:focus-visible { outline: 2px solid var(--amber); outline-offset: 4px; border-radius: 4px; }
+.ls-tags { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px; margin-bottom: 1rem; }
+.ls-tags .ai-mark { --ai-h: 64px; }
+/* the two pills share one size; Featured only changes colour */
+.ls-tags .hp-md-tag { display: inline-flex; align-items: center; box-sizing: border-box; height: 1.7rem; padding-top: 0; padding-bottom: 0; }
+.ls-feat { color: #ffd9b0; border: 1px solid rgba(255, 177, 92, 0.42); background: rgba(255, 177, 92, 0.12); }
+.ls-title { margin: 0; font-weight: 800; font-size: clamp(3rem, 7.4vw, 7.2rem); line-height: 0.92; letter-spacing: -0.045em; color: var(--bone); text-wrap: balance; }
+.ls-lead { margin: 1.2rem 0 0; font-size: clamp(1.05rem, 1.35vw, 1.22rem); line-height: 1.6; color: var(--mute); max-width: 34em; }
+.ls-toolrow { display: flex; align-items: center; gap: 14px; margin-top: 1.3rem; font-size: 0.86rem; font-weight: 600; color: var(--dim); }
+.ls-intro .art-links { margin-top: 1.2rem; }
+.ls-meta { margin: 1rem 0 0; font-size: 0.8rem; line-height: 1.5; color: var(--dim); }
+.ls-cue { position: absolute; right: calc(var(--gut) + 30px); bottom: clamp(2.4rem, 9vh, 5.5rem); display: flex; align-items: center; gap: 12px; font-size: 0.86rem; font-weight: 600; color: var(--mute); opacity: calc(1 - min(1, var(--t) * 8)); }
+.ls-cue i { position: relative; width: 1px; height: 46px; background: rgba(255, 177, 92, 0.25); overflow: hidden; }
+.ls-cue i::after { content: ''; position: absolute; left: 0; top: -40%; width: 1px; height: 40%; background: var(--amber); animation: ls-cue 1.8s cubic-bezier(0.6, 0, 0.3, 1) infinite; }
+@keyframes ls-cue { to { top: 100%; } }
+
+/* captions: glass cards at the left (at the foot on phones), each shown while --t is between --a and --b */
+.ls-cap {
+  --v: clamp(0, min((var(--t) - var(--a)) * 14, (var(--b) - var(--t)) * 14), 1);
+  position: absolute; left: var(--gut); top: 50%; width: min(460px, 38vw);
+  padding: 1.5rem 1.6rem 1.6rem; border-radius: 22px;
+  background: var(--glass); border: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1); backdrop-filter: blur(16px) saturate(1.1);
+  box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.9), 0 2px 0 rgba(255, 255, 255, 0.03) inset;
+  opacity: var(--v); transform: translate3d(0, calc(-50% + (1 - var(--v)) * 1.6rem), 0);
+}
+.ls-num { display: block; font-size: 0.86rem; font-weight: 800; color: var(--amber); font-variant-numeric: tabular-nums; margin-bottom: 0.8rem; }
+.ls-cap h2 { margin: 0 0 0.7rem; font-size: clamp(1.7rem, 2.6vw, 2.5rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; text-wrap: balance; }
+.ls-cap p { margin: 0; font-size: 1rem; line-height: 1.62; color: var(--mute); }
+
+/* ── the flowing part: a warm wash over the turning room keeps the text legible ── */
+.ls-flow { position: relative; padding: clamp(5rem, 14vh, 9rem) 0 clamp(4rem, 10vh, 7rem);
+  background: linear-gradient(to bottom, rgba(14, 10, 9, 0) 0, rgba(14, 10, 9, 0.84) 26svh, rgba(14, 10, 9, 0.84) calc(100% - 30svh), rgba(14, 10, 9, 0.96) 100%); }
+.ls-block { width: var(--wrap); max-width: 760px; margin: 0 auto clamp(4.5rem, 12vh, 8rem); margin-left: max(var(--gut), calc((100% - 1240px) / 2)); }
+.ls-block.is-wide { max-width: 1100px; }
+.ls-block h2 { margin: 0 0 1rem; font-size: clamp(2.2rem, 4.6vw, 3.8rem); font-weight: 800; line-height: 1; letter-spacing: -0.04em; }
+.ls-block h3 { margin: 2.4rem 0 0.6rem; font-size: clamp(1.25rem, 1.7vw, 1.5rem); font-weight: 800; letter-spacing: -0.02em; color: var(--bone); }
+.ls-block p, .ls-block li { font-size: 1.04rem; line-height: 1.7; color: var(--mute); }
+.ls-block p { margin: 0 0 1rem; max-width: 40em; }
+.ls-block b { color: var(--bone); font-weight: 700; }
+.ls-block a { text-decoration-color: rgba(255, 177, 92, 0.6); text-underline-offset: 3px; color: var(--bone); transition: text-decoration-color 0.2s ease; }
+.ls-block a:hover { text-decoration-color: var(--amber); }
+.ls-hw { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 240px); gap: clamp(1.5rem, 4vw, 3rem); align-items: start; margin-bottom: 2rem; }
+.ls-parts { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.8rem; }
+.ls-parts li::marker { color: var(--amber); }
+.ls-photo { margin: 0; }
+.ls-photo img { width: 100%; height: auto; display: block; filter: drop-shadow(0 24px 30px rgba(0, 0, 0, 0.6)); }
+.ls-photo figcaption { margin-top: 0.4rem; font-size: 0.84rem; color: var(--dim); text-align: center; }
+.ls-steps { margin: 0 0 1.4rem; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 1rem; }
+.ls-steps li { counter-increment: s; position: relative; padding-left: 3rem; }
+.ls-steps li::before { content: counter(s); position: absolute; left: 0; top: 0.1rem; width: 2rem; height: 2rem; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 0.92rem; color: var(--ink); background: var(--amber); }
+.ls-note { font-size: 0.92rem !important; color: var(--dim) !important; }
+
+/* ── the demo film ── */
+.lv { margin-top: 1.4rem; }
+.lv-video { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 18px; background: #000; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 30px 60px -34px rgba(0, 0, 0, 0.9); }
+.lv-moments { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 14px 0 0; padding: 0; list-style: none; }
+.lv-moments button { display: grid; gap: 4px; width: 100%; height: 100%; text-align: left; padding: 8px 8px 12px; border-radius: 14px; cursor: pointer; color: inherit; font: inherit;
+  background: rgba(255, 255, 255, 0.035); border: 1px solid rgba(255, 255, 255, 0.1); transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.25s var(--ease); }
+.lv-moments img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 9px; margin-bottom: 6px; background: #000; }
+.lv-time { font-size: 0.82rem; font-weight: 800; color: var(--amber); font-variant-numeric: tabular-nums; padding: 0 2px; }
+.lv-moments b { font-size: 1.02rem; font-weight: 800; color: var(--bone); padding: 0 2px; }
+.lv-note { font-size: 0.86rem; line-height: 1.45; color: var(--dim); padding: 0 2px; }
+.lv-moments button:hover { background: rgba(255, 255, 255, 0.07); border-color: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
+.lv-moments button:active { transform: translateY(0) scale(0.99); }
+.lv-moments button:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.lv-moments button.is-on { border-color: rgba(255, 177, 92, 0.55); background: rgba(255, 177, 92, 0.08); }
+
+/* ── the .ply playground: the view with its few controls on it, and one line of file links under it ── */
+.pg { margin-top: 1.4rem; }
+.pg-view { position: relative; aspect-ratio: 16 / 9; border-radius: 20px; overflow: hidden; touch-action: none; cursor: grab;
+  background: radial-gradient(80% 70% at 50% 40%, #2a1611, #0b0706 75%); border: 1px solid var(--line); box-shadow: 0 30px 60px -34px rgba(0, 0, 0, 0.9); }
+.pg-view:active { cursor: grabbing; }
+.pg-view.is-full { aspect-ratio: auto; width: 100vw; height: 100vh; border-radius: 0; border: 0; }
+/* the fallback when the browser has no element full screen: the view fixed over the whole window */
+html.pg-lock, html.pg-lock body { overflow: hidden; }
+html.pg-lock main.ls { z-index: 2147483000; }   /* main is the stacking context the view lives in */
+html.pg-lock .pg-view.is-full .pg-bar { bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
+html.pg-lock .pg-view.is-full .pg-stat { top: calc(14px + env(safe-area-inset-top, 0px)); }
 html.pg-lock .pg-view.is-full { position: fixed; inset: 0; z-index: 2147483000; width: 100vw; height: 100dvh; }
 .pg.is-drag .pg-view { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(255, 177, 92, 0.3); }
 .pg-gl { position: absolute; inset: 0; }
@@ -182,12 +320,92 @@ html.pg-lock .pg-view.is-full { position: fixed; inset: 0; z-index: 2147483000; 
 
 /* ── phones ── */
 @media (max-width: 860px) {
-  .ls-intro { left: var(--gut); right: var(--gut); width: auto; bottom: 26px; }
+  .ls-intro { left: var(--gut); right: var(--gut); width: auto; bottom: calc(26px + env(safe-area-inset-bottom, 0px)); }
   .ls-intro .ls-meta { display: none; }
   .ls-title { font-size: clamp(2.6rem, 12vw, 3.6rem); }
   .ls-lead { font-size: 1rem; }
   .ls-cue { display: none; }
-  .ls-cap { left: 14px; right: 14px; width: auto; top: auto; bottom: 18px; padding: 1.1rem 1.2rem 1.2rem; transform: translate3d(0, calc((1 - var(--v)) * 1.4rem), 0); }
+  .ls-cap { left: 14px; right: 14px; width: auto; top: auto; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); padding: 1.1rem 1.2rem 1.2rem; transform: translate3d(0, calc((1 - var(--v)) * 1.4rem), 0); }
+  .ls-cap h2 { font-size: 1.55rem; }
+  .ls-cap p { font-size: 0.94rem; }
+  .ls-dots { display: none; }
+  .ls-block { margin-left: auto; }
+  .ls-hw { grid-template-columns: minmax(0, 1fr); }
+  .ls-photo { max-width: 280px; margin: 0 auto; }
+  .lv-moments { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pg-view { aspect-ratio: 4 / 5; }
+  .pg-seg button { padding: 7px 11px; }
+}
+
+/* ── no WebGL or reduced motion: the chapters in plain flow, each with its still ── */
+html.lr-flat .ls-bg canvas { display: none; }
+html.lr-flat .ls-pin { height: auto; }
+html.lr-flat .ls-sticky { position: relative; height: auto; overflow: visible; display: grid; gap: 1.2rem; padding: calc(var(--hs-navb, 72px) + 2.5rem) var(--gut) 2rem; max-width: 1240px; margin: 0 auto; }
+html.lr-flat .ls-still { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 20px; border: 1px solid var(--line); }
+html.lr-flat .ls-intro, html.lr-flat .ls-cap { position: relative; left: auto; right: auto; top: auto; bottom: auto; width: auto; max-width: 720px; opacity: 1; transform: none; }
+html.lr-flat .ls-cue { display: none; }
+html.lr-flat .ls-flow { background: transparent; }
+@media (prefers-reduced-motion: reduce) {
+  .ls-cue i::after, .pg-msg.is-hint { animation: none; }
+  .lv-moments button, .pg-seg button, .pg-icon, .ls-dots i, .ls-dots span, .ls-gl canvas, .pg-gl canvas { transition: none; }
+}
+@media (max-width: 860px) {
+  .pg-msg.is-hint { white-space: normal; text-align: center; width: max-content; max-width: calc(100% - 40px); border-radius: 14px; line-height: 1.4; }
+}
+ inset: 0; z-index: 2147483000; width: 100vw; height: 100dvh; }
+.pg.is-drag .pg-view { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(255, 177, 92, 0.3); }
+.pg-gl { position: absolute; inset: 0; }
+.pg-gl canvas { display: block; width: 100% !important; height: 100% !important; opacity: 0; transition: opacity 0.8s ease; }
+.pg.is-ready .pg-gl canvas { opacity: 1; }
+/* the still only stands in without WebGL; otherwise it must not catch the pointer meant for the canvas */
+.pg-still { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; pointer-events: none; }
+.pg.is-flat .pg-still { opacity: 1; }
+.pg.is-flat .pg-view { cursor: default; touch-action: auto; }
+.pg-msg { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); margin: 0 !important; padding: 9px 16px; border-radius: 999px; pointer-events: none; text-align: center; max-width: calc(100% - 40px);
+  font-size: 0.86rem !important; font-weight: 600; color: var(--bone) !important; background: rgba(14, 10, 9, 0.72); border: 1px solid var(--line); }
+.pg-msg.is-hint { animation: pg-hint 0.6s 0.4s var(--ease) both; }
+@keyframes pg-hint { from { opacity: 0; transform: translate(-50%, calc(-50% + 8px)); } }
+.pg-drop { position: absolute; inset: 0; display: grid; place-items: center; margin: 0 !important; font-size: 1.2rem !important; font-weight: 800; color: var(--bone) !important; background: rgba(14, 10, 9, 0.6); pointer-events: none; }
+.pg-stat { position: absolute; left: 14px; top: 14px; margin: 0 !important; display: grid; gap: 2px; padding: 8px 12px; border-radius: 12px; background: rgba(14, 10, 9, 0.66); border: 1px solid rgba(255, 255, 255, 0.08); pointer-events: none; max-width: calc(100% - 28px); }
+.pg-stat b { font-size: 0.86rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pg-stat span { font-size: 0.78rem; color: var(--dim); font-variant-numeric: tabular-nums; }
+.pg-bar { position: absolute; left: 12px; right: 12px; bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 10px; pointer-events: none; }
+.pg-bar > * { pointer-events: auto; }
+.pg-seg { display: inline-flex; padding: 4px; border-radius: 999px; background: rgba(14, 10, 9, 0.72); border: 1px solid rgba(255, 255, 255, 0.12); }
+.pg-seg button { font: inherit; font-size: 0.86rem; font-weight: 700; color: var(--mute); padding: 7px 13px; border-radius: 999px; border: 0; background: transparent; cursor: pointer; transition: background-color 0.2s ease, color 0.2s ease; }
+.pg-seg button:hover { color: var(--bone); }
+.pg-seg button.is-on { background: var(--amber); color: #1d0f08; }
+.pg-icons { display: inline-flex; gap: 6px; }
+.pg-icon { display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border-radius: 50%; cursor: pointer; color: var(--bone);
+  background: rgba(14, 10, 9, 0.72); border: 1px solid rgba(255, 255, 255, 0.12); transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s var(--ease); }
+.pg-icon svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.pg-icon:hover { background: rgba(40, 28, 24, 0.9); border-color: rgba(255, 255, 255, 0.24); transform: translateY(-1px); }
+.pg-icon:active { transform: scale(0.95); }
+.pg-icon.is-on { color: #1d0f08; background: var(--amber); border-color: var(--amber); }
+.pg-seg button:focus-visible, .pg-icon:focus-visible, .pg-text:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.pg-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.pg-files { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin-top: 14px; font-size: 0.88rem; }
+.pg-text { font: inherit; font-weight: 700; color: var(--amber) !important; background: none; border: 0; padding: 0; cursor: pointer; text-decoration: none; }
+.pg-text:hover { text-decoration: underline; text-underline-offset: 3px; }
+.pg-text:disabled { opacity: 0.45; cursor: not-allowed; text-decoration: none; }
+.pg-check { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: var(--mute); cursor: pointer; }
+.pg-check input { accent-color: var(--amber); width: 16px; height: 16px; }
+.pg-note { color: var(--dim); }
+.pg-err { flex-basis: 100%; margin: 0 !important; font-size: 0.9rem !important; color: #ff9a7a !important; }
+
+/* the recommendations sit on the painted night scene, faded in from the page's black */
+.ls > .arec-section { position: relative; isolation: isolate; border-top: 0; }
+.ls > .arec-section::before { content: ''; position: absolute; left: 0; right: 0; top: 0; z-index: -1; height: min(45svh, 420px); pointer-events: none;
+  background: linear-gradient(to bottom, var(--ink), rgba(14, 10, 9, 0.6) 45%, rgba(14, 10, 9, 0)); }
+
+/* ── phones ── */
+@media (max-width: 860px) {
+  .ls-intro { left: var(--gut); right: var(--gut); width: auto; bottom: calc(26px + env(safe-area-inset-bottom, 0px)); }
+  .ls-intro .ls-meta { display: none; }
+  .ls-title { font-size: clamp(2.6rem, 12vw, 3.6rem); }
+  .ls-lead { font-size: 1rem; }
+  .ls-cue { display: none; }
+  .ls-cap { left: 14px; right: 14px; width: auto; top: auto; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); padding: 1.1rem 1.2rem 1.2rem; transform: translate3d(0, calc((1 - var(--v)) * 1.4rem), 0); }
   .ls-cap h2 { font-size: 1.55rem; }
   .ls-cap p { font-size: 0.94rem; }
   .ls-dots { display: none; }

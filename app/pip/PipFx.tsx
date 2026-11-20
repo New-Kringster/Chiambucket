@@ -185,8 +185,12 @@ export function HeroMeet({ hero, title, lede, slotLabel }: { hero: ReactNode; ti
     if (!el) return;
     let alive = true, raf = 0, visible = true;
     const video = document.createElement('video');
-    video.muted = true; video.loop = true; video.playsInline = true;
-    video.setAttribute('playsinline', '');
+    video.muted = true; video.defaultMuted = true; video.loop = true; video.playsInline = true;
+    video.setAttribute('muted', ''); video.setAttribute('playsinline', '');
+    // in the page and on screen (2 px, nearly transparent), or Safari on iPhone won't decode it for the tablet's screen
+    video.setAttribute('aria-hidden', 'true');
+    video.style.cssText = 'position:absolute;left:0;bottom:0;width:2px;height:2px;opacity:0.01;pointer-events:none';
+    el.appendChild(video);
     const canWebm = video.canPlayType('video/webm; codecs="vp9"') !== '';
     if (!reduced) { video.src = '/videos/pip/pip-layer' + (canWebm ? '.webm' : '.mp4'); video.preload = 'auto'; }
 
@@ -252,7 +256,7 @@ export function HeroMeet({ hero, title, lede, slotLabel }: { hero: ReactNode; ti
       window.removeEventListener('resize', onResize); window.removeEventListener('pointermove', onMove);
       document.removeEventListener('visibilitychange', onVis);
       if (raf) cancelAnimationFrame(raf);
-      video.pause(); if (video.src) { video.removeAttribute('src'); video.load(); }
+      video.pause(); if (video.src) { video.removeAttribute('src'); video.load(); } video.remove();
       scene.current?.destroy(); scene.current = null;
     };
   }, [reduced]);

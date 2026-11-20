@@ -38,7 +38,7 @@
   --nv-blob-drop: rgba(0, 0, 0, 0.55);
 
   position: fixed;
-  top: 16px;
+  top: calc(16px + env(safe-area-inset-top, 0px));
   left: clamp(14px, 3vw, 32px);
   right: clamp(14px, 3vw, 32px);
   z-index: 999;
@@ -397,7 +397,7 @@ html.is-day .pnav-work > .pnav-item:not(.is-active) { text-shadow: 0 0 6px rgba(
 }
 
 @media (max-width: 760px) {
-  .pnav { top: 12px; grid-template-columns: 1fr auto; }
+  .pnav { top: calc(12px + env(safe-area-inset-top, 0px)); grid-template-columns: 1fr auto; }
   .pnav-links { display: none; }
   .pnav-menu { display: inline-block; }
 }

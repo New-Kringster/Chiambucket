@@ -490,7 +490,7 @@ html.hs-home .footer { position: relative; z-index: 3; }
   display: grid; align-content: center; gap: 3vh;
 }
 @media (max-width: 760px) {
-  .hs-sp-cap { left: var(--hs-gutter); right: var(--hs-gutter); width: auto; top: auto; bottom: clamp(1.4rem, 5vh, 2.6rem); transform: translate3d(0, calc((1 - var(--v)) * 1.4rem), 0); }
+  .hs-sp-cap { left: var(--hs-gutter); right: var(--hs-gutter); width: auto; top: auto; bottom: calc(clamp(1.4rem, 5vh, 2.6rem) + env(safe-area-inset-bottom, 0px)); transform: translate3d(0, calc((1 - var(--v)) * 1.4rem), 0); }
   .hs-sp-cap h3 { font-size: 1.6rem; margin-bottom: 0.6rem; }
   .hs-sp-cap p { font-size: 0.95rem; }
   .hs-sp > [class$="-visual"] { left: var(--hs-gutter); right: var(--hs-gutter); top: calc(var(--hs-navb, 64px) + 12px); bottom: 38svh; gap: 14px; }
