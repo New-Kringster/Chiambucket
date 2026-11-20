@@ -20,3 +20,13 @@ html:is(:lang(de), :lang(nl), :lang(ru)) :is(h1, h2, h3, h4, p, li, button, a) {
   overflow-wrap: break-word;
   hyphens: auto;
 }
+
+/* Text boxes measured in ch (the width of a Latin "0") hold only half as many
+   ideographs, which broke short Chinese and Japanese lines mid-word; these
+   give the same boxes a width in em instead. */
+html:is(:lang(zh), :lang(ja)) .hs-sub { max-width: 21em; }
+html:is(:lang(zh), :lang(ja)) .hs .hs-under-line { max-width: 16em; }
+html:is(:lang(zh), :lang(ja)) .ar-title { max-width: 9em; }
+html:is(:lang(zh), :lang(ja)) .hl2-rackreal-text p { max-width: 26em; }
+/* Japanese wraps at phrase boundaries where the browser supports it (Chromium) */
+html:lang(ja) { word-break: auto-phrase; }

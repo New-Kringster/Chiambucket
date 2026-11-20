@@ -15,7 +15,7 @@ export default function NotFound() {
         <div className="ct-aura"></div>
         <div className="nf-bloom" aria-hidden="true"></div>
 
-        {/* the words follow the language of the missing address, so they render on the client */}
+        {/* every language is rendered; CSS shows the one matching <html lang> */}
         <NotFoundBody />
       </section>
 
