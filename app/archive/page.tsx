@@ -90,7 +90,6 @@ export default function ArchivePage() {
           ))}
         </nav>
         <p className="ar-strip-ends"><span>{new Date(FIRST_LAUNCH).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}</span><span>Today</span></p>
-        <p className="ar-note">Each band is one design, as wide as the time it was live.</p>
       </header>
 
       <ol className="ar-list ar-wrap" data-zoom>
@@ -139,8 +138,11 @@ export default function ArchivePage() {
 
       <section className="ar-end ar-wrap" aria-labelledby="ar-why">
         <div className="ar-fact">
-          <p className="ar-fact-kicker">Fun fact</p>
-          <h2 id="ar-why" className="ar-fact-title">Why chiambucket.com?</h2>
+          <div className="ar-fact-head">
+            <p className="ar-fact-kicker">Fun fact</p>
+            <h2 id="ar-why" className="ar-fact-title">Why chiambucket.com?</h2>
+          </div>
+          <div className="ar-fact-text">
           <p>
             Chiambucket started as a nickname that one of my close friends gave me. When I was looking for a domain name for my new
             landing page, chiambucket.com just happened to be the cheapest one available, so I took it and have kept it ever since.
@@ -148,6 +150,7 @@ export default function ArchivePage() {
           <p className="ar-fact-extra">
             <b>Extra fun fact:</b> I also own <a href="https://bravenchiam.com" target="_blank" rel="noopener">bravenchiam.com</a>, and it redirects to this site!
           </p>
+          </div>
         </div>
       </section>
     </main>
