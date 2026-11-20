@@ -180,6 +180,13 @@ html.pg-lock .pg-view.is-full { position: fixed; inset: 0; z-index: 2147483000; 
 .pg-note { color: var(--dim); }
 .pg-err { flex-basis: 100%; margin: 0 !important; font-size: 0.9rem !important; color: #ff9a7a !important; }
 
+/* /stackchan-lidar/embed: the playground alone, filling the frame another site puts it in */
+html:has(main.ls-embed), html:has(main.ls-embed) body { height: 100%; overflow: hidden; background: #0e0a09; }
+html.sensory-active main.ls-embed { position: fixed; inset: 0; z-index: 1; display: flex; flex-direction: column; }
+html.sensory-active main.ls-embed .pg { flex: 1; min-height: 0; margin: 0; display: flex; flex-direction: column; }
+html.sensory-active main.ls-embed .pg-view { flex: 1; min-height: 0; aspect-ratio: auto; border: 0; border-radius: 0; box-shadow: none; }
+html.sensory-active main.ls-embed .pg-files { margin: 0; padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px)); }
+
 /* the recommendations sit on the painted night scene, faded in from the page's black */
 .ls > .arec-section { position: relative; isolation: isolate; border-top: 0; }
 .ls > .arec-section::before { content: ''; position: absolute; left: 0; right: 0; top: 0; z-index: -1; height: min(45svh, 420px); pointer-events: none;

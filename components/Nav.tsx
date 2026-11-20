@@ -2,6 +2,7 @@
 import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { isEmbed } from '../lib/embed';
 import { blobPath, type Capsule } from './navBlob';
 import './nav.css';
 
@@ -397,6 +398,7 @@ export default function Nav() {
       </Link>
   );
 
+  if (isEmbed(pathname)) return null;
   return (
     <header className="pnav" ref={headerRef}>
       {/* the glass for every piece, drawn as one merging shape */}

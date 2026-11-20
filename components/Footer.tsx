@@ -1,8 +1,12 @@
 'use client';
+import { usePathname } from 'next/navigation';
+import { isEmbed } from '../lib/embed';
 
 export default function Footer() {
+  const pathname = usePathname();
   const openExt = (url: string) => window.open(url, '_blank', 'noopener');
 
+  if (isEmbed(pathname)) return null;
   return (
     <div className="footer">
       <button onClick={() => { window.location.href = '/'; }} className="footer-left">
