@@ -87,7 +87,7 @@ export const LIDAR_CARD: Flagship = {
   lead: 'A makeshift LiDAR: four distance sensors on Stack-chan’s head, swept across a room by its two servos, with its camera colouring the points and a browser showing the scan in 3D.',
   stats: [{ v: '68,206', l: 'points in one scan' }, { v: '256°', l: 'widest sweep' }, { v: '4', l: 'ToF sensors' }, { v: '54 s', l: 'for a Quick scan' }],
   tools: [{ src: '/images/esp-icon.webp', alt: 'ESP32-S3' }, { src: '/images/PlatformIO-icon.webp', alt: 'PlatformIO' }, { src: '/images/blender-icon.webp', alt: 'Blender' }],
-  poster: '/images/stackchan-lidar-pf-context.webp',
+  poster: '/images/stackchan-lidar/cover.webp',   // the transparent cutout, so no box shows on the card
   posterAlt: 'Stack-chan with four Unit ToF4M distance sensors on its head',
   read: '/stackchan-lidar',
 };
