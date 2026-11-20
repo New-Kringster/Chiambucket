@@ -79,6 +79,12 @@ html.sensory-active.is-day {
   pointer-events: none;
 }
 .sl-scene > * { position: absolute; inset: 0; width: 100%; height: 100%; }
+/* Safari on iPhone (26) colours its status bar and toolbar from any full-width layer pinned at the
+   screen's top or bottom edge, even one the page covers, so the painted scene behind a black chapter
+   turned the bars sage. A pinned layer that is itself hidden is skipped, so the scene and the field
+   hide themselves and only their children paint; the bars then show the page under them. */
+.sl-scene, .sl-grass { visibility: hidden; }
+.sl-scene > *, .sl-grass > * { visibility: visible; }
 .sl-sky {
   background:
     radial-gradient(circle 100vmax at 97% 0%,

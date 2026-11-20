@@ -6,7 +6,7 @@
    and a laser orange, the same ramp the depth view uses. Figtree throughout,
    like the homepage story. */
 html.lr-route body { background: #0e0a09; }
-html.lr-route:not(.lr-end) .sl-scene { visibility: hidden; }
+html.lr-route:not(.lr-end) :is(.sl-scene, .sl-scene > *) { visibility: hidden; }
 html.sensory-active main.ls { background: transparent; }
 
 .ls {
@@ -22,11 +22,12 @@ html.sensory-active main.ls { background: transparent; }
 .ls a { color: inherit; }
 
 /* the backdrop: the 3D scene, fixed behind everything until the recommendations */
-.ls-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  background: radial-gradient(70% 60% at 62% 42%, rgba(255, 106, 61, 0.1), rgba(255, 106, 61, 0) 70%), var(--ink);
-  transition: opacity 0.8s ease; }
+/* the pinned layer itself is hidden and paints nothing, so Safari on iPhone doesn't take its bar colours
+   from it (see .sl-scene in app/sunlit.css); its child carries the backdrop */
+.ls-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; visibility: hidden; transition: opacity 0.8s ease; }
 html.lr-end .ls-bg { opacity: 0; }
-.ls-gl { position: absolute; inset: 0; }
+.ls-gl { position: absolute; inset: 0; visibility: visible;
+  background: radial-gradient(70% 60% at 62% 42%, rgba(255, 106, 61, 0.1), rgba(255, 106, 61, 0) 70%), var(--ink); }
 .ls-gl canvas { display: block; width: 100% !important; height: 100% !important; opacity: 0; transition: opacity 1.2s ease; }
 html.lr-ready .ls-gl canvas { opacity: 1; }
 

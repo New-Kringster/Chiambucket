@@ -42,10 +42,11 @@ export function createPipStage(section: HTMLElement) {
 
   /* Safari on iPhone only decodes an autoplaying video that is in the page and on screen, so the
      videos live in a 2 px, nearly transparent dock inside the pinned stage instead of off the page
-     (where the tablet's screen stayed on its home picture). */
+     (where the tablet's screen stayed on its home picture). The dock sits in the middle of the stage,
+     so it is on screen whenever the stage is. */
   const dock = document.createElement('div');
   dock.setAttribute('aria-hidden', 'true');
-  dock.style.cssText = 'position:absolute;left:0;bottom:0;width:2px;height:2px;overflow:hidden;opacity:0.01;pointer-events:none;z-index:0';
+  dock.style.cssText = 'position:absolute;left:50%;top:50%;width:2px;height:2px;overflow:hidden;opacity:0.01;pointer-events:none;z-index:0';
   stage.appendChild(dock);
   const video = (src: string) => {
     const v = document.createElement('video');
@@ -54,6 +55,7 @@ export function createPipStage(section: HTMLElement) {
     v.preload = 'auto';
     v.style.cssText = 'width:2px;height:2px';
     v.src = src;
+    v.addEventListener('canplay', () => { if (on && scene) apply(); });
     dock.appendChild(v);
     return v;
   };
@@ -132,8 +134,8 @@ export function createPipStage(section: HTMLElement) {
 
   const load = () => {
     if (scene || !alive) return;
-    const webm = document.createElement('video').canPlayType('video/webm; codecs="vp9"') !== '';
-    layer = video('/videos/pip/pip-layer' + (webm ? '.webm' : '.mp4'));
+    // the H.264 copy: smaller than the WebM, and decoded in hardware on iPhones
+    layer = video('/videos/pip/pip-layer.mp4');
     clips = CLIPS.map((k) => video(`/videos/pip/${k}.mp4`));
     import('../pip/tab5Scene').then(({ createTab5Scene }) => {
       if (!alive) return;

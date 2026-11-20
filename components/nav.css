@@ -362,6 +362,9 @@ html.is-day .pnav-work > .pnav-item:not(.is-active) { text-shadow: 0 0 6px rgba(
    the SVG paints its edge, rim and shadow. */
 .pnav > .pnav-blob { display: none; pointer-events: none; }
 .pnav.is-blob > .pnav-blob { display: block; position: fixed; inset: 0 0 auto 0; height: 96px; z-index: -1; }
+/* hidden itself, painting only through its children, so Safari on iPhone doesn't colour its status bar from it (see .sl-scene) */
+.pnav > .pnav-blob { visibility: hidden; }
+.pnav > .pnav-blob > * { visibility: visible; }
 .pnav-blob-glass {
   position: absolute;
   inset: 0;

@@ -189,10 +189,10 @@ export function HeroMeet({ hero, title, lede, slotLabel }: { hero: ReactNode; ti
     video.setAttribute('muted', ''); video.setAttribute('playsinline', '');
     // in the page and on screen (2 px, nearly transparent), or Safari on iPhone won't decode it for the tablet's screen
     video.setAttribute('aria-hidden', 'true');
-    video.style.cssText = 'position:absolute;left:0;bottom:0;width:2px;height:2px;opacity:0.01;pointer-events:none';
+    video.style.cssText = 'position:absolute;left:50%;top:50%;width:2px;height:2px;opacity:0.01;pointer-events:none';
     el.appendChild(video);
-    const canWebm = video.canPlayType('video/webm; codecs="vp9"') !== '';
-    if (!reduced) { video.src = '/videos/pip/pip-layer' + (canWebm ? '.webm' : '.mp4'); video.preload = 'auto'; }
+    // the H.264 copy: smaller than the WebM, and decoded in hardware on iPhones
+    if (!reduced) { video.src = '/videos/pip/pip-layer.mp4'; video.preload = 'auto'; }
 
     // the handoff, worked out every frame from the stage's progress and where the slot is now
     const handoff = () => {

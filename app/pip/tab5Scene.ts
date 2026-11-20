@@ -89,6 +89,13 @@ function slab(w: number, h: number, r: number, depth: number, bevel = 0.35) {
 
 export function createTab5Scene(host: HTMLElement, opts: { video: HTMLVideoElement; wallpaper: string; still?: string; glb: string; onReady?: () => void }): Tab5Scene {
   let needs = true, pending = 2;   // ready once the model and the home picture have loaded
+  // a video that gets its first picture, starts or loops while nothing else moves still needs drawing
+  const wake = () => { needs = true; };
+  const watched: HTMLVideoElement[] = [];
+  const watch = (v: HTMLVideoElement) => {
+    for (const ev of ['loadeddata', 'playing', 'seeked']) v.addEventListener(ev, wake);
+    watched.push(v);
+  };
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.setClearColor(0x000000, 1);
@@ -148,6 +155,7 @@ export function createTab5Scene(host: HTMLElement, opts: { video: HTMLVideoEleme
 
   // Pip, its own plane over the picture. `anchor` marks where the tablet draws it.
   const pipTex = new THREE.VideoTexture(opts.video);
+  watch(opts.video);
   pipTex.colorSpace = THREE.NoColorSpace;
   pipTex.minFilter = THREE.LinearFilter;
   pipTex.magFilter = THREE.LinearFilter;
@@ -293,6 +301,7 @@ export function createTab5Scene(host: HTMLElement, opts: { video: HTMLVideoEleme
     setClip(video, opacity) {
       if (video && !clipTex.has(video)) {
         const t = new THREE.VideoTexture(video);
+        watch(video);
         t.colorSpace = THREE.SRGBColorSpace;
         t.minFilter = THREE.LinearFilter;
         t.generateMipmaps = false;
@@ -311,9 +320,16 @@ export function createTab5Scene(host: HTMLElement, opts: { video: HTMLVideoEleme
       if (!needs && opts.video.paused && (!clipVideo || clipVideo.paused || !clipPlane.visible)) return;
       needs = false;
       place();
+      /* three.js copies a video's new picture when the browser reports a new frame, and Safari on
+         iPhone doesn't report them for a video this small on the page, so the screen stayed blank
+         until a scroll redrew it; copy the current picture on every render instead */
+      if (opts.video.readyState >= 2) pipTex.needsUpdate = true;
+      const ct = clipVideo && clipPlane.visible ? clipTex.get(clipVideo) : undefined;
+      if (ct && clipVideo!.readyState >= 2) ct.needsUpdate = true;
       renderer.render(scene, camera);
     },
     destroy() {
+      for (const v of watched) for (const ev of ['loadeddata', 'playing', 'seeked']) v.removeEventListener(ev, wake);
       renderer.dispose();
       pmrem.dispose();
       env.dispose();

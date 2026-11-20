@@ -10,7 +10,7 @@
 html.pp-route body { background: #000; }
 /* The page is the black of the screen until the end, where it fades out into the painted night scene
    behind the recommendations and the footer, like the other articles. The scene is hidden until then. */
-html.pp-route:not(.pp-end) .sl-scene { visibility: hidden; }
+html.pp-route:not(.pp-end) :is(.sl-scene, .sl-scene > *) { visibility: hidden; }
 
 .pp {
   --bg: #000;
