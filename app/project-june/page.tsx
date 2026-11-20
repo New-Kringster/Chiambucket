@@ -57,8 +57,8 @@ export default function ProjectJunePage() {
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#projects"><BackArrow /> Back to projects</a>
           <div className="art-tags">
-            <span className="hp-md-tag personal">Personal project</span>
             <AiMark project="proj-june" />
+            <span className="hp-md-tag personal">Personal project</span>
           </div>
           <h1 className="art-title">Project <em>June</em></h1>
           <p className="art-lead">I built this 5G rover because I wanted a Mars rover, and it streams three live camera feeds, GPS and sensor readings (temperature, humidity, pressure and brightness) to a web console that I drive it from.</p>

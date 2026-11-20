@@ -148,6 +148,10 @@ export function createPlyViewer(host: HTMLElement): PlyViewer {
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true; controls.dampingFactor = 0.08;
   controls.zoomToCursor = true; controls.screenSpacePanning = true; controls.zoomSpeed = 1.2;
+  // on touch, two fingers only zoom: pinching toward a point (zoomToCursor) while panning read as a pan.
+  // One finger turns it, as with the mouse.
+  controls.touches.TWO = THREE.TOUCH.DOLLY_ROTATE;
+  renderer.domElement.addEventListener('pointerdown', (e) => { controls.zoomToCursor = e.pointerType !== 'touch'; });
 
   const uniforms = {
     uMode: { value: 0 }, uSize: { value: 1.6 }, uScale: { value: 1 }, uHasColour: { value: 1 },

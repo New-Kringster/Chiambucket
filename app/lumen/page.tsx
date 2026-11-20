@@ -153,8 +153,8 @@ export default function LumenPage() {
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#projects"><BackArrow /> Back to projects</a>
           <div className="art-tags">
-            <span className="hp-md-tag school">School project</span>
             <AiMark project="proj-lumen" />
+            <span className="hp-md-tag school">School project</span>
           </div>
           <h1 className="art-title"><em>LUMEN</em></h1>
           <p className="art-lead">LUMEN is a voice-controlled assistant for a smart room, which you use by saying &ldquo;Hello Robot&rdquo; or holding a button and speaking. An ESP32 records the audio, a server transcribes it and has an LLM turn it into one JSON command, and MQTT carries that command to the lights, fan, servo and buzzer. The hardest part was fitting all of this onto a board with about 33&nbsp;KB of free RAM.</p>

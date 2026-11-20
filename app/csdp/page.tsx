@@ -52,8 +52,8 @@ export default function CsdpPage() {
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#projects"><BackArrow /> Back to projects</a>
           <div className="art-tags">
-            <span className="hp-md-tag school">School project, team of five</span>
             <AiMark project="proj-ema" />
+            <span className="hp-md-tag school">School project, team of five</span>
           </div>
           <h1 className="art-title">EMA Smart <em>Home</em></h1>
           <p className="art-lead">This is a smart home system built on four BeagleBone Black Wireless boards to cut the energy a home uses. It was the most complex group project I have worked on and drew on several of our courses, and we got an A for it.</p>

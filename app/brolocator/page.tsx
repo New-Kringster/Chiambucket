@@ -51,8 +51,8 @@ export default function BrolocatorPage() {
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#projects"><BackArrow /> Back to projects</a>
           <div className="art-tags">
-            <span className="hp-md-tag personal">Personal project</span>
             <AiMark project="proj-lora" />
+            <span className="hp-md-tag personal">Personal project</span>
           </div>
           <h1 className="art-title">LoRA <em>Messenger</em></h1>
           <p className="art-lead">This was my first PCB and my first ESP32 project, a pair of handhelds that text each other over LoRa with no internet and do crude full-duplex two-way voice over ESP-NOW when they are in range. I called it Brolocator while I was building it.</p>

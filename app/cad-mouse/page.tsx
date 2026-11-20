@@ -55,8 +55,8 @@ export default function CadMousePage() {
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#projects"><BackArrow /> Back to projects</a>
           <div className="art-tags">
-            <span className="hp-md-tag internship"><i className="hp-m5" aria-hidden="true" />Internship project</span>
             <AiMark project="proj-cadmouse" />
+            <span className="hp-md-tag internship"><i className="hp-m5" aria-hidden="true" />Internship project</span>
           </div>
           <h1 className="art-title">3D CAD <em>Mouse</em></h1>
           <p className="art-lead">I turned an M5Stack Capsule into a wireless 3D mouse for Onshape. You click its button and turn it in your hand, and the model on the screen turns with it, as if you were holding the part itself.</p>

@@ -60,8 +60,8 @@ export function FlagCard({ p, onPeek, variant, slot }: { p: Flagship; onPeek: (i
       </div>
       <div className="hs-fc-body">
         <div className="hs-fc-top">
-          <span className={`hs-fc-badge${p.gold ? ' is-gold' : ''}`}>{p.gold ? <Crown /> : <Star />}{p.badge}</span>
           <AiMark project={p.id} className="hs-fc-ai" />
+          <span className={`hs-fc-badge${p.gold ? ' is-gold' : ''}`}>{p.gold ? <Crown /> : <Star />}{p.badge}</span>
         </div>
         <div className="hs-fc-head">
           <h3 className="hs-fc-title">{p.name}</h3>
@@ -149,8 +149,8 @@ export function ProjectGallery({ onPeek }: { onPeek: (id: string) => void }) {
           <li key={p.id} className={`hs-pc is-${size}${pair ? ' is-pair' : ''}${p.url ? '' : ' is-soon'}`} style={{ '--i': i } as CSSProperties}>
             <div className="hs-pc-thumb">
               <img src={p.img} alt="" loading="lazy" />
-              <AiMark project={p.id} />
               <div className="hs-pc-tags">
+                <AiMark project={p.id} />
                 <span className="hs-pc-type">{TYPE_LABEL[p.type]}{p.type === 'internship' && <i className="hs-m5" role="img" aria-label="at M5Stack" />}</span>
                 {p.flagship ? <span className="hs-pc-hl is-gold"><Crown />Flagship</span> : p.highlight && <span className="hs-pc-hl"><Star />Highlight</span>}
               </div>

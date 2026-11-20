@@ -107,8 +107,10 @@ export default function ArticleRecommendations({ exclude }: { exclude: string })
                   <button className="hp-pf-peek" onClick={() => openProject(p.id)} aria-label="Peek at a quick summary">
                     <span className="hp-pf-peek-pill"><SR />Peek summary</span>
                   </button>
-                  <span className={`hp-pf-type ${p.type}`}>{TYPE_LABEL[p.type]}{p.type === 'internship' && <i className="hp-m5" role="img" aria-label="at M5Stack" />}</span>
-                  <AiMark project={p.id} />
+                  <div className="hp-pf-badges">
+                    <AiMark project={p.id} />
+                    <span className={`hp-pf-type ${p.type}`}>{TYPE_LABEL[p.type]}{p.type === 'internship' && <i className="hp-m5" role="img" aria-label="at M5Stack" />}</span>
+                  </div>
                   
                   <img src={p.img} alt={p.imgAlt} loading="lazy" />
                 </div>

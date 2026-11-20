@@ -53,8 +53,8 @@ export default function BeadReaderPage() {
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#projects"><BackArrow /> Back to projects</a>
           <div className="art-tags">
-            <span className="hp-md-tag personal">Personal project</span>
             <AiMark project="proj-beadreader" />
+            <span className="hp-md-tag personal">Personal project</span>
           </div>
           {/* On desktop the cover art carries the BeadReader wordmark, so this title is
               hidden there (kept for SEO/a11y). On phones the wide promo crops out its own

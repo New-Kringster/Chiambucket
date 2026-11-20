@@ -55,11 +55,14 @@ export default function PlyPlayground({ still, stillAlt }: { still: string; stil
     io.observe(el);
     const onResize = () => viewer.current?.resize();
     const onFull = () => { setFull(document.fullscreenElement === el); requestAnimationFrame(onResize); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setFull((f) => (f && !document.fullscreenElement ? false : f)); };
+    window.addEventListener('keydown', onKey);
     window.addEventListener('resize', onResize);
     document.addEventListener('fullscreenchange', onFull);
     return () => {
       alive = false; io.disconnect();
       window.removeEventListener('resize', onResize); document.removeEventListener('fullscreenchange', onFull);
+      window.removeEventListener('keydown', onKey); document.documentElement.classList.remove('pg-lock');
       viewer.current?.destroy(); viewer.current = null;
     };
   }, []);
@@ -71,15 +74,24 @@ export default function PlyPlayground({ still, stillAlt }: { still: string; stil
     catch (e) { setErr(e instanceof Error ? e.message : 'That file could not be read.'); }
   };
   const back = async () => { if (!viewer.current) return; setErr(''); last.current = null; setEye(false); setInfo(await viewer.current.bundled()); };
+  /* Full screen: the browser's own where it allows it for an element; phones that don't (Safari on iPhone)
+     get the view filling the window instead, with the page behind it locked. */
   const toggleFull = () => {
     const el = box.current;
     if (!el) return;
-    if (document.fullscreenElement) document.exitFullscreen?.();
-    else el.requestFullscreen?.().catch(() => {});
+    if (document.fullscreenElement) { document.exitFullscreen?.(); return; }
+    if (full) { setFull(false); return; }
+    const fallback = () => setFull(true);
+    if (el.requestFullscreen && document.fullscreenEnabled) el.requestFullscreen().catch(fallback);
+    else fallback();
   };
+  useEffect(() => {
+    document.documentElement.classList.toggle('pg-lock', full && !document.fullscreenElement);
+    requestAnimationFrame(() => viewer.current?.resize());
+  }, [full]);
 
   const sizeTxt = info ? info.size.map((v) => v.toFixed(1)).join(' x ') : '';
-  const hint = coarse ? 'Drag to turn it, pinch to zoom and use two fingers to move it' : 'Drag to turn it, scroll to zoom and right-drag to move it';
+  const hint = coarse ? 'Drag to turn it and pinch to zoom' : 'Drag to turn it, scroll to zoom and right-drag to move it';
 
   return (
     <div className={`pg is-${state}${drag ? ' is-drag' : ''}`} data-no-zoom>
@@ -89,7 +101,7 @@ export default function PlyPlayground({ still, stillAlt }: { still: string; stil
         onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
         onDragLeave={() => setDrag(false)}
         onDrop={(e) => { e.preventDefault(); setDrag(false); const f = e.dataTransfer.files?.[0]; if (f) load(f); }}>
-        <div className="pg-gl" ref={host} role="img" aria-label="A 3D point cloud of the room Stack-chan scanned. Drag to turn it, scroll or pinch to zoom, right-drag or use two fingers to move it, and double-click a spot to fly to it." />
+        <div className="pg-gl" ref={host} role="img" aria-label="A 3D point cloud of the room Stack-chan scanned. Drag to turn it, scroll or pinch to zoom, right-drag to move it, and double-click a spot to fly to it." />
         <img className="pg-still" src={still} alt={stillAlt} loading="lazy" />
         {state === 'loading' && <p className="pg-msg">Loading the scan</p>}
         {state === 'ready' && !touched && <p className="pg-msg is-hint" aria-hidden="true">{hint}</p>}
@@ -134,7 +146,6 @@ export default function PlyPlayground({ still, stillAlt }: { still: string; stil
         ) : (
           <a className="pg-text" href="/stackchan-lidar/stackchan-scan-9-dense.ply" download>Download this scan</a>
         )}
-        <span className="pg-note">Your own file opens only in this browser and is never uploaded.</span>
         {err && <p className="pg-err" role="alert">{err}</p>}
       </div>
     </div>

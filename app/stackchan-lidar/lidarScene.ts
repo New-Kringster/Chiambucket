@@ -289,7 +289,8 @@ export function createLidarScene(host: HTMLElement, layout: 'article' | 'home' =
       } else if (shot === 'colour') {
         // the camera pulls out and swings round behind the robot until the whole room is in view, while the
         // depth colours fade into the photos'
-        arc(sideNear, orbitPose(ORBIT_START), seg(t, 0, 0.85), target, 0.35, 1);
+        // the article goes straight from the sweep (which ends on the room); the homepage comes from its sensors beat
+        arc(layout === 'home' ? sideNear : POSE.room, orbitPose(ORBIT_START), seg(t, 0, 0.85), target, 0.35, 1);
         target.reveal = 1; target.mix = seg(t, 0.3, 0.8);
         target.yaw = 0; target.pitch = -0.1;
         offsetFor(layout === 'home' ? 0.5 : 0.3);

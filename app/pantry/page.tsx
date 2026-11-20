@@ -69,8 +69,8 @@ export default function PantryPage() {
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#projects"><BackArrow /> Back to projects</a>
           <div className="art-tags">
-            <span className="hp-md-tag internship"><i className="hp-m5" aria-hidden="true" />Internship project</span>
             <AiMark project="proj-pantry" />
+            <span className="hp-md-tag internship"><i className="hp-m5" aria-hidden="true" />Internship project</span>
           </div>
           <h1 className="art-title">Pantry <em>Expiry Tracker</em></h1>
           <p className="art-lead">I built this expiry tracker for the fridge door during my internship at M5Stack. You scan a product&rsquo;s barcode and pick when it expires, and the screen always shows what to eat first, with product names in Chinese or English.</p>

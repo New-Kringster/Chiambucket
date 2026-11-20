@@ -68,8 +68,8 @@ export default function ScrollRulerPage() {
         <div className="art-hero-inner hp-section">
           <a className="art-back" href="/#projects"><BackArrow /> Back to projects</a>
           <div className="art-tags">
-            <span className="hp-md-tag internship"><i className="hp-m5" aria-hidden="true" />Internship project</span>
             <AiMark project="proj-ruler" />
+            <span className="hp-md-tag internship"><i className="hp-m5" aria-hidden="true" />Internship project</span>
           </div>
           <h1 className="art-title">Scroll <em>Ruler</em></h1>
           <p className="art-lead">I built this digital ruler during my internship at M5Stack from an AtomS3R and a Unit Scroll. You press the scroll wheel down and roll it along whatever you want to measure, and the screen shows the distance in centimetres.</p>

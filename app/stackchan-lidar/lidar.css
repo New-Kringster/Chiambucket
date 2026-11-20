@@ -60,7 +60,9 @@ html.lr-end .ls-dots { opacity: 0; pointer-events: none; }
 .ls-back:focus-visible { outline: 2px solid var(--amber); outline-offset: 4px; border-radius: 4px; }
 .ls-tags { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px; margin-bottom: 1rem; }
 .ls-tags .ai-mark { --ai-h: 64px; }
-.ls-feat { display: inline-flex; align-items: center; height: 28px; padding: 0 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; color: #ffd9b0; border: 1px solid rgba(255, 177, 92, 0.42); background: rgba(255, 177, 92, 0.1); }
+/* the two pills share one size; Featured only changes colour */
+.ls-tags .hp-md-tag { display: inline-flex; align-items: center; box-sizing: border-box; height: 1.7rem; padding-top: 0; padding-bottom: 0; }
+.ls-feat { color: #ffd9b0; border: 1px solid rgba(255, 177, 92, 0.42); background: rgba(255, 177, 92, 0.12); }
 .ls-title { margin: 0; font-weight: 800; font-size: clamp(3rem, 7.4vw, 7.2rem); line-height: 0.92; letter-spacing: -0.045em; color: var(--bone); text-wrap: balance; }
 .ls-lead { margin: 1.2rem 0 0; font-size: clamp(1.05rem, 1.35vw, 1.22rem); line-height: 1.6; color: var(--mute); max-width: 34em; }
 .ls-toolrow { display: flex; align-items: center; gap: 14px; margin-top: 1.3rem; font-size: 0.86rem; font-weight: 600; color: var(--dim); }
@@ -129,6 +131,10 @@ html.lr-end .ls-dots { opacity: 0; pointer-events: none; }
   background: radial-gradient(80% 70% at 50% 40%, #2a1611, #0b0706 75%); border: 1px solid var(--line); box-shadow: 0 30px 60px -34px rgba(0, 0, 0, 0.9); }
 .pg-view:active { cursor: grabbing; }
 .pg-view.is-full { aspect-ratio: auto; width: 100vw; height: 100vh; border-radius: 0; border: 0; }
+/* the fallback when the browser has no element full screen: the view fixed over the whole window */
+html.pg-lock, html.pg-lock body { overflow: hidden; }
+html.pg-lock main.ls { z-index: 2147483000; }   /* main is the stacking context the view lives in */
+html.pg-lock .pg-view.is-full { position: fixed; inset: 0; z-index: 2147483000; width: 100vw; height: 100dvh; }
 .pg.is-drag .pg-view { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(255, 177, 92, 0.3); }
 .pg-gl { position: absolute; inset: 0; }
 .pg-gl canvas { display: block; width: 100% !important; height: 100% !important; opacity: 0; transition: opacity 0.8s ease; }

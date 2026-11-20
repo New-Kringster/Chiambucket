@@ -63,8 +63,8 @@ export function PeekModalContent({ id }: { id: string }) {
     <div className="hp-rd-hero">
       <img src={img} alt={alt} />
       <div className="hp-rd-hero-tags">
-        {tags.map(t => <span key={t} className={`hp-md-tag ${t === 'Flagship' ? 'flagship' : t === 'Highlights' ? 'highlight' : type}`}>{t}</span>)}
         <AiMark project={id} />
+        {tags.map(t => <span key={t} className={`hp-md-tag ${t === 'Flagship' ? 'flagship' : t === 'Highlights' ? 'highlight' : type}`}>{t}</span>)}
       </div>
     </div>
   );
