@@ -1,13 +1,17 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useLang } from '@/lib/useLang';
+import { ARTICLE_SHELL } from '@/lib/articleShell';
 
 type Pic = { src: string; alt: string; lit: boolean };
 
 /* Click-to-zoom for article images. A single delegated listener opens any
    image inside `.art-body` in a full-screen viewer; a floating magnifier cue
-   follows the hovered image so it is subtly obvious the images are clickable. */
+   follows the hovered image so it is subtly obvious the images are clickable.
+   Its words are in lib/articleShell.ts. */
 export default function ArticleLightbox() {
+  const words = ARTICLE_SHELL[useLang()].lightbox;
   const [mounted, setMounted] = useState(false);
   const [pic, setPic] = useState<Pic | null>(null);
   const [open, setOpen] = useState(false);
@@ -122,10 +126,10 @@ export default function ArticleLightbox() {
       className={`art-lb${open ? ' is-open' : ''}`}
       role="dialog"
       aria-modal="true"
-      aria-label="Image viewer"
+      aria-label={words.label}
       onClick={close}
     >
-      <button className="art-lb-x" aria-label="Close image" onClick={(e) => { e.stopPropagation(); close(); }}>
+      <button className="art-lb-x" aria-label={words.close} onClick={(e) => { e.stopPropagation(); close(); }}>
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
       </button>
       <img
@@ -137,7 +141,7 @@ export default function ArticleLightbox() {
         onMouseMove={zoomed ? (e) => setOrigin(e.clientX, e.clientY) : undefined}
         draggable={false}
       />
-      <span className="art-lb-hint" aria-hidden="true">{zoomed ? 'Click to fit · Esc to close' : 'Click to zoom · Esc to close'}</span>
+      <span className="art-lb-hint" aria-hidden="true">{zoomed ? words.fit : words.zoom}</span>
     </div>,
     document.body,
   );

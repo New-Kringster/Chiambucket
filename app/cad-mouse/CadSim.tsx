@@ -8,8 +8,10 @@
   while rotate is on, moving it turns the part; while panning, moving it slides
   the part and the wheel zooms (the twist). The LED colours are the firmware's.
   Until the reader touches it, and only while on screen, it plays a short demo.
+  Its words come from the article's copy (`t`, the copy's `sim`).
 */
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type { CadMouseCopy } from './_copy/en';
 
 const HOLD_MS = 250, GAP_MS = 300, SETTLE_MS = 100;
 const DEG_PER_PX = 0.45;
@@ -17,14 +19,7 @@ const HOME = { yaw: -28, pitch: -14, x: 0, y: 0, zoom: 1 };
 type View = typeof HOME;
 type Led = 'ready' | 'rotate' | 'pan' | 'fit';
 
-const LED_TEXT: Record<Led, string> = {
-  ready: 'Green blink: connected, rotate off',
-  rotate: 'Cyan: rotate on',
-  pan: 'Amber: panning',
-  fit: 'White flash: fit',
-};
-
-export default function CadSim() {
+export default function CadSim({ t: tx }: { t: CadMouseCopy['sim'] }) {
   const root = useRef<HTMLDivElement>(null);
   const [view, setView] = useState<View>(HOME);
   const [rotate, setRotate] = useState(false);
@@ -138,18 +133,14 @@ export default function CadSim() {
   };
 
   const led: Led = flash ? 'fit' : panning ? 'pan' : rotate ? 'rotate' : 'ready';
-  const status = demo
-    ? 'Playing a demo with rotate on. Touch the Capsule’s button to take over.'
-    : panning ? 'Panning while you hold. Move to slide the part, and scroll to zoom, which is the twist on the real one.'
-    : rotate ? 'Rotate is on. Move the pointer over the view and the part turns with it. Click again to stop.'
-    : 'Rotate is off. Click the button to start, hold it to pan, or double click to fit.';
+  const status = demo ? tx.status.demo : panning ? tx.status.pan : rotate ? tx.status.rotate : tx.status.off;
   const part = { transform: `translate(${view.x}px, ${view.y}px) scale(${view.zoom}) rotateX(${view.pitch}deg) rotateY(${view.yaw}deg)` };
   const triad = { transform: `rotateX(${view.pitch}deg) rotateY(${view.yaw}deg)` };
 
   return (
     <div ref={root} className={`cmx${fitting ? ' is-fitting' : ''}`} data-no-zoom onPointerMove={panMove}>
       <div className="cmx-vp" onPointerDown={vpDown} onPointerMove={vpMove} onPointerLeave={() => { live.current.vpLast = null; }} onKeyDown={arrows} tabIndex={0}
-        role="img" aria-label="An orange handheld enclosure in a CAD viewport, turned by the Capsule">
+        role="img" aria-label={tx.viewport}>
         <div className="cmx-vp-bar" aria-hidden="true"><span /><span /><span /><span className="cmx-vp-name">Part Studio 1</span></div>
         <div className="cmx-stage" aria-hidden="true">
           <div className="cmx-part" style={part}>
@@ -164,15 +155,15 @@ export default function CadSim() {
       <div className="cmx-dev">
         <div className="cmx-cap">
           <img src="/images/cad-mouse/cover.webp" alt="" width={535} height={823} draggable={false} />
-          <button type="button" className={`cmx-btn${pressed ? ' is-down' : ''}`} aria-label="The Capsule's button: click to toggle rotate, hold to pan, double click to fit"
+          <button type="button" className={`cmx-btn${pressed ? ' is-down' : ''}`} aria-label={tx.button}
             onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); live.current.last = { x: e.clientX, y: e.clientY }; down(); }}
             onPointerUp={up} onPointerCancel={up} onKeyDown={(e) => key(e, true)} onKeyUp={(e) => key(e, false)}>
             <span className="cmx-btn-ring" aria-hidden="true" />
           </button>
         </div>
-        <p className={`cmx-led is-${led}`}><i aria-hidden="true" />{LED_TEXT[led]}</p>
+        <p className={`cmx-led is-${led}`}><i aria-hidden="true" />{tx.led[led]}</p>
         <p className="cmx-status" aria-live="polite">{status}</p>
-        {!demo && (rotate || view !== HOME) && <button type="button" className="cmx-reset" onClick={() => { setRotate(false); fit(); }}>Start over</button>}
+        {!demo && (rotate || view !== HOME) && <button type="button" className="cmx-reset" onClick={() => { setRotate(false); fit(); }}>{tx.reset}</button>}
       </div>
     </div>
   );

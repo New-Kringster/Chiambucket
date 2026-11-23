@@ -13,9 +13,14 @@
   Until the reader touches it, it plays a short demo by itself (only while it
   is on screen); the first touch hands it over for good. Product names are the
   ones the tracker showed, from Open Food Facts and GS1 China.
+
+  The words around the screen come from the article's copy (`t`, the copy's
+  `sim`); the screen itself keeps the firmware's English labels.
 */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { fill } from '@/lib/fill';
 import { Core } from './Core';
+import type { PantryCopy } from './_copy/en';
 
 type Prod = { code: string; name: string; brand: string; img?: string };
 type Item = { id: number; code: string; days: number; ago: number };
@@ -39,10 +44,6 @@ const START: Item[] = [
   { id: 3, code: '3329770077003', days: 5, ago: 0 },
   { id: 4, code: '3017620425035', days: 14, ago: 3 },
 ];
-const SHELF_NAME: Record<string, string> = {
-  '5449000000996': 'Coca-Cola', '3256540000698': 'Pains au lait', '6909548500734': '冰红茶',
-  '3046920029759': 'Lindt dark', '3017620425035': 'Nutella',
-};
 
 /* ── the firmware's labels ── */
 const urgency = (d: number) => (d <= 1 ? 'is-red' : d <= 7 ? 'is-amber' : '');
@@ -108,7 +109,7 @@ const Thumb = ({ p, big }: { p: Prod; big?: boolean }) => (
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-export default function PantrySim() {
+export default function PantrySim({ t }: { t: PantryCopy['sim'] }) {
   const root = useRef<HTMLDivElement>(null);
   const [today, setToday] = useState<Date | null>(null);
   const [items, setItems] = useState<Item[]>(START);
@@ -270,10 +271,10 @@ export default function PantrySim() {
   const left = today && expiry ? between(today, expiry) : 0;
 
   const live =
-    screen === 'scan' ? 'Scanning. Pick a product from the shelf to hold up to the scanner.'
-    : screen === 'entry' && p ? `${p.name}. Set when it expires, then save it.`
-    : screen === 'detail' && p ? `${p.name}, already on the list. ${curItem ? daysBig(curItem.days) : ''}.`
-    : `The pantry, ${sorted.length} items, sorted by what expires first.`;
+    screen === 'scan' ? t.live.scan
+    : screen === 'entry' && p ? fill(t.live.entry, { name: p.name })
+    : screen === 'detail' && p ? fill(t.live.detail, { name: p.name, days: curItem ? daysBig(curItem.days) : '' })
+    : fill(t.live.home, { n: sorted.length });
 
   return (
     <div ref={root} className={`pxs${manual ? ' is-manual' : ''}`} data-no-zoom onPointerDownCapture={takeOver} onKeyDownCapture={takeOver}>
@@ -288,17 +289,17 @@ export default function PantrySim() {
                     <span className="pxs-round">+</span>
                     <Status />
                   </div>
-                  <ul className="pxs-list" aria-label="Pantry">
+                  <ul className="pxs-list" aria-label={t.list}>
                     {sorted.map((it) => {
                       const q = PRODUCTS[it.code];
                       const x = drag?.id === it.id ? drag.x : open === it.id ? -0.19 * UNIT() : 0;
                       return (
                         <li key={it.id} className={`pxs-row${gone === it.id ? ' is-gone' : ''}${fresh === it.id ? ' is-fresh' : ''}`}>
                           <button type="button" className={`pxs-bin${press === `bin-${it.id}` ? ' is-press' : ''}`} tabIndex={open === it.id ? 0 : -1}
-                            aria-label={`Delete ${q.name}`} onClick={() => remove(it.id)}><Bin /></button>
+                            aria-label={fill(t.remove, { name: q.name })} onClick={() => remove(it.id)}><Bin /></button>
                           <button type="button" className={`pxs-card${drag?.id === it.id ? ' is-drag' : ''}`} style={{ transform: `translateX(${x}px)` }}
                             onPointerDown={(e) => { e.stopPropagation(); onDown(e, it.id); }} onPointerMove={onMove} onPointerUp={onUp}
-                            onClick={() => tapCard(it)} aria-label={`${q.name}, ${daysBig(it.days)}`}>
+                            onClick={() => tapCard(it)} aria-label={fill(t.card, { name: q.name, days: daysBig(it.days) })}>
                             <Thumb p={q} />
                             <span className="pxs-name">{q.name}</span>
                             <span className="pxs-brand">{q.brand.split(' / ')[0]}</span>
@@ -327,7 +328,7 @@ export default function PantrySim() {
                 <>
                   <div className="pxs-bar">
                     <span className="pxs-pill">Pantry <i className="pxs-caret" /></span>
-                    <button type="button" className="pxs-round" aria-label="Cancel" onClick={() => go('home', 'back')}>✕</button>
+                    <button type="button" className="pxs-round" aria-label={t.cancel} onClick={() => go('home', 'back')}>✕</button>
                     <Status />
                   </div>
                   <div className="pxs-sheet">
@@ -341,9 +342,9 @@ export default function PantrySim() {
                       {(['d', 'w', 'm'] as const).map((k) => (
                         <div className="pxs-picker" key={k}>
                           <span>{k === 'd' ? 'Days' : k === 'w' ? 'Weeks' : 'Months'}</span>
-                          <button type="button" className={press === `${k}+` ? 'is-press' : ''} aria-label={`More ${k === 'd' ? 'days' : k === 'w' ? 'weeks' : 'months'}`} onClick={() => bump(k, 1)}><Chevron up /></button>
+                          <button type="button" className={press === `${k}+` ? 'is-press' : ''} aria-label={t.more[k]} onClick={() => bump(k, 1)}><Chevron up /></button>
                           <b>{pick[k]}</b>
-                          <button type="button" aria-label={`Fewer ${k === 'd' ? 'days' : k === 'w' ? 'weeks' : 'months'}`} onClick={() => bump(k, -1)}><Chevron /></button>
+                          <button type="button" aria-label={t.fewer[k]} onClick={() => bump(k, -1)}><Chevron /></button>
                         </div>
                       ))}
                     </div>
@@ -356,7 +357,7 @@ export default function PantrySim() {
                 <>
                   <div className="pxs-bar">
                     <span className="pxs-pill">Pantry <i className="pxs-caret" /></span>
-                    <button type="button" className="pxs-round" aria-label="Back" onClick={() => go('home', 'back')}>✕</button>
+                    <button type="button" className="pxs-round" aria-label={t.back} onClick={() => go('home', 'back')}>✕</button>
                     <Status />
                   </div>
                   <div className="pxs-sheet is-detail">
@@ -380,7 +381,7 @@ export default function PantrySim() {
       </div>
 
       <div className="pxs-shelf">
-        <p className="pxs-hint">{screen === 'scan' ? 'Pick a product to hold up to the scanner' : 'Tap a product to scan it'}</p>
+        <p className="pxs-hint">{screen === 'scan' ? t.hintScan : t.hint}</p>
         <ul>
           {SHELF.map((code) => {
             const q = PRODUCTS[code];
@@ -388,9 +389,9 @@ export default function PantrySim() {
             return (
               <li key={code}>
                 <button type="button" className={`pxs-item${beam === code ? ' is-beam' : ''}`} onClick={() => scanned(code)}
-                  aria-label={`Scan ${q.name}${saved ? ', already on the list' : ''}`}>
+                  aria-label={fill(saved ? t.scanSaved : t.scan, { name: q.name })}>
                   <Thumb p={q} />
-                  <span className="pxs-item-name">{SHELF_NAME[code]}{saved && <em>on the list</em>}</span>
+                  <span className="pxs-item-name">{t.shelf[code]}{saved && <em>{t.onList}</em>}</span>
                   <Barcode code={code} />
                   <i className="pxs-laser" aria-hidden="true" />
                 </button>
@@ -398,7 +399,7 @@ export default function PantrySim() {
             );
           })}
         </ul>
-        <button type="button" className="pxs-reset" onClick={reset}>Start over</button>
+        <button type="button" className="pxs-reset" onClick={reset}>{t.reset}</button>
       </div>
     </div>
   );

@@ -16,9 +16,14 @@
   lifts it and sets it down there without counting. Until the reader touches
   it, it plays the demo's calibration and two runs by itself, only while it
   is on screen.
+
+  The words around the device come from the article's copy (`t`, the copy's
+  `sim`); the AtomS3R's screen keeps the firmware's English.
 */
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { fill } from '@/lib/fill';
 import { Atom, Screen, type Mode } from './Atom';
+import type { ScrollRulerCopy } from './_copy/en';
 
 const STEP_MM = 100 / 49;    // one detent of the wheel, as counted in the demo
 const RANGE_MM = 150;        // the ruler shows 0 to 15 cm
@@ -47,7 +52,7 @@ const led = (c: Core) =>
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-export default function RulerSim() {
+export default function RulerSim({ t: tx }: { t: ScrollRulerCopy['sim'] }) {
   const root = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
   const [core, setCore] = useState<Core>(START);
@@ -182,16 +187,16 @@ export default function RulerSim() {
 
   const mm = core.per10cm ? (core.steps * 100) / core.per10cm : 0;
   const live =
-    core.mode === 'measuring' ? `Reading ${(mm / 10).toFixed(1)} centimetres${core.pressed ? ', counting' : ''}.`
-    : core.mode === 'calibrating' ? `Calibrating: ${Math.abs(core.calSteps)} steps so far. Roll exactly 10 centimetres with the wheel pressed, then release.`
-    : `${Math.abs(core.calSteps)} steps for 10 centimetres. Tap the screen to save it.`;
+    core.mode === 'measuring' ? fill(core.pressed ? tx.readingLive : tx.reading, { cm: (mm / 10).toFixed(1) })
+    : core.mode === 'calibrating' ? fill(tx.calibrating, { n: Math.abs(core.calSteps) })
+    : fill(tx.confirming, { n: Math.abs(core.calSteps) });
   const ticks = [];
   for (let i = 0; i <= RANGE_MM; i++) ticks.push(<i key={i} className={i % 10 === 0 ? 'cm' : i % 5 === 0 ? 'half' : ''} style={{ left: `${(i / RANGE_MM) * 100}%` }} />);
 
   return (
     <div ref={root} className={`srx${manual ? ' is-manual' : ''}`} data-no-zoom onPointerDownCapture={takeOver} onKeyDownCapture={takeOver}>
       <div className="srx-top">
-        <button type="button" className={`srx-btn${btn ? ' is-down' : ''}`} aria-label="The AtomS3R's screen, which is also its button: tap to zero or save, hold to calibrate again"
+        <button type="button" className={`srx-btn${btn ? ' is-down' : ''}`} aria-label={tx.button}
           onPointerDown={btnDown} onPointerUp={btnUp} onPointerLeave={btnUp} onPointerCancel={btnUp}
           onKeyDown={(e) => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) { e.preventDefault(); btnDown(); } }}
           onKeyUp={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); btnUp(); } }}>
@@ -208,7 +213,7 @@ export default function RulerSim() {
           </div>
           <button type="button" className={`srx-puck${core.pressed ? ' is-pressed' : ''}${lifted ? ' is-lifted' : ''}`}
             style={{ left: `${(pos / RANGE_MM) * 100}%` }}
-            aria-label={`The Unit Scroll at ${(pos / 10).toFixed(1)} cm on the ruler. Hold an arrow key to roll it with the wheel pressed.`}
+            aria-label={fill(tx.puck, { cm: (pos / 10).toFixed(1) })}
             onPointerDown={onPuckDown} onPointerMove={onPuckMove} onPointerUp={onPuckUp} onPointerCancel={onPuckUp}
             onKeyDown={onPuckKey} onKeyUp={onPuckKeyUp}>
             <span className="srx-puck-body">
@@ -219,7 +224,7 @@ export default function RulerSim() {
             <i className="srx-mark" />
           </button>
         </div>
-        <button type="button" className="srx-reset" onClick={reset}>Start over</button>
+        <button type="button" className="srx-reset" onClick={reset}>{tx.reset}</button>
       </div>
     </div>
   );
