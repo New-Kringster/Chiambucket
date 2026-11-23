@@ -42,25 +42,33 @@ const es: CadMouseCopy = {
   },
   try: {
     h: 'Pruébalo',
-    p: 'Esta copia ejecuta la lógica del botón de la Capsule, con tu puntero en lugar de tu mano. La parte de arriba de la Capsule es su botón, así que haz clic para activar el giro y mueve el puntero sobre la vista para girar la pieza, mantenlo para desplazarla y haz doble clic para encuadrarla de nuevo.',
-    note: 'La Capsule de verdad mide lo rápido que gira tu mano, así que la pieza gira el mismo ángulo que tu mano. Aquí el movimiento del puntero hace ese papel.',
+    p: 'Esta es la carcasa de la demo, la que diseñé para mi LoRA Messenger, y es el mismo modelo que tenía abierto en Onshape. Arrástrala y gira igual que cuando giro la Capsule, mientras la Capsule de al lado muestra lo que harían mi mano y su botón.',
+    note: 'La Capsule de verdad mide lo rápido que gira tu mano, así que la pieza gira el mismo ángulo que tu mano. Aquí tu arrastre hace ese papel.',
   },
+  /** the simulator's words (CadSim) */
   sim: {
+    /** the Capsule's light, by state */
     led: {
       ready: 'Parpadeo verde: conectado, sin giro',
       rotate: 'Cian: giro activado',
-      pan: 'Ámbar: desplazando',
+      pan: 'Ámbar: botón mantenido',
       fit: 'Destello blanco: encuadrar',
     },
-    status: {
-      demo: 'Reproduciendo una demo con el giro activado. Toca el botón de la Capsule para tomar el control.',
-      pan: 'Desplazando mientras mantienes. Mueve para deslizar la pieza y usa la rueda para hacer zoom, que en la de verdad es retorcerla.',
-      rotate: 'El giro está activado. Mueve el puntero sobre la vista y la pieza gira con él. Haz clic otra vez para pararlo.',
-      off: 'El giro está desactivado. Haz clic en el botón para empezar, mantenlo para desplazar o haz doble clic para encuadrar.',
+    viewport: 'La carcasa del LoRA Messenger en una vista de CAD. Arrastra para girarla, arrastra con Mayús para desplazarla, usa la rueda para hacer zoom y haz doble clic para encuadrarla. Las flechas la giran, Mayús con las flechas la desplaza, más y menos hacen zoom, y 0 la encuadra.',
+    loading: 'Cargando la carcasa',
+    failed: 'La vista 3D no ha podido iniciarse en este navegador.',
+    hint: 'Arrastra para girar la carcasa',
+    zoomIn: 'Acercar',
+    zoomOut: 'Alejar',
+    fit: 'Encuadrar',
+    /** the key under the view: its two column heads, then each control with a mouse, with a touch screen, and as the Capsule's gesture */
+    heads: { here: 'En esta vista', capsule: 'Con la Capsule' },
+    moves: {
+      rotate: { mouse: 'Arrastrar', touch: 'Arrastrar con un dedo', capsule: 'Clic en el botón y luego girar la mano' },
+      pan: { mouse: 'Arrastrar con el botón derecho o con Mayús', touch: 'Arrastrar con dos dedos', capsule: 'Mantener el botón y apuntar con la Capsule' },
+      zoom: { mouse: 'Rueda del ratón', touch: 'Pellizcar', capsule: 'Mantener el botón y retorcerla' },
+      fit: { mouse: 'Doble clic', touch: 'Doble toque', capsule: 'Doble clic en el botón' },
     },
-    viewport: 'Una carcasa de mano naranja en una vista de CAD, girada por la Capsule',
-    button: 'El botón de la Capsule: clic para activar o desactivar el giro, mantener para desplazar, doble clic para encuadrar',
-    reset: 'Reiniciar',
   },
   use: {
     h: 'Cómo se usa',

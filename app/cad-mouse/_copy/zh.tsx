@@ -41,25 +41,33 @@ const zh: CadMouseCopy = {
   },
   try: {
     h: '试一试',
-    p: '这个副本运行的是 Capsule 的按钮逻辑，只是用你的鼠标指针代替你的手。Capsule 的顶部就是它的按钮：点一下打开旋转，然后把指针移到视图上来转动零件；按住它就是平移，双击它就能让零件重新完整地显示在视图里。',
-    note: '真正的 Capsule 会测量你的手转得有多快，所以零件转过的角度和你的手一样。这里用指针的移动来代替。',
+    p: '这就是演示里的那个外壳，是我为 LoRA Messenger 设计的，用的也是我在 Onshape 里打开的同一个模型。拖动它，它就会像我转动 Capsule 时那样转动，旁边的 Capsule 会显示我的手和它的按钮此时在做什么。',
+    note: '真正的 Capsule 会测量你的手转得有多快，所以零件转过的角度和你的手一样。这里用你的拖动来代替。',
   },
+  /** the simulator's words (CadSim) */
   sim: {
+    /** the Capsule's light, by state */
     led: {
       ready: '绿灯闪：已连接，旋转关闭',
       rotate: '青色：旋转打开',
-      pan: '琥珀色：平移中',
+      pan: '琥珀色：按钮按住中',
       fit: '白光一闪：适配视图',
     },
-    status: {
-      demo: '正在播放旋转演示。碰一下 Capsule 的按钮就能接手。',
-      pan: '按住时是平移。移动指针拖动零件，滚动滚轮缩放，也就是真机上的扭动。',
-      rotate: '旋转已打开。把指针移到视图上，零件就跟着转。再点一下就停。',
-      off: '旋转已关闭。点按钮开始，按住平移，双击适配视图。',
+    viewport: 'CAD 视图里的 LoRA Messenger 外壳。拖动可以旋转，按住 Shift 拖动可以平移，滚动滚轮可以缩放，双击适配视图。方向键旋转，Shift 加方向键平移，加号和减号缩放，按 0 适配视图。',
+    loading: '正在加载外壳',
+    failed: '这个浏览器无法启动 3D 视图。',
+    hint: '拖动来转动外壳',
+    zoomIn: '放大',
+    zoomOut: '缩小',
+    fit: '适配视图',
+    /** the key under the view: its two column heads, then each control with a mouse, with a touch screen, and as the Capsule's gesture */
+    heads: { here: '在这个视图里', capsule: '在 Capsule 上' },
+    moves: {
+      rotate: { mouse: '拖动', touch: '单指拖动', capsule: '点一下按钮，然后转动手' },
+      pan: { mouse: '右键拖动或按住 Shift 拖动', touch: '双指拖动', capsule: '按住按钮，把 Capsule 指向一边' },
+      zoom: { mouse: '滚动滚轮', touch: '双指捏合', capsule: '按住按钮并扭动' },
+      fit: { mouse: '双击', touch: '双击屏幕', capsule: '双击按钮' },
     },
-    viewport: 'CAD 视图里一个橙色的手持设备外壳，由 Capsule 转动',
-    button: 'Capsule 的按钮：点一下切换旋转，按住平移，双击适配视图',
-    reset: '重新开始',
   },
   use: {
     h: '怎么用',

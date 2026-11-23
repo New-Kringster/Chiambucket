@@ -42,26 +42,33 @@ const en = {
   },
   try: {
     h: 'Try it',
-    p: 'This copy runs the Capsule’s button logic with your pointer standing in for your hand. The top of the Capsule is its button, so click it to turn rotate on and move the pointer over the view to turn the part, hold it to pan, and double click it to fit the part back in view.',
-    note: 'The real Capsule measures how fast your hand turns, so the part turns through the same angle your hand did. Here the pointer’s movement stands in for that.',
+    p: 'This is the case from the demo, the one I designed for my LoRA Messenger, and it is the same model I had open in Onshape. Drag it and it turns the way it does when I turn the Capsule, while the Capsule beside it shows what my hand and its button would be doing.',
+    note: 'The real Capsule measures how fast your hand turns, so the part turns through the same angle your hand did. Here your drag stands in for that.',
   },
   /** the simulator's words (CadSim) */
   sim: {
+    /** the Capsule's light, by state */
     led: {
       ready: 'Green blink: connected, rotate off',
       rotate: 'Cyan: rotate on',
-      pan: 'Amber: panning',
+      pan: 'Amber: the button is held',
       fit: 'White flash: fit',
     },
-    status: {
-      demo: 'Playing a demo with rotate on. Touch the Capsule’s button to take over.',
-      pan: 'Panning while you hold. Move to slide the part, and scroll to zoom, which is the twist on the real one.',
-      rotate: 'Rotate is on. Move the pointer over the view and the part turns with it. Click again to stop.',
-      off: 'Rotate is off. Click the button to start, hold it to pan, or double click to fit.',
+    viewport: 'The LoRA Messenger case in a CAD view. Drag to turn it, hold Shift and drag to slide it, scroll to zoom and double click to fit it. The arrow keys turn it, Shift with the arrow keys slides it, plus and minus zoom, and 0 fits it.',
+    loading: 'Loading the case',
+    failed: 'The 3D view could not start in this browser.',
+    hint: 'Drag to turn the case',
+    zoomIn: 'Zoom in',
+    zoomOut: 'Zoom out',
+    fit: 'Fit',
+    /** the key under the view: its two column heads, then each control with a mouse, with a touch screen, and as the Capsule's gesture */
+    heads: { here: 'In this view', capsule: 'With the Capsule' },
+    moves: {
+      rotate: { mouse: 'Drag', touch: 'Drag with one finger', capsule: 'Click the button, then turn your hand' },
+      pan: { mouse: 'Right-drag or Shift-drag', touch: 'Drag with two fingers', capsule: 'Hold the button and point the Capsule' },
+      zoom: { mouse: 'Scroll', touch: 'Pinch', capsule: 'Hold the button and twist' },
+      fit: { mouse: 'Double click', touch: 'Double tap', capsule: 'Double click the button' },
     },
-    viewport: 'An orange handheld enclosure in a CAD viewport, turned by the Capsule',
-    button: 'The Capsule\'s button: click to toggle rotate, hold to pan, double click to fit',
-    reset: 'Start over',
   },
   use: {
     h: 'How to use it',

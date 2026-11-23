@@ -1,169 +1,242 @@
 'use client';
 /*
-  CadSim: the Capsule's button and an Onshape-like viewport, so a reader can
-  feel the gesture machine from the firmware (lib/cadcore, GestureMachine):
-  a click toggles rotate 0.3 s after release (the double-click window), a
-  press held for 0.25 s pans while held, a double click fits the view, and
-  rotate picks up again 0.1 s after a pan. The pointer stands in for the hand:
-  while rotate is on, moving it turns the part; while panning, moving it slides
-  the part and the wheel zooms (the twist). The LED colours are the firmware's.
-  Until the reader touches it, and only while on screen, it plays a short demo.
-  Its words come from the article's copy (`t`, the copy's `sim`).
+  CadSim: the "Try it" section. The viewport holds the real LoRA Messenger case
+  (caseScene.ts) and takes the controls a reader already knows from any 3D
+  viewer: drag to turn, right-drag, Shift-drag or two fingers to slide, the
+  wheel or a pinch to zoom, a double click to fit. Each of those is one of the
+  Capsule's three gestures, so the Capsule beside the view acts it out as the
+  reader does it: it leans the way the hand would turn, its button shows as
+  clicked or held, and its light takes the firmware's colour (cyan for rotate,
+  amber while the button is held, a white flash for fit). The key under the
+  view pairs each control with its gesture and lights the one in use.
+
+  The wheel only zooms once the reader has pressed inside the view, so
+  scrolling the page past it is never caught. Until the first touch, and only
+  while on screen, the case sways by itself. Its words come from the article's
+  copy (`t`, the copy's `sim`).
 */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { CadMouseCopy } from './_copy/en';
+import type { CaseScene } from './caseScene';
 
-const HOLD_MS = 250, GAP_MS = 300, SETTLE_MS = 100;
-const DEG_PER_PX = 0.45;
-const HOME = { yaw: -28, pitch: -14, x: 0, y: 0, zoom: 1 };
-type View = typeof HOME;
+type Mode = 'ready' | 'rotate' | 'pan' | 'zoom' | 'fit';
 type Led = 'ready' | 'rotate' | 'pan' | 'fit';
+const MOVES = ['rotate', 'pan', 'zoom', 'fit'] as const;
+const LEDS: Led[] = ['ready', 'rotate', 'pan', 'fit'];
+const LEAN_MAX = 24;
+const clamp = (v: number, m: number) => Math.max(-m, Math.min(m, v));
 
 export default function CadSim({ t: tx }: { t: CadMouseCopy['sim'] }) {
   const root = useRef<HTMLDivElement>(null);
-  const [view, setView] = useState<View>(HOME);
-  const [rotate, setRotate] = useState(false);
-  const [panning, setPanning] = useState(false);
-  const [pressed, setPressed] = useState(false);
-  const [flash, setFlash] = useState(false);
-  const [fitting, setFitting] = useState(false);
+  const vp = useRef<HTMLDivElement>(null);
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const cap = useRef<HTMLDivElement>(null);
+  const scene = useRef<CaseScene | null>(null);
+
+  const [mode, setMode] = useState<Mode>('ready');
+  const [state, setState] = useState<'idle' | 'ready' | 'failed'>('idle');
   const [demo, setDemo] = useState(true);
+  const [near, setNear] = useState(false);
   const [inView, setInView] = useState(false);
 
-  const t = useRef({ hold: 0, click: 0, settle: 0, flash: 0, fit: 0 });
-  const live = useRef({ rotate: false, panning: false, pressed: false, resumeAt: 0, downAt: 0, pendingClick: false, last: null as null | { x: number; y: number }, vpLast: null as null | { x: number; y: number } });
-  live.current.rotate = rotate;
+  const live = useRef({
+    pts: new Map<number, { x: number; y: number }>(), mode: 'ready' as Mode, engaged: false,
+    tapAt: 0, tapX: 0, tapY: 0, downX: 0, downY: 0, moved: false, timer: 0,
+    lean: { x: 0, y: 0, z: 0 }, leanAt: 0, leanRaf: 0,
+  });
 
-  const stopDemo = useCallback(() => setDemo(false), []);
+  const go = useCallback((m: Mode) => { if (live.current.mode !== m) { live.current.mode = m; setMode(m); } }, []);
+  /* a short state (zoom from the wheel, the fit flash) that falls back to ready */
+  const flash = useCallback((m: Mode, ms: number) => {
+    const L = live.current;
+    go(m); window.clearTimeout(L.timer);
+    L.timer = window.setTimeout(() => { if (!L.pts.size) go('ready'); }, ms);
+  }, [go]);
 
-  // auto demo: rotate on, a slow hand turning back and forth, only on screen
+  /* The Capsule leans with the hand, then settles back upright. */
+  const lean = useCallback((x: number, y: number, z: number) => {
+    const L = live.current, el = cap.current;
+    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    L.lean.x = clamp(L.lean.x + x, LEAN_MAX); L.lean.y = clamp(L.lean.y + y, LEAN_MAX); L.lean.z = clamp(L.lean.z + z, LEAN_MAX);
+    L.leanAt = performance.now();
+    if (L.leanRaf) return;
+    const step = (now: number) => {
+      const a = L.lean;
+      if (now - L.leanAt > 70) { a.x *= 0.9; a.y *= 0.9; a.z *= 0.9; }
+      el.style.transform = `perspective(520px) rotateX(${a.x.toFixed(2)}deg) rotateY(${a.y.toFixed(2)}deg) rotateZ(${a.z.toFixed(2)}deg)`;
+      if (Math.abs(a.x) + Math.abs(a.y) + Math.abs(a.z) < 0.08 && now - L.leanAt > 70) { el.style.transform = ''; L.leanRaf = 0; return; }
+      L.leanRaf = requestAnimationFrame(step);
+    };
+    L.leanRaf = requestAnimationFrame(step);
+  }, []);
+
+  // the model and three.js are only fetched once the section is close
   useEffect(() => {
     const el = root.current; if (!el) return;
-    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.35 });
-    io.observe(el);
-    return () => io.disconnect();
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setNear(true); io.disconnect(); } }, { rootMargin: '500px 0px' });
+    const vis = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.3 });
+    io.observe(el); vis.observe(el);
+    return () => { io.disconnect(); vis.disconnect(); };
   }, []);
   useEffect(() => {
-    if (!demo || !inView) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setDemo(false); return; }
-    setRotate(true);
-    let raf = 0; const t0 = performance.now();
-    const step = (now: number) => {
-      const s = (now - t0) / 1000;
-      setView((v) => ({ ...v, yaw: HOME.yaw + Math.sin(s * 0.7) * 48, pitch: HOME.pitch + Math.sin(s * 0.45) * 16 }));
-      raf = requestAnimationFrame(step);
-    };
-    raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, [demo, inView]);
-  useEffect(() => { if (!demo) { setRotate(false); setView(HOME); } }, [demo]);
-  useEffect(() => () => { Object.values(t.current).forEach((id) => window.clearTimeout(id)); }, []);
+    if (!near || !canvas.current) return;
+    let gone = false, ro: ResizeObserver | null = null;
+    import('./caseScene').then(({ createCaseScene }) => {
+      if (gone || !canvas.current) return;
+      try {
+        const s = createCaseScene(canvas.current, {
+          glb: '/cad-mouse/brolocator.glb',
+          onReady: () => { if (!gone) setState('ready'); },
+          onError: () => { if (!gone) setState('failed'); },
+          onAutoTurn: (yaw, pitch) => lean(pitch * 0.6, yaw * 0.6, 0),
+        });
+        scene.current = s;
+        ro = new ResizeObserver(() => s.resize());
+        if (vp.current) ro.observe(vp.current);
+      } catch { setState('failed'); }
+    }).catch(() => { if (!gone) setState('failed'); });
+    const L = live.current;
+    return () => { gone = true; ro?.disconnect(); scene.current?.destroy(); scene.current = null; window.clearTimeout(L.timer); cancelAnimationFrame(L.leanRaf); L.leanRaf = 0; };
+  }, [near, lean]);
 
-  const fit = () => {
-    setFitting(true); setView(HOME); setFlash(true);
-    window.clearTimeout(t.current.flash); window.clearTimeout(t.current.fit);
-    t.current.flash = window.setTimeout(() => setFlash(false), 320);
-    t.current.fit = window.setTimeout(() => setFitting(false), 520);
-  };
+  // the sway that plays until the reader takes over, only while on screen
+  const swaying = demo && inView && state === 'ready';
+  useEffect(() => {
+    scene.current?.setAuto(swaying);
+    if (swaying && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) go('rotate');
+    else if (demo) go('ready');
+  }, [swaying, demo, go]);
+  const take = useCallback(() => { if (live.current.pts.size === 0 && demo) go('ready'); setDemo(false); }, [demo, go]);
 
-  // the button, as the firmware's gesture machine sees it
-  const down = () => {
-    stopDemo();
-    const L = live.current; if (L.pressed) return;
-    L.pressed = true; setPressed(true); L.downAt = performance.now();
-    window.clearTimeout(t.current.settle);
-    t.current.hold = window.setTimeout(() => {
-      L.panning = true; setPanning(true);
-      if (L.pendingClick) { L.pendingClick = false; window.clearTimeout(t.current.click); setRotate((r) => !r); }
-    }, HOLD_MS);
+  const fit = useCallback(() => { take(); scene.current?.fit(); flash('fit', 420); }, [take, flash]);
+  const zoomBy = useCallback((f: number) => { take(); scene.current?.zoom(f); lean(0, 0, f > 1 ? 7 : -7); flash('zoom', 320); }, [take, flash, lean]);
+
+  const down = (e: React.PointerEvent) => {
+    if ((e.target as HTMLElement).closest('button')) return;
+    const L = live.current;
+    take(); L.engaged = true;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    L.pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    L.downX = e.clientX; L.downY = e.clientY; L.moved = false;
+    window.clearTimeout(L.timer);
+    go(L.pts.size > 1 || e.button === 2 || e.button === 1 || e.shiftKey ? 'pan' : 'rotate');
   };
-  const up = () => {
-    const L = live.current; if (!L.pressed) return;
-    L.pressed = false; setPressed(false); window.clearTimeout(t.current.hold);
-    if (L.panning) {
-      L.panning = false; setPanning(false);
-      L.resumeAt = performance.now() + SETTLE_MS;
+  const move = (e: React.PointerEvent) => {
+    const L = live.current, p = L.pts.get(e.pointerId), s = scene.current;
+    if (!p || !s) return;
+    const x = e.clientX, y = e.clientY, dx = x - p.x, dy = y - p.y;
+    if (Math.abs(x - L.downX) + Math.abs(y - L.downY) > 6) L.moved = true;
+    if (L.pts.size === 1) {
+      p.x = x; p.y = y;
+      if (L.mode === 'pan') { s.pan(dx, dy); lean(-dy * 0.16, dx * 0.16, 0); }
+      else { go('rotate'); s.rotate(dx, dy); lean(-dy * 0.22, dx * 0.22, 0); }
       return;
     }
-    if (L.pendingClick) { L.pendingClick = false; window.clearTimeout(t.current.click); fit(); return; }
-    L.pendingClick = true;
-    t.current.click = window.setTimeout(() => { L.pendingClick = false; setRotate((r) => !r); }, GAP_MS);
+    // two fingers: the pair slides the case, and the gap between them zooms it
+    const other = [...L.pts.entries()].find(([id]) => id !== e.pointerId)?.[1];
+    if (!other) return;
+    const before = Math.hypot(p.x - other.x, p.y - other.y), after = Math.hypot(x - other.x, y - other.y);
+    p.x = x; p.y = y;
+    s.pan(dx / 2, dy / 2);
+    if (before > 8 && after > 8) {
+      const f = after / before;
+      s.zoom(f);
+      const pinch = Math.abs(after - before) > Math.hypot(dx, dy) * 0.6;
+      go(pinch ? 'zoom' : 'pan');
+      if (pinch) lean(0, 0, (f - 1) * 90); else lean(-dy * 0.1, dx * 0.1, 0);
+    }
+  };
+  const up = (e: React.PointerEvent) => {
+    const L = live.current;
+    if (!L.pts.delete(e.pointerId)) return;
+    if (L.pts.size) { go('rotate'); return; }
+    go('ready');
+    if (L.moved || e.type === 'pointercancel') { L.tapAt = 0; return; }
+    // a second quick tap in the same place is the double click
+    const now = performance.now();
+    if (now - L.tapAt < 340 && Math.abs(e.clientX - L.tapX) + Math.abs(e.clientY - L.tapY) < 28) { L.tapAt = 0; fit(); return; }
+    L.tapAt = now; L.tapX = e.clientX; L.tapY = e.clientY;
   };
 
-  // the pointer stands in for the hand: while the button is held it pans from
-  // anywhere (the button keeps the pointer), otherwise moving it over the
-  // viewport turns the part when rotate is on
-  const panMove = (e: React.PointerEvent) => {
-    const L = live.current; if (!L.pressed) return;
-    const p = { x: e.clientX, y: e.clientY }; const prev = L.last; L.last = p;
-    if (!prev || !L.panning) return;
-    setView((v) => ({ ...v, x: v.x + p.x - prev.x, y: v.y + p.y - prev.y }));
-  };
-  const vpMove = (e: React.PointerEvent) => {
-    const L = live.current; if (L.pressed) return;
-    const p = { x: e.clientX, y: e.clientY }; const prev = L.vpLast; L.vpLast = p;
-    if (!prev || demo || !L.rotate || performance.now() < L.resumeAt) return;
-    setView((v) => ({ ...v, yaw: v.yaw + (p.x - prev.x) * DEG_PER_PX, pitch: v.pitch - (p.y - prev.y) * DEG_PER_PX }));
-  };
-  // scrolling while panning is the twist: it zooms, and must not scroll the page
+  // the wheel zooms once the reader has pressed inside the view (or pinches a trackpad), never before
   useEffect(() => {
-    const el = root.current; if (!el) return;
+    const el = vp.current; if (!el) return;
     const onWheel = (e: WheelEvent) => {
-      if (!live.current.panning) return;
+      if (!live.current.engaged && !e.ctrlKey) return;
       e.preventDefault();
-      setView((v) => ({ ...v, zoom: Math.min(2.6, Math.max(0.45, v.zoom * Math.exp(-e.deltaY * 0.0015))) }));
+      zoomBy(Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0016)));
     };
     el.addEventListener('wheel', onWheel, { passive: false });
     return () => el.removeEventListener('wheel', onWheel);
-  }, []);
-  // a touch only moves while it is down, so a drag on the viewport works too
-  const vpDown = (e: React.PointerEvent) => { stopDemo(); live.current.vpLast = { x: e.clientX, y: e.clientY }; };
+  }, [zoomBy]);
 
-  const key = (e: React.KeyboardEvent, isDown: boolean) => {
-    if (e.key !== ' ' && e.key !== 'Enter') return;
-    e.preventDefault();
-    if (isDown) { if (!e.repeat) down(); } else up();
+  const key = (e: React.KeyboardEvent) => {
+    if (e.target !== e.currentTarget) return;
+    const s = scene.current; if (!s) return;
+    const arrow: Record<string, [number, number]> = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+    const a = arrow[e.key];
+    if (a) {
+      e.preventDefault(); take();
+      if (e.shiftKey) { s.pan(a[0] * 24, a[1] * 24); lean(-a[1] * 6, a[0] * 6, 0); flash('pan', 320); }
+      else { s.rotate(a[0] * 30, a[1] * 30); lean(-a[1] * 8, a[0] * 8, 0); flash('rotate', 320); }
+    } else if (e.key === '+' || e.key === '=') { e.preventDefault(); zoomBy(1.2); }
+    else if (e.key === '-' || e.key === '_') { e.preventDefault(); zoomBy(1 / 1.2); }
+    else if (e.key === '0' || e.key === 'Home' || e.key === 'f' || e.key === 'F') { e.preventDefault(); fit(); }
   };
-  const arrows = (e: React.KeyboardEvent) => {
-    const step: Record<string, [number, number]> = { ArrowLeft: [-12, 0], ArrowRight: [12, 0], ArrowUp: [0, 12], ArrowDown: [0, -12] };
-    const s = step[e.key]; if (!s) return;
-    e.preventDefault(); stopDemo();
-    if (live.current.panning) setView((v) => ({ ...v, x: v.x + s[0] * 2, y: v.y - s[1] * 2 }));
-    else if (live.current.rotate) setView((v) => ({ ...v, yaw: v.yaw + s[0], pitch: v.pitch + s[1] }));
-  };
 
-  const led: Led = flash ? 'fit' : panning ? 'pan' : rotate ? 'rotate' : 'ready';
-  const status = demo ? tx.status.demo : panning ? tx.status.pan : rotate ? tx.status.rotate : tx.status.off;
-  const part = { transform: `translate(${view.x}px, ${view.y}px) scale(${view.zoom}) rotateX(${view.pitch}deg) rotateY(${view.yaw}deg)` };
-  const triad = { transform: `rotateX(${view.pitch}deg) rotateY(${view.yaw}deg)` };
-
+  const led: Led = mode === 'zoom' ? 'pan' : mode;
   return (
-    <div ref={root} className={`cmx${fitting ? ' is-fitting' : ''}`} data-no-zoom onPointerMove={panMove}>
-      <div className="cmx-vp" onPointerDown={vpDown} onPointerMove={vpMove} onPointerLeave={() => { live.current.vpLast = null; }} onKeyDown={arrows} tabIndex={0}
-        role="img" aria-label={tx.viewport}>
-        <div className="cmx-vp-bar" aria-hidden="true"><span /><span /><span /><span className="cmx-vp-name">Part Studio 1</span></div>
-        <div className="cmx-stage" aria-hidden="true">
-          <div className="cmx-part" style={part}>
-            <i className="cmx-f cmx-front"><em className="cmx-win w1" /><em className="cmx-win w2" /><em className="cmx-win w3" /><em className="cmx-knob k1" /><em className="cmx-knob k2" /><em className="cmx-dot" /><em className="cmx-slot" /></i>
-            <i className="cmx-f cmx-back" /><i className="cmx-f cmx-left" /><i className="cmx-f cmx-right" />
-            <i className="cmx-f cmx-top" /><i className="cmx-f cmx-bottom" />
-          </div>
-        </div>
-        <div className="cmx-triad" aria-hidden="true"><div className="cmx-triad-in" style={triad}><i className="ax x" /><i className="ax y" /><i className="ax z" /></div></div>
-      </div>
-
-      <div className="cmx-dev">
-        <div className="cmx-cap">
-          <img src="/images/cad-mouse/cover.webp" alt="" width={535} height={823} draggable={false} />
-          <button type="button" className={`cmx-btn${pressed ? ' is-down' : ''}`} aria-label={tx.button}
-            onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); live.current.last = { x: e.clientX, y: e.clientY }; down(); }}
-            onPointerUp={up} onPointerCancel={up} onKeyDown={(e) => key(e, true)} onKeyUp={(e) => key(e, false)}>
-            <span className="cmx-btn-ring" aria-hidden="true" />
+    <div ref={root} className={`cmx is-${mode}${state === 'ready' ? ' is-loaded' : ''}`} data-no-zoom>
+      <div ref={vp} className="cmx-vp" tabIndex={0} role="group" aria-label={tx.viewport}
+        onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}
+        onPointerLeave={() => { if (!live.current.pts.size) live.current.engaged = false; }}
+        onContextMenu={(e) => e.preventDefault()} onKeyDown={key}>
+        <div className="cmx-vp-bar" aria-hidden="true"><span /><span /><span /><span className="cmx-vp-name">Brolocator case</span></div>
+        <div className="cmx-stage"><canvas ref={canvas} aria-hidden="true" /></div>
+        {state !== 'ready' && <p className="cmx-wait">{state === 'failed' ? tx.failed : tx.loading}</p>}
+        {state === 'ready' && demo && (
+          <p className="cmx-hint" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3M18 3v4h-4M6 21v-4h4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            {tx.hint}
+          </p>
+        )}
+        <div className="cmx-tools">
+          <button type="button" onClick={() => zoomBy(1 / 1.3)} aria-label={tx.zoomOut} title={tx.zoomOut}>
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 12h12" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" /></svg>
+          </button>
+          <button type="button" onClick={() => zoomBy(1.3)} aria-label={tx.zoomIn} title={tx.zoomIn}>
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 12h12M12 6v12" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" /></svg>
+          </button>
+          <button type="button" className="cmx-tools-fit" onClick={fit}>
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            {tx.fit}
           </button>
         </div>
-        <p className={`cmx-led is-${led}`}><i aria-hidden="true" />{tx.led[led]}</p>
-        <p className="cmx-status" aria-live="polite">{status}</p>
-        {!demo && (rotate || view !== HOME) && <button type="button" className="cmx-reset" onClick={() => { setRotate(false); fit(); }}>{tx.reset}</button>}
+      </div>
+
+      <div className="cmx-dev" aria-hidden="true">
+        <div className="cmx-cap" ref={cap}>
+          <img src="/images/cad-mouse/cover.webp" alt="" width={535} height={823} draggable={false} />
+          <span className="cmx-btn"><i /></span>
+        </div>
+        <p className={`cmx-led is-${led}`}>
+          <i />
+          <span className="cmx-led-text">
+            {LEDS.map((k) => <span key={k} className={k === led ? 'on' : undefined}>{tx.led[k]}</span>)}
+          </span>
+        </p>
+      </div>
+
+      <div className="cmx-key">
+        <p className="cmx-key-head"><span>{tx.heads.here}</span><span>{tx.heads.capsule}</span></p>
+        <ul>
+          {MOVES.map((m) => (
+            <li key={m} className={`cmx-move is-${m}${mode === m ? ' on' : ''}`}>
+              <b><span className="cmx-mouse">{tx.moves[m].mouse}</span><span className="cmx-touch">{tx.moves[m].touch}</span></b>
+              <span>{tx.moves[m].capsule}</span>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

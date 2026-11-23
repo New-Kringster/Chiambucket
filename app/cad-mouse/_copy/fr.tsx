@@ -42,25 +42,33 @@ const fr: CadMouseCopy = {
   },
   try: {
     h: 'Essaie-la',
-    p: 'Cette copie fait tourner la logique du bouton de la Capsule, avec ton pointeur à la place de ta main. Le haut de la Capsule, c’est son bouton, alors clique dessus pour activer la rotation et passe le pointeur sur la vue pour tourner la pièce, maintiens-le pour faire un panoramique, et double-clique pour recadrer la pièce dans la vue.',
-    note: 'La vraie Capsule mesure à quelle vitesse ta main tourne, donc la pièce tourne du même angle que ta main. Ici, c’est le mouvement du pointeur qui la remplace.',
+    p: 'C’est le boîtier de la démo, celui que j’ai dessiné pour mon LoRA Messenger, et c’est le même modèle que j’avais ouvert dans Onshape. Fais-le glisser et il tourne comme quand je tourne la Capsule, pendant que la Capsule à côté montre ce que feraient ma main et son bouton.',
+    note: 'La vraie Capsule mesure à quelle vitesse ta main tourne, donc la pièce tourne du même angle que ta main. Ici, c’est ton glissement qui la remplace.',
   },
+  /** the simulator's words (CadSim) */
   sim: {
+    /** the Capsule's light, by state */
     led: {
-      ready: 'Vert clignotant : connectée, rotation coupée',
-      rotate: 'Cyan : rotation active',
-      pan: 'Ambre : panoramique',
-      fit: 'Flash blanc : recadrage',
+      ready: 'Vert clignotant : connectée, rotation coupée',
+      rotate: 'Cyan : rotation active',
+      pan: 'Ambre : bouton maintenu',
+      fit: 'Flash blanc : recadrage',
     },
-    status: {
-      demo: 'Une démo tourne avec la rotation activée. Touche le bouton de la Capsule pour prendre la main.',
-      pan: 'Panoramique tant que tu maintiens. Bouge pour faire glisser la pièce, et fais défiler pour zoomer, ce qui correspond à la torsion sur la vraie.',
-      rotate: 'La rotation est activée. Passe le pointeur sur la vue et la pièce tourne avec. Clique encore pour arrêter.',
-      off: 'La rotation est désactivée. Clique sur le bouton pour commencer, maintiens-le pour un panoramique, ou double-clique pour recadrer.',
+    viewport: 'Le boîtier du LoRA Messenger dans une vue de CAO. Fais glisser pour le tourner, fais glisser avec Maj pour le déplacer, fais défiler pour zoomer et double-clique pour le recadrer. Les flèches le tournent, Maj avec les flèches le déplace, plus et moins zooment, et 0 le recadre.',
+    loading: 'Chargement du boîtier',
+    failed: 'La vue 3D n’a pas pu démarrer dans ce navigateur.',
+    hint: 'Fais glisser pour tourner le boîtier',
+    zoomIn: 'Zoomer',
+    zoomOut: 'Dézoomer',
+    fit: 'Recadrer',
+    /** the key under the view: its two column heads, then each control with a mouse, with a touch screen, and as the Capsule's gesture */
+    heads: { here: 'Dans cette vue', capsule: 'Avec la Capsule' },
+    moves: {
+      rotate: { mouse: 'Glisser', touch: 'Glisser avec un doigt', capsule: 'Cliquer sur le bouton, puis tourner la main' },
+      pan: { mouse: 'Glisser avec le clic droit ou avec Maj', touch: 'Glisser avec deux doigts', capsule: 'Maintenir le bouton et pointer la Capsule' },
+      zoom: { mouse: 'Faire défiler', touch: 'Pincer', capsule: 'Maintenir le bouton et tordre la Capsule' },
+      fit: { mouse: 'Double-clic', touch: 'Toucher deux fois', capsule: 'Double-cliquer sur le bouton' },
     },
-    viewport: 'Un boîtier portable orange dans une vue de CAO, tourné par la Capsule',
-    button: 'Le bouton de la Capsule : clique pour activer la rotation, maintiens pour un panoramique, double-clique pour recadrer',
-    reset: 'Recommencer',
   },
   use: {
     h: 'Mode d’emploi',

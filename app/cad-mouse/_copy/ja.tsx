@@ -41,25 +41,33 @@ const ja: CadMouseCopy = {
   },
   try: {
     h: '試す',
-    p: 'このコピーは Capsule のボタンの処理をそのまま動かしていて、手の代わりにポインターを使います。Capsule の上の部分がボタンです。クリックすると回転がオンになるので、ポインターをビューの上で動かしてパーツを回してください。押したままにするとパン、ダブルクリックするとパーツが画面に収まります。',
-    note: '本物の Capsule は手の回る速さを測るので、パーツは手と同じ角度だけ回ります。ここではポインターの動きがその代わりです。',
+    p: 'これはデモに映っているケースで、自分の LoRA Messenger のために設計したものです。Onshape で開いていたのと同じモデルをここに読み込んでいます。ドラッグすると、Capsule を回したときと同じようにケースが回り、隣の Capsule がそのときの手とボタンの動きを見せます。',
+    note: '本物の Capsule は手の回る速さを測るので、パーツは手と同じ角度だけ回ります。ここではドラッグがその代わりです。',
   },
+  /** the simulator's words (CadSim) */
   sim: {
+    /** the Capsule's light, by state */
     led: {
       ready: '緑の点滅：接続中、回転オフ',
       rotate: 'シアン：回転オン',
-      pan: 'アンバー：パン中',
+      pan: 'アンバー：ボタンを押している間',
       fit: '白く光る：全体表示',
     },
-    status: {
-      demo: '回転オンでデモを再生中です。Capsule のボタンに触ると操作を交代できます。',
-      pan: '押している間はパンします。動かすとパーツが動き、スクロールでズームします。本物ではひねる操作です。',
-      rotate: '回転がオンです。ポインターをビューの上で動かすと、パーツが一緒に回ります。もう一度クリックすると止まります。',
-      off: '回転はオフです。ボタンをクリックすると開始、押したままでパン、ダブルクリックで全体表示です。',
+    viewport: 'CAD のビューに表示された LoRA Messenger のケース。ドラッグで回転、Shift を押しながらドラッグでパン、スクロールでズーム、ダブルクリックで全体表示します。矢印キーで回転、Shift と矢印キーでパン、プラスとマイナスでズーム、0 で全体表示します。',
+    loading: 'ケースを読み込み中',
+    failed: 'このブラウザでは 3D ビューを開始できませんでした。',
+    hint: 'ドラッグしてケースを回す',
+    zoomIn: '拡大',
+    zoomOut: '縮小',
+    fit: '全体表示',
+    /** the key under the view: its two column heads, then each control with a mouse, with a touch screen, and as the Capsule's gesture */
+    heads: { here: 'このビューでは', capsule: 'Capsule では' },
+    moves: {
+      rotate: { mouse: 'ドラッグ', touch: '1 本指でドラッグ', capsule: 'ボタンをクリックして手を回す' },
+      pan: { mouse: '右ドラッグか Shift とドラッグ', touch: '2 本指でドラッグ', capsule: 'ボタンを押したまま Capsule を向ける' },
+      zoom: { mouse: 'スクロール', touch: 'ピンチ', capsule: 'ボタンを押したままひねる' },
+      fit: { mouse: 'ダブルクリック', touch: 'ダブルタップ', capsule: 'ボタンをダブルクリック' },
     },
-    viewport: 'CAD のビューポートに表示された、Capsule で回すオレンジ色のハンディケース',
-    button: 'Capsule のボタン：クリックで回転の切り替え、長押しでパン、ダブルクリックで全体表示',
-    reset: '最初から',
   },
   use: {
     h: '使い方',
