@@ -25,16 +25,18 @@ const en = {
   close: 'Close',
 
   hero: {
+    tag: 'Infrastructure',
     title: 'Agentic first HomeLab',
-    lead: 'Every machine, network and service here is run by braven-agents, a server whose job is running my AI agents. They can reach everything else, from the storage server to the router and Cloudflare, so most changes happen from a prompt without me touching anything.',
-    mapCta: 'See how it connects',
-    machinesCta: 'See the machines',
+    /** the line under the title, after the gold trace */
+    sub: 'Every machine, network and service here is run by AI agents on one server.',
+    scroll: 'Scroll',
   },
 
   /* the control map: braven-agents in the middle, every system it reaches around it */
   core: {
     title: 'Everything goes through braven-agents',
-    lead: 'braven-agents holds the keys to every other system, and the agents on it reach each one through its own API or over SSH. Select a system to see what they do there.',
+    lead: 'braven-agents holds the keys to every other system, and the agents on it reach each one through its own API or over SSH, so most changes happen from a prompt without me touching anything.',
+    hint: 'Select a system to see what the agents do there.',
     mapLabel: 'How braven-agents connects to every other system',
     coreTag: 'The core',
     coreRole: 'It runs Claude Code, Codex and OpenCode, plus Hermes for scheduled jobs, and I start and follow their work in T3 Code.',
@@ -70,8 +72,12 @@ const en = {
 
   /* one request followed through every system it touches */
   prompt: {
+    tag: 'One prompt',
     title: 'From one prompt to a running app',
-    lead: 'When I ask for something new, the agents work through every system it touches by themselves. If I ask them to put a new app online at its own chiambucket.com address, for example, this is what happens:',
+    lead: 'When I ask for something new, the agents work through every system it touches by themselves.',
+    /** {n} and {total} are step numbers */
+    stepOf: 'Step {n} of {total}',
+    done: 'Live at notes.chiambucket.com',
     requestLabel: 'The request',
     request: 'Put my new notes app online at notes.chiambucket.com.',
     steps: [
@@ -89,11 +95,12 @@ const en = {
   },
 
   machines: {
+    tag: 'Hardware',
     title: 'The machines',
     /** alt text for each machine's photo */
     photoAlt: 'The {name}',
     lead: 'Five machines are running, and a sixth is still being planned.',
-    status: { running: 'Running', planned: 'Planned' },
+    planned: 'Planned',
     items: byId<MachineText>()({
       agents: {
         name: 'braven-agents', role: 'The core',
@@ -162,8 +169,9 @@ const en = {
   },
 
   stack: {
+    tag: 'Software',
     title: 'What it hosts',
-    lead: 'NewMain runs these services for me and my projects, and the public ones show a live status that is checked once a minute.',
+    lead: 'NewMain runs these services for me and my projects. Select one to see what it does.',
     filterLabel: 'Filter services',
     /** filter buttons; every key but `all` is a service category in data.ts */
     categories: {
@@ -246,6 +254,7 @@ const en = {
   }),
 
   tubs: {
+    tag: 'What I am building',
     title: 'Shebang Tubs',
     status: 'Early, in development',
     lead: 'Shebang Tubs is a project and framework I am building so that anyone can build and self-host their own apps with agents.',

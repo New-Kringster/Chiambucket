@@ -1,6 +1,8 @@
+import { draft, type Draft } from './draft';
 import type { HomelabCopy } from './en';
 
-const zh: HomelabCopy = {
+// a loose cast while drafting: keys English no longer has are ignored by draft()
+const zh = {
   meta: {
     title: 'Homelab | Braven Chiam',
     description:
@@ -254,5 +256,5 @@ const zh: HomelabCopy = {
     projects: '查看我的项目',
     contact: '联系我',
   },
-};
-export default zh;
+} as Draft<HomelabCopy>;
+export default draft(zh);

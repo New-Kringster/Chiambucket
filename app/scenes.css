@@ -14,7 +14,7 @@
 html.sensory-active.is-day[data-theme="golden"] { --sl-sky: #b6aec3; }
 html.sensory-active.is-day[data-theme="noon"] { --sl-sky: #92b6d0; }
 html.sensory-active.is-day[data-theme="teal"] { --sl-sky: #8eb2ad; }
-html.sensory-active.is-night[data-theme="deep"] { --sl-sky: #081615; }
+html.sensory-active.is-night[data-theme="deep"] { --sl-sky: #000; }
 html.sensory-active.is-day[data-theme="mist"] { --sl-sky: #b5afc4; }
 
 /* ── Golden hour (photography): a low sun on the left ── */
@@ -265,7 +265,7 @@ html.sensory-active.is-night[data-theme] {
   color-scheme: dark;
 }
 html[data-theme="dusk"] { --sl-edge: #171d29; }
-html[data-theme="deep"] { --sl-edge: #0a1616; }
+html[data-theme="deep"] { --sl-edge: #000; }
 
 /* The night footer stands in the dark grass like the day one: no strip,
    moonlit shade under cream type and a night-glass social pill. */

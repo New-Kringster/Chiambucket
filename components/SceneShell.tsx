@@ -12,8 +12,9 @@ import { splitLang } from '../lib/i18n';
 */
 export default function SceneShell() {
   const pathname = usePathname();
-  // The homepage draws its own chapters (app/_home/HomeStory.tsx), so no scene there.
+  // The homepage draws its own chapters (app/_home/HomeStory.tsx), and the HomeLab
+  // is told the same way on black (app/homelab), so neither has a scene.
   const { base } = splitLang(pathname);
-  if (base === '/' || isEmbed(pathname)) return null;
+  if (base === '/' || base === '/homelab' || isEmbed(pathname)) return null;
   return <SunlitScene key={pathname} theme={themeForPath(base)} home={false} />;
 }

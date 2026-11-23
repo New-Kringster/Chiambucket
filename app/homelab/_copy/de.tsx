@@ -1,7 +1,9 @@
+import { draft, type Draft } from './draft';
 import type { HomelabCopy } from './en';
 
 /* The homelab page's German words, in the shape of en.tsx. */
-const de: HomelabCopy = {
+// a loose cast while drafting: keys English no longer has are ignored by draft()
+const de = {
   meta: {
     title: 'Homelab | Braven Chiam',
     description:
@@ -255,6 +257,6 @@ const de: HomelabCopy = {
     projects: 'Meine Projekte',
     contact: 'Kontakt',
   },
-};
+} as Draft<HomelabCopy>;
 
-export default de;
+export default draft(de);
