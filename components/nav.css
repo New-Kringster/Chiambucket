@@ -271,13 +271,6 @@ html.is-day .pnav-work > .pnav-item:not(.is-active) { text-shadow: 0 0 6px rgba(
 .pnav-globe:active { transform: scale(0.94); }
 .pnav-lang.is-open .pnav-globe { background: var(--nv-active); color: var(--nv-active-text); }
 .pnav-lang.is-open .pnav-globe svg { filter: none; }
-.pnav-lang.is-gone .pnav-globe {
-  opacity: 0;
-  transform: scale(0.6);
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 0.22s ease, transform 0.3s ease, visibility 0s linear 0.3s;
-}
 .pnav-langs {
   position: absolute;
   top: calc(100% + 8px);
@@ -507,14 +500,18 @@ html.is-day .pnav-work > .pnav-item:not(.is-active) { text-shadow: 0 0 6px rgba(
 .pnav-fl-rim { flood-color: var(--nv-blob-rim); }
 .pnav-fl-rim2 { flood-color: var(--nv-blob-rim2); }
 
-.pnav.is-blob :is(.pnav-pill, .pnav-circle),
+.pnav.is-blob :is(.pnav-pill, .pnav-circle, .pnav-globe),
 .pnav.is-blob.is-scrolled .pnav-logo {
   background: transparent;
   -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
   border-color: transparent;
   box-shadow: none;
 }
-.pnav.is-blob :is(.pnav-logo, .pnav-links, .pnav-work, .pnav-menu), .pnav.is-blob .pnav-sheet { will-change: translate; }
+.pnav.is-blob :is(.pnav-logo, .pnav-links, .pnav-work, .pnav-menu, .pnav-lang), .pnav.is-blob .pnav-sheet { will-change: translate; }
+/* the globe on the shared glass: its hover and open fills sit inside the bar's edge, like the page items */
+.pnav.is-blob .pnav-globe { padding: 3px; background-clip: content-box; }
+.pnav.is-blob .pnav-globe:hover { background-color: var(--nv-hover); }
+.pnav.is-blob .pnav-lang.is-open .pnav-globe { background: var(--nv-active); background-clip: content-box; }
 /* on phones, room between My work and the menu button so they start apart */
 .pnav.is-blob .pnav-right { gap: 22px; }
 
@@ -529,10 +526,9 @@ html.is-day .pnav-work > .pnav-item:not(.is-active) { text-shadow: 0 0 6px rgba(
 
 @media (max-width: 760px) {
   .pnav { top: calc(12px + env(safe-area-inset-top, 0px)); grid-template-columns: 1fr auto; }
-  /* phones choose the language in the menu (LangSheet); the globe's slot leaves the bar so the
-     merged bar stays at the edge, and the English-only note hangs from the nav's right end */
-  .pnav-globe { display: none; }
-  .pnav-lang { position: absolute; top: 0; right: 0; height: 100%; pointer-events: none; }
+  /* phones choose the language in the menu (LangSheet); the globe leaves the bar so the
+     merged bar stays at the edge */
+  .pnav-lang { display: none; }
   .pnav-links { display: none; }
   .pnav-menu { display: inline-block; }
 }

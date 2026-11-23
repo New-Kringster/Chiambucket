@@ -35,7 +35,8 @@ const WORK = { key: 'work' as const, href: `/#${PROJECTS_ID}` };
 
   As the page scrolls, the pieces slide together and merge into one compact
   bar, in the middle (on phones, at the right), like metaballs. My work joins
-  the end of the page pill and becomes one more option in the list: the logo gets a chip that swells out of a
+  the end of the page pill and becomes one more option in the list, and on
+  desktop the language globe joins the end of the bar: the logo gets a chip that swells out of a
   point, and where two pieces come close a neck of glass reaches across and
   thickens until they fuse (geometry in components/navBlob.ts). The glass for
   all of them is one layer clipped to that shape, with the rim and shadow
@@ -275,8 +276,11 @@ export default function Nav() {
     let last = 0;
     let on = false;
 
+    // the language globe (LangGlobe) is the last piece on desktop; on phones it is not shown
+    const globe = () => header.querySelector<HTMLElement>('.pnav-lang');
+
     const measure = () => {
-      const all = [logoRef.current, linksRef.current, workRef.current, menuRef.current];
+      const all = [logoRef.current, linksRef.current, workRef.current, menuRef.current, globe()];
       all.forEach((el) => { if (el) el.style.translate = ''; });
       sheet.style.translate = '';
       const shown = all.filter((el): el is HTMLElement => !!el && el.getClientRects().length > 0);
@@ -362,7 +366,7 @@ export default function Nav() {
       if (!on) {
         cancelAnimationFrame(frame);
         frame = 0;
-        [logoRef.current, linksRef.current, workRef.current, menuRef.current, sheet].forEach((el) => { if (el) el.style.translate = ''; });
+        [logoRef.current, linksRef.current, workRef.current, menuRef.current, globe(), sheet].forEach((el) => { if (el) el.style.translate = ''; });
         workRef.current?.style.removeProperty('--lit');
         workRef.current?.style.removeProperty('--ink');
         placeMark.current();

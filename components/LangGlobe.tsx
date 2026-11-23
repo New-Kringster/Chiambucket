@@ -9,16 +9,13 @@ import { SHELL } from '../lib/shell';
   which proxy.ts reads) and opens the same page in that language.
 
   - LangGlobe (desktop): a round glass button at the right end of the nav that
-    opens the list of languages, each in its own words. It sits outside the
-    nav's merging pieces and fades away once the page scrolls into its content,
-    then comes back at the very end of the page, where people go looking for
-    language settings.
+    opens the list of languages, each in its own words. It is the last of the
+    nav's pieces, so as the page scrolls it slides in and merges onto the end
+    of the bar with the others (Nav.tsx), and stays there.
     On phones it is hidden and takes no room, so the merged bar stays at the edge.
   - LangSheet (phones): the last row of the menu dropdown, the current language
     with a globe, which opens the same list inside the menu.
 */
-const SCROLL_GONE = 48;
-const END_BACK = 96; // px from the bottom of the page where the globe returns
 
 /** Remembers the choice and opens the page in it. */
 function useChooseLang(base: string) {
@@ -63,25 +60,9 @@ function LangList({ lang, open, onPick, id }: { lang: Lang; open: boolean; onPic
 export default function LangGlobe({ lang, base }: { lang: Lang; base: string }) {
   const choose = useChooseLang(base);
   const [open, setOpen] = useState(false);
-  const [gone, setGone] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
   const button = useRef<HTMLButtonElement>(null);
   const t = SHELL[lang];
-
-  // fades out once the page has scrolled into its content, back at the end of the page
-  useEffect(() => {
-    const on = () => {
-      const y = window.scrollY;
-      const atEnd = y + window.innerHeight >= document.documentElement.scrollHeight - END_BACK;
-      const g = y > SCROLL_GONE && !atEnd;
-      setGone(g);
-      if (g) setOpen(false);
-    };
-    on();
-    window.addEventListener('scroll', on, { passive: true });
-    window.addEventListener('resize', on);
-    return () => { window.removeEventListener('scroll', on); window.removeEventListener('resize', on); };
-  }, []);
 
   // closes on Escape (focus back on the globe) or a tap outside
   useEffect(() => {
@@ -94,7 +75,7 @@ export default function LangGlobe({ lang, base }: { lang: Lang; base: string }) 
   }, [open]);
 
   return (
-    <div className={`pnav-lang${gone ? ' is-gone' : ''}${open ? ' is-open' : ''}`} ref={wrap}>
+    <div className={`pnav-lang${open ? ' is-open' : ''}`} ref={wrap}>
       <button
         ref={button}
         type="button"
@@ -104,7 +85,6 @@ export default function LangGlobe({ lang, base }: { lang: Lang; base: string }) 
         aria-haspopup="true"
         aria-expanded={open}
         aria-controls="pnav-langs"
-        tabIndex={gone ? -1 : 0}
         onClick={() => setOpen((v) => !v)}
       >
         <Globe />
