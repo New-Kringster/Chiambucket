@@ -72,6 +72,7 @@ The site is in English plus Simplified Chinese (`zh`), Japanese (`ja`), Dutch (`
 - **Copy:** the shell words (nav, footer, globe, pop-up close, AI-use mark label) are `lib/shell.ts`. Each page's words live beside it: small pages in `<area>/_copy.tsx` (a record of languages; translations in `_copy.<lang>.tsx`), large ones in `<area>/_copy/<lang>.tsx` with an `index.ts` loader map so only the visitor's language is loaded (the server page loads it and passes it down). `en.tsx` defines the type (`typeof en`), so a missing or misshapen translation is a type error. Peeks: `components/peeks/<lang>.tsx` (loaded with `next/dynamic`, preloaded by the homepage). **When you change English copy, change every language** (or hand it to a translator with `.plan/i18n-translation-guide.md`, which holds the voice, register per language, glossary and the rule that UI labels must not get longer).
 - **Language switch (`components/LangGlobe.tsx`, styles in `components/nav.css` `.pnav-lang*`, `.pnav-sheet-lang`):** on desktop a globe is the last item on the right of the nav, outside the merging pieces, with its own glass, fading away past 48px of scroll. On phones (≤760px) the globe is hidden and takes no room (so the merged bar stays at the edge); the language is the last row of the menu dropdown (`LangSheet`), which opens the list in place. On English-only pages it shows a note in the reader's language (cookie or browser) that the article is English for now.
 - **Type (`app/i18n.css`):** zh/ja drop the tight Latin tracking on headings and labels; de/nl/ru may hyphenate. The display faces are Latin-only, so CJK and Cyrillic fall back to system faces per glyph.
+- **Every change ships in every language (hard rule).** A new page is not done until it has its `_copy` in all 8 languages, an `app/[lang]/<route>/page.tsx`, its path in `LOCALIZED` (`lib/i18n.ts`) and `config.matcher` (`proxy.ts`), and its 7 language alternates in `public/sitemap.xml`. Any edit to English copy (`en.tsx`, `_copy.tsx`, `peeks/en.tsx`, `recs/en.ts`, `lib/shell.ts`, `lib/articleShell.ts`) changes the same strings in every other language **in the same commit**, written per `.plan/i18n-translation-guide.md` (Braven's cheerful, conversational voice; labels no longer than the English). New visible text goes into the copy, never straight into JSX. `scripts/check-i18n.mjs` enforces this: the pre-commit hook (`.githooks/pre-commit`, wired by `npm install` via `prepare`) blocks a commit that changes an English copy file without its translations, `prebuild` fails the build when a page or translation is missing, and `npm run check:i18n` also flags translations older than their English. Only a commit that truly leaves visible English unchanged may skip the hook (`I18N_SKIP=1 git commit`). The few deliberate English-only exceptions are listed in the script (`ENGLISH_ONLY`).
 - **Checking a change:** look at the page in English and at least one long language (de or ru) and one CJK language (ja or zh) at 1440px and 390px; nothing may overflow or wrap inside a button or pill.
 
 ## Shared components (`components/`)
@@ -175,10 +176,11 @@ Pages are recoloured by a single `data-theme` attribute on `<html>` so each rout
 Run through this after ANY code change before reporting done:
 
 1. **Mobile responsiveness** — check the affected page at 390px width. Layouts must collapse gracefully; no overflow, truncated text, or broken spacing.
-2. **SEO / AI crawlers** — if a page was added or renamed: update `public/sitemap.xml`, `public/llms.txt`, ensure the page's server component exports `metadata` with title + description + canonical, and has JSON-LD structured data.
-3. **No em dashes in rendered copy** — use commas or split sentences. Never `—` in any text visible to the user.
-4. **Update CLAUDE.md** — if the architecture, routing, components, or CSS conventions changed, reflect it here.
-5. **Update README.md** — if user-facing information (stack, deploy steps, routes, features) changed, update it.
+2. **Every language** — any page added or copy changed: all 8 languages updated in the same commit, `npm run check:i18n` passes (see Languages).
+3. **SEO / AI crawlers** — if a page was added or renamed: update `public/sitemap.xml`, `public/llms.txt`, ensure the page's server component exports `metadata` with title + description + canonical, and has JSON-LD structured data.
+4. **No em dashes in rendered copy** — use commas or split sentences. Never `—` in any text visible to the user.
+5. **Update CLAUDE.md** — if the architecture, routing, components, or CSS conventions changed, reflect it here.
+6. **Update README.md** — if user-facing information (stack, deploy steps, routes, features) changed, update it.
 
 ## Always do first
 

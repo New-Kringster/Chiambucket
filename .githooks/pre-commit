@@ -1,0 +1,4 @@
+#!/bin/sh
+# Every English copy change ships in all languages (scripts/check-i18n.mjs, "Languages (i18n)" in CLAUDE.md).
+# Skip for a commit that truly only touches English: I18N_SKIP=1 git commit ...
+exec node scripts/check-i18n.mjs --staged
