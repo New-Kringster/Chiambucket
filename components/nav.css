@@ -332,28 +332,6 @@ html.is-day .pnav-work > .pnav-item:not(.is-active) { text-shadow: 0 0 6px rgba(
 .pnav-lang-item:active { transform: scale(0.97); }
 .pnav-lang-item.is-on { color: var(--nv-text-hi); }
 .pnav-lang-item.is-on svg { opacity: 1; }
-.pnav-langnote {
-  position: absolute;
-  top: calc(100% + 10px);
-  right: 0;
-  width: max-content;
-  max-width: min(17rem, calc(100vw - 28px));
-  margin: 0;
-  padding: 9px 13px;
-  border-radius: 14px;
-  background: var(--nv-sheet);
-  -webkit-backdrop-filter: blur(20px) saturate(160%) !important; backdrop-filter: blur(20px) saturate(160%) !important;
-  border: 1px solid var(--nv-border);
-  box-shadow: var(--nv-rim), var(--nv-shadow);
-  color: var(--nv-text-hi);
-  font-family: 'dmsans', system-ui, sans-serif;
-  font-size: 0.82rem;
-  line-height: 1.4;
-  pointer-events: none;
-  transition: opacity 0.25s ease, transform 0.3s ease;
-}
-.pnav-lang.is-open .pnav-langnote, .pnav-lang.is-gone .pnav-langnote { opacity: 0; transform: translateY(-4px); }
-
 .pnav-logo:focus-visible, .pnav-item:focus-visible, .pnav-circle:focus-visible, .pnav-globe:focus-visible, .pnav-lang-item:focus-visible {
   outline: 2px solid var(--nv-focus);
   outline-offset: 2px;
@@ -564,13 +542,13 @@ html.is-day .pnav-work > .pnav-item:not(.is-active) { text-shadow: 0 0 6px rgba(
 @media (prefers-reduced-motion: reduce) {
   .pnav-sheet, .pnav-sheet::before, .pnav-sheet .pnav-item:not(.pnav-sheet-work), .pnav-sheet.is-open .pnav-item:not(.pnav-sheet-work),
   .pnav-sheet-work, .pnav-sheet-work::before,
-  .pnav-menu span, .pnav-item, .pnav-mark.is-live, .pnav-globe, .pnav-langs, .pnav-lang.is-open .pnav-langs, .pnav-langnote, .pnav-sheet-lang, .pnav-sheet.is-open .pnav-sheet-lang, .pnav-chev { transition: none; }
+  .pnav-menu span, .pnav-item, .pnav-mark.is-live, .pnav-globe, .pnav-langs, .pnav-lang.is-open .pnav-langs, .pnav-sheet-lang, .pnav-sheet.is-open .pnav-sheet-lang, .pnav-chev { transition: none; }
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .pnav-pill, .pnav-circle, .pnav.is-scrolled .pnav-logo, .pnav-sheet::before, .pnav-globe, .pnav-langs, .pnav-langnote {
+  .pnav-pill, .pnav-circle, .pnav.is-scrolled .pnav-logo, .pnav-sheet::before, .pnav-globe, .pnav-langs {
     -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
     background: rgba(26, 21, 15, 0.97);
   }
-  html.is-day :is(.pnav-pill, .pnav-circle, .pnav.is-scrolled .pnav-logo, .pnav-globe, .pnav-langs, .pnav-langnote), html.is-day .pnav-sheet::before { background: rgba(248, 249, 243, 0.97); }
+  html.is-day :is(.pnav-pill, .pnav-circle, .pnav.is-scrolled .pnav-logo, .pnav-globe, .pnav-langs), html.is-day .pnav-sheet::before { background: rgba(248, 249, 243, 0.97); }
 }

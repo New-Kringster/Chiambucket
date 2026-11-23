@@ -79,6 +79,7 @@ const ru: ProjectJuneCopy = {
     routingAlt: 'Схема маршрутизации потоков WebRTC',
   },
   console: {
+    labelEnd: '.',
     tag: 'Консоль управления',
     rebuilt: { day: 'По записи дневного заезда', night: 'По записи ночного заезда' },
     toggleAria: 'Выберите дневной или ночной заезд',

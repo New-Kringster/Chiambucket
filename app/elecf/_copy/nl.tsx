@@ -1,0 +1,143 @@
+import type { ElecfCopy } from './en';
+
+const nl: ElecfCopy = {
+  meta: {
+    title: 'ELEC-F | Braven Chiam',
+    description: 'ELEC-F is een systeem voor veilige vriezeropslag dat ik met mijn team van vier bouwde. Twee M5Stack Fire-controllers met ToF-, PIR- en RGB-units slaan alarm als iemand te lang in een walk-in vriezer opgesloten zit.',
+    ogDescription: 'Een veiligheidssysteem voor vriezers op M5Stack dat de deur in de gaten houdt met een ToF-sensor en de ruimte met een PIR-sensor, en alarm slaat met een RGB-lamp en een zoemer.',
+  },
+  ld: { headline: 'Elec-F: systeem voor veilige vriezeropslag' },
+  hero: {
+    alt: 'Het kartonnen vriezerprototype van ELEC-F met M5Stack en sensoren',
+    back: 'Terug naar projecten',
+    tags: { school: 'Schoolproject', team: 'Team van 4' },
+    key: 'ELEC-F',
+    title: <>Veilige <em>vriezeropslag</em></>,
+    lead: 'ELEC-F is een systeem voor veilige vriezeropslag dat ik met mijn team van vier bouwde voor een engineeringvak. Het houdt de deur van een walk-in vriezer en de ruimte erachter in de gaten, en slaat alarm als iemand te lang opgesloten zit.',
+    builtWith: 'Gemaakt met',
+    links: ['GitHub', 'Demovideo'],
+  },
+  chapters: 'Hoofdstukken',
+  rail: {
+    Demo: 'Demo', Problem: 'Het probleem', Objective: 'Doelen', HowItWorks: 'Hoe het werkt',
+    Hardware: 'Hardware', Logic: 'Logica', Build: 'Prototype', Team: 'Team',
+  },
+  demo: { h: 'Demo', video: 'Demovideo van ELEC-F' },
+  problem: {
+    h: 'Het probleem',
+    p1: 'Nu fabrieken steeds verder automatiseren, moet de veiligheid meegroeien, en een risico dat vaak over het hoofd wordt gezien is de walk-in vriezer, waar een medewerker in opgesloten kan raken.',
+    howH: 'Hoe het gebeurt',
+    how: [
+      'De deur kan het begeven, want versleten sloten lopen vast, vocht laat de afdichtingen dichtvriezen en noodontgrendelingen kunnen kapot zijn, ontbreken of bevroren zijn.',
+      'Misschien merkt niemand dat er nog iemand binnen is, en ervaren medewerkers kunnen onoplettend worden.',
+    ],
+    whyH: 'Waarom het gevaarlijk is',
+    why: [
+      'De kou veroorzaakt onderkoeling, wat eerst verwarring en daarna bewusteloosheid geeft.',
+      'In een afgesloten vriezer kan de zuurstof opraken, wat tot verstikking kan leiden.',
+      'Paniek en pogingen om te ontsnappen leiden tot vallen en andere verwondingen.',
+      'Zonder snelle redding kan lang opgesloten zitten dodelijk zijn.',
+    ],
+    p2: 'Opgesloten zitten zorgt ook voor paniek, vooral bij mensen met cleithrofobie, de angst om niet weg te kunnen. ELEC-F is er om de tijd dat iemand vastzit korter te maken en diegene te laten weten dat er hulp komt.',
+  },
+  goals: {
+    h: 'Doelen',
+    items: [
+      'Voorkomen dat medewerkers in een fabrieksvriezer vast komen te zitten.',
+      'Contact houden met iemand die toch opgesloten raakt en diegene geruststellen.',
+      'Betrouwbaar werken in een koude, vochtige, afgesloten ruimte.',
+    ],
+  },
+  how: {
+    h: 'Hoe het werkt',
+    p1: 'Terwijl de deur open is, stel je op de M5Stack een tijdslimiet in, en als de deur dichtgaat, start de timer. Loopt de timer af terwijl er nog iemand binnen is, dan gaat het alarm af.',
+    partsIntro: 'Het systeem heeft vier onderdelen die samenwerken:',
+    parts: [
+      <>De <b>timer</b> stel je op de M5Stack in terwijl de deur open is, en hij start als de deur dichtgaat.</>,
+      <>De <b>deursensor</b> is een time-of-flight-sensor (ToF) die afstand meet om te zien of de deur open of dicht is.</>,
+      <>De <b>aanwezigheidssensor</b> is een PIR-sensor die lichaamswarmte en beweging opvangt om te zien of er nog iemand in de ruimte is.</>,
+      <>Het <b>alarm</b> laat de RGB-unit knipperen en de zoemer afgaan als de deur langer dan de limiet dicht blijft met iemand erin.</>,
+    ],
+    p2: 'We kozen ToF- en PIR-sensoren omdat ze allebei blijven werken onder het vriespunt.',
+  },
+  seq: {
+    steps: {
+      open: {
+        label: 'Deur open',
+        title: 'Stel de timer in',
+        desc: 'Als een medewerker naar binnen loopt, vangt de PIR-sensor zijn lichaamswarmte en beweging op en ziet de ToF-sensor dat de deur open is. Dan stel je op de M5Stack in hoe lang de deur dicht mag blijven.',
+        alt: 'Het M5Stack-scherm bij stap 1, de timer instellen',
+        pir: 'Persoon binnen',
+        tof: 'Deur open',
+      },
+      armed: {
+        label: 'Deur dicht',
+        title: 'Timer loopt',
+        desc: 'Als de deur dichtgaat, ziet de ToF-sensor dat hij dicht is en start de timer, maar als de ruimte leeg is voordat de tijd om is, reset het systeem.',
+        alt: 'Het M5Stack-scherm bij stap 2, de timer loopt',
+        pir: 'Persoon binnen',
+        tof: 'Deur dicht',
+      },
+      alarm: {
+        label: 'Tijd om',
+        title: 'Alarm',
+        desc: 'Is de tijd om terwijl er nog iemand binnen is, dan knippert de RGB-unit en gaat de zoemer van de M5Stack af om iedereen in de buurt te waarschuwen, tot de deur opengaat.',
+        alt: 'Het M5Stack-scherm bij stap 3, alarm',
+        pir: 'Persoon binnen',
+        tof: 'Deur dicht',
+      },
+    },
+    eyebrow: 'Stap {n} van {total} · {label}',
+    chips: { pir: 'PIR', tof: 'ToF', alert: 'Alarm' },
+    alert: { idle: 'Stand-by', armed: 'Actief', sounding: 'RGB-lamp en zoemer' },
+    pirSizer: 'Aanwezigheid gezien',
+    stepsAria: 'Stappen',
+    dotAria: 'Stap {n}: {title}',
+    prev: 'Vorige stap',
+    nextAria: 'Volgende stap',
+    next: 'Volgende',
+  },
+  hardware: {
+    h: 'Hardware',
+    p: 'Alles is M5Stack, dus we konden snel prototypes maken en makkelijk modules wisselen. Twee M5Stack Fire-controllers draaien de logica en het scherm, en een Mini Hub-unit splitst de enige poort van de Fire zodat elke sensor ergens in kan.',
+    figAlt: 'De M5Stack Fire aangesloten op de ToF-, PIR- en RGB-units',
+    figCaption: 'De M5Stack Fire en zijn sensorunits',
+    components: {
+      fire: { name: 'M5Stack Fire ×2', role: 'Controller', desc: 'Hij draait de timer, leest de sensoren uit en stuurt het scherm aan, en de zoemer zit er al in.' },
+      hub: { name: 'Mini Hub-unit', role: 'Uitbreiding', desc: 'Hij splitst de enige poort van de Fire zodat elke sensor erin kan.' },
+      tof: { name: 'ToF-sensor', role: 'Deurstand', desc: 'Hij meet afstand om te zien of de vriezerdeur open of dicht is.' },
+      pir: { name: 'PIR-sensor', role: 'Aanwezigheid', desc: 'Hij vangt lichaamswarmte en beweging op om te zien of er nog iemand binnen is.' },
+      rgb: { name: 'RGB-unit', role: 'Alarm', desc: 'Hij knippert samen met de zoemer als er iemand langer dan de limiet binnen is.' },
+    },
+    wiringAlt: 'De bedrading van ELEC-F',
+    wiringCaption: 'Hoe de units met elkaar verbonden zijn',
+  },
+  logic: {
+    h: 'Logica',
+    p: 'Het stroomschema hieronder laat de hele lus zien die de M5Stack doorloopt. Met de knoppen stel je de tijdslimiet in terwijl de deur open is, en zodra de deur dichtgaat, loopt de timer en bepalen de sensoren wat er daarna gebeurt.',
+    flowAlt: 'Stroomschema van de software van ELEC-F, van de timer instellen tot het alarm laten afgaan',
+    blockAlt: 'Blokschema van het systeem van ELEC-F',
+    blockCaption: 'Blokschema van het systeem',
+  },
+  build: {
+    h: 'Prototype',
+    p: 'We maakten de vriezer en de deur van karton om de sensoren en de timing van begin tot eind te testen, voordat we aan een echte behuizing dachten.',
+    alts: ['Het prototype van ELEC-F met de sensoren erop', 'De deur van het prototype van ELEC-F'],
+    posterAlt: 'De projectposter van ELEC-F',
+    posterCaption: 'De projectposter',
+    repo: {
+      title: 'ELEC-F op GitHub',
+      text: 'De repository heeft de M5Stack-code voor de deurtimer, het uitlezen van de sensoren en het alarm.',
+      button: 'Bekijk de code op GitHub',
+    },
+  },
+  team: {
+    h: 'Team',
+    lead: 'Teamleider',
+    member: 'Teamlid',
+    me: 'Braven (ik)',
+    profile: 'Profiel',
+  },
+};
+
+export default nl;

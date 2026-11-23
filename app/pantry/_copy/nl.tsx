@@ -1,0 +1,156 @@
+import type { PantryCopy } from './en';
+
+const nl: PantryCopy = {
+  meta: {
+    title: 'Houdbaarheidstracker | Braven Chiam',
+    description: 'Een houdbaarheidstracker voor op de koelkastdeur, gebouwd op een M5Stack CoreS3 SE en een QRCode-module tijdens mijn stage bij M5Stack. Je scant een barcode en kiest wanneer het over de datum gaat, en het scherm laat altijd zien wat je het eerst moet opeten, terwijl een kleine server de producten een naam geeft en herinneringen naar Home Assistant stuurt.',
+    ogDescription: 'Scan een barcode, kies wanneer het over de datum gaat, en de koelkastdeur laat zien wat je het eerst moet opeten.',
+  },
+  ld: {
+    headline: 'Houdbaarheidstracker',
+    about: ['M5Stack CoreS3 SE', 'ESP32-S3', 'barcodescanner', 'Home Assistant', 'MQTT', 'Open Food Facts'],
+  },
+  hero: {
+    alt: 'De houdbaarheidstracker: een CoreS3 SE op de QRCode-module en de batterijbasis, met het scherm dat rood gloeit tijdens het scannen',
+    back: 'Terug naar projecten',
+    tag: 'Stageproject',
+    title: <>Houdbaarheids&shy;<em>tracker</em></>,
+    lead: 'Deze houdbaarheidstracker voor op de koelkastdeur bouwde ik tijdens mijn stage bij M5Stack. Je scant de barcode van een product en kiest wanneer het over de datum gaat, en het scherm laat altijd zien wat je het eerst moet opeten, met productnamen in het Chinees of het Engels.',
+    builtWith: 'Gemaakt met',
+    links: ['GitHub', 'Flash de firmware', 'Server downloaden'],
+    meta: 'Stageproject bij M5Stack, november 2026. M5Stack CoreS3 SE, Module13.2 QRCode, C++, Python, Docker, MQTT.',
+  },
+  chapters: 'Hoofdstukken',
+  rail: {
+    demo: 'Demo', try: 'Probeer het', features: 'Wat hij doet', scan: 'Product scannen', first: 'Wat eerst op moet',
+    again: 'Opnieuw scannen opent', swipe: 'Veeg om te wissen', pantries: 'Meerdere voorraden', control: 'Regelcentrum',
+    web: 'In de browser', ha: 'Home Assistant', how: 'Hoe het werkt', hardware: 'Hardware', setup: 'Zelf instellen',
+  },
+  demo: {
+    h: 'Demo',
+    p: 'Ik filmde dit aan mijn bureau. Eerst scande ik producten van een demovel op mijn laptop en daarna een echt pak 冰红茶, en toen scande ik het pak nog een keer en ging ik naar een tweede voorraad.',
+    video: 'De tracker in gebruik: producten scannen, een echt pak, het nog eens scannen en van voorraad wisselen',
+    moments: [
+      { label: 'Scannen van het demovel', note: 'Nutella, Coca-Cola en Ritter Sport van mijn laptopscherm' },
+      { label: 'Een echt pak', note: 'Een pak 冰红茶, met de naam van GS1 China' },
+      { label: 'Nog een keer scannen', note: 'Het opgeslagen pak gaat open in plaats van dubbel te worden toegevoegd' },
+      { label: 'Een andere voorraad', note: 'Wisselen naar de koelkast en daar iets aan toevoegen' },
+    ],
+  },
+  try: {
+    h: 'Probeer het',
+    p: <>Dit is een kopie van het scherm van de tracker die dezelfde stappen doorloopt. Tik op <b>SCAN NOW</b> en kies een product van het schap om voor de scanner te houden, stel dan in wanneer het over de datum gaat en sla het op. Je kunt ook een kaart naar links vegen om hem te wissen, en als je iets scant dat al op de lijst staat, gaat dat open.</>,
+    note: 'De barcodes op het schap zijn de echte EAN-13-codes van de producten, dus de tracker zelf kan ze van deze pagina scannen.',
+  },
+  sim: {
+    live: {
+      home: 'De voorraad, {n} producten, gesorteerd op wat het eerst over de datum gaat.',
+      scan: 'Aan het scannen. Kies een product van het schap om voor de scanner te houden.',
+      entry: '{name}. Stel in wanneer het over de datum gaat en sla het op.',
+      detail: '{name}, staat al op de lijst. {days}.',
+    },
+    list: 'Voorraad',
+    card: '{name}, {days}',
+    remove: '{name} wissen',
+    cancel: 'Annuleren',
+    back: 'Terug',
+    more: { d: 'Meer dagen', w: 'Meer weken', m: 'Meer maanden' },
+    fewer: { d: 'Minder dagen', w: 'Minder weken', m: 'Minder maanden' },
+    hintScan: 'Kies een product voor de scanner',
+    hint: 'Tik op een product om te scannen',
+    scan: '{name} scannen',
+    scanSaved: '{name} scannen, staat al op de lijst',
+    onList: 'op de lijst',
+    shelf: {
+      '5449000000996': 'Coca-Cola', '3256540000698': 'Pains au lait', '6909548500734': '冰红茶',
+      '3046920029759': 'Lindt puur', '3017620425035': 'Nutella',
+    } as Record<string, string>,
+    reset: 'Opnieuw',
+  },
+  features: {
+    h: 'Wat hij doet',
+    p: 'De tracker zit op de koelkastdeur, en elk scherm hieronder is een opname van het apparaat zelf.',
+  },
+  scan: {
+    h: 'Product scannen',
+    alt: 'De houdbaarheidskiezer voor 牛奶面包 van Brioche Pasquier, met Days 0, Weeks 1 en Months 0, een week vanaf vandaag, en een groene SAVE-knop',
+    p1: <>Als je op <b>SCAN NOW</b> tikt en een barcode op zo’n handbreedte van het scanvenster houdt, gloeit het scherm rood terwijl de scanner een code zoekt. Daarna laat de tracker de naam, het merk, de inhoud en de foto van het product zien. Die komen meestal van Open Food Facts, terwijl producten die op het vasteland van China verkocht worden van GS1 China komen, via een gratis account.</>,
+    p2: <>Je stelt de houdbaarheid in met de pijltjes onder Days, Weeks en Months en tikt dan op <b>SAVE</b>.</>,
+  },
+  first: {
+    h: 'Zie wat eerst op moet',
+    alt: 'Het startscherm: Prince over de datum in rood, Pesto alla Genovese over 2 dagen en Skyr over 5 dagen in oranje, met SCAN NOW onderaan',
+    p: 'Het startscherm zet de voorraad op een rij met wat het eerst over de datum gaat bovenaan, en de teller wordt rood binnen een dag van de datum en oranje binnen een week.',
+  },
+  again: {
+    h: 'Opnieuw scannen opent het',
+    alt: 'De productpagina van Barilla Pesto alla Genovese: vandaag toegevoegd, over de datum op woensdag 2026-11-11, 2 dagen, met een rode DELETE-knop',
+    p: 'Als je iets scant dat al op de lijst staat, gaat het open in plaats van dat het dubbel wordt toegevoegd, zodat je daar de datum kunt checken of het kunt wissen.',
+  },
+  swipe: {
+    h: 'Veeg om te wissen',
+    alt: 'De kaart van Prince naar links geschoven, met een rode prullenbakknop',
+    p: 'Als je een product van rechts naar links veegt, verschijnt er een rode prullenbak om op te tikken, en waar je ook van links naar rechts veegt, ga je terug.',
+  },
+  pantries: {
+    h: 'Meerdere voorraden',
+    alt: 'Het voorraadmenu open: Default Pantry met 6 producten, Fridge met 1, en Create Pantry',
+    p: <>Met de knop <b>Pantry</b> wissel je tussen voorraden zoals de koelkast, de vriezer of een kastje, en je kunt er ook een nieuwe mee maken.</>,
+  },
+  control: {
+    h: 'Een regelcentrum',
+    alt: 'Het regelcentrum: een schakelaar voor de piep, een schuifje voor de helderheid, 100% batterij en Home Assistant verbonden',
+    p: 'De statusknop rechtsboven opent de schakelaar voor de piep, de helderheid van het scherm en het batterijniveau, en het huisje erin wordt groen als de tracker met Home Assistant verbonden is.',
+  },
+  web: {
+    h: 'Beheer het in de browser',
+    p: 'Dezelfde lijst staat op een webpagina, waar je vanaf een computer of telefoon producten op barcode kunt toevoegen, ze een andere naam kunt geven en voorraden kunt indelen. Een klein label naast elke naam laat zien waar hij vandaan komt, zoals OFF voor Open Food Facts of GS1 voor GS1 China.',
+    alt: 'De webpagina van de voorraad: tabbladen voor All, Default Pantry en Fridge, een formulier voor barcode en datum, en de producten op houdbaarheid gesorteerd met hun bronlabels',
+    caption: 'De webpagina van de voorraad',
+  },
+  ha: {
+    h: 'Herinneringen in Home Assistant',
+    p: 'Elke voorraad verschijnt in Home Assistant als een eigen apparaat, met het aantal producten, wat binnenkort over de datum gaat en het volgende product dat over de datum gaat. Elke scan, toevoeging en verwijdering stuurt ook een event, dus je kunt er je eigen automatiseringen bovenop bouwen, zoals een herinnering op je telefoon de dag voordat iets over de datum gaat.',
+    alt: 'Drie apparaten in Home Assistant: Pantry Tracker, Default Pantry en Fridge, elk met over de datum, binnenkort over de datum, aantal producten en volgende houdbaarheidsdatum',
+    caption: 'De voorraadapparaten in Home Assistant',
+  },
+  how: {
+    h: 'Hoe het werkt',
+    p: 'De tracker doet alleen het scherm en de scanner, terwijl een Docker-container op het thuisnetwerk de rest doet: die bewaart de lijst, zoekt barcodes op, cachet productfoto’s en publiceert alles via MQTT naar Home Assistant. Ik heb het zo verdeeld omdat de ESP32-S3 het inloggen bij GS1 China niet aankan, en omdat één lijst op de server betekent dat de tracker, de webpagina en Home Assistant het altijd met elkaar eens zijn.',
+    overviewAlt: 'Overzicht van het systeem: de tracker op de koelkast praat via wifi met de voorraadserver, de server zoekt producten op bij Open Food Facts en GS1 China en publiceert via MQTT naar Home Assistant, en elke browser kan de webpagina openen',
+    overviewCaption: 'Hoe de onderdelen verbonden zijn',
+    flowAlt: 'Wat er gebeurt als je scant: de barcode wordt via UART gelezen, de server krijgt de vraag of hij al is opgeslagen, het product wordt opgezocht en gecachet, jij kiest de houdbaarheid, het product wordt opgeslagen en Home Assistant wordt bijgewerkt',
+    flowCaption: 'Wat er gebeurt als je scant',
+  },
+  hardware: {
+    h: 'Hardware',
+    parts: [
+      { b: 'CoreS3 SE', s: 'draait de tracker, met het touchscreen en de wifi.' },
+      { b: 'Module13.2 QRCode', s: 'leest 1D- en 2D-barcodes en zit onder de CoreS3 SE.' },
+      { b: 'Een batterijbasis', s: 'komt eronder, zodat hij zonder kabel op de koelkast werkt.' },
+    ],
+    fridgeAlt: 'De tracker op een grijze koelkastdeur, met het scherm Set me up en een QR-code',
+    fridgeCaption: 'Op de koelkastdeur, klaar om in te stellen',
+    p: 'Je hebt ook een computer nodig die aan blijft voor de server, en Home Assistant als je herinneringen wilt.',
+  },
+  setup: {
+    h: 'Zelf instellen',
+    p: 'Alles wat je nodig hebt kun je gratis downloaden: de firmware flash je vanuit je browser, en de server komt als Docker-bundel met de images erbij, dus er hoeft tijdens de installatie niets van Docker Hub gehaald te worden.',
+    steps: [
+      <>Zet op de QRCode-module de interfaceschakelaar op UART en zet nummer 2 aan in zowel het TX- als het RX-DIP-blok, en stapel dan de drie onderdelen op elkaar.</>,
+      <>Open <a href="https://flashdeck.shebang.pro/" target="_blank" rel="noopener">Flashdeck</a> in Chrome of Edge, kies <b>Pantry</b>, sluit de CoreS3 SE aan via USB-C en druk op <b>Install</b>, en de firmware wordt meteen vanuit de browser geflasht.</>,
+      <>Download de server voor de computer waarop hij gaat draaien, de <a href="https://github.com/New-Kringster/Pantry_tracker_code/releases/latest/download/pantry-server-docker-amd64.tar.gz">bundel voor Intel- en AMD-computers</a> of de <a href="https://github.com/New-Kringster/Pantry_tracker_code/releases/latest/download/pantry-server-docker-arm64.tar.gz">bundel voor Macs met Apple Silicon en een Raspberry Pi</a>. Pak hem uit, zet <code>TZ</code> in <code>docker-compose.yml</code> op je tijdzone en draai <code>./install.sh</code> in die map.</>,
+      <>Zet de tracker aan, scan de QR-code op het scherm met je telefoon en vul je wifi en het serveradres in, bijvoorbeeld <code>http://192.168.1.20:8080</code>.</>,
+      <>Tik op <b>SCAN NOW</b> en scan deze code één keer, zodat de scanmodule van USB naar serieel overschakelt.</>,
+      <>Voeg in Home Assistant de MQTT-integratie toe met het IP-adres van de server en poort 1883.</>,
+      <>Voor Chinese barcodes voeg je onder <b>Settings</b> op de webpagina van de server een gratis gds.org.cn-account toe en log je één keer in.</>,
+    ],
+    hardwareAlt: 'De interfaceschakelaar op UART, schakelaar 2 aan in het TX- en RX-DIP-blok, en de CoreS3 SE op de module en de batterijbasis gestapeld',
+    bootAlt: 'De eerste keer opstarten: de tracker opent een Pantry-hotspot met een QR-code, de telefoon maakt er verbinding mee, de instelpagina vraagt om de wifi en het serveradres, en het startscherm laadt',
+    codeAlt: 'De instelcode 21424000 voor de scanmodule, Serial Communication',
+    repo: <>De <a href="https://github.com/New-Kringster/Pantry_tracker_code" target="_blank" rel="noopener">GitHub-repository</a> heeft de volledige handleiding in de README, samen met de code van de firmware en de server als je ze liever zelf bouwt.</>,
+    note: 'Productnamen en foto’s op deze pagina komen van Open Food Facts (CC BY-SA) en GS1 China.',
+  },
+};
+
+export default nl;

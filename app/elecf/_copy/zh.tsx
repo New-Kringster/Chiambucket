@@ -1,0 +1,143 @@
+import type { ElecfCopy } from './en';
+
+const zh: ElecfCopy = {
+  meta: {
+    title: 'ELEC-F | Braven Chiam',
+    description: 'ELEC-F 是我们四人团队做的冷库安全存储系统，两台 M5Stack Fire 控制器配上 ToF、PIR 和 RGB 模块，有人被关在步入式冷库里太久时就会拉响警报。',
+    ogDescription: '一个基于 M5Stack 的冷库安全系统，用 ToF 传感器盯着门，用 PIR 传感器盯着室内，再用 RGB 灯和蜂鸣器发出警报。',
+  },
+  ld: { headline: 'Elec-F：冷库安全存储系统' },
+  hero: {
+    alt: '装着 M5Stack 和传感器的 ELEC-F 纸板冷库原型',
+    back: '返回项目',
+    tags: { school: '学校项目', team: '4 人团队' },
+    key: 'ELEC-F',
+    title: <>冷库<em>安全</em>存储系统</>,
+    lead: 'ELEC-F 是我们四人团队为一门工程课做的冷库安全存储系统。它会盯着步入式冷库的门和里面的情况，如果有人被关在里面太久，就会拉响警报。',
+    builtWith: '使用工具',
+    links: ['GitHub', '演示视频'],
+  },
+  chapters: '章节',
+  rail: {
+    Demo: '演示', Problem: '问题在哪', Objective: '目标', HowItWorks: '工作原理',
+    Hardware: '硬件', Logic: '逻辑', Build: '原型', Team: '团队',
+  },
+  demo: { h: '演示', video: 'ELEC-F 演示视频' },
+  problem: {
+    h: '问题在哪',
+    p1: '工厂里的自动化越来越多，安全也得跟上，而有一个风险常常被忽略，那就是步入式冷库，工人可能会被困在里面。',
+    howH: '事情是怎么发生的',
+    how: [
+      '门可能会出故障，因为磨损的门闩会卡住，湿气会把密封条冻住，紧急开门装置也可能坏了、不见了或者结了冰。',
+      '可能没人意识到里面还有人，而老员工也可能一时大意。',
+    ],
+    whyH: '为什么危险',
+    why: [
+      '寒冷会导致失温，先是意识混乱，然后失去知觉。',
+      '密封的冷库里氧气可能不够，可能导致窒息。',
+      '惊慌和试图逃出来会导致摔倒和其他受伤。',
+      '如果没有及时救援，被困太久可能会致命。',
+    ],
+    p2: '被困还会让人惊慌，尤其是有被困恐惧症（cleithrophobia）的人，也就是害怕自己逃不出去。ELEC-F 就是为了缩短有人被困的时间，也让他们知道有人会来帮忙。',
+  },
+  goals: {
+    h: '目标',
+    items: [
+      '不让工人被困在工厂的冷库里。',
+      '和真的被困的人保持联系，让他们安心。',
+      '在寒冷、潮湿、密封的房间里稳定工作。',
+    ],
+  },
+  how: {
+    h: '工作原理',
+    p1: '门开着的时候，你在 M5Stack 上设好时间限制，关门就会启动计时器。如果时间到了里面还有人，警报就会响起。',
+    partsIntro: '这个系统由四个一起运行的部分组成：',
+    parts: [
+      <><b>计时器</b>在门开着时在 M5Stack 上设好，关门时开始计时。</>,
+      <><b>门传感器</b>是一个飞行时间（ToF）传感器，通过测距离来判断门是开着还是关着。</>,
+      <><b>人体传感器</b>是一个 PIR 传感器，通过检测体温和动作来判断房间里还有没有人。</>,
+      <><b>警报</b>会在门关着超过时限、里面又有人时，让 RGB 模块闪烁、蜂鸣器响起。</>,
+    ],
+    p2: '我们选 ToF 和 PIR 传感器，是因为它们在零度以下都能照常工作。',
+  },
+  seq: {
+    steps: {
+      open: {
+        label: '门开着',
+        title: '设定计时器',
+        desc: '工人走进去时，PIR 传感器会感应到他的体温和动作，ToF 传感器读到门是开着的。这时你在 M5Stack 上设定门最多可以关多久。',
+        alt: '第 1 步“设定计时器”时的 M5Stack 屏幕',
+        pir: '里面有人',
+        tof: '门开着',
+      },
+      armed: {
+        label: '门关上',
+        title: '计时中',
+        desc: '门一关上，ToF 传感器读到门已关闭，计时器就开始计时，但如果时间到之前房间里的人都出来了，系统就会重置。',
+        alt: '第 2 步“计时中”时的 M5Stack 屏幕',
+        pir: '里面有人',
+        tof: '门关上',
+      },
+      alarm: {
+        label: '时间到',
+        title: '警报',
+        desc: '如果时间到了里面还有人，RGB 模块就会闪烁，M5Stack 的蜂鸣器也会响起，提醒附近的人，直到门被打开为止。',
+        alt: '第 3 步“警报”时的 M5Stack 屏幕',
+        pir: '里面有人',
+        tof: '门关上',
+      },
+    },
+    eyebrow: '第 {n} 步，共 {total} 步 · {label}',
+    chips: { pir: 'PIR', tof: 'ToF', alert: '警报' },
+    alert: { idle: '待机', armed: '已布防', sounding: 'RGB 灯和蜂鸣器' },
+    pirSizer: '检测到有人',
+    stepsAria: '步骤',
+    dotAria: '第 {n} 步：{title}',
+    prev: '上一步',
+    nextAria: '下一步',
+    next: '下一步',
+  },
+  hardware: {
+    h: '硬件',
+    p: '所有东西都是 M5Stack 的，所以做原型很快，换模块也很方便。两台 M5Stack Fire 控制器负责运行逻辑和显示，一个 Mini Hub 模块把 Fire 唯一的接口分成几路，让每个传感器都有地方插。',
+    figAlt: '接上 ToF、PIR 和 RGB 模块的 M5Stack Fire',
+    figCaption: 'M5Stack Fire 和它的传感器模块',
+    components: {
+      fire: { name: 'M5Stack Fire ×2', role: '控制器', desc: '它负责计时、读取传感器和驱动屏幕，还内置了蜂鸣器。' },
+      hub: { name: 'Mini Hub 模块', role: '扩展', desc: '它把 Fire 唯一的接口分成几路，让每个传感器都能插上。' },
+      tof: { name: 'ToF 传感器', role: '门的状态', desc: '它通过测距离来判断冷库的门是开着还是关着。' },
+      pir: { name: 'PIR 传感器', role: '有没有人', desc: '它感应体温和动作，判断里面还有没有人。' },
+      rgb: { name: 'RGB 模块', role: '警报', desc: '有人在里面超过时限时，它会和蜂鸣器一起闪烁。' },
+    },
+    wiringAlt: 'ELEC-F 的接线布局',
+    wiringCaption: '各个模块是怎么接在一起的',
+  },
+  logic: {
+    h: '逻辑',
+    p: '下面的流程图展示了 M5Stack 运行的完整循环。门开着时用按钮设定时间限制，门一关上，计时器就开始运行，接下来怎么做由传感器决定。',
+    flowAlt: 'ELEC-F 的软件流程图，从设定计时器到拉响警报',
+    blockAlt: 'ELEC-F 系统框图',
+    blockCaption: '系统框图',
+  },
+  build: {
+    h: '原型',
+    p: '我们用纸板做了冷库和它的门，在考虑正式的外壳之前，先把传感器和计时从头到尾测一遍。',
+    alts: ['装好传感器的 ELEC-F 原型', 'ELEC-F 原型的门'],
+    posterAlt: 'ELEC-F 项目海报',
+    posterCaption: '项目海报',
+    repo: {
+      title: 'GitHub 上的 ELEC-F',
+      text: '仓库里有门计时器、传感器读数和警报的 M5Stack 代码。',
+      button: '在 GitHub 上查看代码',
+    },
+  },
+  team: {
+    h: '团队',
+    lead: '组长',
+    member: '组员',
+    me: 'Braven（我）',
+    profile: '主页',
+  },
+};
+
+export default zh;

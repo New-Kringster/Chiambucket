@@ -23,7 +23,7 @@
 - [Braven's Scale of AI use](https://www.chiambucket.com/ai-use): how Braven uses AI, and the four-level scale (L1 little use, L2 average use, L3 heavy use, L4 entirely AI generated) that labels how much of each project was made with AI tools, with the marks free to download as SVG.
 
 ## Languages
-The home, contact, photography, homelab, archive, credits and AI use pages are also in Simplified Chinese, Japanese, Dutch, German, Russian, French and Spanish, under a language prefix: https://www.chiambucket.com/zh/, /ja/, /nl/, /de/, /ru/, /fr/ and /es/ (for example https://www.chiambucket.com/ja/contact). Visitors are sent to their browser's language automatically and can switch with the globe in the nav. The project articles are in English only.
+Every page, the project articles included, is also in Simplified Chinese, Japanese, Dutch, German, Russian, French and Spanish, under a language prefix: https://www.chiambucket.com/zh/, /ja/, /nl/, /de/, /ru/, /fr/ and /es/ (for example https://www.chiambucket.com/ja/contact or https://www.chiambucket.com/de/waterslop). Visitors are sent to their browser's language automatically and can switch with the globe in the nav.
 
 ## Projects
 

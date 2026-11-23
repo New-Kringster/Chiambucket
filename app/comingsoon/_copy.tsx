@@ -1,6 +1,13 @@
 import type { Lang } from '@/lib/i18n';
+import zh from './_copy.zh';
+import ja from './_copy.ja';
+import nl from './_copy.nl';
+import de from './_copy.de';
+import ru from './_copy.ru';
+import fr from './_copy.fr';
+import es from './_copy.es';
 
-/* The coming-soon placeholder's words. Translations go in _copy.<lang>.tsx and are added to COMINGSOON_COPY. */
+/* The coming-soon placeholder's words; each other language is in _copy.<lang>.tsx. */
 const en = {
   meta: {
     title: 'Coming soon | Braven Chiam',
@@ -14,5 +21,5 @@ const en = {
 };
 export type ComingSoonCopy = typeof en;
 
-export const COMINGSOON_COPY: Partial<Record<Lang, ComingSoonCopy>> = { en };
-export const comingSoonCopy = (lang: Lang): ComingSoonCopy => COMINGSOON_COPY[lang] ?? en;
+export const COMINGSOON_COPY: Record<Lang, ComingSoonCopy> = { en, zh, ja, nl, de, ru, fr, es };
+export const comingSoonCopy = (lang: Lang): ComingSoonCopy => COMINGSOON_COPY[lang];

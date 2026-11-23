@@ -80,6 +80,7 @@ const es: ProjectJuneCopy = {
     routingAlt: 'Diagrama del enrutado de los streams WebRTC',
   },
   console: {
+    labelEnd: '.',
     tag: 'Consola de conducción',
     rebuilt: { day: 'Reconstruida de la ruta de día', night: 'Reconstruida de la ruta de noche' },
     toggleAria: 'Elige la ruta de día o de noche',

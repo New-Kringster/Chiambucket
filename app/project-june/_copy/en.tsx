@@ -87,6 +87,8 @@ const en = {
   },
   /** the rebuilt driving console (CommandLink) */
   console: {
+    /** follows the bold label before each blurb */
+    labelEnd: '.',
     tag: 'Driving console',
     /** the line beside the tag, by run */
     rebuilt: { day: 'Rebuilt from the day run', night: 'Rebuilt from the night run' },

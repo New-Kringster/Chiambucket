@@ -1,10 +1,9 @@
 /*
   The site's languages. English lives at the plain paths (/contact); every
-  other language has the same page under its code (/ja/contact). Only the
-  pages in LOCALIZED have translations: the articles stay English, so their
-  links never get a prefix.
+  other language has the same page under its code (/ja/contact). Every page
+  is in LOCALIZED (scripts/check-i18n.mjs makes sure of it); embeds stay English.
 
-  A visitor's first request to a localized English page is sent to their
+  A visitor's first request to an English page is sent to their
   browser's preferred language by proxy.ts, unless they picked a language with
   the globe in the nav, which is remembered in the `lang` cookie.
 
@@ -27,7 +26,10 @@ export const NATIVE_NAME: Record<Lang, string> = {
 export const OG_LOCALE: Record<Lang, string> = { en: 'en_GB', zh: 'zh_CN', ja: 'ja_JP', nl: 'nl_NL', de: 'de_DE', ru: 'ru_RU', fr: 'fr_FR', es: 'es_ES' };
 
 /** The English paths that have a translation in every other language. */
-export const LOCALIZED = ['/', '/contact', '/photography', '/homelab', '/archive', '/credits', '/ai-use'];
+export const LOCALIZED = [
+  '/', '/contact', '/photography', '/homelab', '/archive', '/credits', '/ai-use',
+  '/waterslop', '/project-june', '/pip', '/stackchan-lidar', '/beadreader', '/pantry', '/scroll-ruler', '/cad-mouse', '/brolocator', '/lumen', '/csdp', '/pandus', '/elecf', '/comingsoon',
+];
 
 export const LANG_COOKIE = 'lang';
 export const SITE = 'https://www.chiambucket.com';

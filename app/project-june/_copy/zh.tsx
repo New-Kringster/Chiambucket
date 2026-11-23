@@ -79,6 +79,7 @@ const zh: ProjectJuneCopy = {
     routingAlt: 'WebRTC 流路由的示意图',
   },
   console: {
+    labelEnd: '：',
     tag: '驾驶控制台',
     rebuilt: { day: '用白天的实测重建', night: '用夜间的实测重建' },
     toggleAria: '选择白天或夜间的实测',

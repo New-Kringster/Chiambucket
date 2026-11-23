@@ -1,0 +1,143 @@
+import type { ElecfCopy } from './en';
+
+/* The ELEC-F article's German words, in the shape of en.tsx. */
+const de: ElecfCopy = {
+  meta: {
+    title: 'ELEC-F | Braven Chiam',
+    description: 'ELEC-F ist ein sicheres Kühlraumsystem, das mein vierköpfiges Team gebaut hat. Zwei M5Stack-Fire-Controller mit ToF-, PIR- und RGB-Einheiten schlagen Alarm, wenn jemand zu lange in einem begehbaren Tiefkühlraum eingeschlossen ist.',
+    ogDescription: 'Ein Sicherheitssystem für Tiefkühlräume auf M5Stack, das die Tür mit einem ToF-Sensor und den Raum mit einem PIR-Sensor überwacht und mit einem RGB-Licht und einem Summer Alarm schlägt.',
+  },
+  ld: { headline: 'Elec-F: Sicheres Kühlraumsystem' },
+  hero: {
+    alt: 'Der Kühlraum-Prototyp von ELEC-F aus Pappe mit M5Stack und Sensoren',
+    back: 'Zu den Projekten',
+    tags: { school: 'Schulprojekt', team: '4er‑Team' },
+    key: 'ELEC-F',
+    title: <>Sicheres <em>Kühlraum</em>system</>,
+    lead: 'ELEC-F ist ein sicheres Kühlraumsystem, das mein vierköpfiges Team für einen Ingenieurkurs gebaut hat. Es überwacht die Tür eines begehbaren Tiefkühlraums und den Raum dahinter und schlägt Alarm, wenn jemand zu lange eingeschlossen ist.',
+    builtWith: 'Gebaut mit',
+    links: ['GitHub', 'Demovideo'],
+  },
+  chapters: 'Kapitel',
+  rail: {
+    Demo: 'Demo', Problem: 'Das Problem', Objective: 'Ziele', HowItWorks: 'Funktionsweise',
+    Hardware: 'Hardware', Logic: 'Logik', Build: 'Prototyp', Team: 'Team',
+  },
+  demo: { h: 'Demo', video: 'Demovideo von ELEC-F' },
+  problem: {
+    h: 'Das Problem',
+    p1: 'Je mehr Fabriken automatisiert werden, desto mehr muss die Sicherheit mithalten, und ein Risiko, das oft übersehen wird, ist der begehbare Tiefkühlraum, in dem jemand eingesperrt werden kann.',
+    howH: 'Wie es passiert',
+    how: [
+      'Die Tür kann versagen, weil abgenutzte Riegel klemmen, Feuchtigkeit die Dichtungen zufrieren lässt und Notöffner kaputt, nicht vorhanden oder vereist sein können.',
+      'Vielleicht merkt niemand, dass noch jemand drin ist, und auch erfahrene Leute werden mal unachtsam.',
+    ],
+    whyH: 'Warum es gefährlich ist',
+    why: [
+      'Die Kälte führt zu Unterkühlung, die erst Verwirrung und dann Bewusstlosigkeit auslöst.',
+      'In einem dicht geschlossenen Kühlraum kann der Sauerstoff knapp werden, was zum Ersticken führen kann.',
+      'Panik und Fluchtversuche führen zu Stürzen und anderen Verletzungen.',
+      'Ohne rechtzeitige Rettung kann es tödlich sein, lange eingeschlossen zu sein.',
+    ],
+    p2: 'Eingeschlossen zu sein löst außerdem Panik aus, besonders bei Menschen mit Kleithrophobie, der Angst, nicht entkommen zu können. ELEC-F soll die Zeit verkürzen, die jemand festsitzt, und ihm zeigen, dass Hilfe kommt.',
+  },
+  goals: {
+    h: 'Ziele',
+    items: [
+      'Verhindern, dass Leute in einem Tiefkühlraum in der Fabrik festsitzen.',
+      'Mit allen, die doch eingeschlossen werden, in Kontakt bleiben und sie beruhigen.',
+      'Zuverlässig in einem kalten, feuchten, dicht geschlossenen Raum funktionieren.',
+    ],
+  },
+  how: {
+    h: 'Funktionsweise',
+    p1: 'Solange die Tür offen ist, stellst du am M5Stack ein Zeitlimit ein, und wenn die Tür zugeht, startet der Timer. Läuft er ab, während noch jemand drin ist, geht der Alarm los.',
+    partsIntro: 'Das System hat vier Teile, die zusammenarbeiten:',
+    parts: [
+      <>Der <b>Timer</b> wird am M5Stack eingestellt, während die Tür offen ist, und startet, wenn sie zugeht.</>,
+      <>Der <b>Türsensor</b> ist ein Time-of-Flight-Sensor (ToF), der einen Abstand misst, um zu erkennen, ob die Tür offen oder zu ist.</>,
+      <>Der <b>Anwesenheitssensor</b> ist ein PIR-Sensor, der Körperwärme und Bewegung erkennt, um festzustellen, ob noch jemand im Raum ist.</>,
+      <>Der <b>Alarm</b> lässt die RGB-Einheit blinken und den Summer ertönen, wenn die Tür mit jemandem darin länger als erlaubt zu bleibt.</>,
+    ],
+    p2: 'Wir haben ToF- und PIR-Sensoren gewählt, weil beide auch unter dem Gefrierpunkt weiterlaufen.',
+  },
+  seq: {
+    steps: {
+      open: {
+        label: 'Tür offen',
+        title: 'Timer stellen',
+        desc: 'Wenn jemand hineingeht, erfasst der PIR-Sensor Körperwärme und Bewegung, und der ToF-Sensor erkennt die Tür als offen. Dann stellst du am M5Stack ein, wie lange die Tür zu bleiben darf.',
+        alt: 'Der M5Stack-Bildschirm in Schritt 1, Timer stellen',
+        pir: 'Person drin',
+        tof: 'Tür offen',
+      },
+      armed: {
+        label: 'Tür zu',
+        title: 'Timer läuft',
+        desc: 'Wenn die Tür zugeht, erkennt der ToF-Sensor sie als geschlossen, und der Timer startet. Ist der Raum aber leer, bevor die Zeit abläuft, setzt sich das System zurück.',
+        alt: 'Der M5Stack-Bildschirm in Schritt 2, Timer läuft',
+        pir: 'Person drin',
+        tof: 'Tür zu',
+      },
+      alarm: {
+        label: 'Zeit um',
+        title: 'Alarm',
+        desc: 'Läuft die Zeit ab, während noch jemand drin ist, blinkt die RGB-Einheit, und der Summer des M5Stack warnt alle in der Nähe, bis die Tür geöffnet wird.',
+        alt: 'Der M5Stack-Bildschirm in Schritt 3, Alarm',
+        pir: 'Person drin',
+        tof: 'Tür zu',
+      },
+    },
+    eyebrow: 'Schritt {n} von {total} · {label}',
+    chips: { pir: 'PIR', tof: 'ToF', alert: 'Alarm' },
+    alert: { idle: 'Bereit', armed: 'Scharf', sounding: 'RGB-Licht und Summer' },
+    pirSizer: 'Person erkannt',
+    stepsAria: 'Schritte',
+    dotAria: 'Schritt {n}: {title}',
+    prev: 'Vorheriger Schritt',
+    nextAria: 'Nächster Schritt',
+    next: 'Weiter',
+  },
+  hardware: {
+    h: 'Hardware',
+    p: 'Alles ist von M5Stack, deshalb ging der Prototyp schnell, und Module ließen sich leicht tauschen. Zwei M5Stack-Fire-Controller übernehmen Logik und Display, und eine Mini-Hub-Einheit teilt den einzigen Anschluss des Fire auf, damit jeder Sensor einen Platz zum Einstecken hat.',
+    figAlt: 'Der M5Stack Fire, verkabelt mit den ToF-, PIR- und RGB-Einheiten',
+    figCaption: 'Der M5Stack Fire und seine Sensoreinheiten',
+    components: {
+      fire: { name: 'M5Stack Fire ×2', role: 'Controller', desc: 'Er führt den Timer aus, liest die Sensoren, steuert den Bildschirm und hat den Summer schon eingebaut.' },
+      hub: { name: 'Mini-Hub-Einheit', role: 'Erweiterung', desc: 'Sie teilt den einzigen Anschluss des Fire auf, damit jeder Sensor eingesteckt werden kann.' },
+      tof: { name: 'ToF-Sensor', role: 'Türstatus', desc: 'Er misst einen Abstand, um zu erkennen, ob die Tür des Kühlraums offen oder zu ist.' },
+      pir: { name: 'PIR-Sensor', role: 'Anwesenheit', desc: 'Er erfasst Körperwärme und Bewegung, um zu erkennen, ob noch jemand drin ist.' },
+      rgb: { name: 'RGB-Einheit', role: 'Alarm', desc: 'Sie blinkt zusammen mit dem Summer, wenn jemand länger als erlaubt drin ist.' },
+    },
+    wiringAlt: 'Verkabelung von ELEC-F',
+    wiringCaption: 'Wie die Einheiten verkabelt sind',
+  },
+  logic: {
+    h: 'Logik',
+    p: 'Das Flussdiagramm unten zeigt die ganze Schleife, die der M5Stack durchläuft. Mit den Tasten stellt man das Zeitlimit ein, solange die Tür offen ist, und sobald sie zu ist, läuft der Timer, und die Sensoren entscheiden, was als Nächstes passiert.',
+    flowAlt: 'Software-Flussdiagramm von ELEC-F, vom Stellen des Timers bis zum Alarm',
+    blockAlt: 'Blockdiagramm des Systems ELEC-F',
+    blockCaption: 'Blockdiagramm des Systems',
+  },
+  build: {
+    h: 'Prototyp',
+    p: 'Den Kühlraum und seine Tür haben wir aus Pappe gebaut, um die Sensoren und das Timing von Anfang bis Ende zu testen, bevor wir über ein richtiges Gehäuse nachgedacht haben.',
+    alts: ['Prototyp von ELEC-F mit montierten Sensoren', 'Die Tür des Prototyps von ELEC-F'],
+    posterAlt: 'Das Projektposter von ELEC-F',
+    posterCaption: 'Das Projektposter',
+    repo: {
+      title: 'ELEC-F auf GitHub',
+      text: 'Im Repository liegt der M5Stack-Code für den Türtimer, die Sensorwerte und den Alarm.',
+      button: 'Code auf GitHub ansehen',
+    },
+  },
+  team: {
+    h: 'Team',
+    lead: 'Teamleitung',
+    member: 'Teammitglied',
+    me: 'Braven (ich)',
+    profile: 'Profil',
+  },
+};
+export default de;

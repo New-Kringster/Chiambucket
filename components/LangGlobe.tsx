@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { LANGS, LANG_COOKIE, LOCALIZED, NATIVE_NAME, HTML_LANG, isLang, localize, pickLang, type Lang } from '../lib/i18n';
+import { LANGS, LANG_COOKIE, NATIVE_NAME, HTML_LANG, localize, type Lang } from '../lib/i18n';
 import { SHELL } from '../lib/shell';
 
 /*
@@ -14,27 +14,16 @@ import { SHELL } from '../lib/shell';
     On phones it is hidden and takes no room, so the merged bar stays at the edge.
   - LangSheet (phones): the last row of the menu dropdown, the current language
     with a globe, which opens the same list inside the menu.
-
-  On pages that are only in English (the articles), a reader whose language is
-  another one gets a small note under the right end of the nav saying so,
-  which fades the same way (LangGlobe renders it on every screen size).
 */
 const SCROLL_GONE = 48;
-const PICKED = 'pnav-lang-picked';
 
-function readCookie(): Lang | null {
-  const m = document.cookie.match(new RegExp(`(?:^|; )${LANG_COOKIE}=([^;]+)`));
-  return m && isLang(m[1]) ? m[1] : null;
-}
-
-/** Remembers the choice and opens the page in it; on an English-only page it stays and tells the note. */
+/** Remembers the choice and opens the page in it. */
 function useChooseLang(base: string) {
   const router = useRouter();
   return (l: Lang) => {
     document.cookie = `${LANG_COOKIE}=${l}; path=/; max-age=31536000; samesite=lax`;
     const target = localize(base, l);
     if (target !== window.location.pathname) router.push(target + window.location.hash);
-    else window.dispatchEvent(new CustomEvent<Lang>(PICKED, { detail: l }));
   };
 }
 
@@ -72,11 +61,9 @@ export default function LangGlobe({ lang, base }: { lang: Lang; base: string }) 
   const choose = useChooseLang(base);
   const [open, setOpen] = useState(false);
   const [gone, setGone] = useState(false);
-  const [noteLang, setNoteLang] = useState<Lang | null>(null);
   const wrap = useRef<HTMLDivElement>(null);
   const button = useRef<HTMLButtonElement>(null);
   const t = SHELL[lang];
-  const localized = LOCALIZED.includes(base);
 
   // fades out once the page has scrolled into its content
   useEffect(() => {
@@ -89,16 +76,6 @@ export default function LangGlobe({ lang, base }: { lang: Lang; base: string }) 
     window.addEventListener('scroll', on, { passive: true });
     return () => window.removeEventListener('scroll', on);
   }, []);
-
-  // an English-only page, for a reader of another language: say so in theirs
-  useEffect(() => {
-    if (localized) { setNoteLang(null); return; }
-    const want = readCookie() ?? pickLang(navigator.languages?.join(',') || navigator.language);
-    setNoteLang(want && want !== 'en' ? want : null);
-    const onPicked = (e: Event) => { const l = (e as CustomEvent<Lang>).detail; setNoteLang(l === 'en' ? null : l); };
-    window.addEventListener(PICKED, onPicked);
-    return () => window.removeEventListener(PICKED, onPicked);
-  }, [localized, base]);
 
   // closes on Escape (focus back on the globe) or a tap outside
   useEffect(() => {
@@ -127,7 +104,6 @@ export default function LangGlobe({ lang, base }: { lang: Lang; base: string }) 
         <Globe />
       </button>
       <LangList id="pnav-langs" lang={lang} open={open} onPick={(l) => { setOpen(false); choose(l); }} />
-      {noteLang && <p className="pnav-langnote" lang={HTML_LANG[noteLang]}>{SHELL[noteLang].englishOnly}</p>}
     </div>
   );
 }

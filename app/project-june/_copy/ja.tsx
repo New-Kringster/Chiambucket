@@ -79,6 +79,7 @@ const ja: ProjectJuneCopy = {
     routingAlt: 'WebRTC ストリームの経路の図',
   },
   console: {
+    labelEnd: '：',
     tag: '運転コンソール',
     rebuilt: { day: '昼の走行から再現', night: '夜の走行から再現' },
     toggleAria: '昼か夜の走行を選ぶ',

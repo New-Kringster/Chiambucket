@@ -48,7 +48,7 @@ Article pages: `/project-june`, `/lumen`, `/beadreader`, `/waterslop`, `/pip`, `
 
 ## Languages
 
-The home, contact, photography, homelab, archive, credits and AI use pages are also in Simplified Chinese, Japanese, Dutch, German, Russian, French and Spanish, at `/zh`, `/ja`, `/nl`, `/de`, `/ru`, `/fr` and `/es` (for example `/ja/contact`); the articles are English only. A first visit is sent to the browser's language (`proxy.ts`), and the globe at the right end of the nav switches language and remembers the choice. Each page's words live in a `_copy` file per language beside it (`lib/i18n.ts` has the helpers, `lib/shell.ts` the nav and footer words); see the Languages section of `CLAUDE.md` before changing copy.
+Every page, the project articles included, is also in Simplified Chinese, Japanese, Dutch, German, Russian, French and Spanish, at `/zh`, `/ja`, `/nl`, `/de`, `/ru`, `/fr` and `/es` (for example `/ja/contact`, `/de/pip`). A first visit is sent to the browser's language (`proxy.ts`), and the globe at the right end of the nav switches language and remembers the choice. Each page's words live in a `_copy` file per language beside it (`lib/i18n.ts` has the helpers, `lib/shell.ts` the nav and footer words); see the Languages section of `CLAUDE.md` before changing copy. Every copy change ships in all languages: `npm run check:i18n` checks it, a pre-commit hook blocks English-only copy changes, and the build fails if a page or translation is missing.
 
 ## Theming
 

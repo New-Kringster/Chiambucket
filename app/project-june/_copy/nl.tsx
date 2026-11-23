@@ -79,6 +79,7 @@ const nl: ProjectJuneCopy = {
     routingAlt: 'Diagram van de routering van de WebRTC-streams',
   },
   console: {
+    labelEnd: '.',
     tag: 'Rijconsole',
     rebuilt: { day: 'Nagebouwd van de dagrit', night: 'Nagebouwd van de nachtrit' },
     toggleAria: 'Kies de dagrit of de nachtrit',

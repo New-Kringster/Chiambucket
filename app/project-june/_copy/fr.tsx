@@ -80,6 +80,7 @@ const fr: ProjectJuneCopy = {
     routingAlt: 'Schéma du routage des flux WebRTC',
   },
   console: {
+    labelEnd: '.',
     tag: 'Console de pilotage',
     rebuilt: { day: 'D’après la sortie de jour', night: 'D’après la sortie de nuit' },
     toggleAria: 'Choisir la sortie de jour ou de nuit',

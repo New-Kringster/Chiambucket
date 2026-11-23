@@ -24,5 +24,8 @@ export function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/contact', '/photography', '/homelab', '/archive', '/credits', '/ai-use'],
+  matcher: [
+    '/', '/contact', '/photography', '/homelab', '/archive', '/credits', '/ai-use',
+    '/waterslop', '/project-june', '/pip', '/stackchan-lidar', '/beadreader', '/pantry', '/scroll-ruler', '/cad-mouse', '/brolocator', '/lumen', '/csdp', '/pandus', '/elecf', '/comingsoon',
+  ],
 };

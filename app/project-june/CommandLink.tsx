@@ -264,7 +264,7 @@ export default function CommandLink({ t }: { t: T }) {
           <span><i className="dir back" />{t.flow.back}</span>
         </div>
         <div className="pj-cl-blurb-wrap" aria-live="polite">
-          <p className="pj-cl-blurb pj-cl-sizer" aria-hidden="true"><b>{LONGEST_BLURB.label}.</b> {LONGEST_BLURB.blurb}</p>
+          <p className="pj-cl-blurb pj-cl-sizer" aria-hidden="true"><b>{LONGEST_BLURB.label}{t.labelEnd}</b> {LONGEST_BLURB.blurb}</p>
           <AnimatePresence mode="wait">
             <m.p
               key={node.key}
@@ -274,7 +274,7 @@ export default function CommandLink({ t }: { t: T }) {
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
             >
-              <b>{nodeWords.label}.</b> {nodeWords.blurb}
+              <b>{nodeWords.label}{t.labelEnd}</b> {nodeWords.blurb}
             </m.p>
           </AnimatePresence>
         </div>

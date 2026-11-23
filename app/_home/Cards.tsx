@@ -96,7 +96,7 @@ export function FlagCard({ p, onPeek, variant, slot }: { p: Flagship; onPeek: (i
             {slot && <img className="hs-fc-poster" src={p.poster} alt={f.posterAlt} loading="lazy" />}
           </div>
           <div className="hs-btns">
-            <a className="hs-btn is-primary" href={p.read}><IcRead /> {c.card.read}</a>
+            <a className="hs-btn is-primary" href={localize(p.read, lang)}><IcRead /> {c.card.read}</a>
             <button type="button" className="hs-btn" onClick={() => onPeek(p.id)}><IcPeek /> {c.card.peek}</button>
             {p.extra && <a className="hs-btn" href={p.extra.url} target="_blank" rel="noopener">{extraIcon[p.extra.kind]} {f.extra}</a>}
           </div>
@@ -184,7 +184,7 @@ export function ProjectGallery({ onPeek }: { onPeek: (id: string) => void }) {
                 {p.url ? (
                   <div className="hs-pc-act">
                     <button type="button" className="hs-pc-peek" onClick={() => onPeek(p.id)} aria-label={fill(g.peek, { title: words[p.id].title })}><IcPeek /></button>
-                    <a className="hs-pc-read" href={p.url}><IcRead /> {g.read}</a>
+                    <a className="hs-pc-read" href={localize(p.url, lang)}><IcRead /> {g.read}</a>
                   </div>
                 ) : <span className="hs-pc-soon">{g.soon}</span>}
               </div>

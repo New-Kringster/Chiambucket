@@ -80,6 +80,7 @@ const de: ProjectJuneCopy = {
     routingAlt: 'Diagramm des WebRTC-Stream-Routings',
   },
   console: {
+    labelEnd: '.',
     tag: 'Fahrkonsole',
     rebuilt: { day: 'Nachbau der Tagfahrt', night: 'Nachbau der Nachtfahrt' },
     toggleAria: 'Tag- oder Nachtfahrt wählen',

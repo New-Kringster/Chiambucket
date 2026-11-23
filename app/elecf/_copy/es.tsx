@@ -1,0 +1,143 @@
+import type { ElecfCopy } from './en';
+
+/* The ELEC-F article's Spanish words. */
+const es: ElecfCopy = {
+  meta: {
+    title: 'ELEC-F | Braven Chiam',
+    description: 'ELEC-F es un sistema de almacenamiento seguro en congeladores que construimos en un equipo de cuatro, en el que dos controladores M5Stack Fire con unidades ToF, PIR y RGB hacen sonar una alarma cuando alguien se queda encerrado demasiado tiempo dentro de una cámara frigorífica.',
+    ogDescription: 'Un sistema de seguridad para congeladores con M5Stack que vigila la puerta con un sensor ToF y la sala con un sensor PIR, y da la alarma con una luz RGB y un zumbador.',
+  },
+  ld: { headline: 'Elec-F: sistema de almacenamiento seguro en congeladores' },
+  hero: {
+    alt: 'El prototipo de congelador de cartón de ELEC-F con M5Stack y sensores',
+    back: 'Volver a proyectos',
+    tags: { school: 'Proyecto escolar', team: 'Equipo de 4' },
+    key: 'ELEC-F',
+    title: <>Sistema de <em>congelador</em> seguro</>,
+    lead: 'ELEC-F es un sistema de almacenamiento seguro en congeladores que construimos en un equipo de cuatro para una asignatura de ingeniería. Vigila la puerta de una cámara frigorífica y la sala de dentro, y hace sonar una alarma si alguien se queda encerrado demasiado tiempo.',
+    builtWith: 'Hecho con',
+    links: ['GitHub', 'Vídeo demo'],
+  },
+  chapters: 'Capítulos',
+  rail: {
+    Demo: 'Demo', Problem: 'El problema', Objective: 'Objetivos', HowItWorks: 'Cómo funciona',
+    Hardware: 'Hardware', Logic: 'Lógica', Build: 'Prototipo', Team: 'Equipo',
+  },
+  demo: { h: 'Demo', video: 'Vídeo de demo de ELEC-F' },
+  problem: {
+    h: 'El problema',
+    p1: 'A medida que las fábricas se llenan de automatización, la seguridad tiene que seguirles el ritmo, y un riesgo que a menudo se pasa por alto es la cámara frigorífica, donde un trabajador puede quedarse atrapado dentro.',
+    howH: 'Cómo pasa',
+    how: [
+      'La puerta puede fallar, porque los pestillos gastados se atascan, la humedad congela las juntas y los mecanismos de apertura de emergencia pueden estar rotos, faltar o estar cubiertos de hielo.',
+      'Puede que nadie se dé cuenta de que todavía hay alguien dentro, y los trabajadores con experiencia pueden confiarse.',
+    ],
+    whyH: 'Por qué es peligroso',
+    why: [
+      'El frío provoca hipotermia, que trae confusión y luego pérdida de conocimiento.',
+      'En un congelador cerrado puede faltar el oxígeno, lo que puede acabar en asfixia.',
+      'El pánico y los intentos de escapar provocan caídas y otras lesiones.',
+      'Sin un rescate a tiempo, quedarse atrapado mucho rato puede ser mortal.',
+    ],
+    p2: 'Quedarse atrapado también da pánico, sobre todo a las personas con cleitrofobia, el miedo a no poder escapar. ELEC-F busca acortar el tiempo que alguien pasa encerrado y hacerle saber que la ayuda está en camino.',
+  },
+  goals: {
+    h: 'Objetivos',
+    items: [
+      'Evitar que los trabajadores se queden encerrados en el congelador de una fábrica.',
+      'Mantener el contacto con quien se quede atrapado y tranquilizarle.',
+      'Funcionar de forma fiable en una sala fría, húmeda y cerrada.',
+    ],
+  },
+  how: {
+    h: 'Cómo funciona',
+    p1: 'Mientras la puerta está abierta, fijas un límite de tiempo en el M5Stack, y al cerrar la puerta empieza el temporizador. Si el tiempo se acaba y todavía hay alguien dentro, salta la alarma.',
+    partsIntro: 'El sistema tiene cuatro partes que funcionan juntas:',
+    parts: [
+      <>El <b>temporizador</b> se fija en el M5Stack mientras la puerta está abierta y empieza cuando la puerta se cierra.</>,
+      <>El <b>sensor de puerta</b> es un sensor de tiempo de vuelo (ToF) que mide la distancia para saber si la puerta está abierta o cerrada.</>,
+      <>El <b>sensor de presencia</b> es un sensor PIR que detecta el calor corporal y el movimiento para saber si todavía hay alguien en la sala.</>,
+      <>La <b>alarma</b> hace parpadear la unidad RGB y sonar el zumbador si la puerta sigue cerrada pasado el límite con alguien dentro.</>,
+    ],
+    p2: 'Elegimos sensores ToF y PIR porque los dos siguen funcionando bajo cero.',
+  },
+  seq: {
+    steps: {
+      open: {
+        label: 'Puerta abierta',
+        title: 'Pon el tiempo',
+        desc: 'Cuando entra un trabajador, el sensor PIR detecta su calor corporal y su movimiento, y el sensor ToF ve la puerta abierta. Entonces fijas en el M5Stack cuánto tiempo puede estar cerrada la puerta.',
+        alt: 'La pantalla del M5Stack en el paso 1, poner el tiempo',
+        pir: 'Persona dentro',
+        tof: 'Puerta abierta',
+      },
+      armed: {
+        label: 'Puerta cerrada',
+        title: 'Cuenta atrás',
+        desc: 'Cuando la puerta se cierra, el sensor ToF la ve cerrada y empieza el temporizador, pero si la sala se vacía antes de que se acabe el tiempo, el sistema se reinicia.',
+        alt: 'La pantalla del M5Stack en el paso 2, cuenta atrás',
+        pir: 'Persona dentro',
+        tof: 'Puerta cerrada',
+      },
+      alarm: {
+        label: 'Tiempo agotado',
+        title: 'Alarma',
+        desc: 'Si el tiempo se acaba con alguien todavía dentro, la unidad RGB parpadea y el zumbador del M5Stack suena para avisar a quien esté cerca hasta que se abra la puerta.',
+        alt: 'La pantalla del M5Stack en el paso 3, alarma',
+        pir: 'Persona dentro',
+        tof: 'Puerta cerrada',
+      },
+    },
+    eyebrow: 'Paso {n} de {total} · {label}',
+    chips: { pir: 'PIR', tof: 'ToF', alert: 'Aviso' },
+    alert: { idle: 'En reposo', armed: 'Armado', sounding: 'Luz RGB y zumbador' },
+    pirSizer: 'Presencia detectada',
+    stepsAria: 'Pasos',
+    dotAria: 'Paso {n}: {title}',
+    prev: 'Paso anterior',
+    nextAria: 'Paso siguiente',
+    next: 'Siguiente',
+  },
+  hardware: {
+    h: 'Hardware',
+    p: 'Todo es de M5Stack, lo que hizo que el prototipo fuera rápido y que cambiar módulos fuera fácil. Dos controladores M5Stack Fire ejecutan la lógica y la pantalla, y una unidad Mini Hub divide el único puerto del Fire para que cada sensor tenga dónde conectarse.',
+    figAlt: 'El M5Stack Fire conectado a las unidades ToF, PIR y RGB',
+    figCaption: 'El M5Stack Fire y sus unidades de sensores',
+    components: {
+      fire: { name: 'M5Stack Fire ×2', role: 'Controlador', desc: 'Lleva el temporizador, lee los sensores y controla la pantalla, y tiene el zumbador integrado.' },
+      hub: { name: 'Unidad Mini Hub', role: 'Expansión', desc: 'Divide el único puerto del Fire para que se puedan conectar todos los sensores.' },
+      tof: { name: 'Sensor ToF', role: 'Puerta', desc: 'Mide la distancia para saber si la puerta del congelador está abierta o cerrada.' },
+      pir: { name: 'Sensor PIR', role: 'Presencia', desc: 'Detecta el calor corporal y el movimiento para saber si todavía hay alguien dentro.' },
+      rgb: { name: 'Unidad RGB', role: 'Alarma', desc: 'Parpadea junto con el zumbador cuando alguien sigue dentro pasado el límite.' },
+    },
+    wiringAlt: 'El cableado de ELEC-F',
+    wiringCaption: 'Cómo están cableadas las unidades',
+  },
+  logic: {
+    h: 'Lógica',
+    p: 'El diagrama de flujo de abajo muestra el bucle completo que ejecuta el M5Stack. Los botones fijan el límite de tiempo mientras la puerta está abierta, y cuando la puerta se cierra, el temporizador corre y los sensores deciden qué pasa después.',
+    flowAlt: 'Diagrama de flujo del software de ELEC-F, desde fijar el temporizador hasta hacer sonar la alarma',
+    blockAlt: 'Diagrama de bloques del sistema ELEC-F',
+    blockCaption: 'Diagrama de bloques del sistema',
+  },
+  build: {
+    h: 'Prototipo',
+    p: 'Hicimos el congelador y su puerta de cartón para probar los sensores y los tiempos de principio a fin antes de pensar en una carcasa de verdad.',
+    alts: ['El prototipo de ELEC-F con los sensores montados', 'La puerta del prototipo de ELEC-F'],
+    posterAlt: 'El póster del proyecto ELEC-F',
+    posterCaption: 'El póster del proyecto',
+    repo: {
+      title: 'ELEC-F en GitHub',
+      text: 'El repositorio tiene el código del M5Stack para el temporizador de la puerta, las lecturas de los sensores y la alarma.',
+      button: 'Ver el código en GitHub',
+    },
+  },
+  team: {
+    h: 'Equipo',
+    lead: 'Líder del equipo',
+    member: 'Miembro del equipo',
+    me: 'Braven (yo)',
+    profile: 'Perfil',
+  },
+};
+export default es;
