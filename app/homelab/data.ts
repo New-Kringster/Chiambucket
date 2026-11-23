@@ -1,87 +1,63 @@
 /* ────────────────────────────────────────────────────────────────
-   Homelab page structure. Specs reflect a read-only SSH snapshot of
-   NewMain (Unraid 7.1.2) plus the owner's notes. Everything a visitor
-   reads (blurbs, labels, dialog text) lives in ./_copy, keyed by the
-   ids here. `statusKey` marks publicly reachable services that the
+   Homelab page structure: the systems braven-agents controls, the
+   machines, and the self-hosted services. Everything a visitor reads
+   (roles, blurbs, specs, labels) lives in ./_copy, keyed by the ids
+   here. `statusKey` marks publicly reachable services that the
    /api/homelab-status route pings for a live dot.
    ──────────────────────────────────────────────────────────────── */
 import type { HomelabCopy } from './_copy/en';
 
-export type Weight = 'extreme' | 'very-high' | 'high' | 'moderate' | 'low' | 'dev' | 'diagnostic';
+export type NodeId = keyof HomelabCopy['core']['nodes'];
+export type MachineId = keyof HomelabCopy['machines']['items'];
+export type ServiceId = keyof HomelabCopy['services'];
+export type Category = Exclude<keyof HomelabCopy['stack']['categories'], 'all'>;
+export type Weight = keyof HomelabCopy['stack']['weights'];
 
-/** How many of the five meter bars light up; the label is in the copy (stack.weights). */
+/* ── The control map: braven-agents in the middle, every system it reaches around it ── */
+export type Group = 'machines' | 'edge' | 'platforms';
+export interface MapNode {
+  id: NodeId;
+  /** proper names stay in code; the planned Proxmox server takes its name from the copy */
+  name?: string;
+  group: Group;
+  planned?: boolean;
+}
+export const GROUPS: Group[] = ['machines', 'edge', 'platforms'];
+export const NODES: MapNode[] = [
+  { id: 'newmain', name: 'NewMain', group: 'machines' },
+  { id: 'caca', name: 'CaCa', group: 'machines' },
+  { id: 'servertop', name: 'Servertop', group: 'machines' },
+  { id: 'blade', name: 'Razer Blade 15', group: 'machines' },
+  { id: 'proxmox', group: 'machines', planned: true },
+  { id: 'unifi', name: 'UniFi', group: 'edge' },
+  { id: 'npm', name: 'Nginx Proxy Manager', group: 'edge' },
+  { id: 'cloudflare', name: 'Cloudflare', group: 'edge' },
+  { id: 'github', name: 'GitHub', group: 'platforms' },
+  { id: 'vercel', name: 'Vercel', group: 'platforms' },
+  { id: 'shebang', name: 'Shebang', group: 'platforms' },
+];
+
+/* ── The machines, in the order the page lists them ── */
+export interface Machine { id: MachineId; planned?: boolean; core?: boolean }
+export const MACHINES: Machine[] = [
+  { id: 'agents', core: true },
+  { id: 'newmain' },
+  { id: 'caca' },
+  { id: 'servertop' },
+  { id: 'blade' },
+  { id: 'proxmox', planned: true },
+];
+
+/* ── Self-hosted services on NewMain ── */
+/** How many of the five meter bars light up in the service dialog; the label is in the copy (stack.weights). */
 export const WEIGHT_LEVEL: Record<Weight, number> = {
   extreme: 5,
   'very-high': 5,
   high: 4,
   moderate: 3,
   low: 1,
-  dev: 2,
   diagnostic: 2,
 };
-
-export type SpecKey = 'os' | 'cpu' | 'memory' | 'gpu' | 'array' | 'fastPool' | 'storage' | 'boot' | 'hosts' | 'power';
-export type ServerId = keyof HomelabCopy['servers'];
-export type ServiceId = keyof HomelabCopy['services'];
-export type AccessId = keyof HomelabCopy['access']['methods'];
-export type Category = Exclude<keyof HomelabCopy['stack']['categories'], 'all'>;
-
-export interface Server {
-  id: ServerId;
-  name: string;
-  photo: string;
-  status: 'always-on' | 'on-demand';
-  /** `v` is a plain model name or size; specs whose value has words take it from the copy */
-  specs: { k: SpecKey; v?: string }[];
-  visual: 'runs' | 'pxe' | 'wake';       // which explainer the detail dialog renders
-}
-
-export const SERVERS: Server[] = [
-  {
-    id: 'newmain',
-    name: 'NewMain',
-    photo: '/images/hl-newmain.png',
-    status: 'always-on',
-    specs: [
-      { k: 'os', v: 'Unraid 7.1.2' },
-      { k: 'cpu' },
-      { k: 'memory', v: '64 GB DDR4' },
-      { k: 'gpu', v: 'GTX 1070 8 GB' },
-      { k: 'array' },
-      { k: 'fastPool' },
-    ],
-    visual: 'runs',
-  },
-  {
-    id: 'caca',
-    name: 'CaCa',
-    photo: '/images/hl-caca.png',
-    status: 'always-on',
-    specs: [
-      { k: 'os', v: 'Proxmox VE' },
-      { k: 'cpu', v: 'Core i7-6700T' },
-      { k: 'memory', v: '32 GB DDR4' },
-      { k: 'storage' },
-      { k: 'boot' },
-      { k: 'hosts' },
-    ],
-    visual: 'pxe',
-  },
-  {
-    id: 'adell',
-    name: 'Adell',
-    photo: '/images/hl-adell.png',
-    status: 'on-demand',
-    specs: [
-      { k: 'os', v: 'Proxmox VE' },
-      { k: 'cpu' },
-      { k: 'memory', v: '128 GB DDR3' },
-      { k: 'storage' },
-      { k: 'power' },
-    ],
-    visual: 'wake',
-  },
-];
 
 export interface Service {
   id: ServiceId;
@@ -90,75 +66,59 @@ export interface Service {
   iconRound?: boolean;
   category: Category;
   weight: Weight;
-  hosts: string[];
   url?: string;        // public link shown on the card
   statusKey?: string;  // hostname pinged by the live-status route
-  featured?: boolean;  // what I am building now, listed first
 }
 
 export const CATEGORIES: Category[] = ['access', 'files', 'media', 'monitoring', 'projects'];
 
 export const SERVICES: Service[] = [
-  { id: 'openclaw', name: 'OpenClaw', icon: '/images/openclaw-icon.webp', category: 'projects', weight: 'dev', hosts: ['NewMain'], featured: true },
-
   // Access
-  { id: 'npm', name: 'Nginx Proxy Manager', icon: '/images/npm-icon.webp', category: 'access', weight: 'very-high', hosts: ['NewMain'] },
-  { id: 'tailscale', name: 'Tailscale', icon: '/images/tailscale-icon.webp', category: 'access', weight: 'high', hosts: ['NewMain'] },
-  { id: 'shadowsocks', name: 'Shadowsocks', icon: '/images/shadowsocks-icon.png', iconRound: true, category: 'access', weight: 'high', hosts: ['NewMain'] },
-  { id: 'twingate', name: 'Twingate', icon: '/images/twingate-icon.webp', category: 'access', weight: 'low', hosts: ['NewMain'] },
-  { id: 'pihole', name: 'Pi-hole', icon: '/images/pihole-icon.png', iconRound: true, category: 'access', weight: 'diagnostic', hosts: ['NewMain'] },
+  { id: 'npm', name: 'Nginx Proxy Manager', icon: '/images/npm-icon.webp', category: 'access', weight: 'very-high' },
+  { id: 'tailscale', name: 'Tailscale', icon: '/images/tailscale-icon.webp', category: 'access', weight: 'high' },
+  { id: 'shadowsocks', name: 'Shadowsocks', icon: '/images/shadowsocks-icon.png', iconRound: true, category: 'access', weight: 'high' },
+  { id: 'twingate', name: 'Twingate', icon: '/images/twingate-icon.webp', category: 'access', weight: 'low' },
+  { id: 'pihole', name: 'Pi-hole', icon: '/images/pihole-icon.png', iconRound: true, category: 'access', weight: 'diagnostic' },
 
   // Files
-  { id: 'immich', name: 'Immich', icon: '/images/immich-icon.webp', category: 'files', weight: 'extreme', hosts: ['NewMain'] },
+  { id: 'immich', name: 'Immich', icon: '/images/immich-icon.webp', category: 'files', weight: 'extreme' },
   {
-    id: 'lychee', name: 'Lychee', icon: '/images/lychee-icon.webp', category: 'files', weight: 'high', hosts: ['NewMain'],
+    id: 'lychee', name: 'Lychee', icon: '/images/lychee-icon.webp', category: 'files', weight: 'high',
     url: 'https://photos.chiambucket.com', statusKey: 'photos.chiambucket.com',
   },
   {
-    id: 'pingvin', name: 'Pingvin Share', icon: '/images/pingvin-icon.png', iconRound: true, category: 'files', weight: 'high', hosts: ['NewMain'],
+    id: 'pingvin', name: 'Pingvin Share', icon: '/images/pingvin-icon.png', iconRound: true, category: 'files', weight: 'high',
     url: 'https://share.chiambucket.com', statusKey: 'share.chiambucket.com',
   },
   {
-    id: 'pairdrop', name: 'PairDrop', icon: '/images/pairdrop-icon.png', iconRound: true, category: 'files', weight: 'high', hosts: ['NewMain'],
+    id: 'pairdrop', name: 'PairDrop', icon: '/images/pairdrop-icon.png', iconRound: true, category: 'files', weight: 'high',
     url: 'https://drop.chiambucket.com', statusKey: 'drop.chiambucket.com',
   },
-  { id: 'fbq', name: 'File Browser Quantum', icon: '/images/fbq-icon.webp', category: 'files', weight: 'high', hosts: ['NewMain'] },
-  { id: 'syncthing', name: 'Syncthing', icon: '/images/syncthing-icon.webp', category: 'files', weight: 'low', hosts: ['NewMain'] },
+  { id: 'fbq', name: 'File Browser Quantum', icon: '/images/fbq-icon.webp', category: 'files', weight: 'high' },
+  { id: 'syncthing', name: 'Syncthing', icon: '/images/syncthing-icon.webp', category: 'files', weight: 'low' },
 
   // Media and tools
   {
-    id: 'fireshare', name: 'Fireshare', icon: '/images/fireshare-icon.webp', iconRound: true, category: 'media', weight: 'moderate', hosts: ['NewMain'],
+    id: 'fireshare', name: 'Fireshare', icon: '/images/fireshare-icon.webp', iconRound: true, category: 'media', weight: 'moderate',
     url: 'https://clips.chiambucket.com', statusKey: 'clips.chiambucket.com',
   },
-  { id: 'neko', name: 'Neko Rooms', icon: '/images/neko-icon.png', iconRound: true, category: 'media', weight: 'high', hosts: ['NewMain'] },
-  { id: 'crafty', name: 'Crafty', icon: '/images/crafty-icon.webp', category: 'media', weight: 'moderate', hosts: ['NewMain', 'CasaOS VM'] },
-  { id: 'paperless', name: 'Paperless-NGX', icon: '/images/paperless-icon.webp', category: 'media', weight: 'low', hosts: ['NewMain'] },
-  { id: 'vscode', name: 'VS Code Server', icon: '/images/vscode-icon.webp', category: 'media', weight: 'low', hosts: ['NewMain'] },
+  { id: 'neko', name: 'Neko Rooms', icon: '/images/neko-icon.png', iconRound: true, category: 'media', weight: 'high' },
+  { id: 'crafty', name: 'Crafty', icon: '/images/crafty-icon.webp', category: 'media', weight: 'moderate' },
+  { id: 'paperless', name: 'Paperless-NGX', icon: '/images/paperless-icon.webp', category: 'media', weight: 'low' },
+  { id: 'vscode', name: 'VS Code Server', icon: '/images/vscode-icon.webp', category: 'media', weight: 'low' },
 
   // Monitoring
-  { id: 'upstat', name: 'UpStat', icon: '/images/hl2/upstat-icon.png', category: 'monitoring', weight: 'high', hosts: ['NewMain'] },
-  { id: 'netdata', name: 'NetData', icon: '/images/netdata-icon.webp', category: 'monitoring', weight: 'low', hosts: ['NewMain'] },
-  { id: 'upsnap', name: 'UpSnap', icon: '/images/upsnap-icon.webp', category: 'monitoring', weight: 'high', hosts: ['NewMain'] },
+  { id: 'upstat', name: 'UpStat', icon: '/images/hl2/upstat-icon.png', category: 'monitoring', weight: 'high' },
+  { id: 'netdata', name: 'NetData', icon: '/images/netdata-icon.webp', category: 'monitoring', weight: 'low' },
+  { id: 'upsnap', name: 'UpSnap', icon: '/images/upsnap-icon.webp', category: 'monitoring', weight: 'high' },
   {
-    id: 'openspeedtest', name: 'OpenSpeedTest', icon: '/images/ost-icon.webp', category: 'monitoring', weight: 'moderate', hosts: ['NewMain'],
+    id: 'openspeedtest', name: 'OpenSpeedTest', icon: '/images/ost-icon.webp', category: 'monitoring', weight: 'moderate',
     url: 'https://speedtest.chiambucket.com', statusKey: 'speedtest.chiambucket.com',
   },
-  { id: 'portainer', name: 'Portainer', icon: '/images/portainer-icon.webp', category: 'monitoring', weight: 'moderate', hosts: ['NewMain', 'CasaOS VM'] },
+  { id: 'portainer', name: 'Portainer', icon: '/images/portainer-icon.webp', category: 'monitoring', weight: 'moderate' },
 
   // For my projects
-  { id: 'coturn', name: 'coturn', icon: '/images/coturn-icon.png', iconRound: true, category: 'projects', weight: 'low', hosts: ['NewMain'] },
-  { id: 'mosquitto', name: 'Mosquitto', icon: '/images/mosquitto-icon.svg', category: 'projects', weight: 'low', hosts: ['NewMain'] },
-  { id: 'nginx', name: 'Nginx', icon: '/images/nginx-icon.webp', iconRound: true, category: 'projects', weight: 'high', hosts: ['NewMain'] },
-];
-
-/* Ways into the network from outside, main one first. They all end at
-   the rack (the "home" node on the page). Type and note are in the copy. */
-export interface AccessMethod { id: AccessId; name: string; primary?: boolean }
-export const ACCESS_METHODS: AccessMethod[] = [
-  { id: 'tailscale', name: 'Tailscale', primary: true },
-  { id: 'wireguard', name: 'WireGuard' },
-  { id: 'teleport', name: 'UniFi Teleport' },
-  { id: 'twingate', name: 'Twingate' },
-  { id: 'shadowsocks', name: 'Shadowsocks' },
-  { id: 'unraidConnect', name: 'Unraid Connect' },
+  { id: 'coturn', name: 'coturn', icon: '/images/coturn-icon.png', iconRound: true, category: 'projects', weight: 'low' },
+  { id: 'mosquitto', name: 'Mosquitto', icon: '/images/mosquitto-icon.svg', category: 'projects', weight: 'low' },
+  { id: 'nginx', name: 'Nginx', icon: '/images/nginx-icon.webp', iconRound: true, category: 'projects', weight: 'high' },
 ];

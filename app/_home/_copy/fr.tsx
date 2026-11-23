@@ -43,7 +43,7 @@ const fr: HomeCopy = {
       { name: 'Firmware', line: 'J’écris du C et du C++ pour les cartes ESP32, Arduino et M5Stack, ou du MicroPython quand ça s’y prête.' },
       { name: 'Matériel', line: 'Je dessine les schémas et les cartes dans KiCad et je les soude chez moi, composants CMS compris.' },
       { name: 'Logiciel', line: 'Je crée des applis web en Next.js et TypeScript et je fais tourner de petits serveurs Python dans Docker.' },
-      { name: 'Infrastructure', line: 'Mes projets tournent sur mon propre homelab, monté sur Unraid, Proxmox et Docker.' },
+      { name: 'Infrastructure', line: 'Mes projets tournent sur mon propre homelab, où des agents IA gèrent les serveurs, Docker et le réseau UniFi.' },
       { name: 'Design', line: 'Je modélise les boîtiers dans Onshape, je fais les rendus dans Blender, je conçois les interfaces dans Figma et je monte les films dans DaVinci Resolve.' },
     ],
     complete: 'Complet',
@@ -280,10 +280,10 @@ const fr: HomeCopy = {
         chips: ['Onshape', 'Blender', 'Impression 3D'],
       },
       infra: {
-        word: 'Infrastructure', line: 'Trois serveurs à la maison', title: 'Mon propre homelab',
-        blurb: 'Je fais tourner un homelab auto-hébergé sur Unraid, Proxmox et Docker, derrière Nginx et un réseau UniFi segmenté.',
-        points: ['Des services auto-hébergés derrière Nginx Proxy Manager et CrowdSec', 'Un maillage WireGuard et Tailscale pour joindre la maison de partout', 'Des serveurs coturn et MQTT dont dépendent mes projets matériels'],
-        chips: ['Unraid', 'Proxmox', 'Docker', 'Nginx', 'Tailscale', 'WireGuard', 'UniFi'],
+        word: 'Infrastructure', line: 'Un cloud géré par des agents', title: 'Mon propre homelab',
+        blurb: 'Mon homelab est géré par des agents IA sur un serveur rien qu’à eux, et ils pilotent les autres machines, le réseau UniFi et Cloudflare.',
+        points: ['Des agents qui déploient des applis, modifient le réseau et réparent les services tout seuls', 'Des services auto-hébergés derrière Nginx Proxy Manager et CrowdSec', 'Des serveurs coturn et MQTT dont dépendent mes projets matériels'],
+        chips: ['Unraid', 'Docker', 'UniFi', 'Cloudflare', 'Nginx', 'Tailscale', 'Claude Code'],
         link: 'Explorer le HomeLab',
       },
       radio: {
@@ -317,9 +317,9 @@ const fr: HomeCopy = {
   lab: {
     tag: 'Infrastructure',
     title: 'HomeLab',
-    sub: 'Trois serveurs à la maison sur lesquels tournent mes projets.',
-    lead: 'Ils gardent ma photothèque et mes fichiers et font tourner les serveurs MQTT et TURN qu’utilisent Project June et LUMEN, et les crédits de revente solaire paient leur électricité. Ce site, lui, est hébergé sur Vercel.',
-    facts: [{ v: '3', l: 'serveurs' }, { v: '24 To', l: 'de stockage utile' }, { v: '38', l: 'applis auto-hébergées' }],
+    sub: 'Cinq machines à la maison, gérées par des agents IA.',
+    lead: 'Elles gardent ma photothèque et mes fichiers et font tourner les serveurs MQTT et TURN qu’utilisent Project June et LUMEN, et les agents de braven-agents gèrent tout ça, des conteneurs jusqu’au réseau. Les crédits de revente solaire paient leur électricité, et ce site, lui, est hébergé sur Vercel.',
+    facts: [{ v: '5', l: 'machines' }, { v: '24 To', l: 'de stockage utile' }, { v: '38', l: 'applis auto-hébergées' }],
     cta: 'Explorer le HomeLab',
   },
 

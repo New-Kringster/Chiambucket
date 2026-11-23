@@ -40,7 +40,7 @@ const ja: HomeCopy = {
       { name: 'ファームウェア', line: 'ESP32、Arduino、M5Stack のボード向けに C と C++ を書きます。合うときは MicroPython も。' },
       { name: 'ハードウェア', line: '回路図と基板は KiCad で描いて、家ではんだ付けします。SMD 部品もです。' },
       { name: 'ソフトウェア', line: 'Web アプリは Next.js と TypeScript で作り、小さな Python のサーバーは Docker で動かしています。' },
-      { name: 'インフラ', line: '僕のプロジェクトは、Unraid、Proxmox、Docker で組んだ自前のホームラボで動いています。' },
+      { name: 'インフラ', line: '僕のプロジェクトは自前のホームラボで動いていて、サーバーや Docker、UniFi のネットワークは AI エージェントが管理しています。' },
       { name: 'デザイン', line: 'ケースは Onshape でモデリングし、Blender でレンダリング、UI は Figma でデザインし、映像は DaVinci Resolve で編集します。' },
     ],
     complete: '完成',
@@ -272,10 +272,10 @@ const ja: HomeCopy = {
         chips: ['Onshape', 'Blender', '3D プリント'],
       },
       infra: {
-        word: 'インフラ', line: '家にある 3 台のサーバー', title: '自分だけのホームラボ',
-        blurb: 'Unraid、Proxmox、Docker でセルフホストのホームラボを運用していて、Nginx とセグメント分けした UniFi ネットワークの後ろに置いています。',
-        points: ['Nginx Proxy Manager と CrowdSec の後ろのセルフホストのサービス', 'どこからでも家につながる WireGuard と Tailscale のメッシュ', 'ハードウェアのプロジェクトが頼る coturn と MQTT のサーバー'],
-        chips: ['Unraid', 'Proxmox', 'Docker', 'Nginx', 'Tailscale', 'WireGuard', 'UniFi'],
+        word: 'インフラ', line: 'エージェントが動かす家のクラウド', title: '自分だけのホームラボ',
+        blurb: '僕のホームラボは、専用のサーバーで動く AI エージェントが運用していて、ほかのマシンや UniFi のネットワーク、Cloudflare もエージェントが操作します。',
+        points: ['アプリのデプロイ、ネットワークの変更、サービスの修復を自分でこなすエージェント', 'Nginx Proxy Manager と CrowdSec の後ろのセルフホストのサービス', 'ハードウェアのプロジェクトが頼る coturn と MQTT のサーバー'],
+        chips: ['Unraid', 'Docker', 'UniFi', 'Cloudflare', 'Nginx', 'Tailscale', 'Claude Code'],
         link: 'HomeLab を見る',
       },
       radio: {
@@ -308,9 +308,9 @@ const ja: HomeCopy = {
   lab: {
     tag: 'インフラ',
     title: 'HomeLab',
-    sub: '僕のプロジェクトが動いている、家の 3 台のサーバー。',
-    lead: '写真ライブラリやファイルを保管し、Project June と LUMEN が使う MQTT と TURN のサーバーを動かしています。電気代は太陽光の売電クレジットでまかなっています。このサイト自体は Vercel でホストしています。',
-    facts: [{ v: '3', l: 'サーバー' }, { v: '24 TB', l: '使える容量' }, { v: '38', l: 'セルフホスト' }],
+    sub: '家にある 5 台のマシンを、AI エージェントが動かしています。',
+    lead: '写真ライブラリやファイルを保管し、Project June と LUMEN が使う MQTT と TURN のサーバーを動かしています。コンテナからネットワークまで、そのすべてを braven-agents 上のエージェントが管理しています。電気代は太陽光の売電クレジットでまかなっていて、このサイト自体は Vercel でホストしています。',
+    facts: [{ v: '5', l: 'マシン' }, { v: '24 TB', l: '使える容量' }, { v: '38', l: 'セルフホスト' }],
     cta: 'HomeLab を見る',
   },
 

@@ -40,7 +40,7 @@ const zh: HomeCopy = {
       { name: '固件', line: '我为 ESP32、Arduino 和 M5Stack 开发板写 C 和 C++，合适的时候也用 MicroPython。' },
       { name: '硬件', line: '我在 KiCad 里画原理图和电路板，然后在家里焊接，SMD 元件也自己焊。' },
       { name: '软件', line: '我用 Next.js 和 TypeScript 做网页应用，在 Docker 里跑一些小型 Python 服务器。' },
-      { name: '基础设施', line: '我的项目都跑在我自己的 homelab 上，它基于 Unraid、Proxmox 和 Docker 搭建。' },
+      { name: '基础设施', line: '我的项目都跑在我自己的 homelab 上，服务器、Docker 和 UniFi 网络都由 AI 智能体管理。' },
       { name: '设计', line: '我在 Onshape 里建外壳模型，用 Blender 渲染，在 Figma 里设计界面，用 DaVinci Resolve 剪片子。' },
     ],
     complete: '完成',
@@ -272,10 +272,10 @@ const zh: HomeCopy = {
         chips: ['Onshape', 'Blender', '3D 打印'],
       },
       infra: {
-        word: '基础设施', line: '家里的三台服务器', title: '我自己的 homelab',
-        blurb: '我在家自托管了一套 homelab，基于 Unraid、Proxmox 和 Docker，前面有 Nginx 和一个分段的 UniFi 网络。',
-        points: ['Nginx Proxy Manager 和 CrowdSec 后面的自托管服务', '用 WireGuard 和 Tailscale 组网，在哪里都能连回家', '我的硬件项目要用到的 coturn 和 MQTT 服务器'],
-        chips: ['Unraid', 'Proxmox', 'Docker', 'Nginx', 'Tailscale', 'WireGuard', 'UniFi'],
+        word: '基础设施', line: '由智能体运行的家庭云', title: '我自己的 homelab',
+        blurb: '我的 homelab 由 AI 智能体运行，它们有自己专属的一台服务器，掌控着其他机器、UniFi 网络和 Cloudflare。',
+        points: ['能自己部署应用、修改网络、修复服务的智能体', 'Nginx Proxy Manager 和 CrowdSec 后面的自托管服务', '我的硬件项目要用到的 coturn 和 MQTT 服务器'],
+        chips: ['Unraid', 'Docker', 'UniFi', 'Cloudflare', 'Nginx', 'Tailscale', 'Claude Code'],
         link: '探索 HomeLab',
       },
       radio: {
@@ -308,9 +308,9 @@ const zh: HomeCopy = {
   lab: {
     tag: '基础设施',
     title: 'HomeLab',
-    sub: '家里的三台服务器，我的项目就跑在上面。',
-    lead: '它们存着我的照片库和文件，运行着 Project June 和 LUMEN 用到的 MQTT 和 TURN 服务器，电费则由太阳能上网电费抵扣来支付。这个网站本身托管在 Vercel 上。',
-    facts: [{ v: '3', l: '台服务器' }, { v: '24 TB', l: '可用存储' }, { v: '38', l: '个自托管应用' }],
+    sub: '家里的五台机器，由 AI 智能体运行。',
+    lead: '它们存着我的照片库和文件，运行着 Project June 和 LUMEN 用到的 MQTT 和 TURN 服务器，而 braven-agents 上的智能体管理着这一切，从容器到网络都包了。电费由太阳能上网电费抵扣来支付，这个网站本身则托管在 Vercel 上。',
+    facts: [{ v: '5', l: '台机器' }, { v: '24 TB', l: '可用存储' }, { v: '38', l: '个自托管应用' }],
     cta: '探索 HomeLab',
   },
 

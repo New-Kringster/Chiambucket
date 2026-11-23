@@ -41,7 +41,7 @@ const es: HomeCopy = {
       { name: 'Firmware', line: 'Escribo C y C++ para placas ESP32, Arduino y M5Stack, o MicroPython cuando encaja mejor.' },
       { name: 'Hardware', line: 'Dibujo esquemas y placas en KiCad y las sueldo en casa, componentes SMD incluidos.' },
       { name: 'Software', line: 'Creo aplicaciones web con Next.js y TypeScript y monto pequeños servidores en Python con Docker.' },
-      { name: 'Infraestructura', line: 'Mis proyectos funcionan en mi propio homelab, montado con Unraid, Proxmox y Docker.' },
+      { name: 'Infraestructura', line: 'Mis proyectos funcionan en mi propio homelab, donde agentes de IA gestionan los servidores, Docker y la red UniFi.' },
       { name: 'Diseño', line: 'Modelo carcasas en Onshape, renderizo en Blender, diseño interfaces en Figma y edito vídeos en DaVinci Resolve.' },
     ],
     complete: 'Completo',
@@ -273,10 +273,10 @@ const es: HomeCopy = {
         chips: ['Onshape', 'Blender', 'Impresión 3D'],
       },
       infra: {
-        word: 'Infraestructura', line: 'Tres servidores en casa', title: 'Un homelab propio',
-        blurb: 'Tengo un homelab autoalojado con Unraid, Proxmox y Docker, detrás de Nginx y una red UniFi segmentada.',
-        points: ['Servicios autoalojados detrás de Nginx Proxy Manager y CrowdSec', 'Una malla WireGuard y Tailscale para llegar a casa desde cualquier sitio', 'Servidores coturn y MQTT de los que dependen mis proyectos de hardware'],
-        chips: ['Unraid', 'Proxmox', 'Docker', 'Nginx', 'Tailscale', 'WireGuard', 'UniFi'],
+        word: 'Infraestructura', line: 'Una nube llevada por agentes', title: 'Un homelab propio',
+        blurb: 'Mi homelab lo llevan agentes de IA desde un servidor propio, y controlan las demás máquinas, la red UniFi y Cloudflare.',
+        points: ['Agentes que despliegan apps, cambian la red y arreglan servicios por su cuenta', 'Servicios autoalojados detrás de Nginx Proxy Manager y CrowdSec', 'Servidores coturn y MQTT de los que dependen mis proyectos de hardware'],
+        chips: ['Unraid', 'Docker', 'UniFi', 'Cloudflare', 'Nginx', 'Tailscale', 'Claude Code'],
         link: 'Ver el HomeLab',
       },
       radio: {
@@ -309,9 +309,9 @@ const es: HomeCopy = {
   lab: {
     tag: 'Infraestructura',
     title: 'HomeLab',
-    sub: 'Tres servidores en casa donde funcionan mis proyectos.',
-    lead: 'Guardan mi fototeca y mis archivos y ejecutan los servidores MQTT y TURN que usan Project June y LUMEN, y los créditos por la energía solar que exporto pagan su electricidad. Esta web, en cambio, está alojada en Vercel.',
-    facts: [{ v: '3', l: 'servidores' }, { v: '24 TB', l: 'útiles' }, { v: '38', l: 'apps propias' }],
+    sub: 'Cinco máquinas en casa, gestionadas por agentes de IA.',
+    lead: 'Guardan mi fototeca y mis archivos y ejecutan los servidores MQTT y TURN que usan Project June y LUMEN, y los agentes de braven-agents lo gestionan todo, desde los contenedores hasta la red. Los créditos por la energía solar que exporto pagan su electricidad, y esta web, en cambio, está alojada en Vercel.',
+    facts: [{ v: '5', l: 'máquinas' }, { v: '24 TB', l: 'útiles' }, { v: '38', l: 'apps propias' }],
     cta: 'Ver el HomeLab',
   },
 

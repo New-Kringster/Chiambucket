@@ -47,7 +47,7 @@ const en = {
       { name: 'Firmware', line: 'I write C and C++ for ESP32, Arduino and M5Stack boards, or MicroPython when it suits.' },
       { name: 'Hardware', line: 'I draw schematics and boards in KiCad and solder them at home, SMD parts included.' },
       { name: 'Software', line: 'I build web apps in Next.js and TypeScript and run small Python servers in Docker.' },
-      { name: 'Infrastructure', line: 'My projects run on my own homelab, built on Unraid, Proxmox and Docker.' },
+      { name: 'Infrastructure', line: 'My projects run on my own homelab, where AI agents manage the servers, Docker and the UniFi network.' },
       { name: 'Design', line: 'I model enclosures in Onshape, render in Blender, design interfaces in Figma and edit films in DaVinci Resolve.' },
     ],
     complete: 'Complete',
@@ -296,10 +296,10 @@ const en = {
         chips: ['Onshape', 'Blender', '3D printing'],
       },
       infra: {
-        word: 'Infrastructure', line: 'Three servers at home', title: 'A homelab of my own',
-        blurb: 'I run a self-hosted homelab on Unraid, Proxmox and Docker, behind Nginx and a segmented UniFi network.',
-        points: ['Self-hosted services behind Nginx Proxy Manager and CrowdSec', 'A WireGuard and Tailscale mesh to reach home from anywhere', 'coturn and MQTT servers that my hardware projects rely on'],
-        chips: ['Unraid', 'Proxmox', 'Docker', 'Nginx', 'Tailscale', 'WireGuard', 'UniFi'],
+        word: 'Infrastructure', line: 'A home cloud run by agents', title: 'A homelab of my own',
+        blurb: 'My homelab is run by AI agents on a server of their own, and they control the other machines, the UniFi network and Cloudflare.',
+        points: ['Agents that deploy apps, change the network and fix services on their own', 'Self-hosted services behind Nginx Proxy Manager and CrowdSec', 'coturn and MQTT servers that my hardware projects rely on'],
+        chips: ['Unraid', 'Docker', 'UniFi', 'Cloudflare', 'Nginx', 'Tailscale', 'Claude Code'],
         link: 'Explore the HomeLab',
       },
       radio: {
@@ -333,9 +333,9 @@ const en = {
   lab: {
     tag: 'Infrastructure',
     title: 'HomeLab',
-    sub: 'Three servers at home that my projects run on.',
-    lead: 'They hold my photo library and my files and run the MQTT and TURN servers that Project June and LUMEN use, and solar export credits pay for their power. This site itself is hosted on Vercel.',
-    facts: [{ v: '3', l: 'servers' }, { v: '24 TB', l: 'usable storage' }, { v: '38', l: 'self-hosted apps' }],
+    sub: 'Five machines at home, run by AI agents.',
+    lead: 'They hold my photo library and my files and run the MQTT and TURN servers that Project June and LUMEN use, and the agents on braven-agents manage all of it, from the containers to the network. Solar export credits pay for their power, and this site itself is hosted on Vercel.',
+    facts: [{ v: '5', l: 'machines' }, { v: '24 TB', l: 'usable storage' }, { v: '38', l: 'self-hosted apps' }],
     cta: 'Explore the HomeLab',
   },
 

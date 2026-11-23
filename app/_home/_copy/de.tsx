@@ -41,7 +41,7 @@ const de: HomeCopy = {
       { name: 'Firmware', line: 'Ich schreibe C und C++ für ESP32-, Arduino- und M5Stack-Boards, oder MicroPython, wenn es passt.' },
       { name: 'Hardware', line: 'Ich zeichne Schaltpläne und Platinen in KiCad und löte sie zu Hause, SMD-Bauteile inklusive.' },
       { name: 'Software', line: 'Ich baue Web-Apps mit Next.js und TypeScript und betreibe kleine Python-Server in Docker.' },
-      { name: 'Infrastruktur', line: 'Meine Projekte laufen auf meinem eigenen Homelab, aufgebaut mit Unraid, Proxmox und Docker.' },
+      { name: 'Infrastruktur', line: 'Meine Projekte laufen auf meinem eigenen Homelab, wo KI-Agenten die Server, Docker und das UniFi-Netzwerk verwalten.' },
       { name: 'Design', line: 'Ich modelliere Gehäuse in Onshape, rendere in Blender, gestalte Oberflächen in Figma und schneide Filme in DaVinci Resolve.' },
     ],
     complete: 'Fertig',
@@ -273,10 +273,10 @@ const de: HomeCopy = {
         chips: ['Onshape', 'Blender', '3D-Druck'],
       },
       infra: {
-        word: 'Infrastruktur', line: 'Drei Server zu Hause', title: 'Ein eigenes Homelab',
-        blurb: 'Ich betreibe ein selbst gehostetes Homelab mit Unraid, Proxmox und Docker, hinter Nginx und einem segmentierten UniFi-Netzwerk.',
-        points: ['Selbst gehostete Dienste hinter Nginx Proxy Manager und CrowdSec', 'Ein Mesh aus WireGuard und Tailscale, um von überall nach Hause zu kommen', 'coturn- und MQTT-Server, auf die meine Hardwareprojekte angewiesen sind'],
-        chips: ['Unraid', 'Proxmox', 'Docker', 'Nginx', 'Tailscale', 'WireGuard', 'UniFi'],
+        word: 'Infrastruktur', line: 'Heimcloud, von Agenten betrieben', title: 'Ein eigenes Homelab',
+        blurb: 'Mein Homelab wird von KI-Agenten auf einem eigenen Server betrieben, und sie steuern die anderen Rechner, das UniFi-Netzwerk und Cloudflare.',
+        points: ['Agenten, die selbstständig Apps deployen, das Netzwerk ändern und Dienste reparieren', 'Selbst gehostete Dienste hinter Nginx Proxy Manager und CrowdSec', 'coturn- und MQTT-Server, auf die meine Hardwareprojekte angewiesen sind'],
+        chips: ['Unraid', 'Docker', 'UniFi', 'Cloudflare', 'Nginx', 'Tailscale', 'Claude Code'],
         link: 'HomeLab entdecken',
       },
       radio: {
@@ -309,9 +309,9 @@ const de: HomeCopy = {
   lab: {
     tag: 'Infrastruktur',
     title: 'HomeLab',
-    sub: 'Drei Server zu Hause, auf denen meine Projekte laufen.',
-    lead: 'Auf ihnen liegen meine Fotobibliothek und meine Dateien, und sie betreiben die MQTT- und TURN-Server, die Project June und LUMEN nutzen. Ihren Strom bezahlen Gutschriften für eingespeisten Solarstrom. Diese Website selbst läuft auf Vercel.',
-    facts: [{ v: '3', l: 'Server' }, { v: '24 TB', l: 'nutzbar' }, { v: '38', l: 'gehostete Apps' }],
+    sub: 'Fünf Rechner zu Hause, betrieben von KI-Agenten.',
+    lead: 'Auf ihnen liegen meine Fotobibliothek und meine Dateien, und sie betreiben die MQTT- und TURN-Server, die Project June und LUMEN nutzen. Die Agenten auf braven-agents verwalten das alles, von den Containern bis zum Netzwerk. Ihren Strom bezahlen Gutschriften für eingespeisten Solarstrom, und diese Website selbst läuft auf Vercel.',
+    facts: [{ v: '5', l: 'Rechner' }, { v: '24 TB', l: 'nutzbar' }, { v: '38', l: 'gehostete Apps' }],
     cta: 'HomeLab entdecken',
   },
 

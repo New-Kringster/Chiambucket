@@ -36,7 +36,7 @@ export default function HlModal<T>({ item, onClose, label, closeLabel, children 
     <AnimatePresence>
       {item && (
         <motion.div
-          className="hl2-modal-scrim"
+          className="hx-modal-scrim"
           onClick={onClose}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -44,7 +44,7 @@ export default function HlModal<T>({ item, onClose, label, closeLabel, children 
           transition={{ duration: 0.25 }}
         >
           <motion.div
-            className="hl2-modal"
+            className="hx-modal"
             role="dialog"
             aria-modal="true"
             aria-label={label(item)}
@@ -54,7 +54,7 @@ export default function HlModal<T>({ item, onClose, label, closeLabel, children 
             exit={{ opacity: 0, y: 18, scale: 0.98 }}
             transition={{ type: 'spring', stiffness: 250, damping: 26 }}
           >
-            <button ref={closeRef} className="hl2-modal-x" onClick={onClose} aria-label={closeLabel}>
+            <button ref={closeRef} className="hx-modal-x" onClick={onClose} aria-label={closeLabel}>
               <svg viewBox="0 0 24 24" width="20" height="20" fill="none"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" d="M6 6l12 12M18 6L6 18" /></svg>
             </button>
             {children(item)}
