@@ -1,10 +1,13 @@
 'use client';
 import { useRef, useState, type CSSProperties } from 'react';
+import { fill } from '@/lib/fill';
+import type { WaterslopCopy } from './_copy';
 
 /* PairCompare: the report's sheets of real captures beside their SimGen2
    versions, cut into pairs. One pair at a time, the synthetic image laid over
    the real one; drag the divider to reveal either side. The register strip is
-   the part that matters, so it is the big one. */
+   the part that matters, so it is the big one. Its words are simgen2.compare
+   in the page's copy; the meter ids stay as they are. */
 
 const P = '/images/waterslop/pairs/';
 const METERS: Array<[string, number[]]> = [
@@ -12,7 +15,7 @@ const METERS: Array<[string, number[]]> = [
 ];
 const PAIRS = METERS.flatMap(([m, ns]) => ns.map((n) => ({ n, meter: m })));
 
-export default function PairCompare() {
+export default function PairCompare({ t }: { t: WaterslopCopy['simgen2']['compare'] }) {
   const [i, setI] = useState(15);   // the anchor meter, the real one on the rig
   const [pos, setPos] = useState(0.5);
   const stage = useRef<HTMLDivElement>(null);
@@ -30,18 +33,18 @@ export default function PairCompare() {
         onPointerMove={(e) => { if (dragging.current) at(e); }}
         onPointerUp={() => { dragging.current = false; }} onPointerCancel={() => { dragging.current = false; }}>
         <div className="pc-strip">
-          <img src={`${P}p${p.n}-real-strip.webp`} alt={`Real capture of the ${p.meter} register`} draggable={false} />
-          <img className="over" src={`${P}p${p.n}-virt-strip.webp`} alt="The same register as SimGen2 generated it" draggable={false} />
+          <img src={`${P}p${p.n}-real-strip.webp`} alt={fill(t.realStrip, { meter: p.meter })} draggable={false} />
+          <img className="over" src={`${P}p${p.n}-virt-strip.webp`} alt={t.simStrip} draggable={false} />
         </div>
         <div className="pc-meter">
-          <img src={`${P}p${p.n}-real-meter.webp`} alt={`Real capture of the ${p.meter} meter`} draggable={false} />
-          <img className="over" src={`${P}p${p.n}-virt-meter.webp`} alt="The same meter as SimGen2 generated it" draggable={false} />
+          <img src={`${P}p${p.n}-real-meter.webp`} alt={fill(t.realMeter, { meter: p.meter })} draggable={false} />
+          <img className="over" src={`${P}p${p.n}-virt-meter.webp`} alt={t.simMeter} draggable={false} />
         </div>
         <div className="pc-div" aria-hidden="true"><span /></div>
-        <span className="pc-tag l">real</span><span className="pc-tag r">SimGen2</span>
+        <span className="pc-tag l">{t.real}</span><span className="pc-tag r">{t.sim}</span>
       </div>
-      <input className="pc-range" type="range" min={0} max={1000} value={Math.round(pos * 1000)} onChange={(e) => setPos(+e.target.value / 1000)} aria-label="Divider between the real capture on the left and SimGen2 on the right" />
-      <div className="pc-thumbs" role="tablist" aria-label="Pairs">
+      <input className="pc-range" type="range" min={0} max={1000} value={Math.round(pos * 1000)} onChange={(e) => setPos(+e.target.value / 1000)} aria-label={t.divider} />
+      <div className="pc-thumbs" role="tablist" aria-label={t.pairs}>
         {PAIRS.map((q, k) => (
           <button key={q.n} type="button" role="tab" aria-selected={k === i} className={k === i ? 'on' : undefined} onClick={() => setI(k)} title={q.meter}>
             <img src={`${P}p${q.n}-real-strip.webp`} alt="" loading="lazy" decoding="async" />

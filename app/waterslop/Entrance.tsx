@@ -10,7 +10,10 @@ import { useEffect, useRef, type CSSProperties } from 'react';
    It plays once per tab session, on a full load or a client navigation. Any
    click, key or wheel skips to the dissolve. Reduced motion, or a second visit
    in the same session, never shows it. The inline script hides it before first
-   paint in those cases; a CSS timeout removes it if scripts never run. */
+   paint in those cases; a CSS timeout removes it if scripts never run.
+
+   The drums spell the product's name in every language; the caption under
+   them comes from the page's copy. */
 
 const WORD = 'OCR READER';
 const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -28,7 +31,7 @@ function reel(ch: string, k: number) {
   return out;
 }
 
-export default function Entrance() {
+export default function Entrance({ caption }: { caption: string }) {
   const root = useRef<HTMLDivElement>(null);
   const glHost = useRef<HTMLDivElement>(null);
 
@@ -132,7 +135,7 @@ export default function Entrance() {
             </span>
           ))}
         </div>
-        <p className="wi-cap">Water meter OCR on an ESP32-S3</p>
+        <p className="wi-cap">{caption}</p>
       </div>
       <script dangerouslySetInnerHTML={{ __html: `try{if(sessionStorage.getItem('${SKIP}')==='1'||matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('ws-intro-skip')}catch(e){}` }} />
       <style>{CSS}</style>

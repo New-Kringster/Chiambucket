@@ -7,10 +7,13 @@ import './chapter/chapter.css';
 import './waterslop.css';
 
 // Rendered on the server too, so the component notes are in the HTML. The
-// exported chapter numbers itself V; the article passes its own numeral.
-const markupFor = (numeral: string) => chapterMarkup().replace('Chapter - V', `Chapter - ${numeral}`).replace('Chapter V:', `Chapter ${numeral}:`).replace('WaterSlop PCB', 'OCR Reader PCB');
+// exported chapter numbers itself V and calls the board WaterSlop; the article
+// passes its own labels, already filled with its numeral and in the page's language.
+// Everything else in the exported markup stays as the WaterSlop project made it.
+type Labels = { dash: string; colon: string; name: string };
+const markupFor = (l: Labels) => chapterMarkup().replace('Chapter - V', () => l.dash).replace('Chapter V:', () => l.colon).replace('WaterSlop PCB', () => l.name);
 
-export default function WaterslopChapter({ numeral = 'XI' }: { numeral?: string }) {
+export default function WaterslopChapter({ labels }: { labels: Labels }) {
   const root = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = root.current;
@@ -28,7 +31,7 @@ export default function WaterslopChapter({ numeral = 'XI' }: { numeral?: string 
       className="ws-chapter"
       data-no-zoom
       suppressHydrationWarning
-      dangerouslySetInnerHTML={{ __html: markupFor(numeral) }}
+      dangerouslySetInnerHTML={{ __html: markupFor(labels) }}
     />
   );
 }

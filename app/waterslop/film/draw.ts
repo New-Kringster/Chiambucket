@@ -1,12 +1,16 @@
 /* Canvas primitives for the DrumNet film. Everything is drawn in world units;
    the camera transform is already on the context. Scenes are pure functions of
    their progress p, so the same drawing serves the walkthrough, the finale
-   where every stage runs at once, and reduced motion (p = 1). */
+   where every stage runs at once, and reduced motion (p = 1). The words drawn
+   come from the page's copy (film.draw, film.panels), passed in on env. */
+import { fill } from '@/lib/fill';
+import type { WaterslopCopy } from '../_copy';
 
+export type FilmCopy = WaterslopCopy['film'];
 export type Ctx = CanvasRenderingContext2D;
 export type Rect = { x: number; y: number; w: number; h: number };
 export type Strip = { file: string; tile: readonly number[]; n: number };
-export type Env = { img: (file: string) => HTMLImageElement | null; scale: number; reduced: boolean };
+export type Env = { img: (file: string) => HTMLImageElement | null; scale: number; reduced: boolean; t: FilmCopy['draw']; panels: FilmCopy['panels'] };
 
 export const C = {
   bg: '#181716', ink: '#d8cbb8', muted: '#ada496', dim: '#7d766e', body: '#bfb6a9', hi: '#fff0db',
@@ -184,8 +188,9 @@ export function bars(ctx: Ctx, env: Env, vals: readonly number[], r: Rect, o: { 
 /* ── the network animation: an input, then one block after another ──
    Each block: a 3 × 3 kernel sweeps the source map while the first output map
    is revealed row by row (the LeNet picture), the other maps fan out behind it,
-   then the fan collapses into a compact block that is the next block's source. */
-export type NetBlock = { strip: Strip; w: number; h: number; label: string; sub: string; n: number; weights?: number };
+   then the fan collapses into a compact block that is the next block's source.
+   Blocks are labelled block 1, 2, ... in order; pool: false notes a block that does not pool. */
+export type NetBlock = { strip: Strip; w: number; h: number; sub: string; n: number; weights?: number; pool?: false };
 export type NetLayout = { input: Rect; blocks: Array<Rect & NetBlock>; midY: number };
 export function netLayout(x: number, y: number, rowH: number, inW: number, inH: number, blocks: NetBlock[], gap = 64, step = 6): NetLayout {
   const midY = y + rowH / 2;
@@ -247,9 +252,10 @@ export function drawNet(ctx: Ctx, env: Env, L: NetLayout, p: number, drawInput: 
     if (o.caps !== false) {
       const cy = o.capY ?? L.midY + Math.max(...L.blocks.map((q) => q.h / 2)) + 30;
       const count = bi >= 1 ? b.n : Math.max(1, Math.round(b.n * clamp01(arrive)));
-      txt(ctx, env, b.label, b.x + cw / 2, cy, 17, { a: 'center', w: 700, alpha: la });
-      txt(ctx, env, `${count} map${count === 1 ? '' : 's'} · ${b.sub}`, b.x + cw / 2, cy + 20, 12.5, { a: 'center', c: C.muted, alpha: la });
-      if (b.weights) txt(ctx, env, `${fmt(b.weights)} weights`, b.x + cw / 2, cy + 37, 11.5, { a: 'center', c: C.dim, alpha: la });
+      const sub = b.pool === false ? fill(env.t.noPool, { sub: b.sub }) : b.sub;
+      txt(ctx, env, fill(env.t.block, { n: i + 1 }), b.x + cw / 2, cy, 17, { a: 'center', w: 700, alpha: la });
+      txt(ctx, env, fill(count === 1 ? env.t.mapsOne : env.t.maps, { n: count, sub }), b.x + cw / 2, cy + 20, 12.5, { a: 'center', c: C.muted, alpha: la });
+      if (b.weights) txt(ctx, env, fill(env.t.weights, { n: fmt(b.weights) }), b.x + cw / 2, cy + 37, 11.5, { a: 'center', c: C.dim, alpha: la });
     }
   }
 }

@@ -2,6 +2,7 @@
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import { useFrame } from './Story';
+import { useUi } from './UiContext';
 
 /* ConfigKingSim: the Cardputer's 240 x 135 screen, drawn the way the firmware
    draws it, set into a photo of the real Cardputer (with a magnified copy of the
@@ -826,6 +827,8 @@ export default function ConfigKingSim({ scene = 'free', keys = true, className, 
   const small = useRef<HTMLCanvasElement>(null);
   const off = useRef<HTMLCanvasElement | null>(null);
   const shared = useContext(CkViewContext);
+  // the page's words around the device (the screens themselves are the firmware's, in English)
+  const ui = useUi().ck;
   const [ownView, setOwnView] = useState<CkView>('close');
   const view = shared?.view ?? ownView;
   const applyView = shared?.setView ?? setOwnView;
@@ -1052,7 +1055,7 @@ export default function ConfigKingSim({ scene = 'free', keys = true, className, 
     : close ? { left: pct(-CROP.x / CROP.w), top: pct(-CROP.y / CROP.h), width: pct(1 / CROP.w), height: pct(1 / CROP.h) }
     : { left: 0, top: 0, width: '100%', height: '100%' };
   const touch = keys ? { onPointerDown: onDown, onPointerMove: onMove, onPointerUp: onUp, onPointerCancel: () => { drag.current = null; } } : {};
-  const hint = keys && !armed && <div className="ck-hint" aria-hidden="true"><span>Tap the screen or a key to take over</span></div>;
+  const hint = keys && !armed && <div className="ck-hint" aria-hidden="true"><span>{ui.hint}</span></div>;
   // The key a frame presses on its way in. In Zoom in the keys are out of the
   // frame, so the tag sits under it, outside the crop.
   const pressTag = (
@@ -1061,7 +1064,7 @@ export default function ConfigKingSim({ scene = 'free', keys = true, className, 
     </div>
   );
   const device = (
-    <div className="ck-dev" style={{ '--ck-ar': ar.toFixed(4) } as CSSProperties} role="application" aria-label="ConfigKing simulator on an M5Stack Cardputer. Click the screen or the keys, then use the arrow keys, Enter, Escape and Tab." tabIndex={keys ? 0 : -1} onFocus={() => { if (keys) setArmed(true); }}>
+    <div className="ck-dev" style={{ '--ck-ar': ar.toFixed(4) } as CSSProperties} role="application" aria-label={ui.deviceAria} tabIndex={keys ? 0 : -1} onFocus={() => { if (keys) setArmed(true); }}>
       {zoom && (
         <>
           <div className="ck-zoom" style={{ height: pct(ZH / CH) }}>
@@ -1077,7 +1080,7 @@ export default function ConfigKingSim({ scene = 'free', keys = true, className, 
         <img src="/images/waterslop/cardputer.webp" alt="" draggable={false} />
         <canvas ref={small} className={`ck-lcd${!zoom && keys ? ' live' : ''}`} aria-hidden="true" style={{ left: pct(LCD.x), top: pct(LCD.y), width: pct(LCD.w), height: pct(LCD.h) }} {...(zoom ? {} : touch)} />
         {!zoom && <div className="ck-lcd-hint" style={{ left: pct(LCD.x), top: pct(LCD.y), width: pct(LCD.w), height: pct(LCD.h) }}>{hint}</div>}
-        <div className="ck-kb" aria-label="Cardputer keyboard">
+        <div className="ck-kb" aria-label={ui.keyboard}>
           {ROWS.flatMap((row, r) => row.map((k, c) => (
             <button key={k.id} type="button" tabIndex={-1} className={`ck-cap${lit === k.id ? ' lit' : ''}${k.key === 'fn' && fnHeld ? ' held' : ''}`}
               style={{ left: pct(CAP_X(c) - 20.5 / SHOT.w), top: pct(CAP_Y[r] - 40 / SHOT.h), width: pct(41 / SHOT.w), height: pct(52 / SHOT.h) }}
@@ -1092,16 +1095,16 @@ export default function ConfigKingSim({ scene = 'free', keys = true, className, 
   );
   const tools = (
     <div ref={toolsRef} className="ck-tools">
-      <div className="ck-seg" role="group" aria-label="View">
-        <button type="button" aria-pressed={close} onClick={() => setView('close')}>Zoom in</button>
-        <button type="button" aria-pressed={view === 'full'} onClick={() => setView('full')}>Full view</button>
-        <button type="button" aria-pressed={zoom} onClick={() => setView('zoom')}>Magnified</button>
+      <div className="ck-seg" role="group" aria-label={ui.view}>
+        <button type="button" aria-pressed={close} onClick={() => setView('close')}>{ui.close}</button>
+        <button type="button" aria-pressed={view === 'full'} onClick={() => setView('full')}>{ui.full}</button>
+        <button type="button" aria-pressed={zoom} onClick={() => setView('zoom')}>{ui.zoom}</button>
       </div>
-      <button type="button" className="ck-fsbtn" onClick={() => setFull((f) => (f ? false : 'manual'))} aria-label={full ? 'Exit full screen' : 'Full screen'}>
+      <button type="button" className="ck-fsbtn" onClick={() => setFull((f) => (f ? false : 'manual'))} aria-label={full ? ui.exitFullScreen : ui.fullScreen}>
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">{full
           ? <path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
           : <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />}</svg>
-        <span>{full ? 'Exit full screen' : 'Full screen'}</span>
+        <span>{full ? ui.exitFullScreen : ui.fullScreen}</span>
       </button>
     </div>
   );

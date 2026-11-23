@@ -10,8 +10,9 @@ import { useEffect, useRef, useState } from 'react';
 
    While it shows, <html data-ws-skip="on"> and --ws-skip-x / --ws-skip-w tell the
    stages to keep their dots and the film its player bar clear of it. On phones it
-   rises above the film's player bar while the film fills the screen. */
-export default function SkipToEnd({ target = 'conclusion' }: { target?: string }) {
+   rises above the film's player bar while the film fills the screen. Its two
+   labels come from the page's copy. */
+export default function SkipToEnd({ target = 'conclusion', t }: { target?: string; t: { toEnd: string; toTop: string } }) {
   const [show, setShow] = useState(false);
   const [atEnd, setAtEnd] = useState(false);
   const [lift, setLift] = useState(false);
@@ -85,7 +86,7 @@ export default function SkipToEnd({ target = 'conclusion' }: { target?: string }
     <>
       <button ref={btn} type="button" className={`ws-skip${show ? ' on' : ''}${lift ? ' lift' : ''}${atEnd ? ' top' : ''}`} onClick={atEnd ? toTop : skip} tabIndex={show ? 0 : -1} aria-hidden={!show}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l6 6 6-6M6 13l6 6 6-6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
-        <span>{atEnd ? 'Back to top' : 'Skip to the end'}</span>
+        <span>{atEnd ? t.toTop : t.toEnd}</span>
       </button>
       <style>{`
         .ws-skip { position: fixed; z-index: 60; left: clamp(14px, 1.6vw, 28px); bottom: max(20px, env(safe-area-inset-bottom)); display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px 0 13px; border: 1px solid #d8cbb859; border-radius: 999px; background: #181716d9; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); color: #d8cbb8; font: 500 12.5px/1 Manrope, Arial, sans-serif; letter-spacing: 0.02em; cursor: pointer; box-shadow: 0 10px 26px -12px #000c; opacity: 0; transform: translateY(6px); pointer-events: none; transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), bottom 0.25s cubic-bezier(0.16, 1, 0.3, 1), background 0.15s, color 0.15s; }

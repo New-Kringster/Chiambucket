@@ -1,5 +1,7 @@
 'use client';
 import { Children, createContext, useContext, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { fill } from '@/lib/fill';
+import { useUi } from './UiContext';
 
 /* The OCR Reader article's chapter engine, in the PCB chapter's composition.
 
@@ -10,7 +12,7 @@ import { Children, createContext, useContext, useEffect, useMemo, useRef, useSta
            nothing pinned, so a reader just scrolls.
    Story   a pinned stage where scrolling advances frames; kept for the two
            chapters where one object changes step by step (the DrumNet run and
-           the ConfigKing screen). */
+           the ConfigKing screen). Their chrome words come from the page's copy (useUi). */
 
 export type Frame = {
   id?: string;
@@ -55,6 +57,7 @@ export default function Story({ id, chapter, title, frames, per = 0.92, ariaLabe
   const stage = useRef<HTMLDivElement>(null);
   const [i, setI] = useState(0);
   const reduced = useReduced();
+  const ui = useUi();
   const n = frames.length;
   const height = `calc(${n * per + 1} * 100svh)`;
 
@@ -104,7 +107,7 @@ export default function Story({ id, chapter, title, frames, per = 0.92, ariaLabe
   return (
     <section ref={root} id={id} className="ws-story" style={{ height }} aria-label={ariaLabel ?? title}>
       <div ref={stage} className="ws-stage-pin" data-frame={i} data-wide={f.wide ? 'true' : undefined}>
-        <div className="ws-stage-chapter">{chapter ? `Chapter - ${chapter}` : ''}<span>{title}</span></div>
+        <div className="ws-stage-chapter">{chapter ? fill(ui.chapterDash, { n: chapter }) : ''}<span>{title}</span></div>
         {frames.map((fr, k) => {
           const state = k === i ? 'active' : k < i ? 'past' : 'next';
           const near = Math.abs(k - i) <= 1;
@@ -124,8 +127,8 @@ export default function Story({ id, chapter, title, frames, per = 0.92, ariaLabe
         <div className="ws-stage-dots" aria-hidden="true">
           {frames.map((fr, k) => <button key={fr.id ?? k} type="button" tabIndex={-1} className={k === i ? 'on' : k < i ? 'done' : undefined} onClick={() => go(k)} title={fr.title} />)}
         </div>
-        <button type="button" className="ws-next" onClick={() => go(i + 1)} aria-label={i + 1 < n ? 'Next frame' : 'Next chapter'}>
-          <span>{i + 1 < n ? 'Next' : 'Next chapter'}</span>
+        <button type="button" className="ws-next" onClick={() => go(i + 1)} aria-label={i + 1 < n ? ui.nextFrame : ui.nextChapter}>
+          <span>{i + 1 < n ? ui.next : ui.nextChapter}</span>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
       </div>
@@ -165,9 +168,10 @@ function Row({ frame: fr, index }: { frame: Frame; index: number }) {
 }
 
 export function Page({ id, chapter, title, rows, cls }: { id: string; chapter?: string; title: string; rows: Frame[]; cls?: string }) {
+  const ui = useUi();
   return (
     <section id={id} className={`ws-story ws-single${cls ? ` ${cls}` : ''}`} aria-label={title}>
-      {chapter && <div className="ws-stage-chapter">{`Chapter - ${chapter}`}<span>{title}</span></div>}
+      {chapter && <div className="ws-stage-chapter">{fill(ui.chapterDash, { n: chapter })}<span>{title}</span></div>}
       {rows.map((r, k) => <Row key={r.id ?? k} frame={r} index={k} />)}
     </section>
   );
@@ -192,6 +196,7 @@ export function Cover({ id, chapter, title, lines, contents, bg, lede, focus = [
   const glHost = useRef<HTMLDivElement>(null);
   const [gl, setGl] = useState(false);
   const reduced = useReduced();
+  const ui = useUi();
   const src = bg.startsWith('/') ? bg : '/images/waterslop/' + bg;
   const n = lines.join('').length;
   const [fX, fY] = focus;
@@ -254,13 +259,13 @@ export function Cover({ id, chapter, title, lines, contents, bg, lede, focus = [
 
   let k = 0;
   return (
-    <section ref={ref} id={id} className={`ws-op${gl ? ' gl' : ''}${reduced ? ' still' : ''}${cls ? ` ${cls}` : ''}`} aria-label={`Chapter ${chapter}: ${title}`}>
+    <section ref={ref} id={id} className={`ws-op${gl ? ' gl' : ''}${reduced ? ' still' : ''}${cls ? ` ${cls}` : ''}`} aria-label={fill(ui.coverAria, { n: chapter, title })}>
       <div className="ws-op-stage">
         <img className="ws-op-still" src={src} alt="" aria-hidden="true" loading="lazy" decoding="async" />
         <div ref={glHost} className="ws-op-glhost" aria-hidden="true" />
         <div className="ws-op-shade" aria-hidden="true" />
         <div className="ws-op-copy">
-          <p className="ws-op-n">Chapter {chapter}</p>
+          <p className="ws-op-n">{fill(ui.coverN, { n: chapter })}</p>
           <h2 className="ws-op-title" aria-label={title} style={{ '--n': n, '--w': Math.max(...lines.map((l) => l.length)) } as CSSProperties}>
             {lines.map((l) => (
               <span key={l} className="ws-op-line" aria-hidden="true">
@@ -271,7 +276,7 @@ export function Cover({ id, chapter, title, lines, contents, bg, lede, focus = [
           {lede && <p className="ws-op-lede">{lede}</p>}
         </div>
         {contents?.length ? (
-          <nav className="ws-op-contents" aria-label={`In chapter ${chapter}`}>
+          <nav className="ws-op-contents" aria-label={fill(ui.coverContents, { n: chapter })}>
             {contents.map((c, j) => c.href
               ? <a key={c.label} href={c.href}><span>{c.label}</span><i /><span>{j + 1}</span></a>
               : <span key={c.label}><span>{c.label}</span><i /><span>{j + 1}</span></span>)}

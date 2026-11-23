@@ -1,7 +1,9 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { SCENES, REVEAL, PHOTO, skeleton, revealedBounds, type PanelKey } from './film/scenes';
-import { C, clamp01, ease, lerpRect, type Env, type Rect } from './film/draw';
+import { C, clamp01, ease, lerpRect, type Env, type FilmCopy, type Rect } from './film/draw';
+import { fill } from '@/lib/fill';
+import { useUi } from './UiContext';
 
 /* DrumNetFilm: a full-screen canvas that walks the whole DrumNet V10
    architecture. One world map holds every stage; panels appear as the film
@@ -9,7 +11,8 @@ import { C, clamp01, ease, lerpRect, type Env, type Rect } from './film/draw';
    scene animates as a function of its own progress, so the finale can run
    every stage at once. A player bar gives play, pause, step, fast forward and
    a zoom toggle between the action and the map so far; the keyboard works too
-   (space, arrows, f, z). */
+   (space, arrows, f, z). Every word, captions and the words drawn on the map
+   included, is `film` in the page's copy (the t prop). */
 
 const FILES = ['photo.webp', 'thumb.webp', 'spot-b1.webp', 'spot-b2.webp', 'spot-b3.webp', 'spot-b4.webp', 'spot-b5.webp',
   'ref-p1-crop.webp', 'ref-p1-b1.webp', 'ref-p1-b2.webp', 'ref-p1-b3.webp', 'ref-p1-b4.webp',
@@ -24,7 +27,7 @@ const SPEEDS = [1, 2, 4];
 
 const sceneAt = (t: number) => { let k = 0; for (let i = 0; i < SCENES.length; i++) if (t >= STARTS[i]) k = i; return k; };
 
-export default function DrumNetFilm({ chapter }: { chapter: string }) {
+export default function DrumNetFilm({ chapter, t: tx }: { chapter: string; t: FilmCopy }) {
   const section = useRef<HTMLElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const copy = useRef<HTMLDivElement>(null);
@@ -38,6 +41,9 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
   const inView = useRef(false);
   const started = useRef(false);
   const raf = useRef(0);
+  // the drawing reads the words through a ref, so a new copy object never restarts the loop
+  const words = useRef(tx);
+  words.current = tx;
   // When the film starts, the page holds on it for a moment, so a reader who
   // scrolls on (thinking that is how it starts) sees it play instead of leaving.
   const holdUntil = useRef(0);
@@ -50,6 +56,7 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
   const [zoomOut, setZoomOut] = useState(false);
   const [frac, setFrac] = useState(0);
   const [ended, setEnded] = useState(false);
+  const ui = useUi();
 
   const draw = useCallback((dt: number) => {
     const cv = canvas.current; if (!cv) return;
@@ -91,7 +98,7 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     g.fillStyle = C.bg; g.fillRect(0, 0, cw, ch);
     g.setTransform(dpr * scale, 0, 0, dpr * scale, dpr * tx, dpr * ty);
-    const env: Env = { img: (f) => { const im = images.current[f]; return im && im.complete && im.naturalWidth ? im : null; }, scale, reduced: reducedRef.current };
+    const env: Env = { img: (f) => { const im = images.current[f]; return im && im.complete && im.naturalWidth ? im : null; }, scale, reduced: reducedRef.current, t: words.current.draw, panels: words.current.panels };
     const vis: Rect = { x: -tx / scale, y: -ty / scale, w: cw / scale, h: ch / scale };
     const hits = (r: Rect) => r.x < vis.x + vis.w && r.x + r.w > vis.x && r.y < vis.y + vis.h && r.y + r.h > vis.y;
     skeleton(g, env, alphaOf);
@@ -290,31 +297,31 @@ export default function DrumNetFilm({ chapter }: { chapter: string }) {
     return () => window.removeEventListener('keydown', h);
   }, [toggle, seekScene, faster, zoom]);
 
-  const sc = SCENES[k];
+  const sc = tx.scenes[SCENES[k].id];
   return (
-    <section ref={section} id="drumnet" className="dnf" aria-label="An animation of the whole DrumNet V10 architecture">
+    <section ref={section} id="drumnet" className="dnf" aria-label={tx.aria}>
       <canvas ref={canvas} aria-hidden="true" />
-      <div className="ws-stage-chapter dnf-chapter">{`Chapter - ${chapter}`}<span>DrumNet</span></div>
+      <div className="ws-stage-chapter dnf-chapter">{fill(ui.chapterDash, { n: chapter })}<span>{tx.title}</span></div>
       <div ref={copy} className="dnf-copy" aria-live="polite">
-        <p className="ws-eyebrow">{sc.stage} · {k + 1} of {SCENES.length}</p>
+        <p className="ws-eyebrow">{fill(tx.of, { stage: sc.stage, n: k + 1, total: SCENES.length })}</p>
         <h2>{sc.title}</h2>
         <p className="dnf-body">{sc.body}</p>
       </div>
-      <p className={`dnf-nudge${nudge ? ' on' : ''}`} role="status">The film plays on its own, and the page carries on in a moment.</p>
+      <p className={`dnf-nudge${nudge ? ' on' : ''}`} role="status">{tx.nudge}</p>
       <div className="dnf-bar">
-        <div className="dnf-rail" role="list" aria-label="Scenes">
+        <div className="dnf-rail" role="list" aria-label={tx.scenesAria}>
           {SCENES.map((s, i) => (
-            <button key={s.id} type="button" title={s.title} aria-label={`${i + 1}. ${s.title}`} className={i === k ? 'on' : i < k ? 'done' : undefined} onClick={() => seekScene(i)}>
+            <button key={s.id} type="button" title={tx.scenes[s.id].title} aria-label={fill(tx.sceneAria, { n: i + 1, title: tx.scenes[s.id].title })} className={i === k ? 'on' : i < k ? 'done' : undefined} onClick={() => seekScene(i)}>
               {i === k && <i style={{ width: `${frac * 100}%` }} />}
             </button>
           ))}
         </div>
         <div className="dnf-ctl">
-          <button type="button" onClick={() => seekScene(k - 1)} aria-label="Previous scene" title="Previous (←)">‹</button>
-          <button type="button" className="primary" onClick={toggle} aria-label={playing ? 'Pause' : ended ? 'Replay' : 'Play'} title="Play / pause (space)">{playing ? '❚❚' : ended ? '↺' : '▶'}</button>
-          <button type="button" onClick={() => seekScene(k + 1)} aria-label="Next scene" title="Next (→)">›</button>
-          <button type="button" className={speed > 1 ? 'fast' : undefined} onClick={faster} aria-label={`Fast forward, now ${speed} times`} title="Fast forward (f)">{speed}× {speed === 1 ? '▸' : speed === 2 ? '▸▸' : '▸▸▸'}</button>
-          <button type="button" className="skip" onClick={skipChapter} title="Skip to the next chapter, ConfigKing">Skip chapter</button>
+          <button type="button" onClick={() => seekScene(k - 1)} aria-label={tx.prev} title={tx.prevTitle}>‹</button>
+          <button type="button" className="primary" onClick={toggle} aria-label={playing ? tx.pause : ended ? tx.replay : tx.play} title={tx.playTitle}>{playing ? '❚❚' : ended ? '↺' : '▶'}</button>
+          <button type="button" onClick={() => seekScene(k + 1)} aria-label={tx.next} title={tx.nextTitle}>›</button>
+          <button type="button" className={speed > 1 ? 'fast' : undefined} onClick={faster} aria-label={fill(tx.fast, { n: speed })} title={tx.fastTitle}>{speed}× {speed === 1 ? '▸' : speed === 2 ? '▸▸' : '▸▸▸'}</button>
+          <button type="button" className="skip" onClick={skipChapter} title={tx.skipTitle}>{tx.skip}</button>
         </div>
       </div>
       <style>{`
