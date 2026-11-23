@@ -69,10 +69,25 @@ href, only the words changed):
 Do NOT edit any index.ts loader map, the small-pattern record, ProjectPeek.tsx's language map or any English
 file. The lead wires your files in when all languages are done.
 
-Internal links inside copy JSX: links to the localized pages (/, /contact, /photography, /homelab, /archive,
-/credits, /ai-use, including hash links like /#projects) get your prefix: /<lang>, /<lang>/contact, /<lang>#projects.
-Links to articles (/pip, /waterslop, /stackchan-lidar, ...) and external links stay exactly as they are.
+Internal links inside copy JSX: every page of the site is localized now, articles included, so every internal
+link gets your prefix: /<lang>, /<lang>/contact, /<lang>#projects, /<lang>/pip, /<lang>/waterslop#drumnet.
+External links, image paths, file and PDF paths stay exactly as they are.
 Alt text and aria-labels are translated too. Metadata titles keep the pattern "<Page> | Braven Chiam".
+
+## Articles (phase 3)
+The articles are longer and more technical than the main pages, but the voice is the same: Braven telling a
+friend how he built the thing, what went wrong and what he learned. Keep it warm and easy to read, and keep
+every technical fact exact (numbers, part names, pin names, units, versions, model names).
+- Technical terms: use the word engineers in your language actually use. Where they normally say the English
+  term (PCB, firmware, LiDAR, MQTT, OCR, GPIO, PWM, I2C, Wi-Fi, ESP-NOW, LoRa, API, prompt, commit in zh/ja,
+  for example), keep it; otherwise translate it. Code identifiers, file names, CLI commands and anything in
+  <code> stay exactly as they are.
+- Widgets: their labels, states and captions are short UI text, so the "labels must not get longer" rule
+  applies. Strings drawn on a canvas must stay at most about as long as the English (they sit in fixed boxes).
+- Placeholders such as {n}, {name}, {sub}, {said} must all survive; you may move them within the sentence.
+  Some strings come in pairs for grammar (singular/plural, past/before): fill each one naturally.
+- Alt text and figure captions are copy: translate them.
+- Comments in the English file that explain a key to translators are for you; do not copy them as text.
 
 ## Checks before you finish
 - `npx tsc --noEmit -p .` shows no errors in your files (other translators' in-progress files may error).
