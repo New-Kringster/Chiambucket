@@ -208,7 +208,8 @@ html.sensory-active main.ls-embed .pg-files { margin: 0; padding: 10px 14px calc
   .ls-photo { max-width: 280px; margin: 0 auto; }
   .lv-moments { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .pg-view { aspect-ratio: 4 / 5; }
-  .pg-seg button { padding: 7px 11px; }
+  .pg-seg { min-width: 0; }
+  .pg-seg button { padding: 7px 9px; font-size: 0.8rem; }
 }
 
 /* ── no WebGL or reduced motion: the chapters in plain flow, each with its still ── */

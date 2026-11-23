@@ -198,7 +198,7 @@
   .ws-stage-chapter { font-size: 15px; left: 5%; top: calc(var(--ws-nav, 0px) + 12px); }
   .ws-stage-chapter span { display: none; }
   .ws-op-copy { left: 6%; right: 6%; bottom: 9svh; }
-  .ws-page .ws-op-title { font-size: min(19vw, calc(166vw / var(--w, 8))); }
+  .ws-page .ws-op-title { font-size: min(19vw, calc(155vw / var(--w, 8))); }
   .ws-op-lede { font-size: 16px; max-width: 30ch; }
   .ws-op-contents { display: none; }
   .ws-op-shade { background: linear-gradient(180deg, #18171640 0%, #18171600 25%, #181716e6 78%); }

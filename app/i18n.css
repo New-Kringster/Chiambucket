@@ -30,3 +30,7 @@ html:is(:lang(zh), :lang(ja)) .ar-title { max-width: 9em; }
 html:is(:lang(zh), :lang(ja)) .hl2-rackreal-text p { max-width: 26em; }
 /* Japanese wraps at phrase boundaries where the browser supports it (Chromium) */
 html:lang(ja) { word-break: auto-phrase; }
+
+/* Article titles: the Latin size makes a nine-ideograph title wider than a phone,
+   and Japanese keeps a katakana word whole, so CJK titles start a size smaller. */
+html:is(:lang(zh), :lang(ja)) .art-title { font-size: clamp(2rem, 7vw, 5rem); overflow-wrap: anywhere; }

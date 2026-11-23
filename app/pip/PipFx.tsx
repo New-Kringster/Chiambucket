@@ -24,6 +24,11 @@ type Ui = PipCopy['ui'];
 
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 
+
+/** The width of a title's longest word in Latin-letter units (an ideograph or kana is about twice as wide),
+    so phones can size the big opening titles to fit any language. */
+const wordUnits = (title: string) => Math.max(...title.split(' ').map((w) => Array.from(w).reduce((n, ch) => n + (/[\u3000-\u9fff\uff00-\uffef]/.test(ch) ? 2.1 : 1), 0)));
+
 export function useReduced() {
   const [r, setR] = useState(false);
   useEffect(() => {
@@ -290,7 +295,7 @@ export function HeroMeet({ hero, title, lede, slotLabel, ui }: { hero: ReactNode
             <div className="pp-op-pip pp-hm-slot" ref={slot} role="img" aria-label={slotLabel}>
               {reduced && <img src="/images/pip/mopi-slot.webp" alt="" />}
             </div>
-            <h2 className="pp-op-t" aria-label={title}>
+            <h2 className="pp-op-t" aria-label={title} style={{ ['--w' as string]: wordUnits(title) }}>
               {title.split(' ').map((w, wi) => (
                 <span className="pp-op-w" key={wi} aria-hidden="true">
                   {Array.from(w).map((ch) => <span key={i} className="pp-op-l" style={{ ['--i' as string]: i++ }}>{ch}</span>)}
@@ -389,7 +394,7 @@ export function Opener({ id, desk, color, title, lede, clip, pipLabel }: {
     <Stage id={id} desk={desk} className="pp-op" screens={2.7} from="enter" label={title} style={{ ['--acc' as string]: color, ['--n' as string]: n }}>
       <div className="pp-op-in">
         <div className="pp-op-pip"><Clip src={clip} poster={clip + '.webp'} className="pp-pipvid" label={pipLabel} /></div>
-        <h2 className="pp-op-t" aria-label={title}>
+        <h2 className="pp-op-t" aria-label={title} style={{ ['--w' as string]: wordUnits(title) }}>
           {words.map((w, wi) => (
             <span className="pp-op-w" key={wi} aria-hidden="true">
               {Array.from(w).map((ch) => <span key={i} className="pp-op-l" style={{ ['--i' as string]: i++ }}>{ch}</span>)}

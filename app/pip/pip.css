@@ -441,7 +441,8 @@ html.sensory-active main.pp { background: transparent; z-index: 2; }
   .pp-touch { grid-template-columns: minmax(0, 1fr); gap: 32px; }
 }
 @media (max-width: 420px) {
-  .pp-op-t { font-size: 17vw; }
+  /* long single words (Funktionsweise, デスクトップ) shrink to fit; --w is the longest word's width (PipFx) */
+  .pp-op-t { font-size: min(17vw, calc(170vw / var(--w, 8))); }
   .pp-chips li { height: 38px; font-size: 15px; padding: 0 13px; }
 }
 

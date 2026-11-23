@@ -396,7 +396,7 @@ export default function LumenConsole({ t }: { t: LumenConsoleCopy }) {
           .lm-cl-pick:active { transform: scale(0.97); }
           .lm-cl-pick:focus-visible { outline: 2px solid var(--lm); outline-offset: 2px; }
           .lm-cl-pick.active { color: #fff; border-color: var(--lm); background: color-mix(in srgb, var(--lm) 16%, transparent); }
-          .lm-cl-pick:not(.play) { max-width: 230px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+          .lm-cl-pick:not(.play) { max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
           .lm-cl-pick.play { margin-left: auto; }
 
           @media (max-width: 720px) {

@@ -74,7 +74,7 @@ const fr: WaterslopCopy = {
     nextTitle: 'Suivante (→)',
     fast: 'Avance rapide, actuellement {n} fois',
     fastTitle: 'Avance rapide (f)',
-    skip: 'Passer le chapitre',
+    skip: 'Passer',
     skipTitle: 'Passer au chapitre suivant, ConfigKing',
     scenes: {
       photo: {

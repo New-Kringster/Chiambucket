@@ -105,7 +105,7 @@ const nl: CsdpCopy = {
       },
       intrusion: {
         name: 'Inbraak',
-        short: 'Deurbeveiliging',
+        short: 'Beveiliging',
         does: 'Hij let op geklop op de deur en op de deur die op een ongewoon moment opengaat.',
         hardware: 'Reedcontact op de deur, trillingssensor voor geklop, zoemer',
         alarm: 'Bij allebei gaat het alarm op elke node af',

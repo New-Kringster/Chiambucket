@@ -85,7 +85,7 @@ const de: CsdpCopy = {
     nodes: {
       climate: {
         name: 'Klima',
-        short: 'Lüftersteuerung',
+        short: 'Lüfter',
         does: 'Er schaltet den Ventilator nur ein, wenn jemand im Raum ist und die Luft warm und feucht ist.',
         hardware: 'BME680-Sensor für Temperatur und Luftfeuchtigkeit, PIR-Anwesenheitssensor, 8x8-LED-Matrix, Summer',
         alarm: 'Er ertönt, sobald irgendein Knoten Alarm schlägt',
