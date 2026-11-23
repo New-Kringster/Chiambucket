@@ -1,69 +1,41 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, LazyMotion, domAnimation, m } from 'framer-motion';
+import { fill } from '@/lib/fill';
+import type { ElecfCopy } from './_copy/en';
 
+type T = ElecfCopy['seq'];
+type StepKey = keyof T['steps'];
+
+/* The steps' structure; their words come from the article's copy (`t.steps`, keyed by step). */
 type Step = {
-  key: string;
+  key: StepKey;
   img: string;
-  label: string;
-  title: string;
-  desc: string;
-  pir: string;
-  tof: string;
   tofClosed: boolean;
   alarm: 'idle' | 'armed' | 'sounding';
   tone: 'calm' | 'warn' | 'alarm';
 };
 
 const STEPS: Step[] = [
-  {
-    key: 'open',
-    img: '/images/elecf-door-open.png',
-    label: 'Door open',
-    title: 'Set the timer',
-    desc: 'When a worker walks in, the PIR sensor picks up their body heat and movement and the ToF sensor reads the door as open. You then set on the M5Stack how long the door may stay shut.',
-    pir: 'Person inside',
-    tof: 'Door open',
-    tofClosed: false,
-    alarm: 'idle',
-    tone: 'calm',
-  },
-  {
-    key: 'armed',
-    img: '/images/elecf-door-armed.png',
-    label: 'Door closed',
-    title: 'Timer running',
-    desc: 'When the door shuts, the ToF sensor reads it as closed and the timer starts, but if the room empties before the time runs out, the system resets.',
-    pir: 'Person inside',
-    tof: 'Door closed',
-    tofClosed: true,
-    alarm: 'armed',
-    tone: 'warn',
-  },
-  {
-    key: 'alarm',
-    img: '/images/elecf-warning.png',
-    label: 'Time up',
-    title: 'Alarm',
-    desc: 'If the time runs out with someone still inside, the RGB unit flashes and the M5Stack buzzer sounds to alert anyone nearby until the door is opened.',
-    pir: 'Person inside',
-    tof: 'Door closed',
-    tofClosed: true,
-    alarm: 'sounding',
-    tone: 'alarm',
-  },
+  { key: 'open', img: '/images/elecf-door-open.png', tofClosed: false, alarm: 'idle', tone: 'calm' },
+  { key: 'armed', img: '/images/elecf-door-armed.png', tofClosed: true, alarm: 'armed', tone: 'warn' },
+  { key: 'alarm', img: '/images/elecf-warning.png', tofClosed: true, alarm: 'sounding', tone: 'alarm' },
 ];
 
-/* The longest description sets a stable reserve so swapping steps never reflows the page. */
-const LONGEST_DESC = STEPS.reduce((a, s) => (s.desc.length > a.length ? s.desc : a), '');
+/* The longest of a set of strings (the first one wins a tie), for the hidden sizers. */
+const longest = (xs: string[]) => xs.reduce((a, x) => (x.length > a.length ? x : a), '');
 
-export default function SafetySequence() {
+export default function SafetySequence({ t }: { t: T }) {
   const [i, setI] = useState(0);
   const [auto, setAuto] = useState(true);
   const [inView, setInView] = useState(false);
   const [reduce, setReduce] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const step = STEPS[i];
+  const w = t.steps[step.key];
+  const words = STEPS.map((st) => t.steps[st.key]);
+  /* The longest description and chip values set stable reserves so swapping steps never reflows the page. */
+  const LONGEST_DESC = longest(words.map((x) => x.desc));
 
   const goto = useCallback((n: number, manual = true) => {
     if (manual) setAuto(false);
@@ -83,8 +55,8 @@ export default function SafetySequence() {
   // Auto-advance the demo until the visitor takes over (and only while in view)
   useEffect(() => {
     if (!auto || !inView || reduce) return;
-    const t = setInterval(() => setI((p) => (p + 1) % STEPS.length), 3400);
-    return () => clearInterval(t);
+    const id = setInterval(() => setI((p) => (p + 1) % STEPS.length), 3400);
+    return () => clearInterval(id);
   }, [auto, inView, reduce]);
 
   return (
@@ -97,7 +69,7 @@ export default function SafetySequence() {
             <m.img
               key={step.key}
               src={step.img}
-              alt={`The M5Stack screen during step ${i + 1}, ${step.title.toLowerCase()}`}
+              alt={w.alt}
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 1.02 }}
@@ -109,39 +81,39 @@ export default function SafetySequence() {
       </div>
 
       <div className="ef-seq-info">
-        <span className="ef-seq-eyebrow">Step {i + 1} of 3 · {step.label}</span>
-        <h3 className="ef-seq-title">{step.title}</h3>
+        <span className="ef-seq-eyebrow">{fill(t.eyebrow, { n: i + 1, total: STEPS.length, label: w.label })}</span>
+        <h3 className="ef-seq-title">{w.title}</h3>
         <div className="ef-seq-desc-wrap">
           <p className="ef-seq-desc ef-seq-desc-sizer" aria-hidden="true">{LONGEST_DESC}</p>
-          <p className="ef-seq-desc" aria-live="polite">{step.desc}</p>
+          <p className="ef-seq-desc" aria-live="polite">{w.desc}</p>
         </div>
 
         <div className="ef-seq-sensors-wrap">
           {/* Hidden sizer: the widest possible chip values reserve a stable row height,
               so the chips wrapping differently per step never reflows the widget. */}
           <div className="ef-seq-sensors ef-seq-sensors-sizer" aria-hidden="true">
-            <div className="ef-chip"><span className="ef-chip-dot" /><span className="ef-chip-txt"><b>PIR</b>Presence detected</span></div>
-            <div className="ef-chip"><span className="ef-chip-dot" /><span className="ef-chip-txt"><b>ToF</b>Door closed</span></div>
-            <div className="ef-chip"><span className="ef-chip-dot" /><span className="ef-chip-txt"><b>Alert</b>RGB light and buzzer</span></div>
+            <div className="ef-chip"><span className="ef-chip-dot" /><span className="ef-chip-txt"><b>{t.chips.pir}</b>{longest([t.pirSizer, ...words.map((x) => x.pir)])}</span></div>
+            <div className="ef-chip"><span className="ef-chip-dot" /><span className="ef-chip-txt"><b>{t.chips.tof}</b>{longest(words.map((x) => x.tof))}</span></div>
+            <div className="ef-chip"><span className="ef-chip-dot" /><span className="ef-chip-txt"><b>{t.chips.alert}</b>{longest([t.alert.sounding, t.alert.armed, t.alert.idle])}</span></div>
           </div>
           <div className="ef-seq-sensors">
             <div className="ef-chip on">
               <span className="ef-chip-dot" />
-              <span className="ef-chip-txt"><b>PIR</b>{step.pir}</span>
+              <span className="ef-chip-txt"><b>{t.chips.pir}</b>{w.pir}</span>
             </div>
             <div className={`ef-chip ${step.tofClosed ? 'closed' : 'open'}`}>
               <span className="ef-chip-dot" />
-              <span className="ef-chip-txt"><b>ToF</b>{step.tof}</span>
+              <span className="ef-chip-txt"><b>{t.chips.tof}</b>{w.tof}</span>
             </div>
             <div className={`ef-chip alarm-${step.alarm}`}>
               <span className="ef-chip-dot" />
-              <span className="ef-chip-txt"><b>Alert</b>{step.alarm === 'sounding' ? 'RGB light and buzzer' : step.alarm === 'armed' ? 'Armed' : 'Standby'}</span>
+              <span className="ef-chip-txt"><b>{t.chips.alert}</b>{t.alert[step.alarm]}</span>
             </div>
           </div>
         </div>
 
         <div className="ef-seq-controls">
-          <div className="ef-seq-dots" role="tablist" aria-label="Steps">
+          <div className="ef-seq-dots" role="tablist" aria-label={t.stepsAria}>
             {STEPS.map((s, n) => (
               <button
                 key={s.key}
@@ -149,16 +121,16 @@ export default function SafetySequence() {
                 onClick={() => goto(n)}
                 role="tab"
                 aria-selected={n === i}
-                aria-label={`Step ${n + 1}: ${s.title}`}
+                aria-label={fill(t.dotAria, { n: n + 1, title: t.steps[s.key].title })}
               />
             ))}
           </div>
           <div className="ef-seq-btns">
-            <button className="ef-seq-nav" onClick={() => goto(i - 1)} aria-label="Previous step">
+            <button className="ef-seq-nav" onClick={() => goto(i - 1)} aria-label={t.prev}>
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true"><path d="M15 6l-6 6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </button>
-            <button className="ef-seq-nav primary" onClick={() => goto(i + 1)} aria-label="Next step">
-              Next
+            <button className="ef-seq-nav primary" onClick={() => goto(i + 1)} aria-label={t.nextAria}>
+              {t.next}
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true"><path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </button>
           </div>

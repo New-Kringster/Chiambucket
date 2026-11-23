@@ -1,6 +1,7 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, LazyMotion, domAnimation, m } from 'framer-motion';
+import type { BeadreaderCopy } from './_copy/en';
 
 /* SpicyGate: dramatises BeadReader's per-reader "spicy" content gate. The
    spicy passage sits on its OWN line between two clean sentences, so revealing
@@ -8,21 +9,11 @@ import { AnimatePresence, LazyMotion, domAnimation, m } from 'framer-motion';
    animates it clear on tap; No access shows a locked block; Cal mode drops the
    line entirely. Auto-cycles, pauses off-screen, never reflows the page. */
 
-const LEAD = 'They had circled each other all evening. When the last guest finally left, the room went quiet.';
-const SPICY = 'What happened next stayed between them and the low light of the fire.';
-const TRAIL = 'Morning came far too soon.';
-
+/* The passage, the mode labels and captions are copy, `t`, from the article */
 type ModeKey = 'full' | 'none' | 'cal';
-type Mode = { key: ModeKey; label: string; caption: string };
-const MODES: Mode[] = [
-  { key: 'full', label: 'Full access', caption: 'This reader has access, so a tap clears the blurred line.' },
-  { key: 'none', label: 'No access', caption: 'The server never sends this reader the locked passage.' },
-  { key: 'cal', label: 'Cal mode', caption: 'The line is removed entirely, with no gap and no marker.' },
-];
+const MODES: ModeKey[] = ['full', 'none', 'cal'];
 
-const LONGEST_CAPTION = MODES.reduce((a, b) => (b.caption.length > a.length ? b.caption : a), '');
-
-export default function SpicyGate() {
+export default function SpicyGate({ t }: { t: BeadreaderCopy['spicyGate'] }) {
   const [modeIdx, setModeIdx] = useState(0);
   const [auto, setAuto] = useState(true);
   const [inView, setInView] = useState(true);
@@ -61,7 +52,9 @@ export default function SpicyGate() {
     setModeIdx(idx);
   };
 
-  const mode = MODES[modeIdx];
+  const mode = { key: MODES[modeIdx], ...t.modes[MODES[modeIdx]] };
+  /* Longest caption: reserves the height so switching modes never reflows the page */
+  const longestCaption = useMemo(() => MODES.map((k) => t.modes[k].caption).reduce((a, x) => (x.length > a.length ? x : a), ''), [t]);
   const showRevealed = revealed || reduced;
 
   const fade = {
@@ -75,10 +68,10 @@ export default function SpicyGate() {
     <LazyMotion features={domAnimation}>
       <div ref={rootRef} className="sg" data-no-zoom>
         <div className="sg-panel">
-          <span className="sg-eyebrow">Chapter 9</span>
+          <span className="sg-eyebrow">{t.chapter}</span>
           <div className="sg-page">
             <div className="sg-story">
-              <p className="sg-para">{LEAD}</p>
+              <p className="sg-para">{t.passage.lead}</p>
               <div className="sg-spicy-line">
                 <AnimatePresence mode="wait" initial={false}>
                   {mode.key === 'full' && (
@@ -88,16 +81,16 @@ export default function SpicyGate() {
                         className={`sg-reveal${showRevealed ? ' is-revealed' : ''}`}
                         onClick={() => setRevealed(true)}
                         disabled={showRevealed}
-                        aria-label={showRevealed ? 'Spicy passage revealed' : 'Tap to reveal the spicy passage'}
+                        aria-label={showRevealed ? t.revealedAria : t.revealAria}
                       >
-                        <span className="sg-spicy-text">{SPICY}</span>
-                        <span className="sg-reveal-tag"><span aria-hidden="true">🌶</span> Tap to reveal</span>
+                        <span className="sg-spicy-text">{t.passage.spicy}</span>
+                        <span className="sg-reveal-tag"><span aria-hidden="true">🌶</span> {t.reveal}</span>
                       </button>
                     </m.div>
                   )}
                   {mode.key === 'none' && (
                     <m.div key="none" className="sg-spicy-wrap" {...fade}>
-                      <span className="sg-lock-block"><span aria-hidden="true">🔒</span> Spicy passage. Ask the admin for access.</span>
+                      <span className="sg-lock-block"><span aria-hidden="true">🔒</span> {t.locked}</span>
                     </m.div>
                   )}
                   {mode.key === 'cal' && (
@@ -105,31 +98,31 @@ export default function SpicyGate() {
                   )}
                 </AnimatePresence>
               </div>
-              <p className="sg-para">{TRAIL}</p>
+              <p className="sg-para">{t.passage.trail}</p>
             </div>
           </div>
         </div>
 
         <div className="sg-side">
-          <div className="sg-tabs" role="tablist" aria-label="Reader mode">
-            {MODES.map((m2, n) => (
+          <div className="sg-tabs" role="tablist" aria-label={t.tabsAria}>
+            {MODES.map((k, n) => (
               <button
-                key={m2.key}
+                key={k}
                 className={`sg-tab${n === modeIdx ? ' is-active' : ''}`}
                 onClick={() => selectMode(n)}
                 role="tab"
                 aria-selected={n === modeIdx}
-                aria-label={m2.label}
+                aria-label={t.modes[k].label}
               >
-                {m2.label}
+                {t.modes[k].label}
               </button>
             ))}
           </div>
           <div className="sg-cap-wrap">
-            <p className="sg-cap sg-cap-sizer" aria-hidden="true">{LONGEST_CAPTION}</p>
+            <p className="sg-cap sg-cap-sizer" aria-hidden="true">{longestCaption}</p>
             <p className="sg-cap">{mode.caption}</p>
           </div>
-          <span className="sg-footnote">The gate is enforced in the SQL query, so gated text never leaves the server.</span>
+          <span className="sg-footnote">{t.footnote}</span>
         </div>
 
         <style>{`

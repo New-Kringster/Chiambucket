@@ -7,10 +7,11 @@
   while it is on screen.
 */
 import { useEffect, useRef, useState } from 'react';
-import { createPlyViewer, type PlyInfo, type PlyViewer } from './plyViewer';
+import { createPlyViewer, PlyError, type PlyInfo, type PlyViewer } from './plyViewer';
 import { hasWebGL } from './lidarScene';
+import type { LidarCopy } from './_copy';
+import { fill } from '@/lib/fill';
 
-const MODES = ['Photo', 'Depth', 'Height'] as const;
 const fmt = (n: number) => n.toLocaleString('en-GB');
 
 const Icon = {
@@ -20,7 +21,8 @@ const Icon = {
   shrink: <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" /></svg>,
 };
 
-export default function PlyPlayground({ still, stillAlt }: { still: string; stillAlt: string }) {
+/* t: the playground's words (copy.pg), passed in by the article or the embed. */
+export default function PlyPlayground({ still, stillAlt, t }: { still: string; stillAlt: string; t: LidarCopy['pg'] }) {
   const box = useRef<HTMLDivElement>(null);
   const host = useRef<HTMLDivElement>(null);
   const viewer = useRef<PlyViewer | null>(null);
@@ -71,7 +73,7 @@ export default function PlyPlayground({ still, stillAlt }: { still: string; stil
     if (!viewer.current) return;
     setErr(''); last.current = f; setEye(false);
     try { setInfo(await viewer.current.open(f, y)); }
-    catch (e) { setErr(e instanceof Error ? e.message : 'That file could not be read.'); }
+    catch (e) { setErr(e instanceof PlyError ? t.errors[e.code] : e instanceof Error ? e.message : t.errors.unreadable); }
   };
   const back = async () => { if (!viewer.current) return; setErr(''); last.current = null; setEye(false); setInfo(await viewer.current.bundled()); };
   /* Full screen: the browser's own where it allows it for an element; phones that don't (Safari on iPhone)
@@ -91,7 +93,7 @@ export default function PlyPlayground({ still, stillAlt }: { still: string; stil
   }, [full]);
 
   const sizeTxt = info ? info.size.map((v) => v.toFixed(1)).join(' x ') : '';
-  const hint = coarse ? 'Drag to turn it and pinch to zoom' : 'Drag to turn it, scroll to zoom and right-drag to move it';
+  const hint = coarse ? t.hintTouch : t.hintMouse;
 
   return (
     <div className={`pg is-${state}${drag ? ' is-drag' : ''}`} data-no-zoom>
@@ -101,34 +103,34 @@ export default function PlyPlayground({ still, stillAlt }: { still: string; stil
         onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
         onDragLeave={() => setDrag(false)}
         onDrop={(e) => { e.preventDefault(); setDrag(false); const f = e.dataTransfer.files?.[0]; if (f) load(f); }}>
-        <div className="pg-gl" ref={host} role="img" aria-label="A 3D point cloud of the room Stack-chan scanned. Drag to turn it, scroll or pinch to zoom, right-drag to move it, and double-click a spot to fly to it." />
+        <div className="pg-gl" ref={host} role="img" aria-label={t.view} />
         <img className="pg-still" src={still} alt={stillAlt} loading="lazy" />
-        {state === 'loading' && <p className="pg-msg">Loading the scan</p>}
+        {state === 'loading' && <p className="pg-msg">{t.loading}</p>}
         {state === 'ready' && !touched && <p className="pg-msg is-hint" aria-hidden="true">{hint}</p>}
-        {drag && <p className="pg-drop">Drop a .ply file to open it</p>}
+        {drag && <p className="pg-drop">{t.drop}</p>}
         {info && state === 'ready' && (
-          <p className="pg-stat"><b>{info.name}</b><span>{fmt(info.points)} points, {sizeTxt} m</span></p>
+          <p className="pg-stat"><b>{info.name}</b><span>{fill(t.stat, { n: fmt(info.points), size: sizeTxt })}</span></p>
         )}
         {state === 'ready' && (
           <div className="pg-bar">
-            <div className="pg-seg" role="radiogroup" aria-label="Colour the points by">
-              {MODES.map((m, i) => (
+            <div className="pg-seg" role="radiogroup" aria-label={t.colourBy}>
+              {t.modes.map((m, i) => (
                 <button key={m} type="button" role="radio" aria-checked={mode === i} className={mode === i ? 'is-on' : ''}
                   onClick={() => { setMode(i as 0 | 1 | 2); viewer.current?.setMode(i as 0 | 1 | 2); }}>{m}</button>
               ))}
             </div>
             <div className="pg-icons">
               {info?.robot && (
-                <button type="button" className={`pg-icon${eye ? ' is-on' : ''}`} aria-pressed={eye} title="See it from Stack-chan's head"
+                <button type="button" className={`pg-icon${eye ? ' is-on' : ''}`} aria-pressed={eye} title={t.eyeTitle}
                   onClick={() => { const v = !eye; setEye(v); viewer.current?.view(v ? 'eye' : 'home'); }}>
-                  {Icon.eye}<span className="pg-sr">See it from Stack-chan&rsquo;s head</span>
+                  {Icon.eye}<span className="pg-sr">{t.eye}</span>
                 </button>
               )}
-              <button type="button" className="pg-icon" title="Back to the starting view" onClick={() => { setEye(false); viewer.current?.view('home'); }}>
-                {Icon.reset}<span className="pg-sr">Back to the starting view</span>
+              <button type="button" className="pg-icon" title={t.reset} onClick={() => { setEye(false); viewer.current?.view('home'); }}>
+                {Icon.reset}<span className="pg-sr">{t.reset}</span>
               </button>
-              <button type="button" className="pg-icon" title={full ? 'Leave full screen' : 'Full screen'} onClick={toggleFull}>
-                {full ? Icon.shrink : Icon.full}<span className="pg-sr">{full ? 'Leave full screen' : 'Full screen'}</span>
+              <button type="button" className="pg-icon" title={full ? t.leaveFull : t.full} onClick={toggleFull}>
+                {full ? Icon.shrink : Icon.full}<span className="pg-sr">{full ? t.leaveFull : t.full}</span>
               </button>
             </div>
           </div>
@@ -136,15 +138,15 @@ export default function PlyPlayground({ still, stillAlt }: { still: string; stil
       </div>
 
       <div className="pg-files">
-        <button type="button" className="pg-text" onClick={() => file.current?.click()} disabled={state !== 'ready'}>Open your own .ply</button>
+        <button type="button" className="pg-text" onClick={() => file.current?.click()} disabled={state !== 'ready'}>{t.open}</button>
         <input ref={file} type="file" accept=".ply" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) load(f); e.target.value = ''; }} />
         {info && !info.robot ? (
           <>
-            <label className="pg-check"><input type="checkbox" checked={upY} onChange={(e) => { setUpY(e.target.checked); if (last.current) load(last.current, e.target.checked); }} /> Y is up in this file</label>
-            <button type="button" className="pg-text" onClick={back}>Back to Stack-chan&rsquo;s scan</button>
+            <label className="pg-check"><input type="checkbox" checked={upY} onChange={(e) => { setUpY(e.target.checked); if (last.current) load(last.current, e.target.checked); }} /> {t.upY}</label>
+            <button type="button" className="pg-text" onClick={back}>{t.back}</button>
           </>
         ) : (
-          <a className="pg-text" href="/stackchan-lidar/stackchan-scan-9-dense.ply" download>Download this scan</a>
+          <a className="pg-text" href="/stackchan-lidar/stackchan-scan-9-dense.ply" download>{t.download}</a>
         )}
         {err && <p className="pg-err" role="alert">{err}</p>}
       </div>

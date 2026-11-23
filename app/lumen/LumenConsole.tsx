@@ -1,6 +1,11 @@
 'use client';
 import { AnimatePresence, LazyMotion, domAnimation, m, useReducedMotion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { fill } from '@/lib/fill';
+import type { LumenConsoleCopy } from './_copy/en';
+
+/* The words (phrases, replies, labels) come from the article's copy as `t`; the parsed JSON
+   below is code and stays as it is in every language. */
 
 /* ── Live room state the script mutates ──────────────────────────── */
 type Room = {
@@ -10,112 +15,97 @@ type Room = {
   servo: number;
   buzzer: boolean;
   auto: boolean;
-  timer: string | null;
+  timer: boolean;
   reply: string;
 };
 
 const SENSORS = { temp: 24.3, humidity: 69, motion: true, dark: true };
 
-const START: Room = {
+const START: Omit<Room, 'reply'> = {
   whiteLed: { on: false, bright: 0 },
   rgb: { on: false, r: 0, g: 0, b: 0 },
   fan: false,
   servo: 90,
   buzzer: false,
   auto: true,
-  timer: null,
-  reply: 'Say "Hello Robot" or hold the button to talk.',
+  timer: false,
 };
 
 /* ── The demo script: each line is one real LUMEN exchange ───────── */
+/* What was said and the reply are t.steps[i], in this order. */
 type Step = {
   trigger: 'ptt' | 'wake';
-  said: string;
   json: string;
-  reply: string;
   apply: (r: Room) => Room;
 };
 
 const SCRIPT: Step[] = [
   {
     trigger: 'ptt',
-    said: 'Set the light to cyan and turn the fan on a second later.',
     json: `{ "type": "sequence", "steps": [
   { "delay_ms": 0, "device": "rgb_led",
     "action": "set_rgb", "r": 0, "g": 255, "b": 255 },
   { "delay_ms": 1000, "device": "fan", "action": "turn_on" }
 ] }`,
-    reply: 'Cyan now, fan in 1s.',
     apply: (r) => ({ ...r, rgb: { on: true, r: 0, g: 255, b: 255 }, fan: true, auto: false }),
   },
   {
     trigger: 'wake',
-    said: 'Set the brightness to the humidity percentage.',
     json: `{ "type": "action", "device": "white_led",
   "action": "set_brightness", "value": 69 }
 // from STATE.sensors.humidity = 69%`,
-    reply: 'Brightness set to 69%.',
     apply: (r) => ({ ...r, whiteLed: { on: true, bright: 69 }, auto: false }),
   },
   {
     trigger: 'ptt',
-    said: 'Turn the light off in ten minutes.',
     json: `{ "type": "timer", "device": "white_led",
   "action": "turn_off", "delay_seconds": 600,
   "label": "10 min light off" }`,
-    reply: 'Light off in 10 min.',
-    apply: (r) => ({ ...r, timer: 'light off in 10 min' }),
+    apply: (r) => ({ ...r, timer: true }),
   },
   {
     trigger: 'ptt',
-    said: "What's the temperature in here?",
     json: `{ "type": "action", "device": "none",
   "action": "report",
   "response_text": "24.3°C in here." }
 // answered from live sensor state`,
-    reply: '24.3°C in here.',
     apply: (r) => r,
   },
   {
     trigger: 'wake',
-    said: 'Good night.',
     json: `{ "type": "sequence", "steps": [
   { "device": "white_led", "action": "turn_off" },
   { "device": "rgb_led",  "action": "turn_off" },
   { "device": "fan",      "action": "turn_off" },
   { "device": "auto_mode","action": "disable" }
 ] }`,
-    reply: 'Good night.',
     apply: (r) => ({
       ...r,
       whiteLed: { on: false, bright: 0 },
       rgb: { on: false, r: 0, g: 0, b: 0 },
       fan: false,
       auto: false,
-      timer: null,
+      timer: false,
     }),
   },
   {
     trigger: 'ptt',
-    said: 'Make me a sandwich.',
     json: `{ "type": "action", "device": "none",
   "action": "noop",
   "response_text": "Sorry, I can't do that." }`,
-    reply: "Sorry, I can't do that.",
     apply: (r) => r,
   },
 ];
 
-/* Pipeline the request travels through, mirrored from the real path. */
-const STAGES = ['Trigger', 'Whisper', 'DeepSeek', 'MQTT'] as const;
+/* Pipeline the request travels through, mirrored from the real path (its names are t.stages). */
 // idle = -1, then 0..3 light up, 4 = executed on device
 const STAGE_AT = { listen: 0, stt: 1, llm: 2, exec: 3 };
 
-export default function LumenConsole() {
+export default function LumenConsole({ t }: { t: LumenConsoleCopy }) {
   const reduce = useReducedMotion();
   const [idx, setIdx] = useState(0);
   const [phase, setPhase] = useState<'idle' | 'listen' | 'stt' | 'llm' | 'exec' | 'done'>('idle');
-  const [room, setRoom] = useState<Room>(START);
+  const [room, setRoom] = useState<Room>(() => ({ ...START, reply: t.idle }));
   const [playing, setPlaying] = useState(true);
   const [inView, setInView] = useState(true);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -132,10 +122,10 @@ export default function LumenConsole() {
     after(1500, () => setPhase('llm'));
     after(2500, () => setPhase('exec'));
     after(3050, () => {
-      setRoom((r) => ({ ...step.apply(r), reply: step.reply }));
+      setRoom((r) => ({ ...step.apply(r), reply: t.steps[i].reply }));
       setPhase('done');
     });
-  }, [reduce]);
+  }, [reduce, t.steps]);
 
   // Only animate while the widget is on screen (saves work and avoids any off-view churn)
   useEffect(() => {
@@ -161,6 +151,7 @@ export default function LumenConsole() {
   const pick = (i: number) => { setPlaying(false); setIdx(i); };
 
   const step = SCRIPT[idx];
+  const said = t.steps[idx].said;
   const activeStage =
     phase === 'idle' ? -1 :
     phase === 'done' || phase === 'exec' ? STAGE_AT.exec :
@@ -174,16 +165,16 @@ export default function LumenConsole() {
         <div className="lm-cl-console">
           <div className="lm-cl-bar">
             <span className="lm-cl-dot" />
-            <span className="lm-cl-bar-t">LUMEN console</span>
+            <span className="lm-cl-bar-t">{t.title}</span>
             <span className={`lm-cl-trig ${step.trigger}`}>
-              {step.trigger === 'wake' ? '“Hello Robot”' : 'push-to-talk'}
+              {step.trigger === 'wake' ? t.wake : t.ptt}
             </span>
           </div>
 
           {/* pipeline */}
-          <div className="lm-cl-pipe" role="list" aria-label="Request pipeline">
-            {STAGES.map((s, n) => (
-              <div key={s} className={`lm-cl-node${n <= activeStage ? ' on' : ''}${n === activeStage && phase !== 'done' ? ' live' : ''}`} role="listitem">
+          <div className="lm-cl-pipe" role="list" aria-label={t.pipeAria}>
+            {t.stages.map((s, n) => (
+              <div key={n} className={`lm-cl-node${n <= activeStage ? ' on' : ''}${n === activeStage && phase !== 'done' ? ' live' : ''}`} role="listitem">
                 <span className="lm-cl-node-d" />
                 <span>{s}</span>
               </div>
@@ -192,24 +183,28 @@ export default function LumenConsole() {
 
           {/* heard */}
           <div className="lm-cl-line">
-            <span className="lm-cl-k">Heard</span>
-            <AnimatePresence mode="wait">
-              <m.p
-                key={idx + '-said'}
-                className="lm-cl-said"
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              >
-                “{step.said}”
-              </m.p>
-            </AnimatePresence>
+            <span className="lm-cl-k">{t.heard}</span>
+            {/* the reserve: every phrase stacked unseen in the same grid cell, so the line is always as tall as the longest one in this language */}
+            <div className="lm-cl-saidbox">
+              {t.steps.map((s, i) => <span key={i} className="lm-cl-said lm-cl-sz" aria-hidden="true" data-t={fill(t.quote, { said: s.said })} />)}
+              <AnimatePresence mode="wait">
+                <m.p
+                  key={idx + '-said'}
+                  className="lm-cl-said"
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  {fill(t.quote, { said })}
+                </m.p>
+              </AnimatePresence>
+            </div>
           </div>
 
           {/* parsed JSON */}
           <div className="lm-cl-line">
-            <span className="lm-cl-k">Parsed</span>
+            <span className="lm-cl-k">{t.parsed}</span>
             <div className="lm-cl-jsonwrap">
               <AnimatePresence mode="wait">
                 {activeStage >= STAGE_AT.exec ? (
@@ -246,8 +241,8 @@ export default function LumenConsole() {
         {/* ── The room reacting ── */}
         <div className="lm-cl-room">
           <div className="lm-cl-room-h">
-            <span>The room</span>
-            <span className={`lm-cl-auto${room.auto ? ' on' : ''}`}>Auto mode {room.auto ? 'on' : 'off'}</span>
+            <span>{t.room}</span>
+            <span className={`lm-cl-auto${room.auto ? ' on' : ''}`}>{room.auto ? t.autoOn : t.autoOff}</span>
           </div>
 
           <div className="lm-cl-devices">
@@ -256,16 +251,16 @@ export default function LumenConsole() {
               <div className="lm-cl-dev-ico" style={{ filter: room.whiteLed.on ? `drop-shadow(0 0 10px rgba(255,240,200,${0.25 + room.whiteLed.bright / 160}))` : 'none' }}>
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M9 18h6m-5 3h4M12 2a7 7 0 00-4 12.7c.6.5 1 1.2 1 2h6c0-.8.4-1.5 1-2A7 7 0 0012 2z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </div>
-              <span className="lm-cl-dev-n">White LED</span>
+              <span className="lm-cl-dev-n">{t.devices.white}</span>
               <div className="lm-cl-bright"><span style={{ width: `${room.whiteLed.on ? room.whiteLed.bright : 0}%` }} /></div>
-              <span className="lm-cl-dev-v">{room.whiteLed.on ? `${room.whiteLed.bright}%` : 'off'}</span>
+              <span className="lm-cl-dev-v">{room.whiteLed.on ? `${room.whiteLed.bright}%` : t.off}</span>
             </div>
 
             {/* RGB */}
             <div className={`lm-cl-dev${room.rgb.on ? ' on' : ''}`}>
               <div className="lm-cl-swatch" style={{ background: room.rgb.on ? rgbCss : 'transparent', boxShadow: room.rgb.on ? `0 0 16px ${rgbCss}` : 'none' }} />
-              <span className="lm-cl-dev-n">NeoPixel</span>
-              <span className="lm-cl-dev-v">{room.rgb.on ? `${room.rgb.r},${room.rgb.g},${room.rgb.b}` : 'off'}</span>
+              <span className="lm-cl-dev-n">{t.devices.rgb}</span>
+              <span className="lm-cl-dev-v">{room.rgb.on ? `${room.rgb.r},${room.rgb.g},${room.rgb.b}` : t.off}</span>
             </div>
 
             {/* fan */}
@@ -273,8 +268,8 @@ export default function LumenConsole() {
               <m.div className="lm-cl-dev-ico" animate={room.fan && !reduce ? { rotate: 360 } : { rotate: 0 }} transition={room.fan && !reduce ? { duration: 1.1, repeat: Infinity, ease: 'linear' } : { duration: 0.3 }}>
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M12 12c0-3 1-5 3-5s3 2 1 4m-4 1c3 0 5 1 5 3s-2 3-4 1m-1-4c0 3-1 5-3 5s-3-2-1-4m4-1c-3 0-5-1-5-3s2-3 4-1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><circle cx="12" cy="12" r="1.6" fill="currentColor" /></svg>
               </m.div>
-              <span className="lm-cl-dev-n">Fan</span>
-              <span className="lm-cl-dev-v">{room.fan ? 'on' : 'off'}</span>
+              <span className="lm-cl-dev-n">{t.devices.fan}</span>
+              <span className="lm-cl-dev-v">{room.fan ? t.on : t.off}</span>
             </div>
 
             {/* servo */}
@@ -286,36 +281,42 @@ export default function LumenConsole() {
                   <circle cx="12" cy="18" r="2" fill="currentColor" />
                 </svg>
               </div>
-              <span className="lm-cl-dev-n">Servo</span>
+              <span className="lm-cl-dev-n">{t.devices.servo}</span>
               <span className="lm-cl-dev-v">{room.servo}°</span>
             </div>
           </div>
 
-          {/* live sensors */}
-          <div className="lm-cl-sensors">
-            <span className="lm-cl-chip">{SENSORS.temp}°C</span>
-            <span className="lm-cl-chip">{SENSORS.humidity}% RH</span>
-            <span className={`lm-cl-chip${SENSORS.motion ? ' hot' : ''}`}>{SENSORS.motion ? 'motion' : 'still'}</span>
-            <span className={`lm-cl-chip${SENSORS.dark ? ' hot' : ''}`}>{SENSORS.dark ? 'dark' : 'lit'}</span>
-            <AnimatePresence>
-              {room.timer && (
-                <m.span className="lm-cl-chip timer" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}>
-                  Timer: {room.timer}
-                </m.span>
-              )}
-            </AnimatePresence>
+          {/* live sensors, over an unseen copy of the row with the timer chip, so the timer never makes it grow */}
+          <div className="lm-cl-sensbox">
+            <div className="lm-cl-sensors lm-cl-sz" aria-hidden="true">
+              {[`${SENSORS.temp}°C`, `${SENSORS.humidity}% RH`, SENSORS.motion ? t.motion : t.still, SENSORS.dark ? t.dark : t.lit].map((s, i) => <span key={i} className="lm-cl-chip" data-t={s} />)}
+              <span className="lm-cl-chip timer" data-t={t.timer} />
+            </div>
+            <div className="lm-cl-sensors">
+              <span className="lm-cl-chip">{SENSORS.temp}°C</span>
+              <span className="lm-cl-chip">{SENSORS.humidity}% RH</span>
+              <span className={`lm-cl-chip${SENSORS.motion ? ' hot' : ''}`}>{SENSORS.motion ? t.motion : t.still}</span>
+              <span className={`lm-cl-chip${SENSORS.dark ? ' hot' : ''}`}>{SENSORS.dark ? t.dark : t.lit}</span>
+              <AnimatePresence>
+                {room.timer && (
+                  <m.span className="lm-cl-chip timer" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}>
+                    {t.timer}
+                  </m.span>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
 
         {/* ── Pick a phrase ── */}
         <div className="lm-cl-picks">
-          {SCRIPT.map((s, i) => (
+          {t.steps.map((s, i) => (
             <button key={i} type="button" className={`lm-cl-pick${i === idx ? ' active' : ''}`} aria-pressed={i === idx} title={s.said} onClick={() => pick(i)}>
               {s.said}
             </button>
           ))}
           <button className={`lm-cl-pick play${playing ? ' active' : ''}`} onClick={() => setPlaying((p) => !p)}>
-            {playing ? 'Pause' : 'Play'}
+            {playing ? t.pause : t.play}
           </button>
         </div>
 
@@ -348,6 +349,12 @@ export default function LumenConsole() {
           .lm-cl-k { font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: #6d768a; }
           /* Fixed reserves so cycling the demo never reflows the page */
           .lm-cl-said { margin: 0; font-size: 1.02rem; line-height: 1.4; color: #eef1f7; font-style: italic; min-height: 4.4em; }
+          /* the reserves' unseen copies share one grid cell with the live text; their words are drawn
+             from data-t, so they add no text to the page */
+          .lm-cl-saidbox, .lm-cl-sensbox { display: grid; }
+          .lm-cl-saidbox > *, .lm-cl-sensbox > * { grid-area: 1 / 1; }
+          .lm-cl-sz { visibility: hidden; pointer-events: none; }
+          .lm-cl-sz[data-t]::before, .lm-cl-sz [data-t]::before { content: attr(data-t); }
           .lm-cl-jsonwrap { height: 206px; }
           .lm-cl-json { margin: 0; height: 100%; box-sizing: border-box; overflow: auto; -webkit-overflow-scrolling: touch;
             font-family: var(--font-ddt, ui-monospace, monospace); font-size: 0.74rem; line-height: 1.5; color: #b7e3c8; white-space: pre-wrap; word-break: break-word;
@@ -377,7 +384,8 @@ export default function LumenConsole() {
           .lm-cl-bright span { display: block; height: 100%; background: linear-gradient(90deg, var(--lm-deep), var(--lm)); border-radius: 999px; transition: width 0.6s cubic-bezier(0.16,1,0.3,1); }
           .lm-cl-swatch { grid-row: 1 / 3; width: 26px; height: 26px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.14); transition: background 0.5s, box-shadow 0.5s; }
 
-          .lm-cl-sensors { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 6px; margin-top: auto; min-height: 64px; }
+          .lm-cl-sensbox { margin-top: auto; }
+          .lm-cl-sensors { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 6px; min-height: 64px; }
           .lm-cl-chip { font-size: 0.66rem; padding: 4px 8px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.1); color: #aeb8cc; }
           .lm-cl-chip.hot { color: var(--lm); border-color: color-mix(in srgb, var(--lm) 35%, transparent); }
           .lm-cl-chip.timer { color: #f5c97a; border-color: rgba(245,201,122,0.4); background: rgba(245,201,122,0.08); }

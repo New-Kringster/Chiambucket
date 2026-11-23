@@ -7,6 +7,7 @@
   Flow  how a request travels: the tablet, the bridge on the VM, the harness.
 */
 import type { ReactNode } from 'react';
+import type { PipCopy } from './_copy';
 
 export function Tab({ children, className }: { children: ReactNode; className?: string }) {
   return (
@@ -28,34 +29,31 @@ export function Win({ children, label }: { children: ReactNode; label: string })
   );
 }
 
-const FLOW: Array<{ k: string; title: string; where: string; items: string[] }> = [
-  { k: 'tab', title: 'Tab5', where: 'On my desk', items: ['Pip, drawn on the tablet', 'Touch, keyboard, mics', 'Camera, IMU, speaker', 'Native applets in Lua'] },
-  { k: 'bridge', title: 'Pet bridge', where: 'On the VM', items: ['Speech to text, on the VM', 'The tablet’s hardware, as an API', 'Pages for applets'] },
-  { k: 'dsh', title: 'DeepSeek Harness', where: 'On the VM', items: ['Pip, a session with its own persona', 'Subagents that do the long jobs', 'A browser Pip can see and click', 'Applets in Docker'] },
-];
+/* The three boxes in order; their words come from the copy (copy.flow). */
+const FLOW = ['tab', 'bridge', 'dsh'] as const;
 
-export function Flow() {
+export function Flow({ t }: { t: PipCopy['flow'] }) {
   return (
-    <figure className="pp-flow" aria-label="How a request travels: the Tab5 talks to a bridge on the VM, the bridge talks to the DeepSeek Harness">
+    <figure className="pp-flow" aria-label={t.label}>
       <div className="pp-flow-row">
-        {FLOW.map((n, i) => (
-          <div className="pp-flow-cell" key={n.k}>
-            <div className={`pp-node is-${n.k}`}>
+        {FLOW.map((k, i) => { const n = t.nodes[k]; return (
+          <div className="pp-flow-cell" key={k}>
+            <div className={`pp-node is-${k}`}>
               <span className="pp-node-where">{n.where}</span>
               <b>{n.title}</b>
-              <ul>{n.items.map((t) => <li key={t}>{t}</li>)}</ul>
+              <ul>{n.items.map((s) => <li key={s}>{s}</li>)}</ul>
             </div>
             {i < FLOW.length - 1 && (
               <div className="pp-link" aria-hidden="true">
-                <span className="pp-link-out">{i === 0 ? 'voice, taps, keys' : 'your words, as Pip'}</span>
+                <span className="pp-link-out">{t.links[i].out}</span>
                 <span className="pp-link-line"><i /></span>
-                <span className="pp-link-back">{i === 0 ? 'frames, replies, scripts' : 'replies, pages, apps'}</span>
+                <span className="pp-link-back">{t.links[i].back}</span>
               </div>
             )}
           </div>
-        ))}
+        ); })}
       </div>
-      <figcaption>The tablet draws Pip and the screen, and it talks over Wi-Fi to a small Ubuntu VM on my desk, where everything else runs.</figcaption>
+      <figcaption>{t.caption}</figcaption>
     </figure>
   );
 }

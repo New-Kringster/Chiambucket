@@ -1,6 +1,8 @@
 'use client';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, LazyMotion, domAnimation, m, useReducedMotion } from 'framer-motion';
+import { fill } from '@/lib/fill';
+import type { PandusCopy } from './_copy/en';
 
 /* One dispense cycle, following the flow chart in the write-up:
    IR module triggered, servo to 180°, high-power LED on, level 1;
@@ -13,45 +15,36 @@ type Led = 'red' | 'yellow' | 'green';
 
 const SPRING = [0.16, 1, 0.3, 1] as const;
 
-const LEVELS: Record<Level, { label: string; fill: number; pumpS: number; leds: Led[]; ledText: string }> = {
-  1: { label: 'Level 1', fill: 0.45, pumpS: 3, leds: ['red'], ledText: 'the red LED' },
-  2: { label: 'Level 2', fill: 0.65, pumpS: 4, leds: ['red', 'yellow'], ledText: 'the red and yellow LEDs' },
-  3: { label: 'Level 3', fill: 0.86, pumpS: 5, leds: ['red', 'yellow', 'green'], ledText: 'all three LEDs' },
+/* The words (level labels, step blurbs, component names and states) are copy, `t`, from the article. */
+const LEVELS: Record<Level, { fill: number; pumpS: number; leds: Led[] }> = {
+  1: { fill: 0.45, pumpS: 3, leds: ['red'] },
+  2: { fill: 0.65, pumpS: 4, leds: ['red', 'yellow'] },
+  3: { fill: 0.86, pumpS: 5, leds: ['red', 'yellow', 'green'] },
 };
 const LEVEL_ORDER: Level[] = [1, 2, 3];
 const ALL_LEDS: Led[] = ['red', 'yellow', 'green'];
 
-const PHASES: { key: Phase; label: string; blurb: string }[] = [
-  { key: 'idle', label: 'Waiting', blurb: 'The dispenser waits for the infrared collision detection module to detect a cup.' },
-  { key: 'wake', label: 'Cup in', blurb: 'When a cup triggers the infrared module, the servo turns to 180° to open the door over the buttons, the high-power LED turns on and the level resets to 1.' },
-  { key: 'select', label: 'Select', blurb: 'The select button steps through levels 1, 2 and 3, and the indicator LEDs show which one is chosen.' },
-  { key: 'pour', label: 'Pour', blurb: 'The confirm button switches the DC pump on through the relay for 3, 4 or 5 seconds, depending on the level.' },
-  { key: 'done', label: 'Done', blurb: 'The pump stops and everything turns off until the next cup.' },
-];
-const phaseText = (p: Phase, l: Level) =>
-  (PHASES.find((x) => x.key === p)?.blurb ?? '') + (p === 'select' ? ` It is on level ${l} now, which lights ${LEVELS[l].ledText}.` : '');
-/* Longest text any step can show: reserves the height so steps never reflow the page */
-const LONGEST_BLURB = PHASES.flatMap((p) => LEVEL_ORDER.map((l) => phaseText(p.key, l))).reduce((a, t) => (t.length > a.length ? t : a), '');
+const PHASES: Phase[] = ['idle', 'wake', 'select', 'pour', 'done'];
+type Words = PandusCopy['demo'];
+const levelLabel = (t: Words, l: Level) => fill(t.level, { n: l });
+const phaseText = (t: Words, p: Phase, l: Level) =>
+  t.phases[p].blurb + (p === 'select' ? ' ' + fill(t.selectNow, { n: l, leds: t.ledText[l - 1] }) : '');
 const PHASE_DURATIONS: Record<Phase, number> = { idle: 1800, wake: 1500, select: 1700, pour: 0, done: 2000 };
 
 type CompKey = 'ir' | 'servo' | 'led' | 'pump';
-const COMPONENTS: { key: CompKey; label: string; full: string }[] = [
-  { key: 'ir', label: 'IR module', full: 'Infrared collision detection module' },
-  { key: 'servo', label: 'Door', full: 'Servo door over the buttons' },
-  { key: 'led', label: 'LED', full: 'High-power LED over the cup' },
-  { key: 'pump', label: 'Pump', full: 'DC pump switched by a relay' },
-];
-/* Each component's colour state and its label during each phase */
+const COMPONENTS: CompKey[] = ['ir', 'servo', 'led', 'pump'];
+/* Each component's colour state and its state word (a key of t.states) during each phase */
 type CompState = 'off' | 'standby' | 'active' | 'done';
-const COMP_STATE: Record<Phase, Record<CompKey, [CompState, string]>> = {
-  idle: { ir: ['active', 'Watching'], servo: ['done', 'Closed'], led: ['off', 'Off'], pump: ['off', 'Off'] },
-  wake: { ir: ['active', 'Triggered'], servo: ['active', 'Open'], led: ['active', 'On'], pump: ['off', 'Off'] },
-  select: { ir: ['standby', 'Triggered'], servo: ['active', 'Open'], led: ['active', 'On'], pump: ['standby', 'Off'] },
-  pour: { ir: ['standby', 'Triggered'], servo: ['active', 'Open'], led: ['active', 'On'], pump: ['active', 'Running'] },
-  done: { ir: ['active', 'Watching'], servo: ['done', 'Closed'], led: ['off', 'Off'], pump: ['off', 'Off'] },
+type StateWord = keyof Words['states'];
+const COMP_STATE: Record<Phase, Record<CompKey, [CompState, StateWord]>> = {
+  idle: { ir: ['active', 'watching'], servo: ['done', 'closed'], led: ['off', 'off'], pump: ['off', 'off'] },
+  wake: { ir: ['active', 'triggered'], servo: ['active', 'open'], led: ['active', 'on'], pump: ['off', 'off'] },
+  select: { ir: ['standby', 'triggered'], servo: ['active', 'open'], led: ['active', 'on'], pump: ['standby', 'off'] },
+  pour: { ir: ['standby', 'triggered'], servo: ['active', 'open'], led: ['active', 'on'], pump: ['active', 'running'] },
+  done: { ir: ['active', 'watching'], servo: ['done', 'closed'], led: ['off', 'off'], pump: ['off', 'off'] },
 };
 
-export default function DispenseDemo() {
+export default function DispenseDemo({ t }: { t: PandusCopy['demo'] }) {
   // false on the server and the first client render, so hydration matches
   const reduceMotion = !!useReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -61,7 +54,12 @@ export default function DispenseDemo() {
   const [auto, setAuto] = useState(true);
   const [cycle, setCycle] = useState(0);
 
-  const phaseIndex = PHASES.findIndex((p) => p.key === phase);
+  const phaseIndex = PHASES.indexOf(phase);
+  /* Longest text any step can show: reserves the height so steps never reflow the page */
+  const longestBlurb = useMemo(
+    () => PHASES.flatMap((p) => LEVEL_ORDER.map((l) => phaseText(t, p, l))).reduce((a, x) => (x.length > a.length ? x : a), ''),
+    [t],
+  );
   const lv = LEVELS[level];
   const comp = COMP_STATE[phase];
   const ledOn = comp.led[0] === 'active';
@@ -98,7 +96,7 @@ export default function DispenseDemo() {
         setCycle((c) => c + 1);
         setPhase('idle');
       } else {
-        setPhase(PHASES[PHASES.findIndex((x) => x.key === phase) + 1].key);
+        setPhase(PHASES[PHASES.indexOf(phase) + 1]);
       }
     }, ms);
     return () => clearTimeout(t);
@@ -111,11 +109,8 @@ export default function DispenseDemo() {
     setPhase(reduceMotion ? 'done' : 'wake');
   }, [reduceMotion]);
 
-  const status = reduceMotion
-    ? `${lv.label} · ${lv.pumpS} s pump`
-    : auto
-      ? `Running on its own · ${lv.label}`
-      : `Your pick · ${lv.label}`;
+  const label = levelLabel(t, level);
+  const status = fill(reduceMotion ? t.status.reduced : auto ? t.status.auto : t.status.pick, { level: label, s: lv.pumpS });
 
   return (
     <LazyMotion features={domAnimation}>
@@ -194,7 +189,7 @@ export default function DispenseDemo() {
           />
 
           {/* The cup, sitting in the dispensing area */}
-          <div className="pd-dd-cup" role="img" aria-label={`Cup under the spout, ${phase === 'idle' ? 'empty and waiting' : phase === 'done' ? `filled at ${lv.label.toLowerCase()}` : pouring ? `filling at ${lv.label.toLowerCase()}` : 'empty'}`}>
+          <div className="pd-dd-cup" role="img" aria-label={fill(phase === 'idle' ? t.cup.idle : phase === 'done' ? t.cup.filled : pouring ? t.cup.filling : t.cup.empty, { n: level })}>
             <span className="pd-dd-cup-rim" aria-hidden="true" />
             <m.div
               className="pd-dd-water"
@@ -220,12 +215,12 @@ export default function DispenseDemo() {
           <span className="pd-dd-eyebrow">{status}</span>
           {!reduceMotion && !auto && (
             <button type="button" className="pd-dd-resume" onClick={() => { setAuto(true); setPhase('idle'); }}>
-              <RefreshGlyph /> Run on its own
+              <RefreshGlyph /> {t.resume}
             </button>
           )}
         </div>
 
-        <div className="pd-dd-levels" role="group" aria-label="Choose a level">
+        <div className="pd-dd-levels" role="group" aria-label={t.levelsAria}>
           {LEVEL_ORDER.map((l) => (
             <button
               key={l}
@@ -235,13 +230,13 @@ export default function DispenseDemo() {
               aria-pressed={l === level}
             >
               <span className="pd-dd-level-glyph">{l}</span>
-              <span className="pd-dd-level-text"><b>{LEVELS[l].label}</b>{LEVELS[l].pumpS} s pump</span>
+              <span className="pd-dd-level-text"><b>{levelLabel(t, l)}</b>{fill(t.pump, { s: LEVELS[l].pumpS })}</span>
             </button>
           ))}
         </div>
 
         {/* Phase rail: a horizontal thread the cycle travels along */}
-        <div className="pd-dd-rail" aria-label="Dispense cycle">
+        <div className="pd-dd-rail" aria-label={t.railAria}>
           <div className="pd-dd-rail-track" aria-hidden="true">
             <m.div
               className="pd-dd-rail-fill"
@@ -251,16 +246,16 @@ export default function DispenseDemo() {
           </div>
           <div className="pd-dd-rail-steps">
             {PHASES.map((p, n) => (
-              <span key={p.key} className={`pd-dd-rail-step${n <= phaseIndex ? ' is-lit' : ''}${n === phaseIndex ? ' is-current' : ''}`} aria-current={n === phaseIndex ? 'step' : undefined}>
+              <span key={p} className={`pd-dd-rail-step${n <= phaseIndex ? ' is-lit' : ''}${n === phaseIndex ? ' is-current' : ''}`} aria-current={n === phaseIndex ? 'step' : undefined}>
                 <span className="pd-dd-rail-dot" />
-                <span className="pd-dd-rail-label">{p.label}</span>
+                <span className="pd-dd-rail-label">{t.phases[p].label}</span>
               </span>
             ))}
           </div>
         </div>
 
         <div className="pd-dd-desc-wrap" role="status" aria-live="polite">
-          <p className="pd-dd-desc pd-dd-sizer" aria-hidden="true">{LONGEST_BLURB}</p>
+          <p className="pd-dd-desc pd-dd-sizer" aria-hidden="true">{longestBlurb}</p>
           <AnimatePresence mode="wait">
             <m.p
               key={phase}
@@ -270,7 +265,7 @@ export default function DispenseDemo() {
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: instant ?? 0.32, ease: SPRING }}
             >
-              {phaseText(phase, level)}
+              {phaseText(t, phase, level)}
             </m.p>
           </AnimatePresence>
         </div>
@@ -278,13 +273,13 @@ export default function DispenseDemo() {
         <div className="pd-dd-again-slot">
           {phase === 'done' && !auto && (
             <button type="button" className="pd-dd-again" onClick={() => pick(level)}>
-              Pour another <ArrowGlyph />
+              {t.again} <ArrowGlyph />
             </button>
           )}
         </div>
 
         {/* Mini schematic: signal line through the four components */}
-        <div className="pd-dd-schema" aria-label="Component status">
+        <div className="pd-dd-schema" aria-label={t.schemaAria}>
           <span className="pd-dd-schema-line" aria-hidden="true">
             <m.span
               className="pd-dd-schema-pulse"
@@ -293,10 +288,10 @@ export default function DispenseDemo() {
             />
           </span>
           {COMPONENTS.map((c) => (
-            <div key={c.key} className={`pd-dd-node st-${comp[c.key][0]}`} title={c.full}>
+            <div key={c} className={`pd-dd-node st-${comp[c][0]}`} title={t.comps[c].full}>
               <span className="pd-dd-node-dot" />
-              <span className="pd-dd-node-label">{c.label}</span>
-              <span className="pd-dd-node-state">{comp[c.key][1]}</span>
+              <span className="pd-dd-node-label">{t.comps[c].label}</span>
+              <span className="pd-dd-node-state">{t.states[comp[c][1]]}</span>
             </div>
           ))}
         </div>

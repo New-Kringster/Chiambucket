@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Figtree } from 'next/font/google';
 import PlyPlayground from '../PlyPlayground';
+import en from '../_copy/en';
 import '../lidar.css';
 
 /* The article's "Try the scan" playground on its own, filling whatever frame another site puts it in:
@@ -18,7 +19,8 @@ export const metadata: Metadata = {
 export default function StackchanLidarEmbed() {
   return (
     <main className={`ls ls-embed ${sans.variable}`}>
-      <PlyPlayground still="/images/stackchan-lidar/cloud.webp" stillAlt="The finished scan from above: the walls and ceiling of a room corner, with a blue box on the table" />
+      {/* always in English: the embed sits inside other sites' pages */}
+      <PlyPlayground still="/images/stackchan-lidar/cloud.webp" stillAlt={en.play.stillAlt} t={en.pg} />
     </main>
   );
 }

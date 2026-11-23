@@ -1,5 +1,6 @@
 'use client';
 import { useState, type ReactNode } from 'react';
+import type { LumenPromptCopy } from './_copy/en';
 
 type View = 'formatted' | 'code';
 
@@ -119,20 +120,21 @@ function renderPrompt(src: string): ReactNode[] {
 
 /* Shows the system prompt with a Formatted/Code toggle, a preview that fades
    out, and a Show more / less control. The Code view is the prompt verbatim; the
-   Formatted view is a reading copy, so it swaps the prompt's dashes for colons. */
-export default function PromptReveal({ text }: { text: string }) {
+   Formatted view is a reading copy, so it swaps the prompt's dashes for colons.
+   The prompt stays English in both views; `t` is the frame's words from the article's copy. */
+export default function PromptReveal({ text, t }: { text: string; t: LumenPromptCopy }) {
   const [open, setOpen] = useState(false);
   const [view, setView] = useState<View>('formatted');
   return (
     <div className={`lm-pr${open ? ' open' : ''}`}>
       <div className="lm-pr-head">
-        <span className="lm-pr-eyebrow">The system prompt LUMEN sends the model</span>
-        <div className="lm-pr-toggle" role="tablist" aria-label="Prompt view">
+        <span className="lm-pr-eyebrow">{t.eyebrow}</span>
+        <div className="lm-pr-toggle" role="tablist" aria-label={t.viewAria}>
           <button type="button" role="tab" aria-selected={view === 'formatted'} className={`lm-pr-tab${view === 'formatted' ? ' on' : ''}`} onClick={() => setView('formatted')}>
-            Formatted
+            {t.formatted}
           </button>
           <button type="button" role="tab" aria-selected={view === 'code'} className={`lm-pr-tab${view === 'code' ? ' on' : ''}`} onClick={() => setView('code')}>
-            Code
+            {t.code}
           </button>
         </div>
       </div>
@@ -145,7 +147,7 @@ export default function PromptReveal({ text }: { text: string }) {
         {!open && <div className="lm-pr-fade" aria-hidden="true" />}
       </div>
       <button className="lm-pr-btn" type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
-        {open ? 'Show less' : 'Show the full prompt'}
+        {open ? t.less : t.more}
         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" aria-hidden="true">
           <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>

@@ -1,47 +1,17 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, LazyMotion, domAnimation, m, useReducedMotion } from 'framer-motion';
+import type { BrolocatorCopy } from './_copy/en';
+
+type T = BrolocatorCopy['demoWidget'];
 
 type Radio = 'lora' | 'espnow';
 type Phase = 'idle' | 'sending' | 'arrived';
 
 const SPRING = [0.16, 1, 0.3, 1] as const;
 
-const TEXTS = [
-  'On my way, give me 10',
-  'Found the trailhead',
-  'Battery at 40%, heading back',
-  'Camp is just past the ridge',
-];
-
-const RADIO: Record<Radio, {
-  label: string;
-  short: string;
-  range: string;
-  carries: string;
-  module: string;
-  glyph: 'wave' | 'bolt';
-  blurb: string;
-}> = {
-  lora: {
-    label: 'Text over LoRa',
-    short: 'LoRa',
-    range: 'Long distance',
-    carries: 'Short text packets',
-    module: 'Ebyte E220-900D',
-    glyph: 'wave',
-    blurb: 'LoRa reaches much further than ESP-NOW, but it only has the bandwidth for text.',
-  },
-  espnow: {
-    label: 'Voice over ESP-NOW',
-    short: 'ESP-NOW',
-    range: 'Short, direct link',
-    carries: 'Crude full-duplex voice',
-    module: 'The ESP32 itself',
-    glyph: 'bolt',
-    blurb: 'ESP-NOW is a direct link between the two ESP32s, fast enough for crude two-way voice but only at short range.',
-  },
-};
+/* The radios' structure; their words (and the messages to send) come from the article's copy (`t`). */
+const GLYPH: Record<Radio, 'wave' | 'bolt'> = { lora: 'wave', espnow: 'bolt' };
 
 /* Long, lazy arc for LoRa · viewBox 0 0 520 150 */
 const LORA_PATH = 'M 70 108 C 160 8, 360 8, 450 108';
@@ -58,7 +28,9 @@ function useAutoDemo(running: boolean, onTick: () => void, delayMs: number) {
   });
 }
 
-export default function LinkDemo() {
+export default function LinkDemo({ t }: { t: T }) {
+  const TEXTS = t.texts;
+  const RADIO = t.radio;
   const reduceMotion = useReducedMotion();
   const rootRef = useRef<HTMLDivElement | null>(null);
   const [inView, setInView] = useState(false);
@@ -98,8 +70,8 @@ export default function LinkDemo() {
     if (radio !== 'lora' || phase !== 'sending') return;
     if (reduceMotion) {
       setTyped(message);
-      const t = setTimeout(() => setPhase('arrived'), 700);
-      return () => clearTimeout(t);
+      const id = setTimeout(() => setPhase('arrived'), 700);
+      return () => clearTimeout(id);
     }
     setTyped('');
     let i = 0;
@@ -115,12 +87,12 @@ export default function LinkDemo() {
   /* Settle, then reset for the next round */
   useEffect(() => {
     if (phase !== 'arrived') return;
-    const t = setTimeout(() => {
+    const id = setTimeout(() => {
       setPhase('idle');
       setTyped('');
       setTalking(false);
     }, radio === 'lora' ? 2200 : 1500);
-    return () => clearTimeout(t);
+    return () => clearTimeout(id);
   }, [phase, radio]);
 
   /* ---- ESP-NOW: hold-to-talk waveform pulse ---- */
@@ -136,8 +108,8 @@ export default function LinkDemo() {
 
   useEffect(() => {
     if (radio !== 'espnow' || !talking) return;
-    const t = setInterval(() => setPulse((p) => p + 1), reduceMotion ? 600 : 220);
-    return () => clearInterval(t);
+    const id = setInterval(() => setPulse((p) => p + 1), reduceMotion ? 600 : 220);
+    return () => clearInterval(id);
   }, [radio, talking, reduceMotion]);
 
   /* ---- Mode switch ---- */
@@ -175,7 +147,7 @@ export default function LinkDemo() {
     <LazyMotion features={domAnimation}>
     <div ref={rootRef} className={`bl-ld bl-ld-${radio}`} data-no-zoom>
       <div className="bl-ld-head">
-        <div className="bl-ld-modes" role="tablist" aria-label="Choose a radio link">
+        <div className="bl-ld-modes" role="tablist" aria-label={t.modesAria}>
           {(['lora', 'espnow'] as Radio[]).map((r) => (
             <button
               key={r}
@@ -185,14 +157,14 @@ export default function LinkDemo() {
               className={`bl-ld-mode is-${r}${radio === r ? ' is-active' : ''}`}
               onClick={() => pick(r, true)}
             >
-              <Glyph kind={RADIO[r].glyph} />
+              <Glyph kind={GLYPH[r]} />
               {RADIO[r].label}
             </button>
           ))}
         </div>
         {!auto && !reduceMotion && (
           <button type="button" className="bl-ld-replay" onClick={() => { setAuto(true); setPhase('idle'); setTalking(false); setTyped(''); }}>
-            <RefreshIcon /> Play the demo
+            <RefreshIcon /> {t.replay}
           </button>
         )}
       </div>
@@ -200,12 +172,13 @@ export default function LinkDemo() {
       <div className="bl-ld-stage">
         <Handset
           role="you"
-          label="You"
+          label={t.you}
           radio={radio}
           phase={phase}
           message={message}
+          quote={t.quote}
           typed={typed}
-          screenText={radio === 'lora' ? (phase === 'idle' ? 'Pick a message' : phase === 'arrived' ? 'Delivered' : 'Sending') : (talking ? 'Mic live' : 'Hold to talk')}
+          screenText={radio === 'lora' ? (phase === 'idle' ? t.screen.pick : phase === 'arrived' ? t.screen.delivered : t.screen.sending) : (talking ? t.screen.micLive : t.screen.holdToTalk)}
           talking={radio === 'espnow' && talking}
           pulse={pulse}
           isSender
@@ -247,19 +220,20 @@ export default function LinkDemo() {
           </svg>
           <span className={`bl-ld-link-label${linkActive ? ' is-on' : ''}`}>
             {radio === 'lora'
-              ? (phase === 'sending' ? 'Packet in flight' : phase === 'arrived' ? 'Delivered' : 'Long-range link')
-              : (talking ? 'Voice streaming both ways' : 'Direct peer link')}
+              ? (phase === 'sending' ? t.link.inFlight : phase === 'arrived' ? t.link.delivered : t.link.longRange)
+              : (talking ? t.link.streaming : t.link.direct)}
           </span>
         </div>
 
         <Handset
           role="friend"
-          label="Friend"
+          label={t.friend}
           radio={radio}
           phase={phase}
           message={message}
+          quote={t.quote}
           typed={typed}
-          screenText={radio === 'lora' ? (phase === 'arrived' ? 'New message' : phase === 'sending' ? 'Receiving' : 'Standing by') : (talking ? 'Listening' : 'Standing by')}
+          screenText={radio === 'lora' ? (phase === 'arrived' ? t.screen.newMessage : phase === 'sending' ? t.screen.receiving : t.screen.standingBy) : (talking ? t.screen.listening : t.screen.standingBy)}
           talking={radio === 'espnow' && talking}
           pulse={pulse}
           reduceMotion={!!reduceMotion}
@@ -269,27 +243,27 @@ export default function LinkDemo() {
       <div className="bl-ld-controls">
         {radio === 'lora' ? (
           <>
-            <span className="bl-ld-controls-label">Pick a message, then send it</span>
+            <span className="bl-ld-controls-label">{t.pickLabel}</span>
             <div className="bl-ld-chips">
-              {TEXTS.map((t, n) => (
+              {TEXTS.map((msg, n) => (
                 <button
-                  key={t}
+                  key={msg}
                   type="button"
                   className={`bl-ld-chip${textIdx === n ? ' is-active' : ''}`}
                   onClick={() => { stopAuto(); setTextIdx(n); }}
                   disabled={phase !== 'idle'}
                 >
-                  {t}
+                  {msg}
                 </button>
               ))}
             </div>
             <button type="button" className="bl-ld-send" onClick={() => send(true)} disabled={phase !== 'idle'}>
-              <SendIcon /> Send over LoRa
+              <SendIcon /> {t.send}
             </button>
           </>
         ) : (
           <>
-            <span className="bl-ld-controls-label">Press and hold to talk</span>
+            <span className="bl-ld-controls-label">{t.holdLabel}</span>
             <button
               type="button"
               className={`bl-ld-talk${talking ? ' is-live' : ''}`}
@@ -299,7 +273,7 @@ export default function LinkDemo() {
               aria-pressed={talking}
             >
               <MicIcon />
-              {talking ? 'Transmitting' : 'Hold to talk'}
+              {talking ? t.transmitting : t.holdToTalk}
             </button>
           </>
         )}
@@ -311,13 +285,13 @@ export default function LinkDemo() {
           return (
             <div key={r} className={`bl-ld-gauge is-${r}${radio === r ? ' is-current' : ''}`}>
               <div className="bl-ld-gauge-top">
-                <Glyph kind={c.glyph} />
+                <Glyph kind={GLYPH[r]} />
                 <span className="bl-ld-gauge-name">{c.short}</span>
               </div>
               <div className="bl-ld-gauge-track"><span className={`bl-ld-gauge-fill fill-${r}`} /></div>
-              <div className="bl-ld-gauge-row"><b>Range</b><span>{c.range}</span></div>
-              <div className="bl-ld-gauge-row"><b>Carries</b><span>{c.carries}</span></div>
-              <div className="bl-ld-gauge-row"><b>Radio</b><span>{c.module}</span></div>
+              <div className="bl-ld-gauge-row"><b>{t.gauge.range}</b><span>{c.range}</span></div>
+              <div className="bl-ld-gauge-row"><b>{t.gauge.carries}</b><span>{c.carries}</span></div>
+              <div className="bl-ld-gauge-row"><b>{t.gauge.radio}</b><span>{c.module}</span></div>
               <p className="bl-ld-gauge-blurb">{c.blurb}</p>
             </div>
           );
@@ -500,13 +474,15 @@ export default function LinkDemo() {
 /* ───────────────────────── Handset ───────────────────────── */
 
 function Handset({
-  role, label, radio, phase, message, typed, screenText, talking, pulse, isSender, reduceMotion,
+  role, label, radio, phase, message, quote, typed, screenText, talking, pulse, isSender, reduceMotion,
 }: {
   role: 'you' | 'friend';
   label: string;
   radio: Radio;
   phase: Phase;
   message: string;
+  /** the opening and closing quote marks around a message */
+  quote: readonly [string, string];
   typed: string;
   screenText: string;
   talking: boolean;
@@ -528,8 +504,8 @@ function Handset({
               <span className="bl-ld-screen-status">{screenText.toUpperCase()}</span>
               <span className="bl-ld-screen-msg">
                 {isSender
-                  ? (phase === 'idle' ? `“${message}”` : `“${message}” →`)
-                  : (typed ? <>“{typed}<span className="bl-ld-screen-cursor" /></> : (phase === 'sending' ? <span className="bl-ld-screen-cursor" /> : '···'))}
+                  ? (phase === 'idle' ? `${quote[0]}${message}${quote[1]}` : `${quote[0]}${message}${quote[1]} →`)
+                  : (typed ? <>{quote[0]}{typed}<span className="bl-ld-screen-cursor" /></> : (phase === 'sending' ? <span className="bl-ld-screen-cursor" /> : '···'))}
               </span>
             </>
           ) : (

@@ -21,7 +21,7 @@ import { createLidarScene, hasWebGL, type LidarScene, type Shot } from './lidarS
 export type Chapter = { id: string; name: string };
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 
-export default function LidarStory({ chapters }: { chapters: Chapter[] }) {
+export default function LidarStory({ chapters, label }: { chapters: Chapter[]; label: string }) {
   const host = useRef<HTMLDivElement>(null);
   const [current, setCurrent] = useState(chapters[0]?.id);
 
@@ -95,7 +95,7 @@ export default function LidarStory({ chapters }: { chapters: Chapter[] }) {
   return (
     <>
       <div className="ls-bg" aria-hidden="true"><div className="ls-gl" ref={host} /></div>
-      <nav className="ls-dots" aria-label="Chapters">
+      <nav className="ls-dots" aria-label={label}>
         {chapters.map((c) => (
           <a key={c.id} href={`#${c.id}`} className={c.id === current ? 'is-on' : ''} aria-current={c.id === current ? 'true' : undefined}>
             <i aria-hidden="true" /><span>{c.name}</span>

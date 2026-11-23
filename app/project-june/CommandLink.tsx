@@ -1,6 +1,12 @@
 'use client';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AnimatePresence, LazyMotion, domAnimation, m, useReducedMotion } from 'framer-motion';
+import { fill } from '@/lib/fill';
+import type { ProjectJuneCopy } from './_copy/en';
+
+/* The widget's words come from the article's copy (`t`); the code keeps the structure, icons,
+   clips and the readout values, which reproduce what the real console shows. */
+type T = ProjectJuneCopy['console'];
 
 /* ────────────────────────────────────────────────────────────────────────
  * Signal path: commands go left to right, video and telemetry come back.
@@ -10,9 +16,6 @@ type NodeKey = 'pad' | 'server' | 'phones' | 'rover';
 
 type LinkNode = {
   key: NodeKey;
-  label: string;
-  sub: string;
-  blurb: string;
   icon: ReactNode;
 };
 
@@ -48,37 +51,11 @@ const RoverIcon = () => (
 );
 
 const LINK: LinkNode[] = [
-  {
-    key: 'pad',
-    label: 'Xbox controller',
-    sub: 'Bluetooth to the console',
-    icon: <PadIcon />,
-    blurb: 'The controller pairs with the web console over Bluetooth, and the console turns stick and trigger input into movement commands that it publishes over MQTT.',
-  },
-  {
-    key: 'server',
-    label: 'Server',
-    sub: 'MQTT, signalling, TURN',
-    icon: <ServerIcon />,
-    blurb: 'Mosquitto brokers the commands and the telemetry, a Node.js Socket.IO server serves the console and handles the WebRTC signalling, and CoTURN relays the video so that it works over mobile data.',
-  },
-  {
-    key: 'phones',
-    label: 'Three phones',
-    sub: '5G hotspot and cameras',
-    icon: <PhoneIcon />,
-    blurb: 'Phone 1 is the main 5G hotspot and the front camera, Phone 2 is a second hotspot and the left camera, and Phone 3 joins the hotspot as the right camera, with each one sending its view as a WebRTC stream.',
-  },
-  {
-    key: 'rover',
-    label: 'ESP32-S3',
-    sub: 'On the rover',
-    icon: <RoverIcon />,
-    blurb: 'It joins the phone hotspot over Wi-Fi, drives the motor through the MOSFET driver and sends the sensor data back over MQTT in three packets at about 10 Hz.',
-  },
+  { key: 'pad', icon: <PadIcon /> },
+  { key: 'server', icon: <ServerIcon /> },
+  { key: 'phones', icon: <PhoneIcon /> },
+  { key: 'rover', icon: <RoverIcon /> },
 ];
-/* The longest blurb sizes the blurb box, so cycling never reflows the page. */
-const LONGEST_BLURB = LINK.reduce((a, n) => (n.blurb.length > a.blurb.length ? n : a), LINK[0]);
 
 /* ────────────────────────────────────────────────────────────────────────
  * Day and night runs, each with its own footage and telemetry
@@ -94,15 +71,15 @@ const TELE: Record<Mode, TeleBase> = {
   night: { lat: 1.4602, lon: 103.8359, speed: 3, alt: 4,   temp: 29.2, hum: 67, sats: 26, bright: 'Dark',    loc: 'Sembawang Park' },
 };
 
-type Metric = { key: keyof TeleBase; label: string; unit: string; dp: number; jit: number; min?: number; signed?: boolean };
+type Metric = { key: keyof TeleBase & keyof T['metrics']; unit: string; dp: number; jit: number; min?: number; signed?: boolean };
 const METRICS: Metric[] = [
-  { key: 'lat', label: 'Latitude', unit: '°N', dp: 4, jit: 0.0004 },
-  { key: 'lon', label: 'Longitude', unit: '°E', dp: 4, jit: 0.0004 },
-  { key: 'speed', label: 'Speed', unit: 'km/h', dp: 1, jit: 0.7, min: 0 },
-  { key: 'alt', label: 'Altitude', unit: 'm', dp: 0, jit: 1.4, signed: true },
-  { key: 'temp', label: 'Temperature', unit: '°C', dp: 1, jit: 0.2 },
-  { key: 'hum', label: 'Humidity', unit: '%', dp: 0, jit: 1.2 },
-  { key: 'sats', label: 'Satellites', unit: '', dp: 0, jit: 1.6, min: 0 },
+  { key: 'lat', unit: '°N', dp: 4, jit: 0.0004 },
+  { key: 'lon', unit: '°E', dp: 4, jit: 0.0004 },
+  { key: 'speed', unit: 'km/h', dp: 1, jit: 0.7, min: 0 },
+  { key: 'alt', unit: 'm', dp: 0, jit: 1.4, signed: true },
+  { key: 'temp', unit: '°C', dp: 1, jit: 0.2 },
+  { key: 'hum', unit: '%', dp: 0, jit: 1.2 },
+  { key: 'sats', unit: '', dp: 0, jit: 1.6, min: 0 },
 ];
 
 const jitterStr = (m: Metric, base: number) => {
@@ -128,12 +105,7 @@ const baseVals = (b: TeleBase): Record<string, string> =>
  * Camera feeds: one per phone
  * ──────────────────────────────────────────────────────────────────────── */
 type FeedKey = 'left' | 'center' | 'right';
-type Feed = { key: FeedKey; label: string; phone: string; note: string };
-const FEEDS: Feed[] = [
-  { key: 'left', label: 'Left', phone: 'Phone 2', note: 'Phone 2 is the second hotspot and the left camera.' },
-  { key: 'center', label: 'Front', phone: 'Phone 1', note: 'Phone 1 is the main 5G hotspot and the front camera.' },
-  { key: 'right', label: 'Right', phone: 'Phone 3', note: 'Phone 3 joins the hotspot and is the right camera.' },
-];
+const FEEDS: FeedKey[] = ['left', 'center', 'right'];
 const camSrc = (k: FeedKey, m: Mode) => `/videos/rover-${k}-${m}.mp4`;
 
 const SunIcon = () => (
@@ -148,7 +120,9 @@ const MoonIcon = () => (
   </svg>
 );
 
-export default function CommandLink() {
+export default function CommandLink({ t }: { t: T }) {
+  /* The longest blurb sizes the blurb box, so cycling never reflows the page. */
+  const LONGEST_BLURB = LINK.map((n) => t.nodes[n.key]).reduce((a, n) => (n.blurb.length > a.blurb.length ? n : a));
   const reduceMotion = !!useReducedMotion();
   const [mode, setMode] = useState<Mode>('day');
   const base = TELE[mode];
@@ -183,17 +157,18 @@ export default function CommandLink() {
   const [active, setActive] = useState<NodeKey>('pad');
   const [pinned, setPinned] = useState(false);
   const node = useMemo(() => LINK.find((n) => n.key === active) ?? LINK[0], [active]);
+  const nodeWords = t.nodes[node.key];
   const idx = LINK.findIndex((n) => n.key === active);
 
   useEffect(() => {
     if (pinned || reduceMotion || !inView) return;
-    const t = setInterval(() => {
+    const id = setInterval(() => {
       setActive((cur) => {
         const i = LINK.findIndex((n) => n.key === cur);
         return LINK[(i + 1) % LINK.length].key;
       });
     }, 3200);
-    return () => clearInterval(t);
+    return () => clearInterval(id);
   }, [pinned, reduceMotion, inView]);
 
   const selectNode = (k: NodeKey) => { setPinned(true); setActive(k); };
@@ -217,45 +192,45 @@ export default function CommandLink() {
       return;
     }
     apply();
-    const t = setInterval(apply, 1700);
-    return () => clearInterval(t);
+    const id = setInterval(apply, 1700);
+    return () => clearInterval(id);
   }, [base, reduceMotion, inView]);
 
   useEffect(() => {
     if (!Object.keys(changed).length) return;
-    const t = setTimeout(() => setChanged({}), 650);
-    return () => clearTimeout(t);
+    const id = setTimeout(() => setChanged({}), 650);
+    return () => clearTimeout(id);
   }, [changed]);
 
   const brightIdx = BRIGHT_SCALE.indexOf(base.bright);
 
   /* ── Camera state ── */
   const [primary, setPrimary] = useState<FeedKey>('center');
-  const primaryFeed = FEEDS.find((f) => f.key === primary) ?? FEEDS[1];
+  const primaryFeed = t.feeds[primary];
 
   return (
     <LazyMotion features={domAnimation}>
     <div ref={rootRef} className="pj-cl" data-no-zoom data-mode={mode} data-live={inView ? 'on' : 'off'}>
       <div className="pj-cl-head">
         <div className="pj-cl-head-l">
-          <span className="pj-cl-tag"><i className="pj-cl-tag-dot" />Driving console</span>
-          <span className="pj-cl-head-sub">Rebuilt from the {mode} run</span>
+          <span className="pj-cl-tag"><i className="pj-cl-tag-dot" />{t.tag}</span>
+          <span className="pj-cl-head-sub">{t.rebuilt[mode]}</span>
         </div>
-        <div className="pj-cl-toggle" role="group" aria-label="Choose the day or night run">
+        <div className="pj-cl-toggle" role="group" aria-label={t.toggleAria}>
           <span className="pj-cl-toggle-slider" data-mode={mode} aria-hidden="true" />
           <button type="button" className={`pj-cl-toggle-btn${mode === 'day' ? ' is-on' : ''}`} onClick={() => setMode('day')} aria-pressed={mode === 'day'}>
-            <SunIcon /> Day run
+            <SunIcon /> {t.day}
           </button>
           <button type="button" className={`pj-cl-toggle-btn${mode === 'night' ? ' is-on' : ''}`} onClick={() => setMode('night')} aria-pressed={mode === 'night'}>
-            <MoonIcon /> Night run
+            <MoonIcon /> {t.night}
           </button>
         </div>
       </div>
 
       {/* ── 1. Signal path ── */}
       <div className="pj-cl-block">
-        <span className="pj-cl-label">Signal path</span>
-        <div className="pj-cl-track" role="list" aria-label="Signal path from controller to rover">
+        <span className="pj-cl-label">{t.signalPath}</span>
+        <div className="pj-cl-track" role="list" aria-label={t.trackAria}>
           <div className="pj-cl-rail" aria-hidden="true">
             <span className="pj-cl-rail-fill" style={{ width: `${(idx / (LINK.length - 1)) * 100}%` }} />
             {!reduceMotion && (
@@ -274,19 +249,19 @@ export default function CommandLink() {
               className={`pj-cl-node${n.key === active ? ' is-active' : ''}${i <= idx ? ' is-passed' : ''}`}
               onClick={() => selectNode(n.key)}
               aria-pressed={n.key === active}
-              aria-label={`${n.label}: ${n.sub}`}
+              aria-label={`${t.nodes[n.key].label}: ${t.nodes[n.key].sub}`}
             >
               <span className="pj-cl-node-ring"><span className="pj-cl-node-ic">{n.icon}</span></span>
               <span className="pj-cl-node-text">
-                <b>{n.label}</b>
-                <i>{n.sub}</i>
+                <b>{t.nodes[n.key].label}</b>
+                <i>{t.nodes[n.key].sub}</i>
               </span>
             </button>
           ))}
         </div>
         <div className="pj-cl-flow-key" aria-hidden="true">
-          <span><i className="dir out" />Commands</span>
-          <span><i className="dir back" />Video and telemetry</span>
+          <span><i className="dir out" />{t.flow.out}</span>
+          <span><i className="dir back" />{t.flow.back}</span>
         </div>
         <div className="pj-cl-blurb-wrap" aria-live="polite">
           <p className="pj-cl-blurb pj-cl-sizer" aria-hidden="true"><b>{LONGEST_BLURB.label}.</b> {LONGEST_BLURB.blurb}</p>
@@ -299,7 +274,7 @@ export default function CommandLink() {
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
             >
-              <b>{node.label}.</b> {node.blurb}
+              <b>{nodeWords.label}.</b> {nodeWords.blurb}
             </m.p>
           </AnimatePresence>
         </div>
@@ -308,19 +283,19 @@ export default function CommandLink() {
       <div className="pj-cl-grid2">
         {/* ── 2. Telemetry HUD ── */}
         <div className="pj-cl-block">
-          <span className="pj-cl-label">Telemetry</span>
+          <span className="pj-cl-label">{t.telemetry}</span>
           <div className="pj-cl-hud">
             <ul className="pj-cl-readouts">
               {METRICS.map((m) => (
                 <li key={m.key} className={changed[m.key] ? 'is-tick' : ''}>
-                  <span className="pj-cl-ro-label">{m.label}</span>
+                  <span className="pj-cl-ro-label">{t.metrics[m.key]}</span>
                   <span className="pj-cl-ro-val">
                     {vals[m.key]}{m.unit && <i>{m.unit}</i>}
                   </span>
                 </li>
               ))}
               <li className="pj-cl-ro-bright">
-                <span className="pj-cl-ro-label">Brightness</span>
+                <span className="pj-cl-ro-label">{t.brightness}</span>
                 <span className="pj-cl-bright">
                   <span className="pj-cl-bright-segs" aria-hidden="true">
                     {BRIGHT_SCALE.map((b, i) => <i key={b} className={i <= brightIdx ? 'on' : ''} />)}
@@ -329,7 +304,7 @@ export default function CommandLink() {
                 </span>
               </li>
               <li className="pj-cl-ro-wide">
-                <span className="pj-cl-ro-label">GPS fix</span>
+                <span className="pj-cl-ro-label">{t.gpsFix}</span>
                 <span className="pj-cl-ro-val loc">{base.loc}</span>
               </li>
             </ul>
@@ -338,7 +313,7 @@ export default function CommandLink() {
 
         {/* ── 3. Camera strip ── */}
         <div className="pj-cl-block">
-          <span className="pj-cl-label">Camera feeds</span>
+          <span className="pj-cl-label">{t.cameras}</span>
           <div className="pj-cl-cams">
             <div className="pj-cl-cam-main">
               {seen && (
@@ -346,18 +321,18 @@ export default function CommandLink() {
                   key={`main-${primary}-${mode}`}
                   className="pj-cl-cam-vid"
                   autoPlay={!reduceMotion} muted loop playsInline preload="metadata"
-                  aria-label={`${primaryFeed.label} camera, ${mode} run`}
+                  aria-label={fill(t.camAria[mode], { label: primaryFeed.label })}
                 >
                   <source src={camSrc(primary, mode)} type="video/mp4" />
                 </video>
               )}
               <span className="pj-cl-scan" aria-hidden="true" />
               <span className="pj-cl-cam-grad" aria-hidden="true" />
-              <span className="pj-cl-live"><i className="pj-cl-live-dot" />LIVE</span>
+              <span className="pj-cl-live"><i className="pj-cl-live-dot" />{t.live}</span>
               <span className="pj-cl-cam-tag">{primaryFeed.label} · {primaryFeed.phone}</span>
               <AnimatePresence mode="wait">
                 <m.span
-                  key={primaryFeed.key}
+                  key={primary}
                   className="pj-cl-cam-note"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -368,29 +343,29 @@ export default function CommandLink() {
                 </m.span>
               </AnimatePresence>
             </div>
-            <div className="pj-cl-cam-thumbs" role="group" aria-label="Choose the main camera">
-              {FEEDS.map((f) => (
+            <div className="pj-cl-cam-thumbs" role="group" aria-label={t.camsAria}>
+              {FEEDS.map((k) => (
                 <button
-                  key={f.key}
+                  key={k}
                   type="button"
-                  className={`pj-cl-cam-thumb${f.key === primary ? ' is-primary' : ''}`}
-                  onClick={() => setPrimary(f.key)}
-                  aria-pressed={f.key === primary}
-                  aria-label={`Show the ${f.label.toLowerCase()} camera (${f.phone})`}
+                  className={`pj-cl-cam-thumb${k === primary ? ' is-primary' : ''}`}
+                  onClick={() => setPrimary(k)}
+                  aria-pressed={k === primary}
+                  aria-label={t.feeds[k].show}
                 >
                   {seen && (
                     <video
-                      key={`thumb-${f.key}-${mode}`}
+                      key={`thumb-${k}-${mode}`}
                       className="pj-cl-thumb-vid"
                       autoPlay={!reduceMotion} muted loop playsInline preload="metadata" aria-hidden="true"
                     >
-                      <source src={camSrc(f.key, mode)} type="video/mp4" />
+                      <source src={camSrc(k, mode)} type="video/mp4" />
                     </video>
                   )}
                   <span className="pj-cl-scan sm" aria-hidden="true" />
                   <span className="pj-cl-thumb-grad" aria-hidden="true" />
-                  <span className="pj-cl-live sm"><i className="pj-cl-live-dot" />LIVE</span>
-                  <span className="pj-cl-thumb-label">{f.label}</span>
+                  <span className="pj-cl-live sm"><i className="pj-cl-live-dot" />{t.live}</span>
+                  <span className="pj-cl-thumb-label">{t.feeds[k].label}</span>
                 </button>
               ))}
             </div>

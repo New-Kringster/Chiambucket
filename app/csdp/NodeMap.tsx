@@ -1,6 +1,8 @@
 'use client';
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { AnimatePresence, LazyMotion, domAnimation, m, useReducedMotion } from 'framer-motion';
+import { fill } from '@/lib/fill';
+import type { CsdpCopy } from './_copy/en';
 
 /* ────────────────────────────────────────────────────────────────────────
  * EMA home map: the four BeagleBone nodes around the SocketIO web server.
@@ -16,52 +18,15 @@ type NodeId = 'climate' | 'bathroom' | 'kitchen' | 'intrusion';
 
 type SpokeNode = {
   id: NodeId;
-  name: string;
-  short: string;
-  does: string;
-  hardware: string;
-  alarm: string;
   icon: 'climate' | 'bathroom' | 'flame' | 'intrusion';
 };
 
-/* Facts from the write-up and the project README */
+/* The nodes in order round the hub; their words (name, tag, facts) are copy, t.nodes[id] */
 const NODES: SpokeNode[] = [
-  {
-    id: 'climate',
-    name: 'Climate',
-    short: 'Fan control',
-    does: 'It turns the fan on only when someone is in the room and the air is warm and humid.',
-    hardware: 'BME680 temperature and humidity sensor, PIR presence sensor, 8x8 LED matrix, buzzer',
-    alarm: 'It sounds whenever any node raises the alarm',
-    icon: 'climate',
-  },
-  {
-    id: 'bathroom',
-    name: 'Bathroom',
-    short: 'Shower timer',
-    does: 'It times your shower to the length you set with the buttons, starting when you walk in.',
-    hardware: 'PIR sensor, OLED display, capacitive buttons, buzzer',
-    alarm: 'It plays three tones when the time is up',
-    icon: 'bathroom',
-  },
-  {
-    id: 'kitchen',
-    name: 'Kitchen',
-    short: 'Energy and fire',
-    does: 'It reports the fridge\u2019s energy use to the dashboard as a score and watches for fire.',
-    hardware: 'Analog current sensor, Flame Click, OLED display, buzzer',
-    alarm: 'A fire sets off the alarm on every node',
-    icon: 'flame',
-  },
-  {
-    id: 'intrusion',
-    name: 'Intrusion',
-    short: 'Door security',
-    does: 'It watches the door for knocks and for the door opening at unusual times.',
-    hardware: 'Reed switch on the door, vibration sensor for knocks, buzzer',
-    alarm: 'Either event sets off the alarm on every node',
-    icon: 'intrusion',
-  },
+  { id: 'climate', icon: 'climate' },
+  { id: 'bathroom', icon: 'bathroom' },
+  { id: 'kitchen', icon: 'flame' },
+  { id: 'intrusion', icon: 'intrusion' },
 ];
 
 const N = NODES.length;
@@ -133,13 +98,8 @@ const lerp = (from: number, to: number, t: number) => r4(from + (to - from) * t)
 
 type AlertPhase = 'idle' | 'arming' | 'travelling' | 'received';
 
-const STATUS: Record<Exclude<AlertPhase, 'idle'>, string> = {
-  arming: 'The kitchen sees a flame and its buzzer sounds',
-  travelling: 'Alarm on its way to the server',
-  received: 'The server broadcasts the alarm and every node sounds',
-};
-
-export default function NodeMap() {
+/* `t` is the widget's words for the page's language, from the article's copy */
+export default function NodeMap({ t }: { t: CsdpCopy['nodeMap'] }) {
   const reduceMotion = useReducedMotion();
   const rootRef = useRef<HTMLDivElement | null>(null);
   const [inView, setInView] = useState(false);
@@ -274,7 +234,7 @@ export default function NodeMap() {
             <div className={`cs-nm-hub${isAlerting ? ' is-alert' : ''}${alert === 'received' ? ' is-hit' : ''}`}>
               <span className="cs-nm-hub-ping" aria-hidden="true" />
               <span className="cs-nm-hub-icon"><NodeGlyph kind="controller" /></span>
-              <span className="cs-nm-hub-label">Web server</span>
+              <span className="cs-nm-hub-label">{t.hub.label}</span>
               <span className="cs-nm-hub-sub-slot">
                 <AnimatePresence mode="wait">
                   {alert === 'received' ? (
@@ -286,7 +246,7 @@ export default function NodeMap() {
                       exit={{ opacity: 0, y: -4 }}
                       transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
                     >
-                      Alarm sent to all nodes
+                      {t.hub.alarm}
                     </m.span>
                   ) : (
                     <m.span
@@ -297,7 +257,7 @@ export default function NodeMap() {
                       exit={{ opacity: 0, y: -4 }}
                       transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
                     >
-                      SocketIO, hosts the dashboard
+                      {t.hub.idle}
                     </m.span>
                   )}
                 </AnimatePresence>
@@ -318,25 +278,25 @@ export default function NodeMap() {
                   onClick={() => selectNode(n.id)}
                   onMouseEnter={() => { if (!isAlerting) { setPinned(true); setActive(n.id); } }}
                   aria-pressed={isActive}
-                  aria-label={`${n.name} node${isFlameAlerting ? ', alarm sounding' : ''}`}
+                  aria-label={fill(isFlameAlerting ? t.nodeAriaAlarm : t.nodeAria, { name: t.nodes[n.id].name })}
                 >
                   <span className="cs-nm-node-icon"><NodeGlyph kind={n.icon} /></span>
-                  <span className="cs-nm-node-name">{n.name}</span>
-                  <span className="cs-nm-node-tag">{isFlameAlerting ? 'Alarm' : n.short}</span>
+                  <span className="cs-nm-node-name">{t.nodes[n.id].name}</span>
+                  <span className="cs-nm-node-tag">{isFlameAlerting ? t.alarmTag : t.nodes[n.id].short}</span>
                   {isFlameAlerting && <span className="cs-nm-node-buzz" aria-hidden="true" />}
                 </button>
               );
             })}
           </div>
 
-          <p className="cs-nm-caption">Each line is a SocketIO link, and the dots are readings on their way to the server.</p>
+          <p className="cs-nm-caption">{t.caption}</p>
         </div>
 
         {/* ── Detail panel ── */}
         <div className="cs-nm-panel">
           <div className="cs-nm-panel-head">
-            <span className="cs-nm-eyebrow">{pinned ? 'Selected node' : 'Select a node'}</span>
-            <div className="cs-nm-tabs" role="tablist" aria-label="Sensor nodes">
+            <span className="cs-nm-eyebrow">{pinned ? t.eyebrow.pinned : t.eyebrow.idle}</span>
+            <div className="cs-nm-tabs" role="tablist" aria-label={t.tabsAria}>
               {NODES.map((n) => (
                 <button
                   key={n.id}
@@ -345,7 +305,7 @@ export default function NodeMap() {
                   className={`cs-nm-tab${n.id === active ? ' is-active' : ''}${nodeAlarm(n.id) ? ' is-alarm' : ''}`}
                   onClick={() => selectNode(n.id)}
                 >
-                  {n.name}
+                  {t.nodes[n.id].name}
                 </button>
               ))}
             </div>
@@ -363,31 +323,31 @@ export default function NodeMap() {
               <div className="cs-nm-card-top">
                 <span className="cs-nm-card-icon"><NodeGlyph kind={node.icon} /></span>
                 <div>
-                  <h4>{node.name} node</h4>
-                  <span className="cs-nm-card-kicker">{node.short}</span>
+                  <h4>{fill(t.cardTitle, { name: t.nodes[node.id].name })}</h4>
+                  <span className="cs-nm-card-kicker">{t.nodes[node.id].short}</span>
                 </div>
               </div>
 
               <dl className="cs-nm-deflist">
                 <div>
-                  <dt>Does</dt>
-                  <dd>{node.does}</dd>
+                  <dt>{t.terms.does}</dt>
+                  <dd>{t.nodes[node.id].does}</dd>
                 </div>
                 <div>
-                  <dt>Hardware</dt>
-                  <dd>{node.hardware}</dd>
+                  <dt>{t.terms.hardware}</dt>
+                  <dd>{t.nodes[node.id].hardware}</dd>
                 </div>
                 <div>
-                  <dt>Buzzer</dt>
-                  <dd>{node.alarm}</dd>
+                  <dt>{t.terms.buzzer}</dt>
+                  <dd>{t.nodes[node.id].alarm}</dd>
                 </div>
               </dl>
 
               <div className={`cs-nm-status${alert !== 'idle' && node.id === FIRE ? ' is-alarm' : ''}`}>
                 <span className="cs-nm-status-dot" />
                 {alert !== 'idle' && node.id === FIRE
-                  ? STATUS[alert]
-                  : 'Connected and sending readings to the server'}
+                  ? t.status[alert]
+                  : t.status.idle}
               </div>
             </m.div>
           </AnimatePresence>
@@ -400,9 +360,9 @@ export default function NodeMap() {
               disabled={isAlerting}
             >
               <span className="cs-nm-sim-dot" aria-hidden="true" />
-              {isAlerting ? 'Alarm running' : 'Simulate a kitchen fire'}
+              {isAlerting ? t.sim.busy : t.sim.run}
             </button>
-            <p className="cs-nm-hint">When the kitchen node detects a flame, the server receives the alarm and sends it on to every node.</p>
+            <p className="cs-nm-hint">{t.hint}</p>
           </div>
         </div>
       </div>

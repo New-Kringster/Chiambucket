@@ -17,6 +17,10 @@
 */
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { Tab } from './Parts';
+import type { PipCopy } from './_copy';
+
+/* The labels of the moving parts, from the page's copy (copy.ui); the article passes them in. */
+type Ui = PipCopy['ui'];
 
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 
@@ -172,7 +176,7 @@ const ZOOM_END = 0.42;
 const smooth = (t: number) => t * t * (3 - 2 * t);
 const span = (v: number, a: number, b: number) => clamp01((v - a) / (b - a));
 
-export function HeroMeet({ hero, title, lede, slotLabel }: { hero: ReactNode; title: string; lede: string; slotLabel: string }) {
+export function HeroMeet({ hero, title, lede, slotLabel, ui }: { hero: ReactNode; title: string; lede: string; slotLabel: string; ui: Ui }) {
   const host = useRef<HTMLDivElement>(null);
   const slot = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
@@ -277,7 +281,7 @@ export function HeroMeet({ hero, title, lede, slotLabel }: { hero: ReactNode; ti
     <div className="pp-hm-wrap">
       {/* the desktop dots count Meet Pip from where its opener starts, not from the top of the page */}
       <span id="meet" className="pp-hm-anchor" aria-hidden="true" />
-      <Stage className={`pp-hero pp-hm${ready ? ' is-ready' : ''}`} screens={5.6} label="Pip on the M5Stack Tab5, then Meet Pip"
+      <Stage className={`pp-hero pp-hm${ready ? ' is-ready' : ''}`} screens={5.6} label={ui.heroStage}
         onProgress={(v) => { q.current = v; }}>
         <div className="pp-hero-gl" ref={host} aria-hidden="true" />
         {hero}
@@ -302,12 +306,12 @@ export function HeroMeet({ hero, title, lede, slotLabel }: { hero: ReactNode; ti
 }
 
 /* ── Pip's moods, one beat each, the active one playing ── */
-export type Mood = { key: string; name: string; line: string; clip: string };
-export function Moods({ moods, id }: { moods: Mood[]; id?: string }) {
+export type Mood = { key: string; name: string; line: string; label: string; clip: string };
+export function Moods({ moods, id, ui }: { moods: Mood[]; id?: string; ui: Ui }) {
   const [beat, setBeat] = useState(0);
   const reduced = useReduced();
   return (
-    <Stage id={id} className="pp-moods" screens={moods.length * 0.7 + 1} beats={moods.length} onBeat={setBeat} label="Pip's moods">
+    <Stage id={id} className="pp-moods" screens={moods.length * 0.7 + 1} beats={moods.length} onBeat={setBeat} label={ui.moods}>
       <div className="pp-moods-in">
         <ol className="pp-mood-list" aria-hidden={reduced ? undefined : true}>
           {moods.map((m, i) => <li key={m.key} className={!reduced && i === beat ? 'on' : undefined}><span>{m.name}</span></li>)}
@@ -315,7 +319,7 @@ export function Moods({ moods, id }: { moods: Mood[]; id?: string }) {
         <div className="pp-mood-view">
           {moods.map((m, i) => (
             <figure key={m.key} className={`pp-mood${reduced || i === beat ? ' on' : ''}`}>
-              <Clip src={m.clip} poster={m.clip + '.webp'} className="pp-pipvid" active={reduced || i === beat} label={`Pip ${m.name.toLowerCase()}`} />
+              <Clip src={m.clip} poster={m.clip + '.webp'} className="pp-pipvid" active={reduced || i === beat} label={m.label} />
               <figcaption><b>{m.name}</b>{m.line}</figcaption>
             </figure>
           ))}
@@ -326,7 +330,7 @@ export function Moods({ moods, id }: { moods: Mood[]; id?: string }) {
 }
 
 /* ── Desktop dots: where you are, in the chapter's colour ── */
-export function Desktops({ items }: { items: Array<{ id: string; name: string; color: string }> }) {
+export function Desktops({ items, label }: { items: Array<{ id: string; name: string; color: string }>; label: string }) {
   const [cur, setCur] = useState(-1);
   const [show, setShow] = useState(false);
   useEffect(() => {
@@ -343,7 +347,7 @@ export function Desktops({ items }: { items: Array<{ id: string; name: string; c
     return () => io.disconnect();
   }, [items]);
   return (
-    <nav className={`pp-desks${show ? ' is-on' : ''}`} aria-label="Chapters">
+    <nav className={`pp-desks${show ? ' is-on' : ''}`} aria-label={label}>
       {items.map((it, i) => (
         <a key={it.id} href={`#${it.id}`} className={i === cur ? 'on' : undefined} style={{ ['--c' as string]: it.color }} aria-current={i === cur ? 'true' : undefined}>
           <i aria-hidden="true" /><span>{it.name}</span>
@@ -406,13 +410,13 @@ export function Opener({ id, desk, color, title, lede, clip, pipLabel }: {
    the row is off screen; reduced motion shows each cell's final state. The touch itself is a soft
    contact disc about a fingertip wide (~9 mm on the 110.7 mm panel), pressing in at the touch point. */
 const TOUCHES = [
-  { k: 'tap', img: '/images/pip/touch-docs.webp', title: 'Taps', text: 'Each tap shows as a blue dot, which turns into a green ring once the page reacts.', alt: 'A touch on the round help button of the M5Stack Tab5 page: a blue dot, then a green ring' },
-  { k: 'drag', img: '/images/pip/touch-full.webp', title: 'Drags', text: 'A drag leaves a blue line behind your finger as the page scrolls.', alt: 'A touch dragging down the M5Stack Tab5 page, leaving a blue line' },
-  { k: 'expand', img: '/images/pip/touch-pane.webp', img2: '/images/pip/touch-full.webp', title: 'Expanding a pane', text: 'Tap Expand on any pane and it grows to fill the screen.', alt: 'A touch on Expand on a pane, which grows to the full screen' },
-  { k: 'back', img: '/images/pip/touch-pane.webp', img2: '/images/pip/touch-full.webp', title: 'Going back', text: 'Swipe from left to right to go back, wherever you are.', alt: 'A touch swiping from left to right, sliding the screen back to the one before' },
-];
+  { k: 'tap', img: '/images/pip/touch-docs.webp' },
+  { k: 'drag', img: '/images/pip/touch-full.webp' },
+  { k: 'expand', img: '/images/pip/touch-pane.webp', img2: '/images/pip/touch-full.webp' },
+  { k: 'back', img: '/images/pip/touch-pane.webp', img2: '/images/pip/touch-full.webp' },
+] as const satisfies ReadonlyArray<{ k: keyof PipCopy['touches']; img: string; img2?: string }>;
 
-export function Touches() {
+export function Touches({ words }: { words: PipCopy['touches'] }) {
   const ref = useRef<HTMLUListElement>(null);
   useEffect(() => {
     const el = ref.current;
@@ -423,21 +427,21 @@ export function Touches() {
   }, []);
   return (
     <ul className="pp-touch" ref={ref} data-no-zoom>
-      {TOUCHES.map((t) => (
+      {TOUCHES.map((t) => { const w = words[t.k]; const img2 = 'img2' in t ? t.img2 : undefined; return (
         <li key={t.k} className={`pp-tc is-${t.k}`}>
-          <div className="pp-tc-scr" role="img" aria-label={t.alt}>
+          <div className="pp-tc-scr" role="img" aria-label={w.alt}>
             <div className="pp-tc-world">
-              {t.img2 && t.k === 'back' && <img className="pp-tc-under" src={t.img} alt="" loading="lazy" decoding="async" />}
-              <img className="pp-tc-page" src={t.k === 'back' ? t.img2 : t.img} alt="" loading="lazy" decoding="async" />
-              {t.k === 'expand' && <img className="pp-tc-grow" src={t.img2} alt="" loading="lazy" decoding="async" />}
+              {img2 && t.k === 'back' && <img className="pp-tc-under" src={t.img} alt="" loading="lazy" decoding="async" />}
+              <img className="pp-tc-page" src={t.k === 'back' ? img2 : t.img} alt="" loading="lazy" decoding="async" />
+              {t.k === 'expand' && <img className="pp-tc-grow" src={img2} alt="" loading="lazy" decoding="async" />}
               {t.k === 'drag' && <i className="pp-tc-trail" />}
               {(t.k === 'tap' || t.k === 'expand') && <><i className="pp-tc-dot" /><i className="pp-tc-ring" /></>}
             </div>
             <div className="pp-tc-hand"><span className="pp-tc-finger"><i className="pp-tc-fm" /></span></div>
           </div>
-          <p><b>{t.title}</b> {t.text}</p>
+          <p><b>{w.title}</b> {w.text}</p>
         </li>
-      ))}
+      ); })}
     </ul>
   );
 }
@@ -447,7 +451,7 @@ export function Touches() {
    step waits for its clip's length), and the dots or a tap on the screen step it by hand, which
    pauses the auto-advance. Reduced motion: no auto-advance, the dots still work. */
 export type HatchStep = { src: string; alt: string; caption: string; clip?: { src: string; poster: string; ms: number } };
-export function HatchSlides({ steps }: { steps: HatchStep[] }) {
+export function HatchSlides({ steps, ui }: { steps: HatchStep[]; ui: Ui }) {
   const ref = useRef<HTMLDivElement>(null);
   const [i, setI] = useState(0);
   const [on, setOn] = useState(false);
@@ -469,7 +473,7 @@ export function HatchSlides({ steps }: { steps: HatchStep[] }) {
   return (
     <div className="pp-slides" ref={ref}>
       <Tab>
-        <button type="button" className="pp-slides-scr" onClick={() => go((i + 1) % steps.length)} aria-label="Next step">
+        <button type="button" className="pp-slides-scr" onClick={() => go((i + 1) % steps.length)} aria-label={ui.nextStep}>
           {steps.map((s, n) => (
             <span key={s.src} className={`pp-slides-step${n === i ? ' on' : ''}`} aria-hidden={n !== i}>
               {s.clip
@@ -480,7 +484,7 @@ export function HatchSlides({ steps }: { steps: HatchStep[] }) {
         </button>
       </Tab>
       <div className="pp-slides-foot">
-        <div className="pp-slides-dots" role="tablist" aria-label="Steps">
+        <div className="pp-slides-dots" role="tablist" aria-label={ui.steps}>
           {steps.map((s, n) => (
             <button key={s.src} type="button" role="tab" aria-selected={n === i} aria-label={s.caption} className={n === i ? 'on' : ''} onClick={() => go(n)} />
           ))}
@@ -500,7 +504,7 @@ export function HatchSlides({ steps }: { steps: HatchStep[] }) {
    Tap or click the top card, the arrows, a swipe or the arrow keys; it also deals itself slowly while
    on screen until the reader touches it. Reduced motion: only the top card shows, cross-fading. */
 export type PipCard = { name: string; color: string; look: string; vibe: string; says: string; img: string };
-export function PipDeck({ pips }: { pips: PipCard[] }) {
+export function PipDeck({ pips, ui }: { pips: PipCard[]; ui: Ui }) {
   const n = pips.length;
   const ref = useRef<HTMLDivElement>(null);
   const [top, setTop] = useState(0);
@@ -530,7 +534,7 @@ export function PipDeck({ pips }: { pips: PipCard[] }) {
   }, [top, on, held, reduced]);
   const p = pips[top];
   return (
-    <div className="pp-deck" ref={ref} role="group" aria-roledescription="carousel" aria-label="Eight of my Pips"
+    <div className="pp-deck" ref={ref} role="group" aria-roledescription={ui.carousel} aria-label={ui.deck}
       tabIndex={0} onKeyDown={(e) => { if (e.key === 'ArrowRight') { e.preventDefault(); user(1); } else if (e.key === 'ArrowLeft') { e.preventDefault(); user(-1); } }}>
       <div className="pp-deck-stack"
         onPointerDown={(e) => { swipe.current = { x: e.clientX, y: e.clientY }; }}
@@ -560,9 +564,9 @@ export function PipDeck({ pips }: { pips: PipCard[] }) {
         })}
       </div>
       <div className="pp-deck-bar">
-        <button type="button" onClick={() => user(-1)} aria-label="Previous Pip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg></button>
+        <button type="button" onClick={() => user(-1)} aria-label={ui.prevPip}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg></button>
         <span className="pp-deck-count" aria-live="polite"><span className="sr-only">{p.name}, </span>{top + 1} / {n}</span>
-        <button type="button" onClick={() => user(1)} aria-label="Next Pip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg></button>
+        <button type="button" onClick={() => user(1)} aria-label={ui.nextPip}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg></button>
       </div>
     </div>
   );

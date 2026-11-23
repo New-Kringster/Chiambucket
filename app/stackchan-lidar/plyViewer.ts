@@ -25,6 +25,12 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { BASE, DEPTH_GLSL } from './lidarScene';
 
+/** Why a .ply could not be read; the playground words each code in the page's language (copy.pg.errors). */
+export type PlyErrorCode = 'notPly' | 'lists' | 'noXyz' | 'short';
+export class PlyError extends Error {
+  constructor(public code: PlyErrorCode) { super(code); this.name = 'PlyError'; }
+}
+
 export type PlyInfo = { name: string; points: number; size: [number, number, number]; hasColour: boolean; robot: boolean };
 export type PlyViewer = {
   ready: Promise<PlyInfo>;
@@ -81,7 +87,7 @@ function readNum(dv: DataView, o: number, t: string, le: boolean) {
 export function parsePly(buf: ArrayBuffer, upY: boolean) {
   const head = new TextDecoder().decode(new Uint8Array(buf, 0, Math.min(buf.byteLength, 65536)));
   const end = head.indexOf('end_header');
-  if (!head.startsWith('ply') || end < 0) throw new Error('This file does not look like a .ply point cloud.');
+  if (!head.startsWith('ply') || end < 0) throw new PlyError('notPly');
   const lines = head.slice(0, end).split(/\r?\n/);
   const format = (lines.find((l) => l.startsWith('format')) ?? '').split(/\s+/)[1];
   let n = 0, inVertex = false; const props: Prop[] = []; let before = 0, beforeAscii = 0, seenVertex = false;
@@ -90,14 +96,14 @@ export function parsePly(buf: ArrayBuffer, upY: boolean) {
     const w = l.trim().split(/\s+/);
     if (w[0] === 'element') { elems.push({ name: w[1], count: +w[2], props: [] }); inVertex = w[1] === 'vertex'; if (inVertex) { n = +w[2]; seenVertex = true; } }
     else if (w[0] === 'property' && elems.length) {
-      if (w[1] === 'list') throw new Error('Lists in the vertex data are not supported; export only the points.');
+      if (w[1] === 'list') throw new PlyError('lists');
       const p = { name: w[2], type: w[1] }; elems[elems.length - 1].props.push(p); if (inVertex) props.push(p);
     }
   }
   // elements before the vertices (rare) would need skipping
   for (const e of elems) { if (e.name === 'vertex') break; if (!seenVertex) break; before += e.count * e.props.reduce((s, p) => s + SIZES[p.type], 0); beforeAscii += e.count; }
   const ix = props.findIndex((p) => p.name === 'x'), iy = props.findIndex((p) => p.name === 'y'), iz = props.findIndex((p) => p.name === 'z');
-  if (ix < 0 || iy < 0 || iz < 0 || !n) throw new Error('No x, y and z found in this .ply.');
+  if (ix < 0 || iy < 0 || iz < 0 || !n) throw new PlyError('noXyz');
   const ir = props.findIndex((p) => p.name === 'red' || p.name === 'r'), ig = props.findIndex((p) => p.name === 'green' || p.name === 'g'), ib = props.findIndex((p) => p.name === 'blue' || p.name === 'b');
   const hasColour = ir >= 0 && ig >= 0 && ib >= 0;
   const colMax = hasColour && (props[ir].type.startsWith('float') || props[ir].type === 'double') ? 1 : 255;
@@ -122,7 +128,7 @@ export function parsePly(buf: ArrayBuffer, upY: boolean) {
     const offs: number[] = []; let stride = 0;
     for (const p of props) { offs.push(stride); stride += SIZES[p.type] ?? 4; }
     const dv = new DataView(buf, bodyStart + before);
-    if (dv.byteLength < n * stride) throw new Error('This .ply ends before all its points.');
+    if (dv.byteLength < n * stride) throw new PlyError('short');
     for (let i = 0; i < n; i++) {
       const o = i * stride;
       const g = (k: number) => readNum(dv, o + offs[k], props[k].type, le);

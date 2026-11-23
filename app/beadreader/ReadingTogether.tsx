@@ -1,6 +1,8 @@
 'use client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, LazyMotion, domAnimation, m } from 'framer-motion';
+import { fill } from '@/lib/fill';
+import type { BeadreaderCopy } from './_copy/en';
 
 /* ReadingTogether: dramatises BeadReader's "reading together" presence: an
    Online-now panel where a friend in the same book gets a green ring + chapter
@@ -16,21 +18,22 @@ const READERS: Reader[] = [
 
 type Bubble = { row: number; kind: 'wave' | 'note'; text?: string } | null;
 
-type Beat = { caption: string; bubble: Bubble; samInBook: boolean };
+/* The demo's steps; each step's caption is copy, t.captions[n] (same order) */
+type Beat = { bubble: Bubble; samInBook: boolean };
 const BEATS: Beat[] = [
-  { caption: 'Mara is on chapter 12 of the book you are reading, so her avatar has the green ring.', bubble: null, samInBook: false },
-  { caption: 'Tap a reader to send a wave, which shows on their screen and then fades.', bubble: { row: 0, kind: 'wave' }, samInBook: false },
-  { caption: 'You can also send a short note, which is gone in a few seconds and never saved.', bubble: { row: 1, kind: 'note', text: 'loved that twist!' }, samInBook: false },
-  { caption: 'Sam opens the same book and gets a green ring too.', bubble: null, samInBook: true },
+  { bubble: null, samInBook: false },
+  { bubble: { row: 0, kind: 'wave' }, samInBook: false },
+  { bubble: { row: 1, kind: 'note' }, samInBook: false },
+  { bubble: null, samInBook: true },
 ];
 
-const LONGEST_CAPTION = BEATS.reduce((a, b) => (b.caption.length > a.length ? b.caption : a), '');
 const WaveIcon = () => <span aria-hidden="true">👋</span>;
 const NoteIcon = () => (
   <svg viewBox="0 0 24 24" width="15" height="15" fill="none" aria-hidden="true"><path d="M4 5.5h16v10H9l-4 3.5v-3.5H4z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" /></svg>
 );
 
-export default function ReadingTogether() {
+/* `t` is the widget's words for the page's language, from the article's copy */
+export default function ReadingTogether({ t }: { t: BeadreaderCopy['presence'] }) {
   const [beat, setBeat] = useState(0);
   const [auto, setAuto] = useState(true);
   const [inView, setInView] = useState(true);
@@ -66,22 +69,24 @@ export default function ReadingTogether() {
   const send = useCallback((row: number, kind: 'wave' | 'note') => {
     setAuto(false);
     const id = row * 2 + (kind === 'note' ? 1 : 0) + beat * 10;
-    setManual({ row, kind, text: kind === 'note' ? 'reading this now!' : undefined, id });
+    setManual({ row, kind, text: kind === 'note' ? t.sentNote : undefined, id });
     if (clearRef.current) clearTimeout(clearRef.current);
     clearRef.current = setTimeout(() => setManual(null), 2600);
-  }, [beat]);
+  }, [beat, t]);
 
   useEffect(() => () => { if (clearRef.current) clearTimeout(clearRef.current); }, []);
 
   const current = BEATS[beat];
-  const bubble: Bubble = manual ?? current.bubble;
+  const bubble: Bubble = manual ?? (current.bubble && current.bubble.kind === 'note' ? { ...current.bubble, text: t.note } : current.bubble);
+  /* Longest caption: reserves the height so the steps never reflow the page */
+  const longestCaption = useMemo(() => t.captions.reduce((a, x) => (x.length > a.length ? x : a), ''), [t]);
   const samInBook = current.samInBook;
 
   const status = useMemo(() => [
-    'This book, chapter 12',
-    'The Hobbit, chapter 3',
-    samInBook ? 'This book, chapter 1' : 'Browsing the library',
-  ], [samInBook]);
+    t.status.mara,
+    t.status.jae,
+    samInBook ? t.status.samBook : t.status.samLibrary,
+  ], [samInBook, t]);
   const sameBook = [true, false, samInBook];
   const badge = ['12', '', '1'];
 
@@ -89,7 +94,7 @@ export default function ReadingTogether() {
     <LazyMotion features={domAnimation}>
       <div ref={rootRef} className="rt" data-no-zoom>
         <div className="rt-panel">
-          <span className="rt-eyebrow">Online now</span>
+          <span className="rt-eyebrow">{t.eyebrow}</span>
           <div className="rt-rows">
             {READERS.map((r, idx) => (
               <div className={`rt-row${sameBook[idx] ? ' same' : ''}`} key={r.key}>
@@ -100,12 +105,12 @@ export default function ReadingTogether() {
                     : <span className="rt-dot" />}
                 </div>
                 <div className="rt-meta">
-                  <span className="rt-name">{r.name}{sameBook[idx] && <span className="rt-here">reading here</span>}</span>
+                  <span className="rt-name">{r.name}{sameBook[idx] && <span className="rt-here">{t.here}</span>}</span>
                   <span className="rt-status">{status[idx]}</span>
                 </div>
                 <div className="rt-actions">
-                  <button className="rt-act" onClick={() => send(idx, 'wave')} aria-label={`Wave at ${r.name}`}><WaveIcon /></button>
-                  <button className="rt-act" onClick={() => send(idx, 'note')} aria-label={`Send ${r.name} a note`}><NoteIcon /></button>
+                  <button className="rt-act" onClick={() => send(idx, 'wave')} aria-label={fill(t.wave, { name: r.name })}><WaveIcon /></button>
+                  <button className="rt-act" onClick={() => send(idx, 'note')} aria-label={fill(t.sendNote, { name: r.name })}><NoteIcon /></button>
                 </div>
                 <div className="rt-bubble-slot" aria-live="polite">
                   <AnimatePresence>
@@ -130,10 +135,10 @@ export default function ReadingTogether() {
 
         <div className="rt-side">
           <div className="rt-cap-wrap">
-            <p className="rt-cap rt-cap-sizer" aria-hidden="true">{LONGEST_CAPTION}</p>
-            <p className="rt-cap">{current.caption}</p>
+            <p className="rt-cap rt-cap-sizer" aria-hidden="true">{longestCaption}</p>
+            <p className="rt-cap">{t.captions[beat]}</p>
           </div>
-          <div className="rt-dots" role="tablist" aria-label="Demo steps">
+          <div className="rt-dots" role="tablist" aria-label={t.stepsAria}>
             {BEATS.map((b, n) => (
               <button
                 key={n}
@@ -141,11 +146,11 @@ export default function ReadingTogether() {
                 onClick={() => { setAuto(false); setManual(null); setBeat(n); }}
                 role="tab"
                 aria-selected={n === beat}
-                aria-label={`Step ${n + 1} of ${BEATS.length}`}
+                aria-label={fill(t.step, { n: n + 1, total: BEATS.length })}
               />
             ))}
           </div>
-          <span className="rt-legend"><span className="rt-legend-dot" /> A green ring marks a reader in your book</span>
+          <span className="rt-legend"><span className="rt-legend-dot" /> {t.legend}</span>
         </div>
 
         <style>{`
