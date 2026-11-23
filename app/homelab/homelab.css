@@ -47,7 +47,7 @@
 .hx-title {
   font-family: 'oswaldbold', sans-serif; font-weight: normal;
   font-size: clamp(2.8rem, 6.6vw, 5.6rem); line-height: 0.98; letter-spacing: -0.015em;
-  color: var(--hx-ink); margin: 20px 0 0; max-width: 10em; text-wrap: balance;
+  color: var(--hx-ink); margin: 0; max-width: 10em; text-wrap: balance;
   text-shadow: 0 2px 30px rgba(0, 0, 0, 0.35);
 }
 .hx-h2 {
@@ -89,10 +89,6 @@
 /* ═══════════ Hero ═══════════ */
 .hx-hero { padding: clamp(124px, 17vh, 180px) 0 clamp(30px, 5vw, 60px); }
 .hx-hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: clamp(32px, 6vw, 90px); align-items: center; }
-.hx-live { display: inline-flex; align-items: center; gap: 9px; margin: 0; font-size: 0.86rem; color: var(--hx-ink-soft);
-  padding: 7px 14px; border-radius: 999px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--hx-line);
-  -webkit-backdrop-filter: blur(10px) !important; backdrop-filter: blur(10px) !important; }
-.hx-live b { color: var(--hx-online); font-weight: 700; }
 .hx-rack { position: relative; margin: 0; width: fit-content; }
 .hx-rack img {
   display: block; height: clamp(380px, 60vh, 580px); width: auto; max-width: 100%;

@@ -16,10 +16,7 @@ const es: HomelabCopy = {
   close: 'Cerrar',
 
   hero: {
-    checking: 'Comprobando servicios públicos',
-    online: '{count}servicios públicos en línea',
-    onlineCount: '{n} de {total}',
-    title: 'Una nube casera que funciona sola',
+    title: 'Un HomeLab pensado para agentes',
     lead: 'Todas las máquinas, redes y servicios de aquí los gestiona braven-agents, un servidor cuyo trabajo es ejecutar mis agentes de IA. Pueden llegar a todo lo demás, desde el servidor de almacenamiento hasta el router y Cloudflare, así que la mayoría de los cambios salen de un prompt sin que yo toque nada.',
     mapCta: 'Ver cómo se conecta',
     machinesCta: 'Ver las máquinas',

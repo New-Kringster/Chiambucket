@@ -15,10 +15,7 @@ const ja: HomelabCopy = {
   close: '閉じる',
 
   hero: {
-    checking: '公開サービスを確認中',
-    online: '{count}公開サービスがオンライン',
-    onlineCount: '{n} / {total}',
-    title: '自分で動く家のクラウド',
+    title: 'エージェントファーストの HomeLab',
     lead: 'ここにあるマシン、ネットワーク、サービスは、すべて braven-agents が動かしています。僕の AI エージェントを動かすのが仕事のサーバーです。エージェントはストレージサーバーからルーター、Cloudflare まで、ほかのすべてにアクセスできるので、ほとんどの変更は僕が何も触らなくても、プロンプトひとつで済みます。',
     mapCta: 'つながりを見る',
     machinesCta: 'マシンを見る',

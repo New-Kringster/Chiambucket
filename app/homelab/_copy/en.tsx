@@ -25,11 +25,7 @@ const en = {
   close: 'Close',
 
   hero: {
-    checking: 'Checking public services',
-    /** {count} is the bold "{n} of {total}" */
-    online: '{count}public services online',
-    onlineCount: '{n} of {total}',
-    title: 'A home cloud that runs itself',
+    title: 'Agentic first HomeLab',
     lead: 'Every machine, network and service here is run by braven-agents, a server whose job is running my AI agents. They can reach everything else, from the storage server to the router and Cloudflare, so most changes happen from a prompt without me touching anything.',
     mapCta: 'See how it connects',
     machinesCta: 'See the machines',

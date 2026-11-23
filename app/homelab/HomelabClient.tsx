@@ -7,7 +7,6 @@ import ServiceModal from './ServiceModal';
 import { IcGrid, IcMail } from '../../components/Icons';
 import type { HomelabCopy } from './_copy/en';
 import { HomelabCopyProvider } from './_copy/context';
-import { fillNode } from './_copy/fillNode';
 import { fill } from '@/lib/fill';
 import { localize } from '@/lib/i18n';
 import { useLang } from '@/lib/useLang';
@@ -93,10 +92,6 @@ function HomelabBody({ c }: { c: HomelabCopy }) {
   const [stackOpen, setStackOpen] = useState(false);
   const [openService, setOpenService] = useState<Service | null>(null);
 
-  const publicKeys = SERVICES.filter((s) => s.statusKey).map((s) => s.statusKey!);
-  const onlineCount = publicKeys.filter((k) => status[k] === 'up').length;
-  const checked = publicKeys.some((k) => status[k]);
-
   const shown = filter === 'all' ? SERVICES : SERVICES.filter((s) => s.category === filter);
   const collapsible = shown.length > STACK_VISIBLE;
   const collapsed = collapsible && !stackOpen;
@@ -110,12 +105,6 @@ function HomelabBody({ c }: { c: HomelabCopy }) {
       <header className="hx-hero">
         <div className="hx-wrap hx-hero-grid">
           <div className="hx-hero-text">
-            <p className="hx-live" aria-live="polite">
-              <i className={`hx-dot${checked && onlineCount > 0 ? ' on' : ''}`} />
-              {checked
-                ? fillNode(c.hero.online, { count: <b>{fill(c.hero.onlineCount, { n: onlineCount, total: publicKeys.length })}</b> })
-                : c.hero.checking}
-            </p>
             <h1 className="hx-title">{c.hero.title}</h1>
             <p className="hx-lead">{c.hero.lead}</p>
             <div className="hx-actions">

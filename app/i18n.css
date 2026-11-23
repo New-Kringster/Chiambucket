@@ -33,3 +33,7 @@ html:lang(ja) { word-break: auto-phrase; }
 /* Article titles: the Latin size makes a nine-ideograph title wider than a phone,
    and Japanese keeps a katakana word whole, so CJK titles start a size smaller. */
 html:is(:lang(zh), :lang(ja)) .art-title { font-size: clamp(2rem, 7vw, 5rem); overflow-wrap: anywhere; }
+
+/* HomeLab title: break only at the space before "HomeLab" (keep-all), and only split a
+   word if it cannot fit a line by itself; a size smaller so the first half fits a phone */
+html:is(:lang(zh), :lang(ja)) .hx-title { font-size: clamp(1.4rem, 5.6vw, 4.4rem); max-width: none; word-break: keep-all; overflow-wrap: anywhere; }

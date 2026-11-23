@@ -15,10 +15,7 @@ const zh: HomelabCopy = {
   close: '关闭',
 
   hero: {
-    checking: '正在检查公开服务',
-    online: '{count}个公开服务在线',
-    onlineCount: '{n}/{total}',
-    title: '会自己运转的家庭云',
+    title: '智能体优先的 HomeLab',
     lead: '这里的每台机器、每个网络和每个服务，都由 braven-agents 来运行，这台服务器的工作就是运行我的 AI 智能体。它们能访问其他所有东西，从存储服务器到路由器再到 Cloudflare，所以大部分改动只要一条 prompt 就能完成，我什么都不用碰。',
     mapCta: '查看连接方式',
     machinesCta: '查看机器',

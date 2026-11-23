@@ -16,10 +16,7 @@ const de: HomelabCopy = {
   close: 'Schließen',
 
   hero: {
-    checking: 'Prüfe öffentliche Dienste',
-    online: '{count}öffentliche Dienste online',
-    onlineCount: '{n} von {total}',
-    title: 'Eine Cloud, die von selbst läuft',
+    title: 'Agent-first HomeLab',
     lead: 'Jeder Rechner, jedes Netzwerk und jeder Dienst hier wird von braven-agents betrieben, einem Server, dessen Aufgabe es ist, meine KI-Agenten laufen zu lassen. Sie erreichen alles andere, vom Speicherserver bis zum Router und Cloudflare, also passieren die meisten Änderungen über einen Prompt, ohne dass ich etwas anfassen muss.',
     mapCta: 'Zur Karte',
     machinesCta: 'Zu den Rechnern',

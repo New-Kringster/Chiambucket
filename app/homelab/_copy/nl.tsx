@@ -16,10 +16,7 @@ const nl: HomelabCopy = {
   close: 'Sluiten',
 
   hero: {
-    checking: 'Publieke diensten checken',
-    online: '{count}publieke diensten online',
-    onlineCount: '{n} van {total}',
-    title: 'Een thuiscloud die zichzelf runt',
+    title: 'Agent-first HomeLab',
     lead: 'Elke machine, elk netwerk en elke dienst hier wordt gerund door braven-agents, een server die er is om mijn AI-agents te draaien. Ze kunnen bij al het andere, van de opslagserver tot de router en Cloudflare, dus de meeste wijzigingen gebeuren vanuit een prompt zonder dat ik iets hoef aan te raken.',
     mapCta: 'Zo hangt het samen',
     machinesCta: 'Naar de machines',
