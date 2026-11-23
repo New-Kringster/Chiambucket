@@ -63,6 +63,8 @@ const ja: HomelabCopy = {
   prompt: {
     title: 'プロンプトひとつから、動くアプリまで',
     lead: '新しいものを頼むと、エージェントはそれに関わるすべてのシステムを自分たちで進めていきます。たとえば、新しいアプリを専用の chiambucket.com のアドレスで公開してと頼むと、こんな流れになります：',
+    requestLabel: 'リクエスト',
+    request: '新しいメモアプリを notes.chiambucket.com で公開して。',
     steps: [
       { at: 'braven-agents', t: 'エージェントがアプリとその Docker Compose ファイルを書いて、テストします。' },
       { at: 'NewMain', t: 'アプリを NewMain 上のコンテナとして起動します。' },
@@ -79,6 +81,7 @@ const ja: HomelabCopy = {
 
   machines: {
     title: 'マシン',
+    photoAlt: '{name}',
     lead: '5 台のマシンが動いていて、6 台目はまだ計画中です。',
     status: { running: '稼働中', planned: '計画中' },
     items: {
@@ -238,6 +241,14 @@ const ja: HomelabCopy = {
       'アプリひとつがひとつの tub です。素の Compose ファイルと、専用のデータベース、ファイル、シークレットが入ったひとつのフォルダなので、エージェントはそれをビルドして動かし、データごとひとつの zip にまとめて別のマシンへ移せます。',
       'ダッシュボードで tub のデプロイ、起動、停止ができて、tub を公開すると Cloudflare Tunnel 経由で Web アドレスが付きます。ポート転送もリバースプロキシも要りません。エージェントには API キーを渡しているので、これを全部自分たちでこなせます。',
     ],
+    diagram: {
+      label: 'tub の中身と行き先',
+      tub: 'ひとつの tub',
+      parts: ['Compose ファイル', 'データベース', 'ファイル', 'シークレット'],
+      zip: 'ひとつの zip に書き出し',
+      runs: 'Docker があればどのマシンでも動く',
+      publish: 'Cloudflare Tunnel で公開',
+    },
   },
 
   cta: {

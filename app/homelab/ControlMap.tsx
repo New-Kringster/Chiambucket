@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { GROUPS, NODES, type MapNode, type NodeId } from './data';
+import { CORE_PHOTO, GROUPS, NODES, type MapNode, type NodeId } from './data';
 import { useHomelabCopy } from './_copy/context';
 
 /*
@@ -119,8 +119,13 @@ export default function ControlMap() {
         >
           {/* lights up as a pulse arrives */}
           {pulse?.id === n.id && <span key={pulse.n} className="hx-node-ping" aria-hidden="true" />}
-          <span className="hx-node-name">{name(n)}</span>
-          <span className="hx-node-role">{tt.role}</span>
+          {n.group === 'machines' && (
+            <span className="hx-node-thumb" aria-hidden="true">{n.photo ? <img src={n.photo} alt="" loading="lazy" /> : <i />}</span>
+          )}
+          <span className="hx-node-text">
+            <span className="hx-node-name">{name(n)}</span>
+            <span className="hx-node-role">{tt.role}</span>
+          </span>
           <span className={`hx-node-via${n.planned ? ' planned' : ''}`}>{n.planned ? c.core.planned : tt.via}</span>
         </button>
         {on && <div className="hx-node-inline">{detail(n)}</div>}
@@ -146,6 +151,7 @@ export default function ControlMap() {
         </div>
 
         <div className="hx-core" ref={core}>
+          <img className="hx-core-img" src={CORE_PHOTO} alt="" aria-hidden="true" />
           <span className="hx-core-tag"><i className="hx-dot on" />{c.core.coreTag}</span>
           <b className="hx-core-name">braven-agents</b>
           <p className="hx-core-role">{c.core.coreRole}</p>

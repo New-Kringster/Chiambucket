@@ -64,6 +64,8 @@ const fr: HomelabCopy = {
   prompt: {
     title: 'D’un prompt à une appli qui tourne',
     lead: 'Quand je demande quelque chose de nouveau, les agents passent tout seuls par chaque système concerné. Si je leur demande de mettre une nouvelle appli en ligne à sa propre adresse chiambucket.com, par exemple, voilà ce qui se passe :',
+    requestLabel: 'La demande',
+    request: 'Mets ma nouvelle appli de notes en ligne sur notes.chiambucket.com.',
     steps: [
       { at: 'braven-agents', t: 'Un agent écrit l’appli et son fichier Docker Compose, puis la teste.' },
       { at: 'NewMain', t: 'Il lance l’appli comme conteneur sur NewMain.' },
@@ -80,6 +82,7 @@ const fr: HomelabCopy = {
 
   machines: {
     title: 'Les machines',
+    photoAlt: '{name}',
     lead: 'Cinq machines tournent, et une sixième est encore en projet.',
     status: { running: 'En marche', planned: 'Prévu' },
     items: {
@@ -239,6 +242,14 @@ const fr: HomelabCopy = {
       'Chaque appli est un tub, un dossier avec un simple fichier Compose et sa propre base de données, ses fichiers et ses secrets, pour qu’un agent puisse la construire, la lancer et la déplacer vers une autre machine en un seul zip, données comprises.',
       'Un tableau de bord déploie, démarre et arrête les tubs, et en publier un lui donne une adresse web via Cloudflare Tunnel, sans redirection de port ni reverse proxy. Les agents reçoivent une clé API, donc ils peuvent tout faire eux-mêmes.',
     ],
+    diagram: {
+      label: 'Ce que contient un tub et où il va',
+      tub: 'Un tub',
+      parts: ['Fichier Compose', 'Base de données', 'Fichiers', 'Secrets'],
+      zip: 'Exporté en un seul zip',
+      runs: 'Tourne sur toute machine avec Docker',
+      publish: 'Publié via Cloudflare Tunnel',
+    },
   },
 
   cta: {

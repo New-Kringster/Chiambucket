@@ -14,6 +14,7 @@
 html.sensory-active.is-day[data-theme="golden"] { --sl-sky: #b6aec3; }
 html.sensory-active.is-day[data-theme="noon"] { --sl-sky: #92b6d0; }
 html.sensory-active.is-day[data-theme="teal"] { --sl-sky: #8eb2ad; }
+html.sensory-active.is-night[data-theme="deep"] { --sl-sky: #081615; }
 html.sensory-active.is-day[data-theme="mist"] { --sl-sky: #b5afc4; }
 
 /* ── Golden hour (photography): a low sun on the left ── */
@@ -120,6 +121,27 @@ html[data-theme="night"] {
     background: radial-gradient(circle 22vmax at 84% 14%,
       rgba(226, 234, 255, 0.34) 0%, rgba(206, 220, 255, 0.12) 40%, rgba(206, 220, 255, 0) 100%);
     transform-origin: 84% 14%;
+  }
+}
+
+/* ── Deep teal night (homelab): a small moon high on the left, stars ── */
+html[data-theme="deep"] {
+  --sl-sky: #081615;
+  & .sl-sky {
+    background:
+      radial-gradient(circle 70vmax at 13% 12%,
+        rgba(96, 178, 168, 0.34) 0%, rgba(58, 130, 126, 0.2) 22%, rgba(30, 84, 86, 0) 52%),
+      linear-gradient(180deg, #050f0f 0%, #0a1a1b 35%, #10262a 70%, #183338 100%);
+  }
+  & .sl-wash {
+    background:
+      radial-gradient(70% 55% at 92% 6%, rgba(40, 70, 110, 0.32) 0%, rgba(40, 70, 110, 0) 70%),
+      radial-gradient(95% 26% at 50% 74%, rgba(80, 170, 156, 0.2) 0%, rgba(80, 170, 156, 0) 72%);
+  }
+  & .sl-sun-bloom {
+    background: radial-gradient(circle 22vmax at 13% 12%,
+      rgba(214, 255, 246, 0.3) 0%, rgba(180, 240, 228, 0.1) 40%, rgba(180, 240, 228, 0) 100%);
+    transform-origin: 13% 12%;
   }
 }
 
@@ -243,6 +265,7 @@ html.sensory-active.is-night[data-theme] {
   color-scheme: dark;
 }
 html[data-theme="dusk"] { --sl-edge: #171d29; }
+html[data-theme="deep"] { --sl-edge: #0a1616; }
 
 /* The night footer stands in the dark grass like the day one: no strip,
    moonlit shade under cream type and a night-glass social pill. */

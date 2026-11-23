@@ -64,6 +64,8 @@ const es: HomelabCopy = {
   prompt: {
     title: 'De un prompt a una app funcionando',
     lead: 'Cuando pido algo nuevo, los agentes pasan solos por cada sistema que toca. Si les pido, por ejemplo, poner online una app nueva con su propia dirección de chiambucket.com, esto es lo que pasa:',
+    requestLabel: 'La petición',
+    request: 'Pon mi nueva app de notas en línea en notes.chiambucket.com.',
     steps: [
       { at: 'braven-agents', t: 'Un agente escribe la app y su archivo Docker Compose, y luego la prueba.' },
       { at: 'NewMain', t: 'Arranca la app como contenedor en NewMain.' },
@@ -80,6 +82,7 @@ const es: HomelabCopy = {
 
   machines: {
     title: 'Las máquinas',
+    photoAlt: '{name}',
     lead: 'Hay cinco máquinas funcionando, y una sexta todavía está en planes.',
     status: { running: 'En marcha', planned: 'Previsto' },
     items: {
@@ -239,6 +242,14 @@ const es: HomelabCopy = {
       'Cada app es un tub, una carpeta con un archivo Compose sencillo y su propia base de datos, archivos y secretos, así un agente puede crearla, ejecutarla y moverla a otra máquina como un solo zip con sus datos intactos.',
       'Un panel despliega, arranca y para los tubs, y al publicar uno le da una dirección web a través de Cloudflare Tunnel, sin redirección de puertos ni proxy inverso. Los agentes reciben una clave de API, así que pueden hacer todo esto ellos solos.',
     ],
+    diagram: {
+      label: 'Qué contiene un tub y adónde va',
+      tub: 'Un tub',
+      parts: ['Archivo Compose', 'Base de datos', 'Archivos', 'Secretos'],
+      zip: 'Exportado en un solo zip',
+      runs: 'Funciona en cualquier máquina con Docker',
+      publish: 'Publicado con Cloudflare Tunnel',
+    },
   },
 
   cta: {

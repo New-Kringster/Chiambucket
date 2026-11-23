@@ -63,6 +63,8 @@ const zh: HomelabCopy = {
   prompt: {
     title: '从一条 prompt 到一个跑起来的应用',
     lead: '我要一个新东西时，智能体会自己把它涉及的每个系统都处理好。比如我让它们把一个新应用上线到它自己的 chiambucket.com 地址，过程是这样的：',
+    requestLabel: '请求',
+    request: '把我新的笔记应用上线到 notes.chiambucket.com。',
     steps: [
       { at: 'braven-agents', t: '一个智能体写好应用和它的 Docker Compose 文件，然后测试它。' },
       { at: 'NewMain', t: '它把应用作为容器在 NewMain 上启动。' },
@@ -79,6 +81,7 @@ const zh: HomelabCopy = {
 
   machines: {
     title: '机器',
+    photoAlt: '{name}',
     lead: '五台机器正在运行，第六台还在计划中。',
     status: { running: '运行中', planned: '计划中' },
     items: {
@@ -238,6 +241,14 @@ const zh: HomelabCopy = {
       '每个应用就是一个 tub，也就是一个文件夹，里面有一份普通的 Compose 文件，还有它自己的数据库、文件和密钥，所以智能体可以构建它、运行它，再把它连同数据完整地打成一个 zip 搬到另一台机器上。',
       '一个仪表盘负责部署、启动和停止这些 tub，发布一个 tub 时，它会通过 Cloudflare Tunnel 拿到一个网址，不需要端口转发，也不需要反向代理。智能体有自己的 API key，所以这些事它们都能自己做。',
     ],
+    diagram: {
+      label: '一个 tub 装着什么、去往哪里',
+      tub: '一个 tub',
+      parts: ['Compose 文件', '数据库', '文件', '密钥'],
+      zip: '导出为一个 zip',
+      runs: '能在任何装了 Docker 的机器上运行',
+      publish: '通过 Cloudflare Tunnel 发布',
+    },
   },
 
   cta: {

@@ -64,6 +64,8 @@ const de: HomelabCopy = {
   prompt: {
     title: 'Vom Prompt zur laufenden App',
     lead: 'Wenn ich etwas Neues will, arbeiten sich die Agenten selbst durch jedes System, das dafür nötig ist. Bitte ich sie zum Beispiel, eine neue App unter einer eigenen chiambucket.com-Adresse online zu stellen, passiert Folgendes:',
+    requestLabel: 'Die Anfrage',
+    request: 'Stell meine neue Notizen-App unter notes.chiambucket.com online.',
     steps: [
       { at: 'braven-agents', t: 'Ein Agent schreibt die App und ihre Docker-Compose-Datei und testet sie dann.' },
       { at: 'NewMain', t: 'Er startet die App als Container auf NewMain.' },
@@ -80,6 +82,7 @@ const de: HomelabCopy = {
 
   machines: {
     title: 'Die Rechner',
+    photoAlt: '{name}',
     lead: 'Fünf Rechner laufen, und ein sechster ist noch in Planung.',
     status: { running: 'Läuft', planned: 'Geplant' },
     items: {
@@ -239,6 +242,14 @@ const de: HomelabCopy = {
       'Jede App ist ein Tub, ein Ordner mit einer schlichten Compose-Datei und eigener Datenbank, eigenen Dateien und Secrets, sodass ein Agent sie bauen, betreiben und als eine einzige ZIP-Datei samt Daten auf einen anderen Rechner umziehen kann.',
       'Ein Dashboard deployt, startet und stoppt die Tubs, und wenn ich einen veröffentliche, bekommt er über Cloudflare Tunnel eine Webadresse, ohne Portweiterleitung oder Reverse Proxy. Agenten bekommen einen API-Key, also können sie all das selbst erledigen.',
     ],
+    diagram: {
+      label: 'Was ein Tub enthält und wohin er geht',
+      tub: 'Ein Tub',
+      parts: ['Compose-Datei', 'Datenbank', 'Dateien', 'Secrets'],
+      zip: 'Als eine Zip exportiert',
+      runs: 'Läuft auf jedem Rechner mit Docker',
+      publish: 'Über Cloudflare Tunnel veröffentlicht',
+    },
   },
 
   cta: {

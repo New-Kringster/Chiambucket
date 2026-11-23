@@ -21,13 +21,15 @@ export interface MapNode {
   name?: string;
   group: Group;
   planned?: boolean;
+  /** a small photo on the machines' cards */
+  photo?: string;
 }
 export const GROUPS: Group[] = ['machines', 'edge', 'platforms'];
 export const NODES: MapNode[] = [
-  { id: 'newmain', name: 'NewMain', group: 'machines' },
-  { id: 'caca', name: 'CaCa', group: 'machines' },
-  { id: 'servertop', name: 'Servertop', group: 'machines' },
-  { id: 'blade', name: 'Razer Blade 15', group: 'machines' },
+  { id: 'newmain', name: 'NewMain', group: 'machines', photo: '/images/homelab/newmain.webp' },
+  { id: 'caca', name: 'CaCa', group: 'machines', photo: '/images/homelab/caca.webp' },
+  { id: 'servertop', name: 'Servertop', group: 'machines', photo: '/images/homelab/servertop.webp' },
+  { id: 'blade', name: 'Razer Blade 15', group: 'machines', photo: '/images/homelab/blade.webp' },
   { id: 'proxmox', group: 'machines', planned: true },
   { id: 'unifi', name: 'UniFi', group: 'edge' },
   { id: 'npm', name: 'Nginx Proxy Manager', group: 'edge' },
@@ -38,13 +40,15 @@ export const NODES: MapNode[] = [
 ];
 
 /* ── The machines, in the order the page lists them ── */
-export interface Machine { id: MachineId; planned?: boolean; core?: boolean }
+/** `photo` is a cut-out on a transparent background; the planned server has none yet */
+export interface Machine { id: MachineId; photo?: string; planned?: boolean; core?: boolean }
+export const CORE_PHOTO = '/images/homelab/agents.webp';
 export const MACHINES: Machine[] = [
-  { id: 'agents', core: true },
-  { id: 'newmain' },
-  { id: 'caca' },
-  { id: 'servertop' },
-  { id: 'blade' },
+  { id: 'agents', photo: CORE_PHOTO, core: true },
+  { id: 'newmain', photo: '/images/homelab/newmain.webp' },
+  { id: 'caca', photo: '/images/homelab/caca.webp' },
+  { id: 'servertop', photo: '/images/homelab/servertop.webp' },
+  { id: 'blade', photo: '/images/homelab/blade.webp' },
   { id: 'proxmox', planned: true },
 ];
 

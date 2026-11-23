@@ -11,7 +11,7 @@
      /             sunlit   the scroll story (app/_home) paints its own chapters; no scene
      /photography  golden   golden hour, low sun on the left
      /contact      noon     clear blue midday, at the beach (sand and sea)
-     /homelab      teal     cool, misty teal morning
+     /homelab      deep     a deep teal night, a small moon on the left, stars (dark glass)
      /credits      mist     soft lilac haze (also /comingsoon and /archive)
      /ai-use       dusk     just after sunset, violet sky, first stars (dark glass)
      everything else (the articles and the 404 page): night, moon and stars
@@ -23,7 +23,7 @@ export const THEME_MAP: Record<string, string> = {
   '/': 'sunlit',
   '/photography': 'golden',
   '/contact': 'noon',
-  '/homelab': 'teal',
+  '/homelab': 'deep',
   '/credits': 'mist',
   '/comingsoon': 'mist',
   '/archive': 'mist',
@@ -37,8 +37,9 @@ export function themeForPath(pathname: string): string {
   return THEME_MAP[p] ?? DEFAULT_THEME;
 }
 
-// Pages whose scene is dark enough for the dark glass (app/scenes.css .is-night).
-export const isNight = (theme: string) => theme === 'night' || theme === 'dusk';
+// Scenes dark enough for the dark glass (app/scenes.css .is-night); the head script in app/layout.tsx reads this list too.
+export const NIGHT_THEMES = ['night', 'dusk', 'deep'];
+export const isNight = (theme: string) => NIGHT_THEMES.includes(theme);
 
 /** Write the theme to <html>: data-theme plus .is-day or .is-night. */
 export function applyTheme(theme: string) {

@@ -76,6 +76,8 @@ const en = {
   prompt: {
     title: 'From one prompt to a running app',
     lead: 'When I ask for something new, the agents work through every system it touches by themselves. If I ask them to put a new app online at its own chiambucket.com address, for example, this is what happens:',
+    requestLabel: 'The request',
+    request: 'Put my new notes app online at notes.chiambucket.com.',
     steps: [
       { at: 'braven-agents', t: 'An agent writes the app and its Docker Compose file, then tests it.' },
       { at: 'NewMain', t: 'It starts the app as a container on NewMain.' },
@@ -92,6 +94,8 @@ const en = {
 
   machines: {
     title: 'The machines',
+    /** alt text for each machine's photo */
+    photoAlt: 'The {name}',
     lead: 'Five machines are running, and a sixth is still being planned.',
     status: { running: 'Running', planned: 'Planned' },
     items: byId<MachineText>()({
@@ -253,6 +257,15 @@ const en = {
       'Each app is a tub, one folder with a plain Compose file and its own database, files and secrets, so an agent can build it, run it and move it to another machine as one zip with its data intact.',
       'A dashboard deploys, starts and stops the tubs, and publishing one gives it a web address through Cloudflare Tunnel with no port forward or reverse proxy. Agents get an API key, so they can do all of this themselves.',
     ],
+    /** the small diagram of one tub */
+    diagram: {
+      label: 'What a tub holds and where it goes',
+      tub: 'One tub',
+      parts: ['Compose file', 'Database', 'Files', 'Secrets'],
+      zip: 'Exported as one zip',
+      runs: 'Runs on any machine with Docker',
+      publish: 'Published through Cloudflare Tunnel',
+    },
   },
 
   cta: {

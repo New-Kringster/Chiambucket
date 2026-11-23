@@ -9,7 +9,7 @@ import PageTransition from '../components/PageTransition';
 import ArticleLightbox from '../components/ArticleLightbox';
 import SceneShell from '../components/SceneShell';
 import GlassDefs from '../components/GlassDefs';
-import { THEME_MAP, DEFAULT_THEME } from '../lib/theme';
+import { THEME_MAP, DEFAULT_THEME, NIGHT_THEMES } from '../lib/theme';
 import { HTML_LANG } from '../lib/i18n';
 import './sunlit.css';
 import './scenes.css';
@@ -40,7 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Set the page's theme (and .is-day / .is-night) before paint to avoid a colour flash */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){var m=${JSON.stringify(THEME_MAP)};var p=location.pathname;var d=document.documentElement;var L=${JSON.stringify(HTML_LANG)};var s=p.split('/')[1];if(s&&s!=='en'&&L[s]){d.lang=L[s];p=p.slice(s.length+1)||'/';}if(p.length>1&&p.slice(-1)==='/')p=p.slice(0,-1);var t=m[p]||${JSON.stringify(DEFAULT_THEME)};d.setAttribute('data-theme',t);d.classList.add('sensory-active',(t==='night'||t==='dusk')?'is-night':'is-day');var u=navigator.userAgentData;if(u&&u.brands&&u.brands.some(function(b){return /Chrom/.test(b.brand)}))d.classList.add('lg-refract');})();`,
+            __html: `(function(){var m=${JSON.stringify(THEME_MAP)};var p=location.pathname;var d=document.documentElement;var L=${JSON.stringify(HTML_LANG)};var s=p.split('/')[1];if(s&&s!=='en'&&L[s]){d.lang=L[s];p=p.slice(s.length+1)||'/';}if(p.length>1&&p.slice(-1)==='/')p=p.slice(0,-1);var t=m[p]||${JSON.stringify(DEFAULT_THEME)};d.setAttribute('data-theme',t);d.classList.add('sensory-active',${JSON.stringify(NIGHT_THEMES)}.indexOf(t)>=0?'is-night':'is-day');var u=navigator.userAgentData;if(u&&u.brands&&u.brands.some(function(b){return /Chrom/.test(b.brand)}))d.classList.add('lg-refract');})();`,
           }}
         />
         <link rel="stylesheet" href="/mainstyle.css" />

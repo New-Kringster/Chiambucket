@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './homelab.css';
 import { MACHINES, SERVICES, CATEGORIES, type Service, type Category } from './data';
 import ControlMap from './ControlMap';
@@ -42,6 +42,50 @@ export default function HomelabClient({ copy }: { copy: HomelabCopy }) {
 
 const STACK_VISIBLE = 6;
 
+/* The run from a request to a live app. Each step lights up once it has scrolled
+   past the lower third of the screen and stays lit, so the line fills in as you
+   read; with reduced motion every step starts lit. */
+function Steps({ steps }: { steps: HomelabCopy['prompt']['steps'] }) {
+  const list = useRef<HTMLOListElement>(null);
+  const [lit, setLit] = useState(0);
+  useEffect(() => {
+    const el = list.current;
+    if (!el) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setLit(steps.length); return; }
+    const items = [...el.querySelectorAll<HTMLElement>('.hx-step')];
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting || e.boundingClientRect.top < 0) setLit((n) => Math.max(n, items.indexOf(e.target as HTMLElement) + 1));
+      });
+    }, { rootMargin: '0px 0px -35% 0px' });
+    items.forEach((it) => io.observe(it));
+    return () => io.disconnect();
+  }, [steps.length]);
+  return (
+    <ol className="hx-steps" ref={list} style={{ ['--lit' as string]: lit / steps.length }}>
+      {steps.map((s, i) => (
+        <li key={i} className={`hx-step${i < lit ? ' is-lit' : ''}`}>
+          <span className="hx-step-n">{i + 1}</span>
+          <div className="hx-step-body">
+            <p>{s.t}</p>
+            <span className="hx-step-at">{s.at}</span>
+          </div>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+/* A planned machine has no photo yet: a dashed outline of a rack server stands in. */
+function PlannedOutline() {
+  return (
+    <svg className="hx-outline" viewBox="0 0 240 110" aria-hidden="true">
+      <path d="M20 40 L120 12 L220 40 L220 70 L120 98 L20 70 Z M20 40 L120 68 L220 40 M120 68 L120 98" />
+      <path d="M36 56 L104 75 M36 63 L104 82" />
+    </svg>
+  );
+}
+
 function HomelabBody({ c }: { c: HomelabCopy }) {
   const lang = useLang();
   const { status, synced } = useStatus();
@@ -64,19 +108,25 @@ function HomelabBody({ c }: { c: HomelabCopy }) {
     <main className="hx">
       {/* ════════════ Hero ════════════ */}
       <header className="hx-hero">
-        <div className="hx-wrap">
-          <p className="hx-live" aria-live="polite">
-            <i className={`hx-dot${checked && onlineCount > 0 ? ' on' : ''}`} />
-            {checked
-              ? fillNode(c.hero.online, { count: <b>{fill(c.hero.onlineCount, { n: onlineCount, total: publicKeys.length })}</b> })
-              : c.hero.checking}
-          </p>
-          <h1 className="hx-title">{c.hero.title}</h1>
-          <p className="hx-lead">{c.hero.lead}</p>
-          <div className="hx-actions">
-            <a className="hx-btn" href="#core">{c.hero.mapCta}</a>
-            <a className="hx-btn ghost" href="#machines">{c.hero.machinesCta}</a>
+        <div className="hx-wrap hx-hero-grid">
+          <div className="hx-hero-text">
+            <p className="hx-live" aria-live="polite">
+              <i className={`hx-dot${checked && onlineCount > 0 ? ' on' : ''}`} />
+              {checked
+                ? fillNode(c.hero.online, { count: <b>{fill(c.hero.onlineCount, { n: onlineCount, total: publicKeys.length })}</b> })
+                : c.hero.checking}
+            </p>
+            <h1 className="hx-title">{c.hero.title}</h1>
+            <p className="hx-lead">{c.hero.lead}</p>
+            <div className="hx-actions">
+              <a className="hx-btn" href="#core">{c.hero.mapCta}</a>
+              <a className="hx-btn ghost" href="#machines">{c.hero.machinesCta}</a>
+            </div>
           </div>
+          <figure className="hx-rack">
+            <img src="/images/hl-rack-real.jpg" alt={c.machines.rack.alt} />
+            <figcaption>{c.machines.rack.caption}</figcaption>
+          </figure>
         </div>
       </header>
 
@@ -95,15 +145,13 @@ function HomelabBody({ c }: { c: HomelabCopy }) {
           <h2 className="hx-h2">{c.prompt.title}</h2>
           <p className="hx-intro">{c.prompt.lead}</p>
           <div className="hx-run">
-            <ol className="hx-steps">
-              {c.prompt.steps.map((s, i) => (
-                <li key={i} className="hx-step">
-                  <span className="hx-step-n">{i + 1}</span>
-                  <p>{s.t}</p>
-                  <span className="hx-step-at">{s.at}</span>
-                </li>
-              ))}
-            </ol>
+            <div className="hx-flow">
+              <div className="hx-request">
+                <span className="hx-request-label">{c.prompt.requestLabel}</span>
+                <p>{c.prompt.request}</p>
+              </div>
+              <Steps steps={c.prompt.steps} />
+            </div>
             <div className="hx-notes">
               <div className="hx-note">
                 <h3>{c.prompt.ownTitle}</h3>
@@ -129,25 +177,26 @@ function HomelabBody({ c }: { c: HomelabCopy }) {
                 const t = c.machines.items[m.id];
                 return (
                   <article key={m.id} className={`hx-machine${m.planned ? ' is-planned' : ''}${m.core ? ' is-core' : ''}`}>
-                    <div className="hx-machine-head">
-                      <h3>{t.name}</h3>
-                      <span className="hx-machine-role">{t.role}</span>
-                      <span className={`hx-state${m.planned ? ' planned' : ''}`}>
-                        <i className={`hx-dot${m.planned ? '' : ' on'}`} />{m.planned ? c.machines.status.planned : c.machines.status.running}
-                      </span>
+                    <div className="hx-machine-photo">
+                      {m.photo ? <img src={m.photo} alt={fill(c.machines.photoAlt, { name: t.name })} loading="lazy" /> : <PlannedOutline />}
                     </div>
-                    <p className="hx-machine-blurb">{t.blurb}</p>
-                    <dl className="hx-spec">
-                      {t.specs.map((sp) => <div key={sp.k}><dt>{sp.k}</dt><dd>{sp.v}</dd></div>)}
-                    </dl>
+                    <div className="hx-machine-body">
+                      <div className="hx-machine-head">
+                        <h3>{t.name}</h3>
+                        <span className="hx-machine-role">{t.role}</span>
+                        <span className={`hx-state${m.planned ? ' planned' : ''}`}>
+                          <i className={`hx-dot${m.planned ? '' : ' on'}`} />{m.planned ? c.machines.status.planned : c.machines.status.running}
+                        </span>
+                      </div>
+                      <p className="hx-machine-blurb">{t.blurb}</p>
+                      <dl className="hx-spec">
+                        {t.specs.map((sp) => <div key={sp.k}><dt>{sp.k}</dt><dd>{sp.v}</dd></div>)}
+                      </dl>
+                    </div>
                   </article>
                 );
               })}
             </div>
-            <figure className="hx-rack">
-              <img src="/images/hl-rack-real.jpg" alt={c.machines.rack.alt} loading="lazy" />
-              <figcaption>{c.machines.rack.caption}</figcaption>
-            </figure>
           </div>
         </div>
       </section>
@@ -217,8 +266,24 @@ function HomelabBody({ c }: { c: HomelabCopy }) {
               <h2 className="hx-h2">{c.tubs.title}</h2>
               <span className="hx-state planned">{c.tubs.status}</span>
             </div>
-            <p className="hx-tubs-lead">{c.tubs.lead}</p>
-            {c.tubs.body.map((p, i) => <p key={i} className="hx-tubs-p">{p}</p>)}
+            <div className="hx-tubs-grid">
+              <div>
+                <p className="hx-tubs-lead">{c.tubs.lead}</p>
+                {c.tubs.body.map((p, i) => <p key={i} className="hx-tubs-p">{p}</p>)}
+              </div>
+              <div className="hx-tubdia" role="img" aria-label={c.tubs.diagram.label}>
+                <div className="hx-tub">
+                  <span className="hx-tub-name">{c.tubs.diagram.tub}</span>
+                  <div className="hx-tub-parts">{c.tubs.diagram.parts.map((p) => <span key={p}>{p}</span>)}</div>
+                </div>
+                <span className="hx-tub-arrow" />
+                <span className="hx-tub-out">{c.tubs.diagram.zip}</span>
+                <div className="hx-tub-split">
+                  <span className="hx-tub-out">{c.tubs.diagram.runs}</span>
+                  <span className="hx-tub-out">{c.tubs.diagram.publish}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

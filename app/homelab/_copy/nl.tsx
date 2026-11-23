@@ -64,6 +64,8 @@ const nl: HomelabCopy = {
   prompt: {
     title: 'Van één prompt naar een draaiende app',
     lead: 'Als ik om iets nieuws vraag, werken de agents zelf elk systeem af waar het mee te maken heeft. Vraag ik ze bijvoorbeeld een nieuwe app online te zetten op een eigen chiambucket.com-adres, dan gebeurt dit:',
+    requestLabel: 'Het verzoek',
+    request: 'Zet mijn nieuwe notities-app online op notes.chiambucket.com.',
     steps: [
       { at: 'braven-agents', t: 'Een agent schrijft de app en het Docker Compose-bestand en test hem daarna.' },
       { at: 'NewMain', t: 'Hij start de app als container op NewMain.' },
@@ -80,6 +82,7 @@ const nl: HomelabCopy = {
 
   machines: {
     title: 'De machines',
+    photoAlt: 'De {name}',
     lead: 'Er draaien vijf machines, en een zesde staat nog op de planning.',
     status: { running: 'Draait', planned: 'Gepland' },
     items: {
@@ -239,6 +242,14 @@ const nl: HomelabCopy = {
       'Elke app is een tub, één map met een gewoon Compose-bestand en een eigen database, bestanden en secrets, zodat een agent hem kan bouwen, draaien en als één zip met al zijn data naar een andere machine kan verhuizen.',
       'Een dashboard deployt, start en stopt de tubs, en publiceer je er een, dan krijgt hij via Cloudflare Tunnel een webadres, zonder port forward of reverse proxy. Agents krijgen een API-key, dus ze kunnen dit allemaal zelf doen.',
     ],
+    diagram: {
+      label: 'Wat een tub bevat en waar hij heen kan',
+      tub: 'Eén tub',
+      parts: ['Compose-bestand', 'Database', 'Bestanden', 'Secrets'],
+      zip: 'Geëxporteerd als één zip',
+      runs: 'Draait op elke machine met Docker',
+      publish: 'Gepubliceerd via Cloudflare Tunnel',
+    },
   },
 
   cta: {

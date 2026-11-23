@@ -193,6 +193,28 @@ export const PRESETS: Record<string, Preset> = {
     ],
     stars: true,
   },
+  // HomeLab: a deep teal night. A small moon high on the left, stars, teal-lit clouds, dark sea-green grass.
+  deep: {
+    sun: { x: 0.13, y: 0.12 },
+    haze: '132,206,196',
+    tints: ['34,84,86', '28,70,82', '44,96,92', '30,64,74', '52,104,100'],
+    beam: '150,220,208',
+    ray: ['150,220,208', '200,246,238'],
+    rays: 0,
+    cloud: { stops: ['#8fb9b3', '#5b8784', '#33585a', '#1f3a3e'], rim: '190,240,230', under: '14,30,34', k: 0.7 },
+    clouds: [
+      { x: 0.74, y: 0.16, w: 0.58, h: 0.09, k: 0.46, drift: 4, secs: 94 },
+      { x: 0.36, y: 0.38, w: 0.42, h: 0.07, k: 0.4, drift: 5, secs: 108 },
+      { x: 0.58, y: 0.28, w: 0.26, h: 0.05, k: 0.28, drift: 6, secs: 76 },
+      { x: 0.5, y: 0.765, w: 0.95, h: 0.04, k: 0.28, drift: 2.5, secs: 134 },
+    ],
+    grass: [
+      { op: 'multiply', color: '#23484a' },
+      { op: 'multiply', color: 'rgba(48,96,98,0.55)' },
+      { op: 'screen', band: ['rgba(120,206,190,0.26)', 'rgba(120,206,190,0)'], depth: 0.16 },
+    ],
+    night: true,
+  },
   // Articles: night. The moon high on the right, stars, moonlit clouds, dark grass.
   night: {
     sun: { x: 0.84, y: 0.14 },

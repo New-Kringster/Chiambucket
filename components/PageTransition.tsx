@@ -27,7 +27,7 @@ import { splitLang } from '../lib/i18n';
    or a browser without WebGL, keeps plain navigation. */
 
 const VEIL: Record<string, string> = {
-  night: '#0d1214', dusk: '#2b2540', sunlit: '#cdd5c2', golden: '#b6aec3', noon: '#92b6d0', teal: '#8eb2ad', mist: '#b5afc4',
+  night: '#0d1214', dusk: '#2b2540', sunlit: '#cdd5c2', golden: '#b6aec3', noon: '#92b6d0', teal: '#8eb2ad', deep: '#0c1c1d', mist: '#b5afc4',
 };
 const PAGE_VEIL: Record<string, string> = { '/waterslop': '#181716' };
 
