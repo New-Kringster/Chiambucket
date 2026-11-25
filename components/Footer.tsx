@@ -12,7 +12,7 @@ export default function Footer() {
 
   if (isEmbed(pathname)) return null;
   return (
-    <div className="footer">
+    <div className="footer" data-nosnippet>
       <button onClick={() => { window.location.href = localize('/', lang); }} className="footer-left">
         <img src="/images/logo.webp" alt="Chiambucket logo" className="footer-left-img" />
         <span className="footer-left-text">{t.footerHome}</span>
@@ -50,8 +50,8 @@ export default function Footer() {
       </div>
 
       <div className="footer-right">
-        <span className="footer-right-text">
-          &copy; Chiambucket 2025<br />
+        <span className="footer-right-text" suppressHydrationWarning>
+          &copy; Chiambucket {new Date().getFullYear()}<br />
           {t.creditsBefore}{' '}
           <button onClick={() => { window.location.href = localize('/credits', lang); }}>{t.creditsLink}</button>
         </span>

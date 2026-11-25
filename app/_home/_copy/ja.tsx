@@ -3,7 +3,7 @@ import type { HomeCopy } from './en';
 const ja: HomeCopy = {
   meta: {
     title: 'Braven Chiam | ハードウェア、ソフトウェア、デザイン',
-    description: 'ナンヤン・ポリテクニックで電子・コンピューター工学を学ぶ Braven Chiam の作品集。回路基板からクラウドまで自分で作っていて、ESP32-S3 の上で数字を読み取る水道メーターリーダー、5G ローバー、プライベートな電子書籍リーダー、自前のホスティングプラットフォームなどがあります。',
+    description: 'Chiambucket は、シンガポールで工学を学ぶ Braven Chiam のポートフォリオです。5G ローバーや水道メーターリーダーなど、回路基板からクラウドまで自分で作っています。',
     keywords: 'Braven Chiam, Chiambucket, OCR Reader, DrumNet, Project June, 5G ローバー, BeadReader, Shebang, M5Stack, LoRA Messenger, ESP32, PCB 設計, KiCad, Onshape, Next.js, ホームラボ, 写真, シンガポール',
     ogDescription: '回路基板からクラウドまで自分で作っています。チップの上で読み取る水道メーターリーダー、5G ローバー、プライベートな電子書籍リーダーなど。',
     twitterTitle: 'Braven Chiam',

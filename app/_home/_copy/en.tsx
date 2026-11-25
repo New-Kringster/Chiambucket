@@ -5,7 +5,7 @@
 const en = {
   meta: {
     title: 'Braven Chiam | Hardware, software and design',
-    description: 'Projects by Braven Chiam, an Electronic and Computer Engineering student at Nanyang Polytechnic who builds from the circuit board to the cloud, including a water meter reader that reads its digits on an ESP32-S3, a 5G rover, a private book reader and his own hosting platform.',
+    description: 'Chiambucket is the portfolio of Braven Chiam, an engineering student in Singapore who builds from circuit board to cloud, like a 5G rover and a water meter reader.',
     keywords: 'Braven Chiam, Chiambucket, OCR Reader, DrumNet, Project June, 5G rover, BeadReader, Shebang, M5Stack, LoRA Messenger, ESP32, PCB design, KiCad, Onshape, Next.js, homelab, photography, Singapore',
     ogDescription: 'I build things from the circuit board to the cloud, including a water meter reader that reads on the chip, a 5G rover and a private book reader.',
     twitterTitle: 'Braven Chiam',
