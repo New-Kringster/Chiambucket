@@ -411,7 +411,7 @@ export default function Nav() {
 
   if (isEmbed(pathname)) return null;
   return (
-    <header className="pnav" ref={headerRef}>
+    <header className="pnav" ref={headerRef} data-nosnippet>
       {/* the glass for every piece, drawn as one merging shape */}
       <div className="pnav-blob" aria-hidden="true">
         <div className="pnav-blob-glass" ref={glassRef} />

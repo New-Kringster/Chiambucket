@@ -4,7 +4,7 @@ import type { HomeCopy } from './en';
 const nl: HomeCopy = {
   meta: {
     title: 'Braven Chiam | Hardware, software en design',
-    description: 'Projecten van Braven Chiam, student Electronic and Computer Engineering aan Nanyang Polytechnic, die bouwt van printplaat tot cloud. Denk aan een watermeterlezer die zijn cijfers leest op een ESP32-S3, een 5G-rover, een privé-boekenlezer en zijn eigen hostingplatform.',
+    description: 'Chiambucket is het portfolio van Braven Chiam, een engineeringstudent in Singapore die bouwt van printplaat tot cloud, zoals een 5G-rover en een watermeterlezer.',
     keywords: 'Braven Chiam, Chiambucket, OCR Reader, DrumNet, Project June, 5G-rover, BeadReader, Shebang, M5Stack, LoRA Messenger, ESP32, PCB-ontwerp, KiCad, Onshape, Next.js, homelab, fotografie, Singapore',
     ogDescription: 'Ik bouw dingen van printplaat tot cloud, zoals een watermeterlezer die op de chip leest, een 5G-rover en een privé-boekenlezer.',
     twitterTitle: 'Braven Chiam',

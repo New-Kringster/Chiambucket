@@ -219,6 +219,8 @@ html.hs-home .footer { position: relative; z-index: 3; }
 /* backwards, not both: a filter left on the word (even blur(0)) would stop its glass seeing the sky */
 @keyframes hs-focus { from { opacity: 0; filter: blur(18px); transform: scale(1.035); } }
 .hs-gw > span { display: block; padding: 0.02em 0.04em 0.06em; color: transparent; }
+/* the three stacked copies carry the word in data-t, not as text (see GlassWord) */
+.hs-gw > [data-t]::before { content: attr(data-t); }
 .hs-gw > :is(.hs-gw-shadow, .hs-gw-glass, .hs-gw-light) { position: absolute; inset: 0; }
 .hs-gw > .hs-gw-rim { position: relative; }
 .hs-gw > .hs-gw-shadow { inset: -0.3em -0.4em -0.6em; padding: 0.32em 0.44em 0.66em; text-shadow: 0 0.08em 0.2em rgba(31, 43, 28, 0.3), 0 0.015em 0.03em rgba(31, 43, 28, 0.16); }

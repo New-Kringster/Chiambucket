@@ -105,13 +105,15 @@ function Chars({ text }: { text: string }) {
 }
 
 /** One word of the name in clear glass: a cut-out shadow, the glass, a
-    highlight and a rim, stacked (the old poster hero's GlassWord). */
+    highlight and a rim, stacked (the old poster hero's GlassWord). Only the
+    rim holds the word as text; the other three draw it from data-t in CSS,
+    so search engines read the name once instead of four times. */
 function GlassWord({ children }: { children: string }) {
   return (
     <span className="hs-gw" aria-hidden="true">
-      <span className="hs-gw-shadow">{children}</span>
-      <span className="hs-gw-glass">{children}</span>
-      <span className="hs-gw-light">{children}</span>
+      <span className="hs-gw-shadow" data-t={children} />
+      <span className="hs-gw-glass" data-t={children} />
+      <span className="hs-gw-light" data-t={children} />
       <span className="hs-gw-rim">{children}</span>
     </span>
   );

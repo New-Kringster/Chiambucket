@@ -3,7 +3,7 @@ import type { HomeCopy } from './en';
 const ru: HomeCopy = {
   meta: {
     title: 'Braven Chiam | Железо, софт и дизайн',
-    description: 'Проекты Braven Chiam, студента-инженера по электронике и компьютерной технике в Nanyang Polytechnic, который делает всё от печатной платы до облака: например, счётчик воды, распознающий цифры прямо на ESP32-S3, 5G-ровер, закрытую читалку книг и собственную платформу для хостинга.',
+    description: 'На Chiambucket собраны проекты Braven Chiam, студента-инженера из Сингапура, который делает всё от печатной платы до облака, например 5G-ровер и считыватель счётчика воды.',
     keywords: 'Braven Chiam, Chiambucket, OCR Reader, DrumNet, Project June, 5G-ровер, BeadReader, Shebang, M5Stack, LoRA Messenger, ESP32, проектирование печатных плат, KiCad, Onshape, Next.js, хоумлаб, фотография, Сингапур',
     ogDescription: 'Я делаю вещи от печатной платы до облака: например, считыватель счётчика воды, который распознаёт цифры прямо на чипе, 5G-ровер и закрытую читалку книг.',
     twitterTitle: 'Braven Chiam',
