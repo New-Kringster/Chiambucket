@@ -1,8 +1,6 @@
-import { draft, type Draft } from './draft';
 import type { HomelabCopy } from './en';
 
-// a loose cast while drafting: keys English no longer has are ignored by draft()
-const zh = {
+const zh: HomelabCopy = {
   meta: {
     title: 'Homelab | Braven Chiam',
     description:
@@ -17,15 +15,16 @@ const zh = {
   close: '关闭',
 
   hero: {
+    tag: '基础设施',
     title: '智能体优先的 HomeLab',
-    lead: '这里的每台机器、每个网络和每个服务，都由 braven-agents 来运行，这台服务器的工作就是运行我的 AI 智能体。它们能访问其他所有东西，从存储服务器到路由器再到 Cloudflare，所以大部分改动只要一条 prompt 就能完成，我什么都不用碰。',
-    mapCta: '查看连接方式',
-    machinesCta: '查看机器',
+    sub: '这里的每台机器、每个网络和每个服务，都由一台服务器上的 AI 智能体来运行。',
+    scroll: '向下滚动',
   },
 
   core: {
     title: '一切都经过 braven-agents',
-    lead: 'braven-agents 握着通往其他每个系统的钥匙，上面的智能体通过各自的 API 或 SSH 访问每一个系统。选一个系统，看看它们在那里做什么。',
+    lead: 'braven-agents 握着通往其他每个系统的钥匙，上面的智能体通过各系统自己的 API 或 SSH 访问它们，所以大部分改动只要一条 prompt 就能完成，我什么都不用碰。',
+    hint: '选一个系统，看看智能体在那里做什么。',
     mapLabel: 'braven-agents 如何连接其他每个系统',
     coreTag: '核心',
     coreRole: '它运行着 Claude Code、Codex 和 OpenCode，还有负责定时任务的 Hermes，我在 T3 Code 里启动并跟进它们的工作。',
@@ -60,8 +59,11 @@ const zh = {
   },
 
   prompt: {
+    tag: '一条 prompt',
     title: '从一条 prompt 到一个跑起来的应用',
-    lead: '我要一个新东西时，智能体会自己把它涉及的每个系统都处理好。比如我让它们把一个新应用上线到它自己的 chiambucket.com 地址，过程是这样的：',
+    lead: '我要一个新东西时，智能体会自己把它涉及的每个系统都处理一遍。',
+    stepOf: '第 {n} 步，共 {total} 步',
+    done: '已上线：notes.chiambucket.com',
     requestLabel: '请求',
     request: '把我新的笔记应用上线到 notes.chiambucket.com。',
     steps: [
@@ -79,10 +81,11 @@ const zh = {
   },
 
   machines: {
+    tag: '硬件',
     title: '机器',
     photoAlt: '{name}',
     lead: '五台机器正在运行，第六台还在计划中。',
-    status: { running: '运行中', planned: '计划中' },
+    planned: '计划中',
     items: {
       agents: {
         name: 'braven-agents', role: '核心',
@@ -102,8 +105,8 @@ const zh = {
           { k: '系统', v: 'Unraid' },
           { k: 'CPU', v: '2 × Xeon E5-2470 v2，20 核' },
           { k: '内存', v: '128 GB DDR3' },
-          { k: '阵列', v: '5 块硬盘，校验保护' },
-          { k: '控制器', v: 'IT 模式的 PERC H710P' },
+          { k: '阵列', v: '5 块硬盘，带校验保护' },
+          { k: '控制器', v: 'PERC H710P，IT 模式' },
         ],
       },
       caca: {
@@ -129,7 +132,7 @@ const zh = {
         blurb: '这台笔记本运行 Ubuntu，负责吃 GPU 的工作，当初为 OCR Reader 训练 DrumNet 的也正是它。',
         specs: [
           { k: '系统', v: 'Ubuntu' },
-          { k: 'CPU', v: '第十代 Core i7' },
+          { k: 'CPU', v: '第 10 代 Core i7' },
           { k: 'GPU', v: 'RTX 3080 笔记本 GPU' },
           { k: '内存', v: '32 GB' },
           { k: '存储', v: '2 × 1 TB SSD' },
@@ -145,14 +148,15 @@ const zh = {
       },
     },
     rack: {
-      alt: '我房间里的机柜：顶部是插着蓝色网线的配线架，服务器在网门后面',
+      alt: '我房间里的机柜，顶部是配线架和蓝色网线，服务器在网孔门后面',
       caption: 'braven-agents、NewMain 和 CaCa 一起放在我房间的这个机柜里。',
     },
   },
 
   stack: {
+    tag: '软件',
     title: '托管的服务',
-    lead: 'NewMain 为我和我的项目运行着这些服务，公开服务会显示每分钟检查一次的实时状态。',
+    lead: 'NewMain 为我和我的项目运行着这些服务。选一个，看看它是做什么的。',
     filterLabel: '筛选服务',
     categories: {
       all: '全部',
@@ -162,7 +166,7 @@ const zh = {
       monitoring: '监控',
       projects: '为了我的项目',
     },
-    checkedAt: '{time} 检查',
+    checkedAt: '检查于 {time}',
     checking: '正在检查状态',
     showFewer: '收起',
     showAll: '显示全部 {n} 个服务',
@@ -220,12 +224,12 @@ const zh = {
     netdata: { blurb: '它按秒记录 CPU、硬盘、网络和容器的各项指标。' },
     upsnap: { blurb: '这是一个网络唤醒面板，能把睡着的机器叫醒。' },
     openspeedtest: { blurb: '这是一个自托管的测速工具，能测出服务器和我所在位置之间的吞吐量。' },
-    portainer: { blurb: '它为 NewMain 上的 Docker 容器提供一个网页界面。' },
+    portainer: { blurb: '它给我一个网页界面，用来管理 NewMain 上的 Docker 容器。' },
     coturn: {
       blurb: '我为 Project June 搭了这个 TURN 和 STUN 服务器，让它的三路 WebRTC 摄像头画面能穿过蜂窝网络的 NAT。',
       long: [
         'Project June 通过 5G 传三路实时摄像头画面，但蜂窝网络会把设备藏在好几层 NAT 后面，WebRTC 自己是穿不过去的。',
-        '我自己的 TURN 和 STUN 服务器给这些视频流提供一个固定的公网地址来会合，所以我在哪里都能开这辆车，而且它几乎不占 CPU。',
+        '我自己的 TURN 和 STUN 服务器给这些视频流提供一个固定的公网地址来会合，所以我在哪里都能开这台小车，而且它几乎不占 CPU。',
       ],
     },
     mosquitto: { blurb: '我最早是为 Project June 的遥测和控制搭了这个 MQTT 代理，现在它在我的 ESP32 学校项目和它们的仪表盘之间传递消息。' },
@@ -233,8 +237,9 @@ const zh = {
   },
 
   tubs: {
+    tag: '我在做的',
     title: 'Shebang Tubs',
-    status: '早期开发中',
+    status: '早期，开发中',
     lead: 'Shebang Tubs 是我正在做的一个项目和框架，让任何人都能用智能体搭建并自托管自己的应用。',
     body: [
       '每个应用就是一个 tub，也就是一个文件夹，里面有一份普通的 Compose 文件，还有它自己的数据库、文件和密钥，所以智能体可以构建它、运行它，再把它连同数据完整地打成一个 zip 搬到另一台机器上。',
@@ -256,5 +261,6 @@ const zh = {
     projects: '查看我的项目',
     contact: '联系我',
   },
-} as Draft<HomelabCopy>;
-export default draft(zh);
+};
+
+export default zh;

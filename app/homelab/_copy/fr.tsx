@@ -1,9 +1,7 @@
-import { draft, type Draft } from './draft';
 import type { HomelabCopy } from './en';
 
 /* The homelab page in French. Same shape as en.tsx. */
-// a loose cast while drafting: keys English no longer has are ignored by draft()
-const fr = {
+const fr: HomelabCopy = {
   meta: {
     title: 'Homelab | Braven Chiam',
     description:
@@ -18,15 +16,16 @@ const fr = {
   close: 'Fermer',
 
   hero: {
-    title: 'Un HomeLab pensé pour les agents',
-    lead: 'Chaque machine, chaque réseau et chaque service ici est géré par braven-agents, un serveur dont le travail est de faire tourner mes agents IA. Ils peuvent atteindre tout le reste, du serveur de stockage au routeur et à Cloudflare, donc la plupart des changements se font à partir d’un prompt, sans que je touche à rien.',
-    mapCta: 'Voir les connexions',
-    machinesCta: 'Voir les machines',
+    tag: 'Infrastructure',
+    title: 'HomeLab, agents d’abord',
+    sub: 'Ici, chaque machine, chaque réseau et chaque service est géré par des agents IA sur un seul serveur.',
+    scroll: 'Défiler',
   },
 
   core: {
     title: 'Tout passe par braven-agents',
-    lead: 'braven-agents détient les clés de tous les autres systèmes, et les agents qui tournent dessus atteignent chacun via sa propre API ou en SSH. Choisis un système pour voir ce qu’ils y font.',
+    lead: 'braven-agents détient les clés de tous les autres systèmes, et les agents qui tournent dessus atteignent chacun via sa propre API ou en SSH, donc la plupart des changements se font à partir d’un prompt, sans que je touche à rien.',
+    hint: 'Choisis un système pour voir ce que les agents y font.',
     mapLabel: 'Comment braven-agents se connecte à tous les autres systèmes',
     coreTag: 'Le cœur',
     coreRole: 'Il fait tourner Claude Code, Codex et OpenCode, plus Hermes pour les tâches planifiées, et je lance et suis leur travail dans T3 Code.',
@@ -35,9 +34,9 @@ const fr = {
     planned: 'Prévu',
     proxmoxName: 'Serveur Proxmox',
     nodes: {
-      newmain: { role: 'Stockage et services auto-hébergés', via: 'Unraid API',
+      newmain: { role: 'Stockage et services auto-hébergés', via: 'API Unraid',
         does: ['Lancer, mettre à jour et redémarrer les conteneurs Docker', 'Surveiller l’array et la santé de chaque disque', 'Créer des partages et des machines virtuelles'] },
-      caca: { role: 'Environnement de dev d’un projet secret', via: 'SSH',
+      caca: { role: 'Environnement de dev d’un projet pas encore annoncé', via: 'SSH',
         does: ['Compiler et tester le projet', 'Garder ses outils et ses paquets à jour'] },
       servertop: { role: 'Passerelle vers mon iCloud', via: 'SSH',
         does: ['Lire et ajouter des événements dans mes calendriers', 'Lire et ajouter des rappels', 'Gérer les autres tâches iCloud qui demandent un Mac'] },
@@ -45,15 +44,15 @@ const fr = {
         does: ['Lancer des entraînements sur la RTX 3080, comme ceux qui ont entraîné DrumNet', 'Faire tourner de plus gros modèles et d’autres travaux lourds pour le GPU'] },
       proxmox: { role: 'Machines virtuelles, matériel encore à choisir', via: 'Pas encore lancé',
         does: ['Il est encore en cours de montage, donc rien n’y tourne pour l’instant.'] },
-      unifi: { role: 'Tout le réseau de la maison', via: 'UniFi API',
+      unifi: { role: 'Tout le réseau de la maison', via: 'API UniFi',
         does: ['Créer des réseaux et des VLAN', 'Ajouter des règles de pare-feu et des redirections de ports', 'Trouver et gérer les appareils connectés'] },
-      npm: { role: 'Reverse proxy des services publics', via: 'NPM API',
+      npm: { role: 'Reverse proxy des services publics', via: 'API NPM',
         does: ['Ajouter un proxy host pour chaque nouveau sous-domaine', 'Émettre et renouveler les certificats SSL', 'Choisir qui peut accéder à un service'] },
-      cloudflare: { role: 'DNS et services edge', via: 'Cloudflare API',
+      cloudflare: { role: 'DNS et services edge', via: 'API Cloudflare',
         does: ['Créer et modifier les enregistrements DNS', 'Ouvrir des Cloudflare Tunnels pour les nouvelles applis', 'Déployer des Workers et gérer le stockage R2'] },
       github: { role: 'Mon code', via: 'GitHub CLI',
         does: ['Créer des dépôts, des branches et des pull requests', 'Pousser les changements qu’ils font'] },
-      vercel: { role: 'L’hébergement de ce site', via: 'Vercel API',
+      vercel: { role: 'L’hébergement de ce site', via: 'API Vercel',
         does: ['Déployer des previews et vérifier que les builds passent', 'Mettre ce site en ligne quand je le demande'] },
       shebang: { role: 'Ma plateforme d’hébergement', via: 'Shebang MCP',
         does: ['Publier des pages et des fichiers', 'Donner à une nouvelle appli sa propre base de données et sa connexion'] },
@@ -61,8 +60,11 @@ const fr = {
   },
 
   prompt: {
+    tag: 'Un prompt',
     title: 'D’un prompt à une appli qui tourne',
-    lead: 'Quand je demande quelque chose de nouveau, les agents passent tout seuls par chaque système concerné. Si je leur demande de mettre une nouvelle appli en ligne à sa propre adresse chiambucket.com, par exemple, voilà ce qui se passe :',
+    lead: 'Quand je demande quelque chose de nouveau, les agents passent tout seuls par chaque système concerné.',
+    stepOf: 'Étape {n} sur {total}',
+    done: 'En ligne sur notes.chiambucket.com',
     requestLabel: 'La demande',
     request: 'Mets ma nouvelle appli de notes en ligne sur notes.chiambucket.com.',
     steps: [
@@ -80,10 +82,11 @@ const fr = {
   },
 
   machines: {
+    tag: 'Matériel',
     title: 'Les machines',
-    photoAlt: '{name}',
+    photoAlt: 'Photo de {name}',
     lead: 'Cinq machines tournent, et une sixième est encore en projet.',
-    status: { running: 'En marche', planned: 'Prévu' },
+    planned: 'Prévu',
     items: {
       agents: {
         name: 'braven-agents', role: 'Le cœur',
@@ -127,7 +130,7 @@ const fr = {
       },
       blade: {
         name: 'Razer Blade 15', role: 'Calcul GPU',
-        blurb: 'Ce portable tourne sous Ubuntu et prend en charge le travail lourd pour le GPU, et c’est la même machine qui a entraîné DrumNet pour l’OCR Reader.',
+        blurb: 'Ce portable tourne sous Ubuntu et prend le travail lourd pour le GPU, et c’est la même machine qui a entraîné DrumNet pour l’OCR Reader.',
         specs: [
           { k: 'OS', v: 'Ubuntu' },
           { k: 'CPU', v: 'Core i7 10e génération' },
@@ -152,8 +155,9 @@ const fr = {
   },
 
   stack: {
+    tag: 'Logiciel',
     title: 'Ce qu’il héberge',
-    lead: 'NewMain fait tourner ces services pour moi et mes projets, et les services publics affichent un état en direct, vérifié une fois par minute.',
+    lead: 'NewMain fait tourner ces services pour moi et mes projets. Choisis-en un pour voir ce qu’il fait.',
     filterLabel: 'Filtrer les services',
     categories: {
       all: 'Tous',
@@ -164,13 +168,13 @@ const fr = {
       projects: 'Pour mes projets',
     },
     checkedAt: 'Vérifié à {time}',
-    checking: 'Vérification de l’état',
-    showFewer: 'Afficher moins',
+    checking: 'Contrôle en cours',
+    showFewer: 'Voir moins',
     showAll: 'Voir les {n} services',
-    status: { up: 'En ligne', down: 'Hors ligne', wait: 'Vérification', self: 'Privé' },
+    status: { up: 'En ligne', down: 'Hors ligne', wait: 'Contrôle', self: 'Privé' },
     loadLabel: 'Charge : {label}',
     weights: {
-      extreme: 'La plus lourde',
+      extreme: 'Maximale',
       'very-high': 'Très élevée',
       high: 'Élevée',
       moderate: 'Modérée',
@@ -187,7 +191,7 @@ const fr = {
 
   services: {
     npm: {
-      blurb: 'Il est placé devant chaque service public comme reverse proxy, où il termine le SSL, route chaque sous-domaine de chiambucket.com vers son conteneur et fait tourner un bouncer CrowdSec qui bannit les IP hostiles.',
+      blurb: 'Il se place devant chaque service public comme reverse proxy : il termine le SSL, envoie chaque sous-domaine de chiambucket.com vers son conteneur et fait tourner un bouncer CrowdSec qui bannit les IP hostiles.',
       long: [
         'Tout le trafic public arrive sur une seule adresse et passe d’abord par NPM, donc aucun conteneur n’est exposé directement à internet.',
         'CrowdSec surveille le trafic à la recherche de schémas d’attaque et bannit la source. Comme tout passe par NPM, tous les services publics tombent dès que NPM tombe.',
@@ -195,7 +199,7 @@ const fr = {
     },
     tailscale: { blurb: 'C’est un maillage WireGuard qui met tous mes appareils sur un même réseau privé, et je m’en sers pour joindre la maison de n’importe où.' },
     shadowsocks: { blurb: 'C’est un proxy qui fait passer mon trafic pour du HTTPS ordinaire, pour que je puisse joindre la maison depuis les réseaux restreints de l’école.' },
-    twingate: { blurb: 'C’est un connecteur zero trust que je garde comme accès de plus, à côté de Tailscale, WireGuard et UniFi Teleport.' },
+    twingate: { blurb: 'C’est un connecteur zero trust que je garde comme autre accès, à côté de Tailscale, WireGuard et UniFi Teleport.' },
     pihole: { blurb: 'Il bloque les pubs et les traqueurs au niveau DNS pour tout le réseau, même si je m’en sers surtout pour le dépannage maintenant.' },
     immich: {
       blurb: 'Immich remplace Google Photos comme photothèque, avec la sauvegarde automatique du téléphone, la recherche et les albums, et c’est le service que j’utilise le plus.',
@@ -234,6 +238,7 @@ const fr = {
   },
 
   tubs: {
+    tag: 'Ce que je construis',
     title: 'Shebang Tubs',
     status: 'Tout début, en dev',
     lead: 'Shebang Tubs est un projet et un framework que je construis pour que n’importe qui puisse créer et auto-héberger ses propres applis avec des agents.',
@@ -257,6 +262,6 @@ const fr = {
     projects: 'Voir mes projets',
     contact: 'Me contacter',
   },
-} as Draft<HomelabCopy>;
+};
 
-export default draft(fr);
+export default fr;

@@ -36,4 +36,4 @@ html:is(:lang(zh), :lang(ja)) .art-title { font-size: clamp(2rem, 7vw, 5rem); ov
 
 /* HomeLab title: break only at the space before "HomeLab" (keep-all), and only split a
    word if it cannot fit a line by itself; a size smaller so the first half fits a phone */
-html:is(:lang(zh), :lang(ja)) .hx-title { font-size: clamp(1.4rem, 5.6vw, 4.4rem); max-width: none; word-break: keep-all; overflow-wrap: anywhere; }
+html:is(:lang(zh), :lang(ja)) .hx-open-title { font-size: clamp(1.4rem, 5.6vw, 4.4rem); max-width: none; word-break: keep-all; overflow-wrap: anywhere; }

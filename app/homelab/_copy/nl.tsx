@@ -1,9 +1,7 @@
-import { draft, type Draft } from './draft';
 import type { HomelabCopy } from './en';
 
 /* De Nederlandse woorden van de homelabpagina, in dezelfde vorm als en.tsx. */
-// a loose cast while drafting: keys English no longer has are ignored by draft()
-const nl = {
+const nl: HomelabCopy = {
   meta: {
     title: 'Homelab | Braven Chiam',
     description:
@@ -18,15 +16,16 @@ const nl = {
   close: 'Sluiten',
 
   hero: {
+    tag: 'Infrastructuur',
     title: 'Agent-first HomeLab',
-    lead: 'Elke machine, elk netwerk en elke dienst hier wordt gerund door braven-agents, een server die er is om mijn AI-agents te draaien. Ze kunnen bij al het andere, van de opslagserver tot de router en Cloudflare, dus de meeste wijzigingen gebeuren vanuit een prompt zonder dat ik iets hoef aan te raken.',
-    mapCta: 'Zo hangt het samen',
-    machinesCta: 'Naar de machines',
+    sub: 'Elke machine, elk netwerk en elke dienst hier wordt gerund door AI-agents op één server.',
+    scroll: 'Scroll',
   },
 
   core: {
     title: 'Alles loopt via braven-agents',
-    lead: 'braven-agents heeft de sleutels van elk ander systeem, en de agents erop bereiken elk systeem via zijn eigen API of via SSH. Kies een systeem om te zien wat ze daar doen.',
+    lead: 'braven-agents heeft de sleutels van elk ander systeem, en de agents erop bereiken elk systeem via zijn eigen API of via SSH, dus de meeste wijzigingen gebeuren vanuit een prompt zonder dat ik iets hoef aan te raken.',
+    hint: 'Kies een systeem om te zien wat de agents daar doen.',
     mapLabel: 'Hoe braven-agents met elk ander systeem verbonden is',
     coreTag: 'De kern',
     coreRole: 'Hij draait Claude Code, Codex en OpenCode, plus Hermes voor geplande taken, en in T3 Code start en volg ik hun werk.',
@@ -61,8 +60,11 @@ const nl = {
   },
 
   prompt: {
+    tag: 'Eén prompt',
     title: 'Van één prompt naar een draaiende app',
-    lead: 'Als ik om iets nieuws vraag, werken de agents zelf elk systeem af waar het mee te maken heeft. Vraag ik ze bijvoorbeeld een nieuwe app online te zetten op een eigen chiambucket.com-adres, dan gebeurt dit:',
+    lead: 'Als ik om iets nieuws vraag, werken de agents zelf elk systeem af waar het mee te maken heeft.',
+    stepOf: 'Stap {n} van {total}',
+    done: 'Live op notes.chiambucket.com',
     requestLabel: 'Het verzoek',
     request: 'Zet mijn nieuwe notities-app online op notes.chiambucket.com.',
     steps: [
@@ -80,10 +82,11 @@ const nl = {
   },
 
   machines: {
+    tag: 'Hardware',
     title: 'De machines',
     photoAlt: 'De {name}',
     lead: 'Er draaien vijf machines, en een zesde staat nog op de planning.',
-    status: { running: 'Draait', planned: 'Gepland' },
+    planned: 'Gepland',
     items: {
       agents: {
         name: 'braven-agents', role: 'De kern',
@@ -152,8 +155,9 @@ const nl = {
   },
 
   stack: {
+    tag: 'Software',
     title: 'Wat erop draait',
-    lead: 'NewMain draait deze diensten voor mij en mijn projecten, en de publieke laten een live status zien die één keer per minuut wordt gecheckt.',
+    lead: 'NewMain draait deze diensten voor mij en mijn projecten. Kies er een om te zien wat hij doet.',
     filterLabel: 'Diensten filteren',
     categories: {
       all: 'Alle',
@@ -193,9 +197,9 @@ const nl = {
         'CrowdSec houdt het verkeer in de gaten op aanvalspatronen en blokkeert de bron. Omdat alles via NPM loopt, gaat elke publieke dienst plat zodra NPM platgaat.',
       ],
     },
-    tailscale: { blurb: 'Een WireGuard-mesh die al mijn apparaten op één privénetwerk zet, en die ik gebruik om overal vandaan thuis te komen.' },
-    shadowsocks: { blurb: 'Een proxy die mijn verkeer eruit laat zien als gewone HTTPS, zodat ik vanaf afgeschermde schoolnetwerken thuis kan komen.' },
-    twingate: { blurb: 'Een zero-trust-connector die ik als extra toegang houd, naast Tailscale, WireGuard en UniFi Teleport.' },
+    tailscale: { blurb: 'Het is een WireGuard-mesh die al mijn apparaten op één privénetwerk zet, en die ik gebruik om overal vandaan thuis te komen.' },
+    shadowsocks: { blurb: 'Het is een proxy die mijn verkeer eruit laat zien als gewone HTTPS, zodat ik vanaf afgeschermde schoolnetwerken thuis kan komen.' },
+    twingate: { blurb: 'Het is een zero-trust-connector die ik als extra toegang houd, naast Tailscale, WireGuard en UniFi Teleport.' },
     pihole: { blurb: 'Hij blokkeert advertenties en trackers op DNS-niveau voor het hele netwerk, al gebruik ik hem nu vooral om problemen op te sporen.' },
     immich: {
       blurb: 'Immich vervangt Google Foto’s als mijn fotobibliotheek, met automatische back-ups van mijn telefoon, zoeken en albums, en het is de dienst die ik het meest gebruik.',
@@ -215,12 +219,12 @@ const nl = {
     fireshare: { blurb: 'Mijn vrienden en ik uploaden en delen hier gameclips, zonder uploadlimiet.' },
     neko: { blurb: 'Het draait een gedeelde browser in een tabblad, zodat we in dezelfde ruimte kunnen meekijken of samen iets uitzoeken op één scherm.' },
     crafty: { blurb: 'Crafty beheert mijn Minecraft-servers.' },
-    paperless: { blurb: 'Een documentarchief dat elke pdf en scan door OCR haalt, zodat ik ze vanaf elk apparaat kan doorzoeken.' },
+    paperless: { blurb: 'Het is een documentarchief dat elke pdf en scan door OCR haalt, zodat ik ze vanaf elk apparaat kan doorzoeken.' },
     vscode: { blurb: 'Het draait VS Code in de browser, zodat ik configbestanden op de server kan bewerken.' },
     upstat: { blurb: 'Het houdt de uptime en reactietijd van elke dienst en container bij, zodat problemen vroeg opvallen.' },
     netdata: { blurb: 'Het legt per seconde statistieken vast voor de CPU, schijven, het netwerk en containers.' },
-    upsnap: { blurb: 'Een Wake-on-LAN-paneel dat machines aanzet die slapen.' },
-    openspeedtest: { blurb: 'Een zelfgehoste snelheidstest die de doorvoer meet tussen de server en waar ik ook ben.' },
+    upsnap: { blurb: 'Het is een Wake-on-LAN-paneel dat machines aanzet die slapen.' },
+    openspeedtest: { blurb: 'Het is een zelfgehoste snelheidstest die de doorvoer meet tussen de server en waar ik ook ben.' },
     portainer: { blurb: 'Het geeft me een web-UI voor de Docker-containers op NewMain.' },
     coturn: {
       blurb: 'Ik zette deze TURN- en STUN-server op voor Project June, zodat zijn drie WebRTC-camerastreams door de NAT van het mobiele netwerk komen.',
@@ -234,6 +238,7 @@ const nl = {
   },
 
   tubs: {
+    tag: 'Waar ik aan bouw',
     title: 'Shebang Tubs',
     status: 'Vroeg, in ontwikkeling',
     lead: 'Shebang Tubs is een project en framework waar ik aan bouw, zodat iedereen met agents zijn eigen apps kan bouwen en zelf hosten.',
@@ -254,9 +259,9 @@ const nl = {
   cta: {
     title: 'Waar dit naartoe gaat',
     sub: 'Het doel is een persoonlijke cloud die voor zichzelf zorgt en alles kan bouwen en draaien vanuit één prompt. De meeste stukjes zijn er nu, en het volgende is de nieuwe Proxmox-server.',
-    projects: 'Bekijk mijn projecten',
-    contact: 'Neem contact op',
+    projects: 'Mijn projecten',
+    contact: 'Contact',
   },
-} as Draft<HomelabCopy>;
+};
 
-export default draft(nl);
+export default nl;

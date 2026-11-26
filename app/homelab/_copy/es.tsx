@@ -1,9 +1,7 @@
-import { draft, type Draft } from './draft';
 import type { HomelabCopy } from './en';
 
 /* The homelab page's Spanish words, in the same shape as en.tsx. */
-// a loose cast while drafting: keys English no longer has are ignored by draft()
-const es = {
+const es: HomelabCopy = {
   meta: {
     title: 'Homelab | Braven Chiam',
     description:
@@ -18,15 +16,16 @@ const es = {
   close: 'Cerrar',
 
   hero: {
-    title: 'Un HomeLab pensado para agentes',
-    lead: 'Todas las máquinas, redes y servicios de aquí los gestiona braven-agents, un servidor cuyo trabajo es ejecutar mis agentes de IA. Pueden llegar a todo lo demás, desde el servidor de almacenamiento hasta el router y Cloudflare, así que la mayoría de los cambios salen de un prompt sin que yo toque nada.',
-    mapCta: 'Ver cómo se conecta',
-    machinesCta: 'Ver las máquinas',
+    tag: 'Infraestructura',
+    title: 'HomeLab para agentes',
+    sub: 'Todas las máquinas, redes y servicios de aquí los llevan agentes de IA desde un solo servidor.',
+    scroll: 'Desliza',
   },
 
   core: {
     title: 'Todo pasa por braven-agents',
-    lead: 'braven-agents tiene las llaves de todos los demás sistemas, y los agentes que corren en él llegan a cada uno por su propia API o por SSH. Elige un sistema para ver qué hacen ahí.',
+    lead: 'braven-agents tiene las llaves de todos los demás sistemas, y los agentes que corren en él llegan a cada uno por su propia API o por SSH, así que la mayoría de los cambios salen de un prompt sin que yo toque nada.',
+    hint: 'Elige un sistema para ver qué hacen ahí los agentes.',
     mapLabel: 'Cómo se conecta braven-agents con todos los demás sistemas',
     coreTag: 'El núcleo',
     coreRole: 'Ejecuta Claude Code, Codex y OpenCode, además de Hermes para las tareas programadas, y yo lanzo y sigo su trabajo en T3 Code.',
@@ -37,7 +36,7 @@ const es = {
     nodes: {
       newmain: { role: 'Almacenamiento y servicios autoalojados', via: 'Unraid API',
         does: ['Arrancar, actualizar y reiniciar contenedores Docker', 'Vigilar el array y la salud de cada disco', 'Crear recursos compartidos y máquinas virtuales'] },
-      caca: { role: 'Entorno de dev de un proyecto sin anunciar', via: 'SSH',
+      caca: { role: 'Entorno de desarrollo de un proyecto sin anunciar', via: 'SSH',
         does: ['Compilar y probar el proyecto', 'Mantener al día sus herramientas y paquetes'] },
       servertop: { role: 'Puente a mi iCloud', via: 'SSH',
         does: ['Leer y añadir eventos en mis calendarios', 'Leer y añadir recordatorios', 'Hacer otras tareas de iCloud que necesitan un Mac'] },
@@ -61,14 +60,17 @@ const es = {
   },
 
   prompt: {
+    tag: 'Un prompt',
     title: 'De un prompt a una app funcionando',
-    lead: 'Cuando pido algo nuevo, los agentes pasan solos por cada sistema que toca. Si les pido, por ejemplo, poner online una app nueva con su propia dirección de chiambucket.com, esto es lo que pasa:',
+    lead: 'Cuando pido algo nuevo, los agentes pasan ellos solos por cada sistema que toca.',
+    stepOf: 'Paso {n} de {total}',
+    done: 'Activa en notes.chiambucket.com',
     requestLabel: 'La petición',
     request: 'Pon mi nueva app de notas en línea en notes.chiambucket.com.',
     steps: [
       { at: 'braven-agents', t: 'Un agente escribe la app y su archivo Docker Compose, y luego la prueba.' },
       { at: 'NewMain', t: 'Arranca la app como contenedor en NewMain.' },
-      { at: 'Nginx Proxy Manager', t: 'Añade un proxy host para el subdominio nuevo y consigue un certificado SSL para él.' },
+      { at: 'Nginx Proxy Manager', t: 'Añade un proxy host para el subdominio nuevo y le consigue un certificado SSL.' },
       { at: 'Cloudflare', t: 'Crea el registro DNS que apunta el subdominio a casa.' },
       { at: 'UniFi', t: 'Si la app necesita un puerto o una regla de firewall, la añade en el router.' },
       { at: 'braven-agents', t: 'Abre la dirección para comprobar que la app responde y luego me manda el enlace.' },
@@ -80,10 +82,11 @@ const es = {
   },
 
   machines: {
+    tag: 'Hardware',
     title: 'Las máquinas',
-    photoAlt: '{name}',
+    photoAlt: 'Foto de {name}',
     lead: 'Hay cinco máquinas funcionando, y una sexta todavía está en planes.',
-    status: { running: 'En marcha', planned: 'Previsto' },
+    planned: 'Previsto',
     items: {
       agents: {
         name: 'braven-agents', role: 'El núcleo',
@@ -130,15 +133,15 @@ const es = {
         blurb: 'Este portátil corre Ubuntu y se encarga del trabajo pesado de GPU, y es la misma máquina que entrenó DrumNet para el OCR Reader.',
         specs: [
           { k: 'SO', v: 'Ubuntu' },
-          { k: 'CPU', v: 'Core i7 de 10.ª generación' },
+          { k: 'CPU', v: 'Core i7 de 10.ª gen.' },
           { k: 'GPU', v: 'RTX 3080 Laptop GPU' },
           { k: 'Memoria', v: '32 GB' },
           { k: 'Discos', v: '2 × SSD de 1 TB' },
         ],
       },
       proxmox: {
-        name: 'Servidor Proxmox', role: 'Virtualización',
-        blurb: 'Un servidor Proxmox nuevo todavía se está montando, y su hardware aún está por decidir.',
+        name: 'Servidor Proxmox', role: 'Máquinas virtuales',
+        blurb: 'Todavía estoy montando un servidor Proxmox nuevo, y su hardware aún está por decidir.',
         specs: [
           { k: 'SO', v: 'Proxmox VE' },
           { k: 'Hardware', v: 'Por decidir' },
@@ -152,22 +155,23 @@ const es = {
   },
 
   stack: {
+    tag: 'Software',
     title: 'Lo que aloja',
-    lead: 'NewMain ejecuta estos servicios para mí y mis proyectos, y los públicos muestran un estado en directo que se comprueba cada minuto.',
+    lead: 'NewMain ejecuta estos servicios para mí y mis proyectos. Elige uno para ver qué hace.',
     filterLabel: 'Filtrar servicios',
     categories: {
       all: 'Todos',
       access: 'Acceso',
       files: 'Archivos',
-      media: 'Multimedia',
+      media: 'Medios y útiles',
       monitoring: 'Monitoreo',
-      projects: 'Proyectos',
+      projects: 'Mis proyectos',
     },
     checkedAt: 'Comprobado a las {time}',
     checking: 'Comprobando estado',
     showFewer: 'Ver menos',
     showAll: 'Ver los {n} servicios',
-    status: { up: 'En línea', down: 'Caído', wait: 'Comprobando', self: 'Privado' },
+    status: { up: 'Activo', down: 'Caído', wait: 'Revisando', self: 'Privado' },
     loadLabel: 'Carga: {label}',
     weights: {
       extreme: 'Máxima',
@@ -187,13 +191,13 @@ const es = {
 
   services: {
     npm: {
-      blurb: 'Está delante de cada servicio público como proxy inverso: termina el SSL, envía cada subdominio de chiambucket.com a su contenedor y ejecuta un bouncer de CrowdSec que bloquea las IPs hostiles.',
+      blurb: 'Está delante de todos los servicios públicos como proxy inverso, termina el SSL, envía cada subdominio de chiambucket.com a su contenedor y ejecuta un bouncer de CrowdSec que bloquea las IP hostiles.',
       long: [
         'Todo el tráfico público llega a una sola dirección y pasa primero por NPM, así que ningún contenedor queda expuesto directamente a internet.',
         'CrowdSec vigila el tráfico en busca de patrones de ataque y bloquea el origen. Como todo pasa por NPM, todos los servicios públicos se caen cuando se cae NPM.',
       ],
     },
-    tailscale: { blurb: 'Es una malla WireGuard que pone todos mis dispositivos en una red privada, y la uso para llegar a casa desde cualquier sitio.' },
+    tailscale: { blurb: 'Es una malla WireGuard que pone todos mis dispositivos en una sola red privada, y la uso para llegar a casa desde cualquier sitio.' },
     shadowsocks: { blurb: 'Es un proxy que hace que mi tráfico parezca HTTPS normal, así puedo llegar a casa desde las redes restringidas de la escuela.' },
     twingate: { blurb: 'Es un conector zero trust que mantengo como otra vía de entrada, junto a Tailscale, WireGuard y UniFi Teleport.' },
     pihole: { blurb: 'Bloquea anuncios y rastreadores a nivel de DNS para toda la red, aunque ahora lo uso sobre todo para diagnosticar problemas.' },
@@ -205,11 +209,11 @@ const es = {
       ],
     },
     lychee: { blurb: 'Lychee es la galería de fotos que hay detrás de la página de fotografía de esta web.' },
-    pingvin: { blurb: 'Aquí subo los archivos que son demasiado grandes para las apps de chat y consigo un enlace para enviarlos.' },
+    pingvin: { blurb: 'Aquí subo los archivos que son demasiado grandes para las apps de chat y me llevo un enlace para enviarlos.' },
     pairdrop: { blurb: 'Envía un archivo entre dos dispositivos cualesquiera desde el navegador, como AirDrop, sin cuentas.' },
     fbq: {
       blurb: 'Me da acceso desde el navegador y enlaces para compartir los mismos archivos que uso por NFS y SMB en casa.',
-      long: ['Antes usé Nextcloud, el FileBrowser original, Alist y SFTPGo, y este es el que me quedé.'],
+      long: ['Antes usé Nextcloud, el FileBrowser original, Alist y SFTPGo, y este es con el que me quedé.'],
     },
     syncthing: { blurb: 'Mantiene los archivos sincronizados entre mis dispositivos todo el tiempo, con historial de versiones.' },
     fireshare: { blurb: 'Mis amigos y yo subimos y compartimos aquí clips de juegos, sin límites de subida.' },
@@ -234,8 +238,9 @@ const es = {
   },
 
   tubs: {
+    tag: 'Lo que construyo',
     title: 'Shebang Tubs',
-    status: 'Inicios, en desarrollo',
+    status: 'Inicial, en desarrollo',
     lead: 'Shebang Tubs es un proyecto y un framework que estoy creando para que cualquiera pueda crear y autoalojar sus propias apps con agentes.',
     body: [
       'Cada app es un tub, una carpeta con un archivo Compose sencillo y su propia base de datos, archivos y secretos, así un agente puede crearla, ejecutarla y moverla a otra máquina como un solo zip con sus datos intactos.',
@@ -246,7 +251,7 @@ const es = {
       tub: 'Un tub',
       parts: ['Archivo Compose', 'Base de datos', 'Archivos', 'Secretos'],
       zip: 'Exportado en un solo zip',
-      runs: 'Funciona en cualquier máquina con Docker',
+      runs: 'Va en cualquier máquina con Docker',
       publish: 'Publicado con Cloudflare Tunnel',
     },
   },
@@ -254,9 +259,9 @@ const es = {
   cta: {
     title: 'Hacia dónde va',
     sub: 'La meta es una nube personal que se cuide sola y pueda crear y ejecutar cualquier cosa desde un solo prompt. La mayoría de las piezas ya están en su sitio, y la siguiente es el servidor Proxmox nuevo.',
-    projects: 'Ver mis proyectos',
-    contact: 'Contactar',
+    projects: 'Ver proyectos',
+    contact: 'Escríbeme',
   },
-} as Draft<HomelabCopy>;
+};
 
-export default draft(es);
+export default es;

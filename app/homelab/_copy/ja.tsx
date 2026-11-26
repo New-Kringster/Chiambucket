@@ -1,10 +1,8 @@
-import { draft, type Draft } from './draft';
 import type { HomelabCopy } from './en';
 
-// a loose cast while drafting: keys English no longer has are ignored by draft()
-const ja = {
+const ja: HomelabCopy = {
   meta: {
-    title: 'ホームラボ | Braven Chiam',
+    title: 'HomeLab | Braven Chiam',
     description:
       '僕の家のクラウドは、braven-agents の上で動く AI エージェントが運用しています。braven-agents は、ほかのマシンや UniFi のネットワーク、Cloudflare のような外部のプラットフォームを操作するサーバーです。このページでは、全体のつながり方、マシン、サービス、そのライブの稼働状況を紹介します。',
   },
@@ -17,15 +15,16 @@ const ja = {
   close: '閉じる',
 
   hero: {
+    tag: 'インフラ',
     title: 'エージェントファーストの HomeLab',
-    lead: 'ここにあるマシン、ネットワーク、サービスは、すべて braven-agents が動かしています。僕の AI エージェントを動かすのが仕事のサーバーです。エージェントはストレージサーバーからルーター、Cloudflare まで、ほかのすべてにアクセスできるので、ほとんどの変更は僕が何も触らなくても、プロンプトひとつで済みます。',
-    mapCta: 'つながりを見る',
-    machinesCta: 'マシンを見る',
+    sub: 'ここにあるマシン、ネットワーク、サービスは、すべてひとつのサーバー上の AI エージェントが動かしています。',
+    scroll: 'スクロール',
   },
 
   core: {
     title: 'すべては braven-agents を通る',
-    lead: 'braven-agents はほかのすべてのシステムの鍵を持っていて、その上のエージェントは、それぞれの API か SSH で各システムにアクセスします。システムを選ぶと、エージェントがそこで何をしているかが見られます。',
+    lead: 'braven-agents はほかのすべてのシステムの鍵を持っていて、その上のエージェントは、それぞれの API か SSH で各システムにアクセスします。だから、ほとんどの変更は僕が何も触らなくても、プロンプトひとつで済みます。',
+    hint: 'システムを選ぶと、エージェントがそこで何をしているかが見られます。',
     mapLabel: 'braven-agents がほかのすべてのシステムにつながる仕組み',
     coreTag: 'コア',
     coreRole: 'Claude Code、Codex、OpenCode に加えて、定期ジョブ用の Hermes も動いていて、僕は T3 Code でエージェントの作業を始めたり見守ったりしています。',
@@ -34,34 +33,37 @@ const ja = {
     planned: '計画中',
     proxmoxName: 'Proxmox サーバー',
     nodes: {
-      newmain: { role: 'ストレージとセルフホスト', via: 'Unraid API',
+      newmain: { role: 'ストレージとセルフホストのサービス', via: 'Unraid API',
         does: ['Docker コンテナの起動、更新、再起動', 'アレイと各ディスクの状態の監視', '共有フォルダと仮想マシンの作成'] },
       caca: { role: '未発表プロジェクトの開発環境', via: 'SSH',
         does: ['プロジェクトのビルドとテスト', 'ツールとパッケージを最新に保つ'] },
-      servertop: { role: 'iCloud への橋渡し', via: 'SSH',
+      servertop: { role: '僕の iCloud への橋渡し', via: 'SSH',
         does: ['カレンダーの予定の確認と追加', 'リマインダーの確認と追加', 'Mac が必要なほかの iCloud の作業'] },
       blade: { role: 'GPU ジョブ', via: 'SSH',
-        does: ['DrumNet の学習のような、RTX 3080 での学習ジョブ', '大きめのモデルや、GPU を多く使うほかの作業'] },
-      proxmox: { role: '仮想マシン用、ハードは未定', via: '未稼働',
+        does: ['DrumNet を学習させたときのような、RTX 3080 での学習ジョブ', '大きめのモデルや、GPU を多く使うほかの作業'] },
+      proxmox: { role: '仮想マシン用、ハードはまだ未定', via: '未稼働',
         does: ['まだ組み立て中なので、今は何も動いていません。'] },
       unifi: { role: '家のネットワーク全体', via: 'UniFi API',
         does: ['ネットワークと VLAN の作成', 'ファイアウォールのルールとポート転送の追加', '接続中のデバイスの確認と管理'] },
       npm: { role: '公開サービスのリバースプロキシ', via: 'NPM API',
-        does: ['新しいサブドメインごとのプロキシホストの追加', 'SSL 証明書の発行と更新', 'サービスに誰がアクセスできるかの設定'] },
+        does: ['新しいサブドメインごとにプロキシホストを追加', 'SSL 証明書の発行と更新', 'サービスに誰がアクセスできるかの設定'] },
       cloudflare: { role: 'DNS とエッジサービス', via: 'Cloudflare API',
-        does: ['DNS レコードの作成と変更', '新しいアプリ用の Cloudflare Tunnel の開設', 'Workers のデプロイと R2 ストレージの管理'] },
+        does: ['DNS レコードの作成と変更', '新しいアプリ用に Cloudflare Tunnel を開く', 'Workers のデプロイと R2 ストレージの管理'] },
       github: { role: '僕のコード', via: 'GitHub CLI',
         does: ['リポジトリ、ブランチ、プルリクエストの作成', 'エージェントが加えた変更のプッシュ'] },
       vercel: { role: 'このサイトのホスティング', via: 'Vercel API',
-        does: ['プレビューのデプロイとビルドの確認', '頼んだときにこのサイトを公開する'] },
+        does: ['プレビューをデプロイして、ビルドが通るかを確認', '頼んだときにこのサイトを公開する'] },
       shebang: { role: '僕のホスティング基盤', via: 'Shebang MCP',
         does: ['ページとファイルの公開', '新しいアプリに専用のデータベースとサインインを用意'] },
     },
   },
 
   prompt: {
+    tag: 'プロンプトひとつ',
     title: 'プロンプトひとつから、動くアプリまで',
-    lead: '新しいものを頼むと、エージェントはそれに関わるすべてのシステムを自分たちで進めていきます。たとえば、新しいアプリを専用の chiambucket.com のアドレスで公開してと頼むと、こんな流れになります：',
+    lead: '新しいものを頼むと、エージェントはそれに関わるすべてのシステムを自分たちで進めていきます。',
+    stepOf: 'ステップ {n} / {total}',
+    done: 'notes.chiambucket.com で公開中',
     requestLabel: 'リクエスト',
     request: '新しいメモアプリを notes.chiambucket.com で公開して。',
     steps: [
@@ -73,16 +75,17 @@ const ja = {
       { at: 'braven-agents', t: 'アドレスを開いてアプリが応答するのを確かめてから、僕にリンクを送ってくれます。' },
     ],
     ownTitle: '頼まなくても',
-    own: '毎日ヘルスチェックが走り、直せるものは自分で直します。止まったコンテナ、サービス、仮想マシンを再起動し、外れたドライブをマウントし直します。',
+    own: '毎日ヘルスチェックが走って、直せるものは自分で直します。止まったコンテナ、サービス、仮想マシンを再起動して、外れたドライブもマウントし直します。',
     waitTitle: 'まだ僕を待つこと',
-    wait: 'データの削除、ストレージアレイの作業、マシンの再起動にはまだ僕の承認が必要で、ツールも破壊的な操作の前には必ず確認してきます。',
+    wait: 'データの削除、ストレージアレイの作業、マシンの再起動にはまだ僕の承認が必要で、ツールも破壊的な操作の前には確認してきます。',
   },
 
   machines: {
+    tag: 'ハードウェア',
     title: 'マシン',
     photoAlt: '{name}',
     lead: '5 台のマシンが動いていて、6 台目はまだ計画中です。',
-    status: { running: '稼働中', planned: '計画中' },
+    planned: '計画中',
     items: {
       agents: {
         name: 'braven-agents', role: 'コア',
@@ -145,14 +148,15 @@ const ja = {
       },
     },
     rack: {
-      alt: '僕の部屋のラック。上に青いケーブルのパッチパネル、メッシュの扉の奥にサーバー',
+      alt: '僕の部屋のラック。上にパッチパネルと青いケーブル、メッシュの扉の奥にサーバー',
       caption: 'braven-agents、NewMain、CaCa は、僕の部屋のこのラックに一緒に入っています。',
     },
   },
 
   stack: {
+    tag: 'ソフトウェア',
     title: 'ホストしているもの',
-    lead: 'NewMain は僕と僕のプロジェクトのためにこれらのサービスを動かしていて、公開しているものは、1 分ごとに確認しているライブの稼働状況を表示しています。',
+    lead: 'NewMain は僕と僕のプロジェクトのためにこれらのサービスを動かしています。選ぶと、それぞれが何をしているかが見られます。',
     filterLabel: 'サービスを絞り込む',
     categories: {
       all: 'すべて',
@@ -188,7 +192,7 @@ const ja = {
     npm: {
       blurb: 'すべての公開サービスの前に立つリバースプロキシです。SSL を終端し、chiambucket.com の各サブドメインをそれぞれのコンテナへ振り分け、悪意のある IP を締め出す CrowdSec のバウンサーも動かしています。',
       long: [
-        '公開の通信はすべてひとつのアドレスに届いてまず NPM へ行くので、インターネットに直接さらされるコンテナはありません。',
+        '公開の通信はすべてひとつのアドレスに届いて、まず NPM へ行くので、インターネットに直接さらされるコンテナはありません。',
         'CrowdSec は通信を見張って攻撃のパターンを見つけ、送り元を締め出します。すべてが NPM を通るので、NPM が止まると公開サービスも全部止まります。',
       ],
     },
@@ -210,7 +214,7 @@ const ja = {
       blurb: '家で NFS や SMB 経由で使っているのと同じファイルに、ブラウザからアクセスしたり共有リンクを作ったりできます。',
       long: ['これまでに Nextcloud、元祖の FileBrowser、Alist、SFTPGo を使ってきて、最後に残ったのがこれです。'],
     },
-    syncthing: { blurb: 'デバイス間のファイルを常に同期し、バージョン管理もしてくれます。' },
+    syncthing: { blurb: 'デバイス間のファイルを常に同期して、バージョン管理もしてくれます。' },
     fireshare: { blurb: '友だちとゲームのクリップをアップロードして共有する場所で、アップロードの上限はありません。' },
     neko: { blurb: 'タブの中で共有のブラウザを動かせるので、同じ部屋に入ってひとつの画面で一緒に観たり調べたりできます。' },
     crafty: { blurb: 'Crafty で Minecraft のサーバーを管理しています。' },
@@ -233,6 +237,7 @@ const ja = {
   },
 
   tubs: {
+    tag: '開発中のもの',
     title: 'Shebang Tubs',
     status: '開発初期',
     lead: 'Shebang Tubs は、誰でもエージェントと一緒に自分のアプリを作ってセルフホストできるように、僕が作っているプロジェクト兼フレームワークです。',
@@ -256,5 +261,6 @@ const ja = {
     projects: 'プロジェクトを見る',
     contact: '連絡する',
   },
-} as Draft<HomelabCopy>;
-export default draft(ja);
+};
+
+export default ja;
