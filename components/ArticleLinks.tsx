@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 /* Key links surfaced at the top of an article hero (GitHub, demo, video, CAD, downloads).
    Server component, no client JS. First link renders as the primary (filled) pill. */
-export type LinkType = 'github' | 'video' | 'demo' | 'cad' | 'download';
+export type LinkType = 'github' | 'video' | 'demo' | 'cad' | 'download' | 'read';
 export type ArtLink = { type: LinkType; label: string; url: string };
 
 const ICONS: Record<LinkType, ReactNode> = {
@@ -27,6 +27,11 @@ const ICONS: Record<LinkType, ReactNode> = {
     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
       <path d="M12 2.8l8 4.4v9.6L12 21.2 4 16.8V7.2z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
       <path d="M4 7.2l8 4.4 8-4.4M12 11.6v9.6" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>
+  ),
+  read: (
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+      <path d="M12 6.5C10.3 5.2 7.9 4.6 4 4.8v13c3.9-.2 6.3.4 8 1.7 1.7-1.3 4.1-1.9 8-1.7v-13c-3.9-.2-6.3.4-8 1.7zM12 6.5v13" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
     </svg>
   ),
   download: (

@@ -17,7 +17,7 @@ const nl: PantryCopy = {
     title: <>Houdbaarheids&shy;<em>tracker</em></>,
     lead: 'Deze houdbaarheidstracker voor op de koelkastdeur bouwde ik tijdens mijn stage bij M5Stack. Je scant de barcode van een product en kiest wanneer het over de datum gaat, en het scherm laat altijd zien wat je het eerst moet opeten, met productnamen in het Chinees of het Engels.',
     builtWith: 'Gemaakt met',
-    links: ['GitHub', 'Flash de firmware', 'Server downloaden'],
+    links: ['GitHub', 'Lees op M5Stack', 'Flash de firmware', 'Server downloaden'],
     meta: 'Stageproject bij M5Stack, november 2026. M5Stack CoreS3 SE, Module13.2 QRCode, C++, Python, Docker, MQTT.',
   },
   chapters: 'Hoofdstukken',

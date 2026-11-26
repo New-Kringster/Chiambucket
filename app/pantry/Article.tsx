@@ -19,7 +19,8 @@ const BackArrow = () => (
 );
 const I = '/images/pantry/';
 const REPO = 'https://github.com/New-Kringster/Pantry_tracker_code';
-const FLASHDECK = 'https://flashdeck.shebang.pro/';
+const M5_BLOG = 'https://shop.m5stack.com/blogs/news/turn-your-fridge-door-into-a-pantry-assistant-with-m5stack-cores3-se';
+const BURNER = 'https://burner.m5stack.com/share/firmware/R4VK5Z';
 const V = '/videos/pantry/';
 /* the chapter rail: section id, and whether it is a sub-chapter */
 const RAIL = [['demo'], ['try'], ['features'], ['scan', 1], ['first', 1], ['again', 1], ['swipe', 1], ['pantries', 1], ['control', 1], ['web', 1], ['ha', 1], ['how'], ['hardware'], ['setup']] as const;
@@ -81,8 +82,9 @@ export default async function PantryArticle({ lang }: { lang: Lang }) {
           <ArticleLinks
             links={[
               { type: 'github', label: c.hero.links[0], url: REPO },
-              { type: 'download', label: c.hero.links[1], url: FLASHDECK },
-              { type: 'download', label: c.hero.links[2], url: REPO + '/releases/latest' },
+              { type: 'read', label: c.hero.links[1], url: M5_BLOG },
+              { type: 'download', label: c.hero.links[2], url: BURNER },
+              { type: 'download', label: c.hero.links[3], url: REPO + '/releases/latest' },
             ]}
           />
           <p className="pt-meta">{c.hero.meta}</p>

@@ -18,7 +18,7 @@ const fr: PantryCopy = {
     title: <>Pantry <em>Expiry Tracker</em></>,
     lead: 'J’ai construit ce suivi des dates de péremption pour la porte du frigo pendant mon stage chez M5Stack. Tu scannes le code-barres d’un produit et tu choisis quand il périme, et l’écran montre toujours quoi manger en premier, avec les noms des produits en chinois ou en anglais.',
     builtWith: 'Fait avec',
-    links: ['GitHub', 'Flasher le firmware', 'Serveur'],
+    links: ['GitHub', 'Lire sur M5Stack', 'Flasher le firmware', 'Serveur'],
     meta: 'Projet de stage chez M5Stack, novembre 2026. M5Stack CoreS3 SE, Module13.2 QRCode, C++, Python, Docker, MQTT.',
   },
   chapters: 'Chapitres',

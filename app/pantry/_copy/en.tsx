@@ -17,8 +17,8 @@ const en = {
     title: <>Pantry <em>Expiry Tracker</em></>,
     lead: 'I built this expiry tracker for the fridge door during my internship at M5Stack. You scan a product’s barcode and pick when it expires, and the screen always shows what to eat first, with product names in Chinese or English.',
     builtWith: 'Built with',
-    /** the key links: GitHub, Flashdeck, the latest release */
-    links: ['GitHub', 'Flash the firmware', 'Server downloads'],
+    /** the key links: GitHub, the M5Stack blog post, the firmware on M5Burner, the latest release */
+    links: ['GitHub', 'Read on M5Stack', 'Flash the firmware', 'Server downloads'],
     meta: 'Internship project at M5Stack, November 2026. M5Stack CoreS3 SE, Module13.2 QRCode, C++, Python, Docker, MQTT.',
   },
   chapters: 'Chapters',

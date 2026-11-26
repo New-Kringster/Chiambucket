@@ -17,7 +17,7 @@ const zh: PantryCopy = {
     title: <>食品<em>保质期追踪器</em></>,
     lead: '这个贴在冰箱门上的保质期追踪器，是我在 M5Stack 实习时做的。扫一下商品的条形码，选好过期时间，屏幕就会一直告诉你该先吃什么，商品名称可以显示中文或英文。',
     builtWith: '使用工具',
-    links: ['GitHub', '烧录固件', '服务器下载'],
+    links: ['GitHub', '在 M5Stack 阅读', '烧录固件', '服务器下载'],
     meta: '2026 年 11 月，M5Stack 实习项目。M5Stack CoreS3 SE、Module13.2 QRCode、C++、Python、Docker、MQTT。',
   },
   chapters: '章节',

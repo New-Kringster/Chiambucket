@@ -19,7 +19,7 @@ const de: PantryCopy = {
     title: <>Haltbarkeits-<em>Tracker</em></>,
     lead: 'Diesen Tracker fürs Ablaufdatum an der Kühlschranktür habe ich während meines Praktikums bei M5Stack gebaut. Du scannst den Barcode eines Produkts und wählst, wann es abläuft, und der Bildschirm zeigt immer, was du zuerst essen solltest, mit Produktnamen auf Chinesisch oder Englisch.',
     builtWith: 'Gebaut mit',
-    links: ['GitHub', 'Firmware flashen', 'Server‑Downloads'],
+    links: ['GitHub', 'Im M5Stack-Blog', 'Firmware flashen', 'Server‑Downloads'],
     meta: 'Praktikumsprojekt bei M5Stack, November 2026. M5Stack CoreS3 SE, Module13.2 QRCode, C++, Python, Docker, MQTT.',
   },
   chapters: 'Kapitel',

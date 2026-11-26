@@ -17,7 +17,7 @@ const ja: PantryCopy = {
     title: <>賞味期限<em>トラッカー</em></>,
     lead: 'M5Stack でのインターン中に、冷蔵庫の扉に貼る賞味期限トラッカーを作りました。商品のバーコードを読み取って期限を選ぶと、画面にはいつも先に食べるべきものが表示されます。商品名は中国語か英語で出ます。',
     builtWith: '使ったもの',
-    links: ['GitHub', 'ファームを書き込む', 'サーバーを入手'],
+    links: ['GitHub', 'M5Stack で読む', 'ファームを書き込む', 'サーバーを入手'],
     meta: 'M5Stack でのインターン作品、2026年11月。M5Stack CoreS3 SE、Module13.2 QRCode、C++、Python、Docker、MQTT。',
   },
   chapters: '章',

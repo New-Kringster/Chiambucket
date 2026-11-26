@@ -19,7 +19,7 @@ const es: PantryCopy = {
     title: <>Control de <em>caducidad</em></>,
     lead: 'Hice este control de caducidad para la puerta de la nevera durante mis prácticas en M5Stack. Escaneas el código de barras de un producto y eliges cuándo caduca, y la pantalla siempre te enseña qué comer primero, con los nombres de los productos en chino o en inglés.',
     builtWith: 'Hecho con',
-    links: ['GitHub', 'Flashear firmware', 'Descargar servidor'],
+    links: ['GitHub', 'Leer en M5Stack', 'Flashear firmware', 'Descargar servidor'],
     meta: 'Proyecto de prácticas en M5Stack, noviembre de 2026. M5Stack CoreS3 SE, Module13.2 QRCode, C++, Python, Docker, MQTT.',
   },
   chapters: 'Capítulos',
