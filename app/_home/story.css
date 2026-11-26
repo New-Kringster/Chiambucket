@@ -370,12 +370,42 @@ html.hs-home .footer { position: relative; z-index: 3; }
 /* the end of the trace: a filled pad with a ring, labelled like the other stops */
 .hs-layer.is-end .hs-layer-pad { background: var(--hs-gold-deep); box-shadow: 0 0 0 4px var(--hs-paper), 0 0 0 5px rgba(156, 122, 53, 0.5); }
 .hs-layer.is-end h3 { color: var(--hs-gold-deep); }
+.hs-layer.is-end .hs-layer-pad { z-index: 2; }
+/* Sukuna stands on the last pad. His window ends at the line, so he climbs up
+   from behind it (.is-up, set when the trace arrives), the pad in front of his
+   feet; pointed at, he turns smug. */
+.hs-suk {
+  position: absolute; z-index: 1;
+  left: calc(8px - 2.6rem); bottom: calc(100% - 9px);
+  width: 5.2rem; height: 9.6rem;
+  overflow: hidden;
+  pointer-events: none;
+}
+.hs-suk-fig {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  aspect-ratio: 323 / 634;
+  transform: translate3d(0, 104%, 0);
+  transform-origin: 50% 100%;
+  transition: transform 0.75s cubic-bezier(0.34, 1.4, 0.5, 1);
+  pointer-events: auto;
+}
+.hs-suk.is-up .hs-suk-fig { transform: translate3d(0, 0, 0); transition-delay: 0.15s; }
+.hs-suk.is-up .hs-suk-fig:hover { transform: translate3d(0, 0, 0) scale(1.05) rotate(-3deg); transition: transform 0.45s cubic-bezier(0.34, 1.5, 0.5, 1); }
+.hs-suk-fig img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hs-suk-smug { opacity: 0; transition: opacity 0.12s; }
+.hs-suk-fig:hover .hs-suk-smug { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .hs-suk-fig, .hs-suk.is-up .hs-suk-fig:hover { transform: none; transition: none; }
+}
 @media (max-width: 860px) {
   .hs-layers-row { grid-template-columns: 1fr; gap: 1.8rem; padding-left: 2.2rem; }
   .hs-layers-trace { display: none; }
   .hs-layers-trace-v { display: block; position: absolute; left: 7px; top: 0.4rem; bottom: 1.2rem; width: 2px; background: var(--hs-gold-deep); transform-origin: 50% 0; }
   .hs-layer { padding-top: 0; }
   .hs-layer-pad { left: -2.2rem; top: 0.2rem; }
+  /* on phones he stands just after the word, on its baseline, with room made above for him */
+  .hs-layer.is-end { margin-top: 4.6rem; }
+  .hs-suk { left: 6.3rem; bottom: 0.55rem; width: 3.7rem; height: 7.6rem; }
 }
 
 /* ───────────── Pinned scenes that become cards ─────────────

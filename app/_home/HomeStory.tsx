@@ -376,6 +376,8 @@ function Story() {
           scaleY: 1, ease: 'none',
           scrollTrigger: { trigger: '.hs-layers', start: 'top 80%', end: 'bottom 60%', scrub: SCRUB },
         });
+        // Sukuna climbs up once the trace has reached "Complete", and ducks back if the page scrolls back up
+        ScrollTrigger.create({ trigger: '.hs-layers', start: 'bottom 60%', end: 'bottom -100%', toggleClass: { targets: '.hs-suk', className: 'is-up' } });
         gsap.utils.toArray<HTMLElement>('.hs-layer').forEach((l, i) => {
           gsap.from(l, { y: 40, opacity: 0, duration: 0.9, ease: 'expo.out', delay: i * 0.06,
             scrollTrigger: { trigger: l, start: 'top 88%', toggleActions: 'play none none reverse' } });
@@ -689,6 +691,13 @@ function Story() {
                   </div>
                 ))}
                 <div className="hs-layer is-end">
+                  {/* my chibi Sukuna, who climbs up from behind the line once it reaches the end, and turns smug when pointed at */}
+                  <span className="hs-suk" aria-hidden="true">
+                    <span className="hs-suk-fig">
+                      <img src="/images/home/sukuna.webp" alt="" width={323} height={634} loading="lazy" />
+                      <img className="hs-suk-smug" src="/images/home/sukuna-smug.webp" alt="" width={323} height={634} loading="lazy" />
+                    </span>
+                  </span>
                   <span className="hs-layer-pad" aria-hidden="true" />
                   <h3>{c.hello.complete}</h3>
                 </div>
