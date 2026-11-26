@@ -136,10 +136,10 @@ const fr: PantryCopy = {
   },
   setup: {
     h: 'En monter un',
-    p: 'Tout ce qu’il te faut se télécharge gratuitement : le firmware se flashe depuis ton navigateur, et le serveur vient en bundle Docker avec ses images incluses, donc rien n’a besoin d’être tiré de Docker Hub pendant l’installation.',
+    p: 'Tout ce qu’il te faut se télécharge gratuitement : le firmware se flashe avec M5Burner, et le serveur vient en bundle Docker avec ses images incluses, donc rien n’a besoin d’être tiré de Docker Hub pendant l’installation.',
     steps: [
       <>Sur le module QRCode, mets l’interrupteur d’interface sur UART et active le numéro 2 dans les deux blocs DIP TX et RX, puis empile les trois pièces.</>,
-      <>Ouvre <a href="https://flashdeck.shebang.pro/" target="_blank" rel="noopener">Flashdeck</a> dans Chrome ou Edge, choisis <b>Pantry</b>, branche la CoreS3 SE en USB-C et appuie sur <b>Install</b>, ce qui flashe le firmware directement depuis le navigateur.</>,
+      <>Ouvre le <a href="https://burner.m5stack.com/share/firmware/R4VK5Z" target="_blank" rel="noopener">firmware Pantry sur M5Burner</a>, branche la CoreS3 SE en USB-C et flashe-le avec l’application M5Burner.</>,
       <>Télécharge le serveur pour l’ordinateur qui le fera tourner, soit le <a href="https://github.com/New-Kringster/Pantry_tracker_code/releases/latest/download/pantry-server-docker-amd64.tar.gz">bundle pour les ordinateurs Intel et AMD</a>, soit le <a href="https://github.com/New-Kringster/Pantry_tracker_code/releases/latest/download/pantry-server-docker-arm64.tar.gz">bundle pour les Mac Apple Silicon et un Raspberry Pi</a>. Décompresse-le, règle <code>TZ</code> dans <code>docker-compose.yml</code> sur ton fuseau horaire et lance <code>./install.sh</code> dans ce dossier.</>,
       <>Allume le suivi, scanne le QR code sur son écran avec ton téléphone, et entre ton Wi-Fi et l’adresse du serveur, par exemple <code>http://192.168.1.20:8080</code>.</>,
       <>Touche <b>SCAN NOW</b> et scanne ce code une fois, ce qui fait passer le moteur de scan de l’USB à la liaison série.</>,

@@ -141,11 +141,11 @@ const en = {
   },
   setup: {
     h: 'Setting one up',
-    p: 'Everything you need is free to download: the firmware flashes from your browser, and the server comes as a Docker bundle with its images included, so nothing has to be pulled from Docker Hub while it installs.',
+    p: 'Everything you need is free to download: the firmware flashes with M5Burner, and the server comes as a Docker bundle with its images included, so nothing has to be pulled from Docker Hub while it installs.',
     /** the steps, in order; steps 1, 4 and 5 carry a picture (see Article.tsx) */
     steps: [
       <>On the QRCode module, slide the interface toggle to UART and switch on number 2 in both the TX and RX DIP blocks, then stack the three parts.</>,
-      <>Open <a href="https://flashdeck.shebang.pro/" target="_blank" rel="noopener">Flashdeck</a> in Chrome or Edge, choose <b>Pantry</b>, plug the CoreS3 SE in over USB-C and press <b>Install</b>, which flashes the firmware straight from the browser.</>,
+      <>Open the <a href="https://burner.m5stack.com/share/firmware/R4VK5Z" target="_blank" rel="noopener">Pantry firmware on M5Burner</a>, plug the CoreS3 SE in over USB-C and burn it with the M5Burner app.</>,
       <>Download the server for the computer that will run it, either the <a href="https://github.com/New-Kringster/Pantry_tracker_code/releases/latest/download/pantry-server-docker-amd64.tar.gz">bundle for Intel and AMD computers</a> or the <a href="https://github.com/New-Kringster/Pantry_tracker_code/releases/latest/download/pantry-server-docker-arm64.tar.gz">bundle for Apple Silicon Macs and a Raspberry Pi</a>. Unpack it, set <code>TZ</code> in <code>docker-compose.yml</code> to your time zone and run <code>./install.sh</code> in that folder.</>,
       <>Turn the tracker on, scan the QR code on its screen with your phone, and enter your WiFi and the server address, for example <code>http://192.168.1.20:8080</code>.</>,
       <>Tap <b>SCAN NOW</b> and scan this code once, which switches the scan engine from USB to serial.</>,

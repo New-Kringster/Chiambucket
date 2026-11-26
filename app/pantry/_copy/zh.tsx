@@ -135,10 +135,10 @@ const zh: PantryCopy = {
   },
   setup: {
     h: '自己搭一个',
-    p: '需要的东西都能免费下载：固件直接在浏览器里烧录，服务器是一个自带镜像的 Docker 安装包，所以安装时不用从 Docker Hub 拉取任何东西。',
+    p: '需要的东西都能免费下载：固件用 M5Burner 烧录，服务器是一个自带镜像的 Docker 安装包，所以安装时不用从 Docker Hub 拉取任何东西。',
     steps: [
       <>在 QRCode 模块上，把接口开关拨到 UART，再把 TX 和 RX 两组 DIP 开关的 2 号都打开，然后把三个部分叠起来。</>,
-      <>用 Chrome 或 Edge 打开 <a href="https://flashdeck.shebang.pro/" target="_blank" rel="noopener">Flashdeck</a>，选择 <b>Pantry</b>，用 USB-C 接上 CoreS3 SE，按 <b>Install</b>，固件就会直接从浏览器烧录进去。</>,
+      <>打开 <a href="https://burner.m5stack.com/share/firmware/R4VK5Z" target="_blank" rel="noopener">M5Burner 上的 Pantry 固件</a>，用 USB-C 接上 CoreS3 SE，再用 M5Burner 应用烧录进去。</>,
       <>给要运行服务器的电脑下载对应的版本，<a href="https://github.com/New-Kringster/Pantry_tracker_code/releases/latest/download/pantry-server-docker-amd64.tar.gz">Intel 和 AMD 电脑用的安装包</a>，或者 <a href="https://github.com/New-Kringster/Pantry_tracker_code/releases/latest/download/pantry-server-docker-arm64.tar.gz">Apple Silicon Mac 和 Raspberry Pi 用的安装包</a>。解压后，把 <code>docker-compose.yml</code> 里的 <code>TZ</code> 设成你的时区，再在那个文件夹里运行 <code>./install.sh</code>。</>,
       <>打开追踪器，用手机扫它屏幕上的二维码，输入你的 WiFi 和服务器地址，例如 <code>http://192.168.1.20:8080</code>。</>,
       <>点 <b>SCAN NOW</b>，扫一次这个码，它会把扫描引擎从 USB 切换到串口。</>,

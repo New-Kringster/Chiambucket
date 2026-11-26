@@ -137,10 +137,10 @@ const es: PantryCopy = {
   },
   setup: {
     h: 'Móntate uno',
-    p: 'Todo lo que necesitas se descarga gratis: el firmware se flashea desde el navegador, y el servidor viene como un paquete de Docker con sus imágenes incluidas, así que no hay que bajar nada de Docker Hub durante la instalación.',
+    p: 'Todo lo que necesitas se descarga gratis: el firmware se flashea con M5Burner, y el servidor viene como un paquete de Docker con sus imágenes incluidas, así que no hay que bajar nada de Docker Hub durante la instalación.',
     steps: [
       <>En el módulo QRCode, pon el selector de interfaz en UART y activa el número 2 en los dos bloques DIP, TX y RX, y luego apila las tres piezas.</>,
-      <>Abre <a href="https://flashdeck.shebang.pro/" target="_blank" rel="noopener">Flashdeck</a> en Chrome o Edge, elige <b>Pantry</b>, conecta el CoreS3 SE por USB-C y pulsa <b>Install</b>, que flashea el firmware directamente desde el navegador.</>,
+      <>Abre el <a href="https://burner.m5stack.com/share/firmware/R4VK5Z" target="_blank" rel="noopener">firmware de Pantry en M5Burner</a>, conecta el CoreS3 SE por USB-C y flashéalo con la app M5Burner.</>,
       <>Descarga el servidor para el ordenador que lo vaya a ejecutar, ya sea el <a href="https://github.com/New-Kringster/Pantry_tracker_code/releases/latest/download/pantry-server-docker-amd64.tar.gz">paquete para ordenadores Intel y AMD</a> o el <a href="https://github.com/New-Kringster/Pantry_tracker_code/releases/latest/download/pantry-server-docker-arm64.tar.gz">paquete para Macs con Apple Silicon y Raspberry Pi</a>. Descomprímelo, pon en <code>TZ</code> de <code>docker-compose.yml</code> tu zona horaria y ejecuta <code>./install.sh</code> en esa carpeta.</>,
       <>Enciende el control, escanea con el móvil el código QR de su pantalla e introduce tu Wi-Fi y la dirección del servidor, por ejemplo <code>http://192.168.1.20:8080</code>.</>,
       <>Toca <b>SCAN NOW</b> y escanea este código una vez, que cambia el lector de USB a serie.</>,

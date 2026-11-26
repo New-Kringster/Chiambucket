@@ -135,10 +135,10 @@ const ja: PantryCopy = {
   },
   setup: {
     h: 'セットアップ',
-    p: '必要なものは全部無料でダウンロードできます。ファームウェアはブラウザーから書き込めて、サーバーはイメージ込みの Docker バンドルなので、インストール中に Docker Hub から何も取ってこなくて大丈夫です。',
+    p: '必要なものは全部無料でダウンロードできます。ファームウェアは M5Burner で書き込めて、サーバーはイメージ込みの Docker バンドルなので、インストール中に Docker Hub から何も取ってこなくて大丈夫です。',
     steps: [
       <>QRCode モジュールのインターフェースのスイッチを UART にスライドし、TX と RX の両方の DIP スイッチで 2 番をオンにしてから、3 つのパーツを重ねます。</>,
-      <>Chrome か Edge で <a href="https://flashdeck.shebang.pro/" target="_blank" rel="noopener">Flashdeck</a> を開き、<b>Pantry</b> を選んで、CoreS3 SE を USB-C でつないで <b>Install</b> を押します。これでブラウザーから直接ファームウェアが書き込まれます。</>,
+      <><a href="https://burner.m5stack.com/share/firmware/R4VK5Z" target="_blank" rel="noopener">M5Burner の Pantry ファームウェア</a>を開き、CoreS3 SE を USB-C でつないで、M5Burner アプリで書き込みます。</>,
       <>サーバーを動かすパソコンに合わせてダウンロードします。<a href="https://github.com/New-Kringster/Pantry_tracker_code/releases/latest/download/pantry-server-docker-amd64.tar.gz">Intel と AMD のパソコン用のバンドル</a>か、<a href="https://github.com/New-Kringster/Pantry_tracker_code/releases/latest/download/pantry-server-docker-arm64.tar.gz">Apple Silicon の Mac と Raspberry Pi 用のバンドル</a>です。展開して、<code>docker-compose.yml</code> の <code>TZ</code> を自分のタイムゾーンにし、そのフォルダーで <code>./install.sh</code> を実行します。</>,
       <>トラッカーの電源を入れて、画面の QR コードをスマホで読み取り、WiFi とサーバーのアドレスを入力します。たとえば <code>http://192.168.1.20:8080</code> です。</>,
       <><b>SCAN NOW</b> をタップしてこのコードを一度読み取ります。これでスキャンエンジンが USB からシリアルに切り替わります。</>,

@@ -137,10 +137,10 @@ const de: PantryCopy = {
   },
   setup: {
     h: 'Nachbauen',
-    p: 'Alles, was du brauchst, kannst du kostenlos herunterladen: Die Firmware flashst du aus dem Browser, und der Server kommt als Docker-Paket mit seinen Images, sodass beim Installieren nichts von Docker Hub geladen werden muss.',
+    p: 'Alles, was du brauchst, kannst du kostenlos herunterladen: Die Firmware flashst du mit M5Burner, und der Server kommt als Docker-Paket mit seinen Images, sodass beim Installieren nichts von Docker Hub geladen werden muss.',
     steps: [
       <>Schieb am QRCode-Modul den Schnittstellen-Schalter auf UART und stell Nummer 2 in den beiden DIP-Blöcken TX und RX auf an, dann steck die drei Teile aufeinander.</>,
-      <>Öffne <a href="https://flashdeck.shebang.pro/" target="_blank" rel="noopener">Flashdeck</a> in Chrome oder Edge, wähl <b>Pantry</b>, schließ den CoreS3 SE per USB-C an und drück <b>Install</b>. Das flasht die Firmware direkt aus dem Browser.</>,
+      <>Öffne die <a href="https://burner.m5stack.com/share/firmware/R4VK5Z" target="_blank" rel="noopener">Pantry-Firmware auf M5Burner</a>, schließ den CoreS3 SE per USB-C an und flash sie mit der M5Burner-App.</>,
       <>Lade den Server für den Computer herunter, auf dem er laufen soll, entweder das <a href="https://github.com/New-Kringster/Pantry_tracker_code/releases/latest/download/pantry-server-docker-amd64.tar.gz">Paket für Intel- und AMD-Computer</a> oder das <a href="https://github.com/New-Kringster/Pantry_tracker_code/releases/latest/download/pantry-server-docker-arm64.tar.gz">Paket für Macs mit Apple Silicon und einen Raspberry Pi</a>. Entpack es, setz <code>TZ</code> in <code>docker-compose.yml</code> auf deine Zeitzone und führ <code>./install.sh</code> in diesem Ordner aus.</>,
       <>Schalt den Tracker ein, scann den QR-Code auf seinem Bildschirm mit dem Handy und gib dein WLAN und die Serveradresse ein, zum Beispiel <code>http://192.168.1.20:8080</code>.</>,
       <>Tipp auf <b>SCAN NOW</b> und scann diesen Code einmal. Das stellt die Scan-Engine von USB auf seriell um.</>,

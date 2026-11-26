@@ -135,10 +135,10 @@ const ru: PantryCopy = {
   },
   setup: {
     h: 'Как настроить',
-    p: 'Всё нужное можно скачать бесплатно: прошивка ставится прямо из браузера, а сервер идёт как пакет Docker со всеми образами внутри, так что при установке ничего не надо тянуть с Docker Hub.',
+    p: 'Всё нужное можно скачать бесплатно: прошивка ставится через M5Burner, а сервер идёт как пакет Docker со всеми образами внутри, так что при установке ничего не надо тянуть с Docker Hub.',
     steps: [
       <>На модуле QRCode переведите переключатель интерфейса в UART и включите переключатель номер 2 в обоих DIP-блоках, TX и RX, а потом соберите три части в стопку.</>,
-      <>Откройте <a href="https://flashdeck.shebang.pro/" target="_blank" rel="noopener">Flashdeck</a> в Chrome или Edge, выберите <b>Pantry</b>, подключите CoreS3 SE по USB-C и нажмите <b>Install</b>, и прошивка запишется прямо из браузера.</>,
+      <>Откройте <a href="https://burner.m5stack.com/share/firmware/R4VK5Z" target="_blank" rel="noopener">прошивку Pantry в M5Burner</a>, подключите CoreS3 SE по USB-C и залейте её через приложение M5Burner.</>,
       <>Скачайте сервер для компьютера, на котором он будет работать: либо <a href="https://github.com/New-Kringster/Pantry_tracker_code/releases/latest/download/pantry-server-docker-amd64.tar.gz">пакет для компьютеров на Intel и AMD</a>, либо <a href="https://github.com/New-Kringster/Pantry_tracker_code/releases/latest/download/pantry-server-docker-arm64.tar.gz">пакет для Mac на Apple Silicon и Raspberry Pi</a>. Распакуйте его, укажите свой часовой пояс в <code>TZ</code> в файле <code>docker-compose.yml</code> и запустите <code>./install.sh</code> в этой папке.</>,
       <>Включите трекер, отсканируйте телефоном QR-код на его экране и введите свой WiFi и адрес сервера, например <code>http://192.168.1.20:8080</code>.</>,
       <>Нажмите <b>SCAN NOW</b> и один раз отсканируйте этот код: он переключает модуль сканера с USB на последовательный порт.</>,

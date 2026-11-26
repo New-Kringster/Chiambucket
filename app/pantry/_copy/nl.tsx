@@ -135,10 +135,10 @@ const nl: PantryCopy = {
   },
   setup: {
     h: 'Zelf instellen',
-    p: 'Alles wat je nodig hebt kun je gratis downloaden: de firmware flash je vanuit je browser, en de server komt als Docker-bundel met de images erbij, dus er hoeft tijdens de installatie niets van Docker Hub gehaald te worden.',
+    p: 'Alles wat je nodig hebt kun je gratis downloaden: de firmware flash je met M5Burner, en de server komt als Docker-bundel met de images erbij, dus er hoeft tijdens de installatie niets van Docker Hub gehaald te worden.',
     steps: [
       <>Zet op de QRCode-module de interfaceschakelaar op UART en zet nummer 2 aan in zowel het TX- als het RX-DIP-blok, en stapel dan de drie onderdelen op elkaar.</>,
-      <>Open <a href="https://flashdeck.shebang.pro/" target="_blank" rel="noopener">Flashdeck</a> in Chrome of Edge, kies <b>Pantry</b>, sluit de CoreS3 SE aan via USB-C en druk op <b>Install</b>, en de firmware wordt meteen vanuit de browser geflasht.</>,
+      <>Open de <a href="https://burner.m5stack.com/share/firmware/R4VK5Z" target="_blank" rel="noopener">Pantry-firmware op M5Burner</a>, sluit de CoreS3 SE aan via USB-C en flash hem met de M5Burner-app.</>,
       <>Download de server voor de computer waarop hij gaat draaien, de <a href="https://github.com/New-Kringster/Pantry_tracker_code/releases/latest/download/pantry-server-docker-amd64.tar.gz">bundel voor Intel- en AMD-computers</a> of de <a href="https://github.com/New-Kringster/Pantry_tracker_code/releases/latest/download/pantry-server-docker-arm64.tar.gz">bundel voor Macs met Apple Silicon en een Raspberry Pi</a>. Pak hem uit, zet <code>TZ</code> in <code>docker-compose.yml</code> op je tijdzone en draai <code>./install.sh</code> in die map.</>,
       <>Zet de tracker aan, scan de QR-code op het scherm met je telefoon en vul je wifi en het serveradres in, bijvoorbeeld <code>http://192.168.1.20:8080</code>.</>,
       <>Tik op <b>SCAN NOW</b> en scan deze code één keer, zodat de scanmodule van USB naar serieel overschakelt.</>,
