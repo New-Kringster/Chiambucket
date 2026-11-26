@@ -373,12 +373,12 @@ function Story() {
         let trace: gsap.core.Tween | undefined; // GSAP updates once while creating it, before this is set
         trace = gsap.fromTo('.hs-layers-trace', { scaleX: 0 }, {
           scaleX: 1, ease: 'none',
-          scrollTrigger: { trigger: '.hs-layers', start: 'top 80%', end: 'bottom 60%', scrub: SCRUB },
+          scrollTrigger: { trigger: '.hs-layers', start: 'top 85%', end: 'bottom 85%', scrub: SCRUB },
           onUpdate: () => { suk?.classList.toggle('is-up', (trace?.progress() ?? 0) > 0.94); },
         });
         gsap.fromTo('.hs-layers-trace-v', { scaleY: 0 }, {
           scaleY: 1, ease: 'none',
-          scrollTrigger: { trigger: '.hs-layers', start: 'top 80%', end: 'bottom 60%', scrub: SCRUB },
+          scrollTrigger: { trigger: '.hs-layers', start: 'top 85%', end: 'bottom 85%', scrub: SCRUB },
         });
         gsap.utils.toArray<HTMLElement>('.hs-layer').forEach((l, i) => {
           gsap.from(l, { y: 40, opacity: 0, duration: 0.9, ease: 'expo.out', delay: i * 0.06,

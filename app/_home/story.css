@@ -376,8 +376,10 @@ html.hs-home .footer { position: relative; z-index: 3; }
    feet; pointed at, he turns smug. */
 .hs-suk {
   position: absolute; z-index: 1;
-  left: calc(8px - 2.6rem); bottom: calc(100% - 9px);
-  width: 5.2rem; height: 9.6rem;
+  --w: 5.2rem;
+  left: calc(8px - var(--w) / 2); bottom: calc(100% - 9px);
+  /* as tall as he is, plus headroom for the hover lean, so his hair is never clipped */
+  width: var(--w); height: calc(var(--w) * 634 / 323 + 1.6rem);
   overflow: hidden;
   pointer-events: none;
 }
@@ -405,7 +407,7 @@ html.hs-home .footer { position: relative; z-index: 3; }
   .hs-layer-pad { left: -2.2rem; top: 0.2rem; }
   /* on phones he stands just after the word, on its baseline, with room made above for him */
   .hs-layer.is-end { margin-top: 4.6rem; }
-  .hs-suk { left: 6.3rem; bottom: 0.55rem; width: 3.7rem; height: 7.6rem; }
+  .hs-suk { --w: 3.7rem; left: 6.3rem; bottom: 0.55rem; }
 }
 
 /* ───────────── Pinned scenes that become cards ─────────────
