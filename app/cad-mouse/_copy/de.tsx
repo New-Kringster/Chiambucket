@@ -42,25 +42,33 @@ const de: CadMouseCopy = {
   },
   try: {
     h: 'Ausprobieren',
-    p: 'Diese Kopie führt die Tastenlogik der Capsule aus, und dein Mauszeiger übernimmt die Rolle deiner Hand. Die Oberseite der Capsule ist ihre Taste. Klick sie also an, um Drehen einzuschalten, und beweg den Zeiger über die Ansicht, um das Teil zu drehen. Halt sie gedrückt, um zu verschieben, und doppelklick sie, um das Teil wieder ganz ins Bild zu holen.',
-    note: 'Die echte Capsule misst, wie schnell sich deine Hand dreht, sodass sich das Teil um denselben Winkel dreht wie deine Hand. Hier steht die Bewegung des Zeigers dafür.',
+    p: 'Das ist das Gehäuse aus der Demo, das ich für meinen LoRA Messenger entworfen habe, und zwar dasselbe Modell, das ich in Onshape geöffnet hatte. Zieh daran, und es dreht sich so, wie wenn ich die Capsule drehe, während die Capsule daneben zeigt, was meine Hand und ihre Taste dabei tun würden.',
+    note: 'Die echte Capsule misst, wie schnell sich deine Hand dreht, sodass sich das Teil um denselben Winkel dreht wie deine Hand. Hier steht dein Ziehen dafür.',
   },
+  /** the simulator's words (CadSim) */
   sim: {
+    /** the Capsule's light, by state */
     led: {
       ready: 'Grün blinkend: verbunden, Drehen aus',
       rotate: 'Cyan: Drehen an',
-      pan: 'Gelb: Verschieben',
+      pan: 'Gelb: Taste gehalten',
       fit: 'Weißer Blitz: Einpassen',
     },
-    status: {
-      demo: 'Eine Demo mit eingeschaltetem Drehen läuft. Tipp die Taste der Capsule an, um selbst zu steuern.',
-      pan: 'Verschieben, solange du gedrückt hältst. Beweg den Zeiger, um das Teil zu schieben, und scroll zum Zoomen, das ist bei der echten das Verdrehen.',
-      rotate: 'Drehen ist an. Beweg den Zeiger über die Ansicht, und das Teil dreht sich mit. Klick nochmal, um aufzuhören.',
-      off: 'Drehen ist aus. Klick die Taste zum Starten, halt sie zum Verschieben oder doppelklick zum Einpassen.',
+    viewport: 'Das Gehäuse des LoRA Messenger in einer CAD-Ansicht. Ziehen dreht es, Ziehen mit gedrückter Umschalttaste verschiebt es, Scrollen zoomt, und ein Doppelklick passt es ein. Die Pfeiltasten drehen es, Umschalt mit den Pfeiltasten verschiebt es, Plus und Minus zoomen, und 0 passt es ein.',
+    loading: 'Gehäuse wird geladen',
+    failed: 'Die 3D-Ansicht konnte in diesem Browser nicht starten.',
+    hint: 'Zieh, um das Gehäuse zu drehen',
+    zoomIn: 'Vergrößern',
+    zoomOut: 'Verkleinern',
+    fit: 'Einpassen',
+    /** the key under the view: its two column heads, then each control with a mouse, with a touch screen, and as the Capsule's gesture */
+    heads: { here: 'In dieser Ansicht', capsule: 'Mit der Capsule' },
+    moves: {
+      rotate: { mouse: 'Ziehen', touch: 'Mit einem Finger ziehen', capsule: 'Taste klicken, dann die Hand drehen' },
+      pan: { mouse: 'Rechts ziehen oder Umschalt und ziehen', touch: 'Mit zwei Fingern ziehen', capsule: 'Taste halten und mit der Capsule zeigen' },
+      zoom: { mouse: 'Scrollen', touch: 'Zwei Finger spreizen', capsule: 'Taste halten und die Capsule verdrehen' },
+      fit: { mouse: 'Doppelklick', touch: 'Doppelt tippen', capsule: 'Taste doppelklicken' },
     },
-    viewport: 'Ein oranges Handgehäuse in einer CAD-Ansicht, gedreht von der Capsule',
-    button: 'Die Taste der Capsule: Klicken schaltet Drehen um, Halten verschiebt, Doppelklick passt ein',
-    reset: 'Neu starten',
   },
   use: {
     h: 'Bedienung',

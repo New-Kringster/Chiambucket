@@ -3,7 +3,7 @@ import type { HomeCopy } from './en';
 const zh: HomeCopy = {
   meta: {
     title: 'Braven Chiam | 硬件、软件与设计',
-    description: 'Braven Chiam 的项目作品。他是南洋理工学院电子与计算机工程专业的学生，从电路板一路做到云端，作品包括一个在 ESP32-S3 上直接读出数字的水表读数器、一辆 5G 遥控车、一个私人电子书阅读器，还有他自己的托管平台。',
+    description: 'Chiambucket 是 Braven Chiam 的作品集。他是新加坡的工程专业学生，从电路板一路做到云端，作品包括一辆 5G 遥控车和一个水表读数器。',
     keywords: 'Braven Chiam, Chiambucket, OCR Reader, DrumNet, Project June, 5G 遥控车, BeadReader, Shebang, M5Stack, LoRA Messenger, ESP32, PCB 设计, KiCad, Onshape, Next.js, homelab, 摄影, 新加坡',
     ogDescription: '我从电路板一路做到云端，作品包括一个在芯片上直接读数的水表读数器、一辆 5G 遥控车和一个私人电子书阅读器。',
     twitterTitle: 'Braven Chiam',

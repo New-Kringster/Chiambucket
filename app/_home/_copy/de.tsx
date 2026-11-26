@@ -4,7 +4,7 @@ import type { HomeCopy } from './en';
 const de: HomeCopy = {
   meta: {
     title: 'Braven Chiam | Hardware, Software und Design',
-    description: 'Projekte von Braven Chiam, der an der Nanyang Polytechnic Elektronik und Technische Informatik studiert und von der Platine bis in die Cloud alles selbst baut, darunter ein Wasserzählerleser, der seine Ziffern auf einem ESP32-S3 liest, ein 5G-Rover, eine private Lese-App für Bücher und seine eigene Hosting-Plattform.',
+    description: 'Chiambucket ist das Portfolio von Braven Chiam, einem Ingenieurstudenten aus Singapur, der von der Platine bis in die Cloud baut, etwa einen 5G-Rover und einen Wasserzählerleser.',
     keywords: 'Braven Chiam, Chiambucket, OCR Reader, DrumNet, Project June, 5G-Rover, BeadReader, Shebang, M5Stack, LoRA Messenger, ESP32, Platinendesign, KiCad, Onshape, Next.js, Homelab, Fotografie, Singapur',
     ogDescription: 'Ich baue Dinge von der Platine bis in die Cloud, darunter einen Wasserzählerleser, der direkt auf dem Chip liest, einen 5G-Rover und eine private Lese-App für Bücher.',
     twitterTitle: 'Braven Chiam',

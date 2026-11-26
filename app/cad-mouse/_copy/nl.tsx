@@ -41,25 +41,33 @@ const nl: CadMouseCopy = {
   },
   try: {
     h: 'Probeer het',
-    p: 'Deze kopie draait de knoplogica van de Capsule, met je muisaanwijzer in de rol van je hand. De bovenkant van de Capsule is de knop: klik erop om draaien aan te zetten en beweeg de aanwijzer over het beeld om het onderdeel te draaien, houd hem ingedrukt om te verschuiven en dubbelklik om het onderdeel weer passend in beeld te zetten.',
-    note: 'De echte Capsule meet hoe snel je hand draait, zodat het onderdeel over dezelfde hoek draait als je hand. Hier neemt de beweging van de aanwijzer die rol over.',
+    p: 'Dit is de behuizing uit de demo, die ik voor mijn LoRA Messenger heb ontworpen, en het is hetzelfde model dat ik in Onshape open had staan. Sleep eraan en hij draait zoals wanneer ik de Capsule draai, terwijl de Capsule ernaast laat zien wat mijn hand en de knop dan zouden doen.',
+    note: 'De echte Capsule meet hoe snel je hand draait, zodat het onderdeel over dezelfde hoek draait als je hand. Hier neemt je sleepbeweging die rol over.',
   },
+  /** the simulator's words (CadSim) */
   sim: {
+    /** the Capsule's light, by state */
     led: {
       ready: 'Groen knipperen: verbonden, draaien uit',
       rotate: 'Cyaan: draaien aan',
-      pan: 'Oranje: schuiven',
+      pan: 'Oranje: knop ingedrukt',
       fit: 'Witte flits: passend',
     },
-    status: {
-      demo: 'Er speelt een demo met draaien aan. Raak de knop van de Capsule aan om het over te nemen.',
-      pan: 'Verschuiven zolang je ingedrukt houdt. Beweeg om het onderdeel te schuiven en scroll om te zoomen, wat op de echte de draai is.',
-      rotate: 'Draaien staat aan. Beweeg de aanwijzer over het beeld en het onderdeel draait mee. Klik nog eens om te stoppen.',
-      off: 'Draaien staat uit. Klik op de knop om te beginnen, houd hem ingedrukt om te verschuiven of dubbelklik om passend te maken.',
+    viewport: 'De behuizing van de LoRA Messenger in een CAD-weergave. Sleep om hem te draaien, sleep met Shift om hem te verschuiven, scroll om te zoomen en dubbelklik om hem passend te maken. De pijltjestoetsen draaien hem, Shift met de pijltjestoetsen verschuift hem, plus en min zoomen, en 0 maakt hem passend.',
+    loading: 'Behuizing wordt geladen',
+    failed: 'De 3D-weergave kon in deze browser niet starten.',
+    hint: 'Sleep om de behuizing te draaien',
+    zoomIn: 'Inzoomen',
+    zoomOut: 'Uitzoomen',
+    fit: 'Passend',
+    /** the key under the view: its two column heads, then each control with a mouse, with a touch screen, and as the Capsule's gesture */
+    heads: { here: 'In deze weergave', capsule: 'Met de Capsule' },
+    moves: {
+      rotate: { mouse: 'Slepen', touch: 'Slepen met één vinger', capsule: 'Op de knop klikken en dan je hand draaien' },
+      pan: { mouse: 'Slepen met rechts of met Shift', touch: 'Slepen met twee vingers', capsule: 'De knop ingedrukt houden en met de Capsule wijzen' },
+      zoom: { mouse: 'Scrollen', touch: 'Knijpen', capsule: 'De knop ingedrukt houden en de Capsule verdraaien' },
+      fit: { mouse: 'Dubbelklikken', touch: 'Dubbeltikken', capsule: 'Dubbelklikken op de knop' },
     },
-    viewport: 'Een oranje handheld-behuizing in een CAD-viewport, gedraaid door de Capsule',
-    button: 'De knop van de Capsule: klik om draaien aan of uit te zetten, houd ingedrukt om te verschuiven, dubbelklik om passend te maken',
-    reset: 'Opnieuw',
   },
   use: {
     h: 'Het gebruik',
