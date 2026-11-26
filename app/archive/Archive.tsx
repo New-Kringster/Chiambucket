@@ -1,14 +1,14 @@
 import type { CSSProperties } from 'react';
 import Link from 'next/link';
-import { Figtree, Newsreader } from 'next/font/google';
+import { archiveSans, archiveSerif } from '../fonts';
 import { VERSIONS, FIRST_LAUNCH, archiveUrl, archiveHost } from './versions';
 import type { ArchiveCopy } from './_copy/en';
 import { HTML_LANG, SITE, localize, type Lang } from '@/lib/i18n';
 import { fill } from '@/lib/fill';
 import './archive.css';
 
-const sans = Figtree({ subsets: ['latin'], weight: ['500', '600', '700', '800'], variable: '--ar-sans', display: 'swap' });
-const serif = Newsreader({ subsets: ['latin'], style: ['italic'], weight: ['400'], variable: '--ar-serif', display: 'swap' });
+const sans = archiveSans;
+const serif = archiveSerif;
 
 const DAY = 86_400_000;
 const days = (a: string, b: string) => Math.max(1, Math.round((Date.parse(b) - Date.parse(a)) / DAY));

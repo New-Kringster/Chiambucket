@@ -1,7 +1,7 @@
 /* The Stack-chan LiDAR article, rendered in any language: the English page (page.tsx) and
    app/[lang]/stackchan-lidar/page.tsx both render it. Its words come from ./_copy. */
 import type { CSSProperties, ReactNode } from 'react';
-import { Figtree } from 'next/font/google';
+import { lidarSans } from '../fonts';
 import AiMark from '../../components/AiMark';
 import ArticleLinks from '../../components/ArticleLinks';
 import ArticleRecommendations from '../../components/ArticleRecommendations';
@@ -12,7 +12,7 @@ import { loadLidarCopy } from './_copy';
 import { HTML_LANG, localize, type Lang } from '@/lib/i18n';
 import './lidar.css';
 
-const sans = Figtree({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'], variable: '--ls-sans', display: 'swap' });
+const sans = lidarSans;
 
 export const URL = 'https://www.chiambucket.com/stackchan-lidar';
 

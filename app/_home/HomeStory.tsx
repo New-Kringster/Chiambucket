@@ -32,7 +32,7 @@
    ──────────────────────────────────────────────────────────────── */
 import { Fragment, useEffect, useRef, useState, type CSSProperties } from 'react';
 import Link from 'next/link';
-import { Figtree, Newsreader } from 'next/font/google';
+import { homeSans, homeSerif } from '../fonts';
 import { BENCH, SHOW_BENCH, PHOTOS, OCR_CARD, JUNE_CARD, PIP_CARD, LIDAR_CARD, BEAD_CARD } from './content';
 import { FlagCard, ProjectGallery, Bento, usePeek, Crown, Star } from './Cards';
 import { JuneHud, PipTab, LidarSet, BeadBook } from './SetPieces';
@@ -49,9 +49,9 @@ import { HomeCopyProvider, useHomeCopy } from './copyContext';
 import type { HomeCopy } from './_copy';
 import './story.css';
 
-const sans = Figtree({ subsets: ['latin'], weight: ['400', '500', '600', '800'], variable: '--hs-sans', display: 'swap' });
+const sans = homeSans;
 // The serif sets the line under Hello. and the email address.
-const serif = Newsreader({ subsets: ['latin'], style: ['italic'], weight: ['400'], variable: '--hs-serif', display: 'swap' });
+const serif = homeSerif;
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 const ramp = (p: number, a: number, b: number) => clamp01((p - a) / (b - a));
